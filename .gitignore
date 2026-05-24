@@ -1,0 +1,23 @@
+# ==========================================
+# GitIgnore - Parche Peludo V2
+# ==========================================
+
+# Ignorar archivos temporales locales del lanzador y codificadores
+*.ps1
+*.bat
+print_base64.py
+base64_*.txt
+Lanzar_Local.bat
+
+# Ignorar la union de sitio_local por defecto
+/sitio_local/*
+
+# Ignorar el respaldo de WordPress cargado por el usuario
+_parchepeludo.com/
+
+# Permitir EXCLUSIVAMENTE nuestro Tema Hijo (Child Theme) para control de versiones
+!/sitio_local/wp-content/
+/sitio_local/wp-content/*
+!/sitio_local/wp-content/themes/
+/sitio_local/wp-content/themes/*
+!/sitio_local/wp-content/themes/listeo-child/

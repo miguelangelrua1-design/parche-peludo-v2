@@ -1,0 +1,27 @@
+PARCHE PELUDO · FUENTES PARA CANVA
+====================================
+
+FAMILIA: Ubuntu
+DESCARGA: https://fonts.google.com/specimen/Ubuntu
+LICENCIA: Ubuntu Font License (libre)
+
+--- SUBIR A CANVA (4 pesos) ---
+1. Ubuntu-Light.ttf      peso 300
+2. Ubuntu-Regular.ttf    peso 400
+3. Ubuntu-Medium.ttf     peso 500
+4. Ubuntu-Bold.ttf       peso 700
+
+--- ASIGNACIÓN EN CANVA ---
+Encabezado  →  Ubuntu Bold 700
+Subtítulo   →  Ubuntu Medium 500
+Cuerpo      →  Ubuntu Regular 400
+
+--- JERARQUÍA DEL MANUAL ---
+Display     40pt · Bold 700 · -2% tracking
+Título      28pt · Bold 700
+Subtítulo   18pt · Medium 500
+Párrafo     13pt · Regular 400
+Caption     10pt · Regular 400
+
+Humanista, generosa y clara en pantalla e impresión.
+Una sola familia sostiene todo el sistema.

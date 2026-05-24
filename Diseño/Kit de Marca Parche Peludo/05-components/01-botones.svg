@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" width="1400" height="900">
+  <rect width="1400" height="900" fill="#F3EDE3"/>
+  <text x="80" y="90" font-family="Ubuntu, sans-serif" font-weight="700" font-size="52" fill="#0D1B1E" letter-spacing="-2">Sistema de Botones</text>
+  <text x="80" y="125" font-family="Ubuntu, sans-serif" font-weight="400" font-size="18" fill="#1E5D64" letter-spacing="3">PARCHE PELUDO &#183; COMPONENTES</text>
+
+  <text x="80" y="200" font-family="Ubuntu, sans-serif" font-weight="500" font-size="16" fill="#1E5D64" letter-spacing="3">PRIMARIO &#183; TEAL</text>
+  <g transform="translate(80, 220)">
+    <rect width="380" height="64" rx="32" fill="#79C8D0"/>
+    <text x="190" y="41" text-anchor="middle" font-family="Ubuntu, sans-serif" font-weight="700" font-size="20" fill="#0D1B1E">Unirme al parche</text>
+    <path d="M278 36 L298 36 M290 30 L298 36 L290 42" stroke="#0D1B1E" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="500" y="262" font-family="Ubuntu Mono, monospace" font-size="13" fill="#1E5D64">BG #79C8D0 &#183; TEXT #0D1B1E &#183; RADIUS 32px</text>
+
+  <text x="80" y="330" font-family="Ubuntu, sans-serif" font-weight="500" font-size="16" fill="#1E5D64" letter-spacing="3">HOVER &#183; TEAL DEEP</text>
+  <g transform="translate(80, 350)">
+    <rect width="380" height="64" rx="32" fill="#4AA5AD"/>
+    <text x="190" y="41" text-anchor="middle" font-family="Ubuntu, sans-serif" font-weight="700" font-size="20" fill="#ffffff">Reservar ahora</text>
+  </g>
+  <text x="500" y="392" font-family="Ubuntu Mono, monospace" font-size="13" fill="#1E5D64">BG #4AA5AD &#183; TEXT #ffffff &#183; estado pressed</text>
+
+  <text x="80" y="460" font-family="Ubuntu, sans-serif" font-weight="500" font-size="16" fill="#1E5D64" letter-spacing="3">SECUNDARIO &#183; NARANJA</text>
+  <g transform="translate(80, 480)">
+    <rect width="380" height="64" rx="32" fill="#F2994A"/>
+    <text x="190" y="41" text-anchor="middle" font-family="Ubuntu, sans-serif" font-weight="700" font-size="20" fill="#ffffff">Explorar directorio</text>
+  </g>
+  <text x="500" y="522" font-family="Ubuntu Mono, monospace" font-size="13" fill="#1E5D64">BG #F2994A &#183; acciones secundarias (energía)</text>
+
+  <text x="80" y="590" font-family="Ubuntu, sans-serif" font-weight="500" font-size="16" fill="#1E5D64" letter-spacing="3">OUTLINE &#183; GHOST</text>
+  <g transform="translate(80, 610)">
+    <rect width="380" height="64" rx="32" fill="none" stroke="#1E5D64" stroke-width="2"/>
+    <text x="190" y="41" text-anchor="middle" font-family="Ubuntu, sans-serif" font-weight="700" font-size="20" fill="#1E5D64">Ver más prestadores</text>
+  </g>
+  <text x="500" y="652" font-family="Ubuntu Mono, monospace" font-size="13" fill="#1E5D64">BORDER #1E5D64 2px &#183; terciarios</text>
+
+  <text x="80" y="720" font-family="Ubuntu, sans-serif" font-weight="500" font-size="16" fill="#1E5D64" letter-spacing="3">TAMAÑO SM &#183; 40PX</text>
+  <g transform="translate(80, 740)">
+    <rect width="180" height="40" rx="20" fill="#79C8D0"/>
+    <text x="90" y="26" text-anchor="middle" font-family="Ubuntu, sans-serif" font-weight="700" font-size="14" fill="#0D1B1E">Reservar</text>
+  </g>
+  <g transform="translate(280, 740)">
+    <rect width="180" height="40" rx="20" fill="#E85D75"/>
+    <text x="90" y="26" text-anchor="middle" font-family="Ubuntu, sans-serif" font-weight="700" font-size="14" fill="#ffffff">Adoptar</text>
+  </g>
+  <g transform="translate(480, 740)">
+    <rect width="180" height="40" rx="20" fill="none" stroke="#1E5D64" stroke-width="1.5"/>
+    <text x="90" y="26" text-anchor="middle" font-family="Ubuntu, sans-serif" font-weight="700" font-size="14" fill="#1E5D64">Guardar</text>
+  </g>
+
+  <text x="80" y="860" font-family="Ubuntu, sans-serif" font-size="13" fill="#4AA5AD" letter-spacing="3">PARCHE PELUDO &#183; BOTONES &#183; ALTURA 64PX &#183; RADIUS FULL (PILL) &#183; FONT UBUNTU BOLD 700</text>
+</svg>

@@ -1,0 +1,113 @@
+PARCHE PELUDO · GUÍA FOTOGRÁFICA
+==================================
+
+PRINCIPIO GENERAL
+-----------------
+La marca se ve cuando la foto cuenta algo. 
+Preferimos expresiones reales a poses, luz natural a flash, 
+y un solo protagonista por pieza.
+
+
+LAS 4 DIRECCIONES DE IMAGEN
+============================
+
+01 · HERO (Hero shot)
+---------------------
+Uso:     portadas, covers de sección, landing heroes
+Sujeto:  peludo (perro/gato) recortado sobre teal pleno
+Fondo:   Teal Parche #79C8D0 al 100%
+Cliché:  divisor de onda en color crema (Bone #EAE4D6 o Paper #F3EDE3)
+         que nace en la parte baja de la composición
+Expresión: natural, curiosa, en contacto visual con la cámara o hacia el titular
+Luz:     natural, sin flash, preferiblemente de tarde
+Tip:     el peludo debe "entrar" al teal como si fuera su territorio
+
+
+02 · PATRÓN (Pattern composition)
+---------------------------------
+Uso:     posts de celebración, campañas de comunidad, #elparche
+Fondo:   patrón de lunares (Teal sobre Teal Mist o Blanco sobre Teal)
+Agrega:  disco cálido en Naranja Parche #F2994A (geometría pura, no ilustración)
+Sujeto:  peludo recortado en composición asimétrica
+Regla:   UN solo color cálido por pieza. Si usas naranja, no uses coral.
+         Geometría sí, ilustración dibujada no.
+
+
+03 · EDITORIAL (Editorial split)
+--------------------------------
+Uso:     artículos, piezas long-form, blog, newsletters
+Layout:  composición dividida — titular apretado a la izquierda, foto plena a la derecha
+Titular: Ubuntu Bold con UNA línea específica resaltada en Coral Fuerte #E85D75
+         El coral es acento puntual, nunca para todo el titular
+Fondo:   Paper o Bone del lado del texto, teal pleno del lado de la foto
+Ejemplo: "Para los que aman de verdad a sus peludos."
+         (donde "aman de verdad" va en coral)
+
+
+04 · COMUNIDAD (Community layout)
+---------------------------------
+Uso:     testimonios, historias de usuarios, reviews, casos
+Fondo:   Azul Noche #2D3A59 (lienzo nocturno, contenedor)
+Layout:  múltiples fotos pequeñas ligeramente inclinadas (rotación -5° a +5°)
+         estilo polaroid o "collage de amigos"
+Dato:    siempre incluir UN dato visible por pieza 
+         (rating, N° de reseñas, ciudad, nombre del peludo)
+Tip:     la constelación cyan puede aparecer sutilmente en el fondo
+
+
+========================================
+REGLAS TRANSVERSALES PARA TODAS LAS FOTOS
+========================================
+
+SÍ HACEMOS
+----------
++ Expresiones reales: bostezos, lametazos, miradas curiosas, "head tilts"
++ Luz natural de ventana o exterior en horas doradas
++ Mirada del peludo hacia cámara o hacia el titular (dirige la lectura)
++ Un protagonista por pieza — si hay humano, que el peludo lidere
++ Mascotas de todas las razas, tamaños, edades, mixtas, "adoptables"
++ Gatos protagonizando igual que perros
++ Escenarios cotidianos: sala, parque, veterinaria, peluquería, terraza
+
+NO HACEMOS
+----------
+- Poses forzadas, "sonrisas" artificiales, disfraces de fiesta
+- Flash directo o luz dura de mediodía
+- Efectos Instagram baratos (vintage excesivo, viñeta dramática)
+- Fondos saturados que compiten con el teal de marca
+- Peludos "con ropa humana" (suéteres, gafas, sombreros) salvo piezas de humor
+- Photoshop visible, stickers emoji sobre la foto
+- Stock genérico "perro feliz en prado" tipo banco de imágenes
+- Solo perros blancos o solo razas "bonitas" — la marca celebra lo real
+
+
+TRATAMIENTO DE COLOR EN FOTOS
+------------------------------
+- Subir ligeramente el contraste (no más de +10)
+- Bajar saturación general -5 a -10 para que el teal de marca no compita
+- Mantener tonos de piel del peludo naturales — nunca calentar ni enfriar en exceso
+- Si la foto va sobre teal pleno, recortar al sujeto y dejar fondo transparente
+
+
+LICENCIAS Y DERECHOS
+--------------------
+- Fotos de prestadores aliados: requerir autorización firmada
+- Fotos de peludos de usuarios: consentimiento explícito del padre/madre
+- Evitar stock free de sitios como Pexels/Unsplash para hero shots:
+  usar solo como placeholder, nunca como arte final
+
+
+FUENTES RECOMENDADAS (STOCK HONESTO)
+-------------------------------------
+Pexels, Unsplash     — para fondos y texturas
+Adobe Stock          — para editoriales (con licencia)
+Fotógrafos aliados   — prioridad para contenido real de Parche
+Fotos de usuarios    — el oro de la comunidad, con consentimiento
+
+
+PLANTILLAS DE ENCUADRE
+-----------------------
+Cuadrado IG Post    1080×1080   → Hero o Patrón
+Vertical IG Story   1080×1920   → Hero con onda abajo
+Banner web          1440×400    → Comunidad (azul noche)
+Editorial           16:9        → Editorial split

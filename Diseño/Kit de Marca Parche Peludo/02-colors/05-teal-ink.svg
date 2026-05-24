@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#1E5D64" />
+  <text x="60" y="100" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#ffffff" letter-spacing="3" opacity="0.85">PARCHE PELUDO · COLOR</text>
+  <text x="60" y="250" font-family="Ubuntu, sans-serif" font-weight="700" font-size="64" fill="#ffffff" letter-spacing="-1">Teal Ink</text>
+  <text x="60" y="310" font-family="Ubuntu, sans-serif" font-weight="400" font-size="24" fill="#ffffff" opacity="0.85">Íconos · texto sobre teal soft/mist</text>
+  <text x="60" y="480" font-family="Ubuntu Mono, monospace" font-size="22" fill="#ffffff" opacity="0.9">HEX #1E5D64</text>
+  <text x="60" y="510" font-family="Ubuntu Mono, monospace" font-size="18" fill="#ffffff" opacity="0.85">RGB 30, 93, 100</text>
+  <text x="60" y="540" font-family="Ubuntu Mono, monospace" font-size="16" fill="#ffffff" opacity="0.75">CMYK 88 64 61 0</text>
+</svg>

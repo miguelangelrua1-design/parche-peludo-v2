@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1400" width="1600" height="1400">
+  <rect width="1600" height="1400" fill="#F3EDE3"/>
+  <text x="80" y="100" font-family="Ubuntu, sans-serif" font-weight="700" font-size="72" fill="#0D1B1E" letter-spacing="-3">Ubuntu</text>
+  <text x="80" y="140" font-family="Ubuntu, sans-serif" font-weight="400" font-size="22" fill="#1E5D64" letter-spacing="4">UNA FAMILIA SOSTIENE TODO EL SISTEMA &#183; PARCHE PELUDO</text>
+  <line x1="80" y1="170" x2="1520" y2="170" stroke="#79C8D0" stroke-width="2"/>
+  <text x="80" y="220" font-family="Ubuntu, sans-serif" font-weight="500" font-size="16" fill="#1E5D64" letter-spacing="3">PESOS AUTORIZADOS</text>
+  <g transform="translate(80, 280)">
+    <text y="0" font-family="Ubuntu, sans-serif" font-weight="300" font-size="58" fill="#0D1B1E">Ubuntu Light 300 &#183; Citas, ep&#237;grafes</text>
+    <text y="80" font-family="Ubuntu, sans-serif" font-weight="400" font-size="58" fill="#0D1B1E">Ubuntu Regular 400 &#183; Cuerpo de texto</text>
+    <text y="160" font-family="Ubuntu, sans-serif" font-weight="500" font-size="58" fill="#0D1B1E">Ubuntu Medium 500 &#183; Subt&#237;tulos</text>
+    <text y="240" font-family="Ubuntu, sans-serif" font-weight="700" font-size="58" fill="#4AA5AD">Ubuntu Bold 700 &#183; T&#237;tulos y CTAs</text>
+  </g>
+  <line x1="80" y1="600" x2="1520" y2="600" stroke="#BEE3E7" stroke-width="1"/>
+  <text x="80" y="650" font-family="Ubuntu, sans-serif" font-weight="500" font-size="16" fill="#1E5D64" letter-spacing="3">JERARQU&#205;A EN ACCI&#211;N</text>
+  <g transform="translate(80, 720)">
+    <text y="0" font-family="Ubuntu Mono, monospace" font-size="12" fill="#4AA5AD" letter-spacing="2">DISPLAY &#183; 40PT &#183; BOLD &#183; -2%</text>
+    <text y="42" font-family="Ubuntu, sans-serif" font-weight="700" font-size="40" fill="#0D1B1E" letter-spacing="-1">Encuentra el parche de tu peludo.</text>
+    <text y="110" font-family="Ubuntu Mono, monospace" font-size="12" fill="#4AA5AD" letter-spacing="2">T&#205;TULO &#183; 28PT &#183; BOLD</text>
+    <text y="145" font-family="Ubuntu, sans-serif" font-weight="700" font-size="28" fill="#0D1B1E">Prestadores verificados cerca de ti</text>
+    <text y="205" font-family="Ubuntu Mono, monospace" font-size="12" fill="#4AA5AD" letter-spacing="2">SUBT&#205;TULO &#183; 18PT &#183; MEDIUM</text>
+    <text y="240" font-family="Ubuntu, sans-serif" font-weight="500" font-size="18" fill="#0D1B1E">M&#225;s de 1.200 veterinarias, peluquer&#237;as y paseadores en un solo lugar.</text>
+    <text y="300" font-family="Ubuntu Mono, monospace" font-size="12" fill="#4AA5AD" letter-spacing="2">P&#193;RRAFO &#183; 13PT &#183; REGULAR</text>
+    <text y="330" font-family="Ubuntu, sans-serif" font-weight="400" font-size="13" fill="#0D1B1E">Parche Peludo re&#250;ne a los mejores aliados del ecosistema pet en Colombia. Cada prestador pasa</text>
+    <text y="350" font-family="Ubuntu, sans-serif" font-weight="400" font-size="13" fill="#0D1B1E">por un proceso de verificaci&#243;n antes de aparecer en el directorio.</text>
+    <text y="410" font-family="Ubuntu Mono, monospace" font-size="12" fill="#4AA5AD" letter-spacing="2">CAPTION &#183; 10PT &#183; REGULAR</text>
+    <text y="438" font-family="Ubuntu, sans-serif" font-weight="400" font-size="10" fill="#1E5D64">Un porcentaje de cada reserva se destina a fundaciones de rescate y esterilizaci&#243;n.</text>
+  </g>
+  <line x1="80" y1="1280" x2="1520" y2="1280" stroke="#BEE3E7" stroke-width="1"/>
+  <text x="80" y="1320" font-family="Ubuntu, sans-serif" font-size="13" fill="#1E5D64" letter-spacing="3">UBUNTU &#183; GOOGLE FONTS &#183; LICENCIA LIBRE &#183; OFL &#183; PARCHE PELUDO 2025</text>
+</svg>

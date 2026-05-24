@@ -1,0 +1,36 @@
+PARCHE PELUDO · COLORES PARA CANVA
+====================================
+
+Copia estos HEX uno por uno en el Kit de Marca de Canva.
+Organízalos en 3 paletas siguiendo la regla 60·30·10.
+
+--- PALETA A · TEAL (protagonista - 60%) ---
+Teal Parche       #79C8D0   Principal, logo, CTAs
+Teal Deep         #4AA5AD   Hover, links, texto sobre blanco
+Teal Soft         #BEE3E7   Chips, tarjetas suaves
+Teal Mist         #E8F4F6   Fondos de sección
+Teal Ink          #1E5D64   Íconos, texto sobre teal claro
+
+--- PALETA B · ACENTOS (10% del uso) ---
+Coral Fuerte      #E85D75   Amor, adopta, favorito, Danger
+Naranja Parche    #F2994A   Energía, Warning
+Amarillo Sol      #FFD166   Ratings, destacados
+Azul Noche        #2D3A59   Dark surfaces, contraste
+
+--- PALETA C · NEUTROS Y ESTADOS (30% del uso) ---
+Success           #14A985   Verificado, abierto
+Paper             #F3EDE3   Fondo cálido base
+Bone              #EAE4D6   Editorial, impresos
+Ink               #0D1B1E   Texto, fondos oscuros
+Blanco            #FFFFFF   Base
+
+REGLA 60 · 30 · 10
+- 60% Teal Parche (el rey)
+- 30% Paper + Bone + Ink (sostienen)
+- 10% Acentos (respiran)
+
+EVITAR
+- Dos acentos cálidos en la misma pieza
+- Gradientes entre teal y coral
+- Teal Mist como protagonista
+- Texto amarillo sobre blanco (no cumple contraste)

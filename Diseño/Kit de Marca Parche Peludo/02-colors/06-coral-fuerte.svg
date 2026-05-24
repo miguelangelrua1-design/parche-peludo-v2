@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#E85D75" />
+  <text x="60" y="100" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#0D1B1E" letter-spacing="3" opacity="0.85">PARCHE PELUDO · COLOR</text>
+  <text x="60" y="250" font-family="Ubuntu, sans-serif" font-weight="700" font-size="64" fill="#0D1B1E" letter-spacing="-1">Coral Fuerte</text>
+  <text x="60" y="310" font-family="Ubuntu, sans-serif" font-weight="400" font-size="24" fill="#0D1B1E" opacity="0.85">Amor · adopta · favorito · Danger</text>
+  <text x="60" y="480" font-family="Ubuntu Mono, monospace" font-size="22" fill="#0D1B1E" opacity="0.9">HEX #E85D75</text>
+  <text x="60" y="510" font-family="Ubuntu Mono, monospace" font-size="18" fill="#0D1B1E" opacity="0.85">RGB 232, 93, 117</text>
+  <text x="60" y="540" font-family="Ubuntu Mono, monospace" font-size="16" fill="#0D1B1E" opacity="0.75">CMYK 9 64 54 0</text>
+</svg>

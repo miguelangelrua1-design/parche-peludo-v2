@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1000" width="1400" height="1000">
+  <defs>
+    <pattern id="lunares" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="16" cy="16" r="2.5" fill="#4AA5AD" opacity="0.5"/>
+    </pattern>
+    <pattern id="lunaresWhite" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="16" cy="16" r="2.5" fill="#ffffff" opacity="0.35"/>
+    </pattern>
+  </defs>
+  <rect width="1400" height="1000" fill="#F3EDE3"/>
+  <text x="80" y="90" font-family="Ubuntu, sans-serif" font-weight="700" font-size="52" fill="#0D1B1E" letter-spacing="-2">Patrones y Graficos</text>
+  <text x="80" y="125" font-family="Ubuntu, sans-serif" font-weight="400" font-size="18" fill="#1E5D64" letter-spacing="3">PARCHE PELUDO &#183; 3 GRAFICOS FUNCIONALES</text>
+
+  <!-- Lunares sobre teal -->
+  <g transform="translate(80, 180)">
+    <rect width="400" height="280" rx="16" fill="#79C8D0"/>
+    <rect width="400" height="280" rx="16" fill="url(#lunaresWhite)"/>
+    <g transform="translate(20, 240)">
+      <rect width="120" height="32" rx="16" fill="#ffffff"/>
+      <text x="60" y="22" text-anchor="middle" font-family="Ubuntu Mono, monospace" font-size="11" fill="#1E5D64" letter-spacing="2">01 &#183; LUNARES</text>
+    </g>
+  </g>
+
+  <!-- Ondas -->
+  <g transform="translate(500, 180)">
+    <rect width="400" height="280" rx="16" fill="#EAE4D6"/>
+    <!-- Onda teal -->
+    <path d="M0 180 Q100 140 200 180 Q300 220 400 180 L400 280 L0 280 Z" fill="#79C8D0"/>
+    <path d="M0 200 Q100 170 200 200 Q300 230 400 200 L400 280 L0 280 Z" fill="#4AA5AD"/>
+    <g transform="translate(20, 240)">
+      <rect width="110" height="32" rx="16" fill="#ffffff"/>
+      <text x="55" y="22" text-anchor="middle" font-family="Ubuntu Mono, monospace" font-size="11" fill="#1E5D64" letter-spacing="2">02 &#183; ONDAS</text>
+    </g>
+  </g>
+
+  <!-- Constelacion -->
+  <g transform="translate(920, 180)">
+    <rect width="400" height="280" rx="16" fill="#2D3A59"/>
+    <!-- Puntos dispersos -->
+    <g fill="#79C8D0">
+      <circle cx="60" cy="40" r="3"/>
+      <circle cx="120" cy="70" r="5"/>
+      <circle cx="200" cy="50" r="3"/>
+      <circle cx="280" cy="80" r="4"/>
+      <circle cx="350" cy="60" r="3"/>
+      <circle cx="40" cy="120" r="4"/>
+      <circle cx="140" cy="130" r="3"/>
+      <circle cx="230" cy="120" r="5"/>
+      <circle cx="310" cy="140" r="3"/>
+      <circle cx="80" cy="180" r="3"/>
+      <circle cx="170" cy="190" r="4"/>
+      <circle cx="270" cy="170" r="3"/>
+      <circle cx="360" cy="200" r="4"/>
+    </g>
+    <g transform="translate(20, 240)">
+      <rect width="160" height="32" rx="16" fill="#ffffff"/>
+      <text x="80" y="22" text-anchor="middle" font-family="Ubuntu Mono, monospace" font-size="11" fill="#1E5D64" letter-spacing="2">03 &#183; CONSTELACION</text>
+    </g>
+  </g>
+
+  <!-- Reglas de uso -->
+  <text x="80" y="510" font-family="Ubuntu, sans-serif" font-weight="500" font-size="14" fill="#1E5D64" letter-spacing="3">REGLAS DE USO &#183; UNO POR PIEZA, CON MODERACION</text>
+
+  <g transform="translate(80, 540)">
+    <rect width="400" height="180" rx="12" fill="#ffffff"/>
+    <text x="20" y="40" font-family="Ubuntu, sans-serif" font-weight="700" font-size="18" fill="#0D1B1E">Lunares</text>
+    <text x="20" y="70" font-family="Ubuntu, sans-serif" font-weight="400" font-size="13" fill="#1E5D64">Fondos de seccion suaves y empaques.</text>
+    <text x="20" y="90" font-family="Ubuntu, sans-serif" font-weight="400" font-size="13" fill="#1E5D64">Siempre teal sobre crema o blanco sobre teal.</text>
+    <text x="20" y="130" font-family="Ubuntu, sans-serif" font-weight="500" font-size="12" fill="#E85D75" letter-spacing="2">NUNCA MEZCLAR CON ONDAS</text>
+  </g>
+  <g transform="translate(500, 540)">
+    <rect width="400" height="180" rx="12" fill="#ffffff"/>
+    <text x="20" y="40" font-family="Ubuntu, sans-serif" font-weight="700" font-size="18" fill="#0D1B1E">Ondas</text>
+    <text x="20" y="70" font-family="Ubuntu, sans-serif" font-weight="400" font-size="13" fill="#1E5D64">Separadores de marca entre bloques.</text>
+    <text x="20" y="90" font-family="Ubuntu, sans-serif" font-weight="400" font-size="13" fill="#1E5D64">Nacen del isotipo: evocan las alas del corazon.</text>
+    <text x="20" y="130" font-family="Ubuntu, sans-serif" font-weight="500" font-size="12" fill="#E85D75" letter-spacing="2">SON TRANSICIONES, NO PROTAGONISTAS</text>
+  </g>
+  <g transform="translate(920, 540)">
+    <rect width="400" height="180" rx="12" fill="#ffffff"/>
+    <text x="20" y="40" font-family="Ubuntu, sans-serif" font-weight="700" font-size="18" fill="#0D1B1E">Constelacion</text>
+    <text x="20" y="70" font-family="Ubuntu, sans-serif" font-weight="400" font-size="13" fill="#1E5D64">Solo sobre Azul Noche.</text>
+    <text x="20" y="90" font-family="Ubuntu, sans-serif" font-weight="400" font-size="13" fill="#1E5D64">Comunica comunidad y presencia.</text>
+    <text x="20" y="130" font-family="Ubuntu, sans-serif" font-weight="500" font-size="12" fill="#E85D75" letter-spacing="2">NUNCA DENSA &#8212; RESPIRA</text>
+  </g>
+
+  <!-- Proporciones 60-30-10 -->
+  <text x="80" y="790" font-family="Ubuntu, sans-serif" font-weight="500" font-size="14" fill="#1E5D64" letter-spacing="3">PROPORCIONES DEL SISTEMA &#183; 60 &#183; 30 &#183; 10</text>
+  <g transform="translate(80, 810)">
+    <rect width="768" height="60" fill="#79C8D0"/>
+    <text x="20" y="38" font-family="Ubuntu, sans-serif" font-weight="700" font-size="14" fill="#ffffff">60% &#183; Teal Parche</text>
+  </g>
+  <g transform="translate(858, 810)">
+    <rect width="322" height="60" fill="#F3EDE3"/>
+    <text x="20" y="38" font-family="Ubuntu, sans-serif" font-weight="700" font-size="13" fill="#0D1B1E">30% &#183; Paper + Bone + Ink</text>
+  </g>
+  <g transform="translate(1190, 810)">
+    <rect width="130" height="60" fill="#E85D75"/>
+    <text x="65" y="38" text-anchor="middle" font-family="Ubuntu, sans-serif" font-weight="700" font-size="13" fill="#ffffff">10%</text>
+  </g>
+  <text x="80" y="940" font-family="Ubuntu, sans-serif" font-weight="400" font-size="12" fill="#1E5D64">Teal domina, los neutros sostienen, los acentos respiran. La regla 60 &#183; 30 &#183; 10 mantiene la marca reconocible.</text>
+</svg>

@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1000" width="1400" height="1000">
+  <rect width="1400" height="1000" fill="#0D1B1E"/>
+
+  <text x="80" y="80" font-family="Ubuntu, sans-serif" font-weight="700" font-size="52" fill="#79C8D0" letter-spacing="-1">Parche Peludo · Paleta</text>
+  <text x="80" y="115" font-family="Ubuntu, sans-serif" font-weight="400" font-size="16" fill="#E8F4F6" letter-spacing="3">SISTEMA DE COLOR · 14 VALORES</text>
+
+  <!-- PRIMARIO - 4 bloques grandes -->
+  <text x="80" y="170" font-family="Ubuntu, sans-serif" font-weight="500" font-size="13" fill="#BEE3E7" letter-spacing="3">PRIMARIO · TEAL</text>
+  <g transform="translate(80, 200)">
+    <rect width="300" height="180" rx="12" fill="#79C8D0"/>
+    <text x="20" y="36" font-family="Ubuntu, sans-serif" font-weight="700" font-size="22" fill="#ffffff">Teal Parche</text>
+    <text x="20" y="58" font-family="Ubuntu Mono, monospace" font-size="12" fill="#ffffff" opacity="0.9">HEX #79C8D0</text>
+    <text x="20" y="160" font-family="Ubuntu, sans-serif" font-weight="400" font-size="11" fill="#ffffff" opacity="0.85">Principal · Logo · CTAs · 60% del uso</text>
+  </g>
+  <g transform="translate(400, 200)">
+    <rect width="300" height="180" rx="12" fill="#4AA5AD"/>
+    <text x="20" y="36" font-family="Ubuntu, sans-serif" font-weight="700" font-size="22" fill="#ffffff">Teal Deep</text>
+    <text x="20" y="58" font-family="Ubuntu Mono, monospace" font-size="12" fill="#ffffff" opacity="0.9">HEX #4AA5AD</text>
+    <text x="20" y="160" font-family="Ubuntu, sans-serif" font-weight="400" font-size="11" fill="#ffffff" opacity="0.85">Hover, pressed, links sobre fondo claro</text>
+  </g>
+  <g transform="translate(720, 200)">
+    <rect width="300" height="180" rx="12" fill="#BEE3E7"/>
+    <text x="20" y="36" font-family="Ubuntu, sans-serif" font-weight="700" font-size="22" fill="#0D1B1E">Teal Soft</text>
+    <text x="20" y="58" font-family="Ubuntu Mono, monospace" font-size="12" fill="#0D1B1E" opacity="0.9">HEX #BEE3E7</text>
+    <text x="20" y="160" font-family="Ubuntu, sans-serif" font-weight="400" font-size="11" fill="#0D1B1E" opacity="0.85">Chips, tarjetas suaves, hover surfaces</text>
+  </g>
+  <g transform="translate(1040, 200)">
+    <rect width="300" height="180" rx="12" fill="#E8F4F6"/>
+    <text x="20" y="36" font-family="Ubuntu, sans-serif" font-weight="700" font-size="22" fill="#0D1B1E">Teal Mist</text>
+    <text x="20" y="58" font-family="Ubuntu Mono, monospace" font-size="12" fill="#0D1B1E" opacity="0.9">HEX #E8F4F6</text>
+    <text x="20" y="160" font-family="Ubuntu, sans-serif" font-weight="400" font-size="11" fill="#0D1B1E" opacity="0.85">Fondos de sección, form fields</text>
+  </g>
+  <text x="80" y="430" font-family="Ubuntu, sans-serif" font-weight="500" font-size="13" fill="#BEE3E7" letter-spacing="3">ACENTOS Y TEAL INK</text>
+  <g transform="translate(80, 460)">
+    <rect width="240" height="140" rx="12" fill="#1E5D64"/>
+    <text x="16" y="30" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#ffffff">Teal Ink</text>
+    <text x="16" y="52" font-family="Ubuntu Mono, monospace" font-size="11" fill="#ffffff" opacity="0.9">#1E5D64</text>
+    <text x="16" y="120" font-family="Ubuntu, sans-serif" font-weight="400" font-size="10" fill="#ffffff" opacity="0.8">Íconos · texto sobre teal soft</text>
+  </g>
+  <g transform="translate(338, 460)">
+    <rect width="240" height="140" rx="12" fill="#E85D75"/>
+    <text x="16" y="30" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#ffffff">Coral Fuerte</text>
+    <text x="16" y="52" font-family="Ubuntu Mono, monospace" font-size="11" fill="#ffffff" opacity="0.9">#E85D75</text>
+    <text x="16" y="120" font-family="Ubuntu, sans-serif" font-weight="400" font-size="10" fill="#ffffff" opacity="0.8">Amor · adopta · favorito</text>
+  </g>
+  <g transform="translate(596, 460)">
+    <rect width="240" height="140" rx="12" fill="#F2994A"/>
+    <text x="16" y="30" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#0D1B1E">Naranja Parche</text>
+    <text x="16" y="52" font-family="Ubuntu Mono, monospace" font-size="11" fill="#0D1B1E" opacity="0.9">#F2994A</text>
+    <text x="16" y="120" font-family="Ubuntu, sans-serif" font-weight="400" font-size="10" fill="#0D1B1E" opacity="0.8">Energía · CTA secundaria</text>
+  </g>
+  <g transform="translate(854, 460)">
+    <rect width="240" height="140" rx="12" fill="#FFD166"/>
+    <text x="16" y="30" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#0D1B1E">Amarillo Sol</text>
+    <text x="16" y="52" font-family="Ubuntu Mono, monospace" font-size="11" fill="#0D1B1E" opacity="0.9">#FFD166</text>
+    <text x="16" y="120" font-family="Ubuntu, sans-serif" font-weight="400" font-size="10" fill="#0D1B1E" opacity="0.8">Ratings · destacados</text>
+  </g>
+  <g transform="translate(1112, 460)">
+    <rect width="240" height="140" rx="12" fill="#2D3A59"/>
+    <text x="16" y="30" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#ffffff">Azul Noche</text>
+    <text x="16" y="52" font-family="Ubuntu Mono, monospace" font-size="11" fill="#ffffff" opacity="0.9">#2D3A59</text>
+    <text x="16" y="120" font-family="Ubuntu, sans-serif" font-weight="400" font-size="10" fill="#ffffff" opacity="0.8">Dark surfaces · contraste</text>
+  </g>
+  <text x="80" y="650" font-family="Ubuntu, sans-serif" font-weight="500" font-size="13" fill="#BEE3E7" letter-spacing="3">SEMÁNTICO Y NEUTROS</text>
+  <g transform="translate(80, 680)">
+    <rect width="240" height="140" rx="12" fill="#14A985" />
+    <text x="16" y="30" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#ffffff">Success</text>
+    <text x="16" y="52" font-family="Ubuntu Mono, monospace" font-size="11" fill="#ffffff" opacity="0.9">#14A985</text>
+    <text x="16" y="120" font-family="Ubuntu, sans-serif" font-weight="400" font-size="10" fill="#ffffff" opacity="0.8">Verificado · abierto</text>
+  </g>
+  <g transform="translate(338, 680)">
+    <rect width="240" height="140" rx="12" fill="#F3EDE3" />
+    <text x="16" y="30" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#0D1B1E">Paper</text>
+    <text x="16" y="52" font-family="Ubuntu Mono, monospace" font-size="11" fill="#0D1B1E" opacity="0.9">#F3EDE3</text>
+    <text x="16" y="120" font-family="Ubuntu, sans-serif" font-weight="400" font-size="10" fill="#0D1B1E" opacity="0.8">Fondo cálido · card base</text>
+  </g>
+  <g transform="translate(596, 680)">
+    <rect width="240" height="140" rx="12" fill="#EAE4D6" />
+    <text x="16" y="30" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#0D1B1E">Bone</text>
+    <text x="16" y="52" font-family="Ubuntu Mono, monospace" font-size="11" fill="#0D1B1E" opacity="0.9">#EAE4D6</text>
+    <text x="16" y="120" font-family="Ubuntu, sans-serif" font-weight="400" font-size="10" fill="#0D1B1E" opacity="0.8">Editorial · piezas impresas</text>
+  </g>
+  <g transform="translate(854, 680)">
+    <rect width="240" height="140" rx="12" fill="#0D1B1E" />
+    <text x="16" y="30" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#ffffff">Ink</text>
+    <text x="16" y="52" font-family="Ubuntu Mono, monospace" font-size="11" fill="#ffffff" opacity="0.9">#0D1B1E</text>
+    <text x="16" y="120" font-family="Ubuntu, sans-serif" font-weight="400" font-size="10" fill="#ffffff" opacity="0.8">Texto principal · fondos oscuros</text>
+  </g>
+  <g transform="translate(1112, 680)">
+    <rect width="240" height="140" rx="12" fill="#FFFFFF" stroke="#30363D" stroke-width="1"/>
+    <text x="16" y="30" font-family="Ubuntu, sans-serif" font-weight="700" font-size="16" fill="#0D1B1E">Blanco</text>
+    <text x="16" y="52" font-family="Ubuntu Mono, monospace" font-size="11" fill="#0D1B1E" opacity="0.9">#FFFFFF</text>
+    <text x="16" y="120" font-family="Ubuntu, sans-serif" font-weight="400" font-size="10" fill="#0D1B1E" opacity="0.8">Fondo base · invertido</text>
+  </g>
+  <text x="80" y="960" font-family="Ubuntu, sans-serif" font-size="13" fill="#4AA5AD" letter-spacing="3">PARCHEPELUDO.COM · MEDELLÍN, COLOMBIA · TEAL ES EL REY (60·30·10)</text>
+</svg>
