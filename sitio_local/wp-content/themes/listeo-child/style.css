@@ -161,3 +161,131 @@ Text Domain:  listeo-child
   transform: translateY(-1px) !important;
   box-shadow: var(--shadow-sm) !important;
 }
+
+/* ==========================================================================
+   Tarjetas de Listado Premium V2 — directorio de Listeo (layout "-nl")
+   Estiliza el markup nativo de Listeo (.listing-card-nl y descendientes)
+   segun DESIGN.md §15 y §17. Los !important ganan especificidad sobre Listeo.
+   ========================================================================== */
+
+.listing-card-nl {
+  background: var(--surface) !important;
+  border: 1px solid var(--ink-line-2) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+  overflow: hidden !important;
+  transition: transform var(--dur-base) var(--ease-soft),
+              box-shadow var(--dur-base) var(--ease-soft) !important;
+}
+
+.listing-card-container-nl:hover .listing-card-nl {
+  transform: translateY(-3px) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* Imagen con ratio 4:3 */
+.listing-image-container-nl {
+  aspect-ratio: 4 / 3 !important;
+  overflow: hidden !important;
+}
+
+.listing-image-container-nl .slider-image-nl {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Badge de estado (Abierto / Cerrado) — pill suave con punto */
+.status-button-nl {
+  font-family: var(--font-sans) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  padding: 5px 12px 5px 10px !important;
+  border-radius: var(--r-pill) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: none !important;
+}
+
+.status-button-nl::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  background: currentColor;
+}
+
+.status-button-nl.open-nl {
+  background: #E6F6EC !important;
+  color: #1F6B3E !important;
+}
+
+.status-button-nl.closed-nl {
+  background: #FBEBE7 !important;
+  color: #8A2A1A !important;
+}
+
+/* Boton favorito */
+.favorite-icon-nl {
+  background: var(--paper) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.favorite-icon-nl .save {
+  color: var(--coral) !important;
+}
+
+/* Badge "Destacados" */
+.badge-nl.featured-nl {
+  background: var(--marigold) !important;
+  color: var(--ink) !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  border-radius: var(--r-pill) !important;
+  padding: 5px 10px !important;
+}
+
+/* Titulo del listado */
+.listing-title-nl {
+  font-family: var(--font-display) !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: var(--ink) !important;
+  line-height: 1.25 !important;
+}
+
+.verified-icon-nl i {
+  color: var(--teal-deep) !important;
+}
+
+/* Descripcion breve */
+.listing-excerpt-nl {
+  font-size: 13px !important;
+  color: var(--ink-muted) !important;
+  line-height: 1.45 !important;
+}
+
+/* Iconos de amenidades */
+.listing-amenities-nl .amenity-icon-nl svg {
+  color: var(--teal-ink) !important;
+}
+
+/* Rating */
+.listing-rating-nl .stars-nl i {
+  color: var(--marigold) !important;
+}
+
+.listing-rating-nl .rating-text-nl {
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+}
+
+/* Precio */
+.price-nl {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: var(--ink) !important;
+}
