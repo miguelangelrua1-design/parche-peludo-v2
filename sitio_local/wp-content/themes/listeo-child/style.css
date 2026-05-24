@@ -1,0 +1,163 @@
+/*
+Theme Name:   Listeo Child Theme V2 (Parche Peludo)
+Theme URI:    https://parchepeludo.com/
+Description:  Tema Hijo personalizado para la optimizacion visual de Parche Peludo V2.
+Author:       AntiGravity & Claude Code (Advanced Agentic Coding)
+Author URI:   https://google.com
+Template:     listeo
+Version:      2.0.0
+License:      GNU General Public License v2 or later
+License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
+Text Domain:  listeo-child
+*/
+
+/* ==========================================================================
+   Importacion de estilos del tema padre (Listeo) y variables de marca V2
+   ========================================================================== */
+
+/* Importar la fuente oficial Ubuntu desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400;1,700&family=Caveat:wght@400;500;600;700&display=swap');
+
+:root {
+  /* 3.1 Color primario — Teal Parche */
+  --teal-parche: #79C8D0;
+  --teal-deep: #4AA5AD;
+  --teal-soft: #BEE3E7;
+  --teal-mist: #E8F4F6;
+  --teal-ink: #1E5D64;
+
+  /* 3.2 Neutros */
+  --paper: #FFFFFF;
+  --bone: #F7F3EC;
+  --ink: #1E2E33;
+  --ink-muted: #5A6B70;
+  --ink-faint: #8E9A9E;
+  --ink-line: rgba(30,46,51,.10);
+  --ink-line-2: rgba(30,46,51,.06);
+
+  /* 3.3 Acentos */
+  --marigold: #FFD166;
+  --coral: #E85D75;
+  --orange: #F2994A;
+  --night: #2D3A59;
+
+  /* 3.4 Semanticos */
+  --success: #14A985;
+  --warning: #F2994A;
+  --danger: #E85D75;
+  --info: #4AA5AD;
+
+  /* 3.5 Aliases de superficie */
+  --bg: var(--paper);
+  --bg-alt: var(--teal-mist);
+  --bg-warm: var(--bone);
+  --surface: var(--paper);
+  --surface-2: var(--teal-mist);
+  --fg: var(--ink);
+  --fg-muted: var(--ink-muted);
+  --fg-faint: var(--ink-faint);
+  --border: var(--ink-line);
+
+  /* 4. Tipografia */
+  --font-sans: 'Ubuntu', sans-serif;
+  --font-display: 'Ubuntu', sans-serif;
+  --font-hand: 'Caveat', cursive;
+
+  /* 5. Escala de espaciado */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+  --s-24: 96px;
+  --s-32: 128px;
+
+  /* 6. Radios de borde */
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-2xl: 40px;
+  --r-pill: 999px;
+
+  /* 7. Sombras */
+  --shadow-sm: 0 1px 2px rgba(30,46,51,.06), 0 1px 3px rgba(30,46,51,.04);
+  --shadow-md: 0 4px 12px rgba(30,46,51,.08), 0 2px 4px rgba(30,46,51,.04);
+  --shadow-lg: 0 12px 32px rgba(30,46,51,.10), 0 4px 8px rgba(30,46,51,.06);
+  --shadow-xl: 0 24px 48px rgba(30,46,51,.14), 0 8px 16px rgba(30,46,51,.06);
+  --shadow-teal: 0 12px 32px rgba(121,200,208,.40);
+
+  /* 8. Transiciones */
+  --ease-soft: cubic-bezier(.2,.8,.2,1);
+  --ease-out: cubic-bezier(.16,1,.3,1);
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
+  --dur-slow: 320ms;
+}
+
+/* ==========================================================================
+   Clases de Utilidad y Estilos Personalizados V2 (Parche Peludo)
+   ========================================================================== */
+
+/* Tarjetas de Listado Premium V2 */
+.tarjeta-premium-v2 {
+  background: var(--surface) !important;
+  border-radius: var(--r-lg) !important;
+  border: 1px solid var(--ink-line-2) !important;
+  box-shadow: var(--shadow-md) !important;
+  overflow: hidden !important;
+  transition: all var(--dur-base) var(--ease-soft) !important;
+  cursor: pointer;
+}
+
+.tarjeta-premium-v2:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.tarjeta-premium-v2 .listing-img-container {
+  aspect-ratio: 4/3 !important;
+  object-fit: cover !important;
+  overflow: hidden !important;
+}
+
+/* Badges de Categoria y Estado */
+.badge-verificado-v2 {
+  background: var(--paper) !important;
+  color: var(--teal-ink) !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  padding: 5px 10px !important;
+  border-radius: var(--r-pill) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+/* Botones CTA de la Marca */
+.btn-marca-primario {
+  font-family: var(--font-sans) !important;
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  padding: 10px 20px !important;
+  border-radius: var(--r-pill) !important;
+  background: var(--teal-parche) !important;
+  color: var(--paper) !important;
+  box-shadow: var(--shadow-teal) !important;
+  transition: all var(--dur-base) var(--ease-soft) !important;
+  border: none !important;
+  cursor: pointer;
+}
+
+.btn-marca-primario:hover {
+  background: var(--teal-deep) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
