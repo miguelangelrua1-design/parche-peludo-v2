@@ -64,7 +64,7 @@ El proyecto tiene una red de seguridad basada en Git para control de versiones y
 Para no dañar el constructor visual **Elementor** y conservar los derechos de la plantilla premium **Listeo**, se ha definido el siguiente protocolo de edición:
 
 1.  **Definición Global de Estilos (Elementor):**
-    Los colores y fuentes de la marca V2 (Teal, Outfit, Inter) se definen de manera global en la sección *Site Settings* de Elementor. Así, cualquier bloque nuevo heredará los tokens de marca nativamente.
+    Los colores y fuentes de la marca V2 (Teal, Ubuntu, Caveat) se definen de manera global en la sección *Site Settings* de Elementor. Así, cualquier bloque nuevo heredará los tokens de marca nativamente.
 2.  **No Modificar Archivos del Tema Padre:**
     Queda terminantemente prohibido hacer cambios sobre los archivos del tema padre `listeo`. Toda personalización de plantillas o CSS se realiza exclusivamente en `listeo-child`.
 3.  **Coexistencia con Elementor (Clases Personalizadas):**

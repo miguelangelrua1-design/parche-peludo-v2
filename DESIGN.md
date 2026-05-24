@@ -1036,7 +1036,7 @@ El carrusel dinámico original contiene las siguientes tarjetas de servicios a d
 Al reconstruir este ecosistema en Stitch V2, implementaremos las siguientes optimizaciones clave de UI/UX premium:
 1.  **Limpieza Tipográfica y de Grillas:** Reemplazo de los layouts densos de Elementor por una grilla moderna basada en flexbox con gutters de 24px estables, alineada con la escala de espaciados base 4px de la marca.
 2.  **Higiene Visual en las Cards:** Las tarjetas de servicios y planes se optimizan con un ratio de 4:3 estricto en imágenes, bordes de 20px (`--r-lg`), y sombras difusas elegantes (`--shadow-md` a `--shadow-lg` en hover).
-3.  **Mapeo Tipográfico Moderno:** Elevación de la tipografía general a `Outfit` para títulos con tracking estrecho (`-0.02em`) para mayor impacto visual, e `Inter` para texto de lectura para excelente legibilidad.
+3.  **Mapeo Tipográfico Consistente:** Uso de `Ubuntu` para títulos y texto de interfaz, con tracking estrecho (`-0.02em`) en displays para mayor impacto visual, y `Caveat` reservada solo para acentos manuales decorativos. Coincide con producción y con las Secciones 4 y 22 de este manual (Inter queda descartada).
 4.  **Lucide Icons nativos:** Sustitución de íconos genéricos por un ecosistema Lucide unificado de 2px de grosor de trazo para mantener la consistencia amigable.
 5.  **Micro-animaciones fluidas:** Transiciones suaves de 220ms (`--ease-soft`) en hover de cards, inputs y CTAs principales.
 
@@ -1052,7 +1052,7 @@ Para garantizar la durabilidad de las personalizaciones visuales de la versión 
     *   `functions.php`: Encola de manera limpia los estilos y permite añadir ganchos (*hooks*) de WordPress para lógica personalizada.
 
 ### 24.2 Integración y Coexistencia con Elementor
-*   **Ajustes Globales (Site Settings):** Los colores y fuentes de la marca (Outfit, Inter, Teal #79C8D0, etc.) se definen a nivel global en la configuración del sitio de Elementor. Esto asegura que cualquier nuevo bloque visual mantenga los tokens de diseño de forma nativa sin configuraciones individuales manuales.
+*   **Ajustes Globales (Site Settings):** Los colores y fuentes de la marca (Ubuntu, Caveat, Teal #79C8D0, etc.) se definen a nivel global en la configuración del sitio de Elementor. Esto asegura que cualquier nuevo bloque visual mantenga los tokens de diseño de forma nativa sin configuraciones individuales manuales.
 *   **Páginas Clonadas para Desarrollo:** Para editar de manera segura con Elementor sin afectar el servicio activo, se trabajará siempre sobre páginas clonadas de pruebas (por ejemplo, `/home-v2-pruebas`). Una vez validadas y aprobadas, se asignan como oficiales.
 
 ### 24.3 Control de Versiones con Git
