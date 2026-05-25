@@ -53,16 +53,22 @@ vive en LocalWP y se edita a través del junction `sitio_local`.
   `--shadow-*`, transiciones `--ease-*`/`--dur-*`), nunca valores hardcodeados.
 - Mantener los `!important` de las utilidades del hijo: ganan especificidad sobre Listeo/Elementor.
 
-## Metodología de edición segura
+## Próxima Tarea Prioritaria: Home V2 (Diseños Stitch)
 
-1. **Elementor — estilos globales:** definir colores/fuentes de marca en *Site Settings* para que
-   los bloques nuevos hereden los tokens nativamente.
-2. **Clases, no inline:** crear clases limpias en `style.css` (p. ej. `.tarjeta-premium-v2`,
-   `.btn-marca-primario`, `.badge-verificado-v2`) y asignarlas en el campo "Clases CSS" de Elementor.
-   Evitar overrides inline agresivos.
-3. **Páginas clonadas:** antes de tocar Home, trabajar sobre un clon de pruebas (p. ej.
-   `/home-v2-pruebas`) y, una vez aprobado en local, asignarlo como oficial.
-4. **Probar en el navegador** cada cambio antes de darlo por bueno.
+- **Diseños de referencia:** Ubicados en `Diseño/Stitch/landing_desktop.html` (escritorio) y `Diseño/Stitch/landing_mobile.html` (móvil). Analizar su estructura, clases Tailwind y HTML para replicar su aspecto visual de forma idéntica.
+- **Constructor obligatorio:** Se debe utilizar **Elementor** de forma visual en la instalación de WordPress local.
+- **Protocolo de Seguridad (Obligatorio):**
+  1. **PROHIBIDO** reemplazar o alterar la página de Home/Inicio que está activa en producción y local.
+  2. Crear una **nueva página** en la base de datos de WordPress llamada **"Home V2 Pruebas"** (con el slug `/home-v2-pruebas`).
+  3. Realizar el 100% del desarrollo y pruebas sobre esta nueva página clonada.
+  4. La asignación como página de inicio oficial solo ocurrirá cuando Miguel Ángel Rúa valide la estética y dé su aprobación explícita.
+
+## Metodología de maquetación limpia
+
+1. **Elementor — estilos globales:** definir colores/fuentes de marca en *Site Settings* (Ajustes del Sitio) de Elementor para que los bloques nuevos hereden los tokens nativamente.
+2. **Clases, no inline:** crear clases limpias en `style.css` (p. ej. `.tarjeta-premium-v2`, `.btn-marca-primario`, `.badge-verificado-v2`) y asignarlas en el campo "Clases CSS" de Elementor. Evitar overrides inline agresivos.
+3. **Probar en el navegador** cada cambio antes de darlo por bueno.
+
 
 ## Git (red de seguridad)
 

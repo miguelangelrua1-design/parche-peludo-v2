@@ -1,0 +1,729 @@
+﻿<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="es" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Parche Peludo | Cuidado profesional para tu mascota</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&amp;family=Inter:wght@400;500;600&amp;family=Caveat:wght@600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                DEFAULT: '#79C8D0',
+                deep: '#4AA5AD',
+                soft: '#BEE3E7',
+                mist: '#E8F4F6',
+                ink: '#1E5D64',
+              },
+              neutral: {
+                paper: '#FFFFFF',
+                bone: '#F7F3EC',
+                ink: '#1E2E33',
+                'ink-muted': '#5A6B70',
+                'ink-faint': '#8E9A9E',
+              },
+              accent: {
+                marigold: '#FFD166',
+                coral: '#E85D75',
+                orange: '#F2994A',
+              }
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1.25rem",
+              "xl": "1.75rem",
+              "2xl": "2.5rem",
+              "full": "9999px"
+            },
+            fontFamily: {
+              headline: ["Public Sans", "sans-serif"],
+              display: ["Public Sans", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+              label: ["Public Sans", "sans-serif"],
+              hand: ["Caveat", "cursive"]
+            },
+            transitionTimingFunction: {
+              'soft': 'cubic-bezier(.2,.8,.2,1)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+      }
+      .font-hand { font-family: 'Caveat', cursive; }
+      .bg-pattern {
+        background-image: radial-gradient(var(--tw-colors-primary-soft) 0.5px, transparent 0.5px);
+        background-size: 24px 24px;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .slide-active { opacity: 1; transform: scale(1); }
+      .slide-inactive { opacity: 0; transform: scale(1.05); }
+      
+      .blob-shape {
+        border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+      }
+      .blob-shape-alt {
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+      }
+    </style>
+</head>
+<body class="bg-neutral-paper font-body text-neutral-ink selection:bg-primary-soft selection:text-primary-ink">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 backdrop-blur-md bg-white/92 border-b border-neutral-ink/10 shadow-sm transition-all duration-300">
+<div class="flex justify-between items-center h-[72px] px-6 max-w-[1200px] mx-auto">
+<a class="flex items-center group" href="/">
+<img alt="Parche Peludo Logo" class="h-10 w-auto transition-transform group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzDtPVVCouURfh_UAW02AdYJ14Uh_bPehwUWacAO87MMGkgKo1OdELb5Oy8lpFoweI9iu6H0yi5hqXRc0KP-vCDDB0jORJ6cI3H53atGeKm5GXpsRfrcZaFGfe0ymWoselMnoOM0rzn47dWUCjwrSDzPF_ARTEF8Yh6ynntl4688BWPI86XE63BP7N1nbEyE9m1q-w00BuXu_FU-FgPo1c5sz6p2dvWbsdKCEr2KDthGsHdKcdLEjCgZXxsxuUCvDUN5EjA2ztxUA"/>
+</a>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-headline font-bold text-[15px] transition-colors duration-220 text-primary-deep border-b-2 border-primary pb-1" href="/">Inicio</a>
+<a class="font-headline font-bold text-[15px] text-neutral-ink hover:text-primary-deep" href="#">Servicios</a>
+<a class="font-headline font-bold text-[15px] text-neutral-ink hover:text-primary-deep transition-colors duration-220" href="#">Tienda</a>
+<a class="font-headline font-bold text-[15px] text-neutral-ink hover:text-primary-deep transition-colors duration-220" href="#">Directorio</a><a class="font-headline font-bold text-[15px] text-neutral-ink hover:text-primary-deep transition-colors duration-220" href="#">Proposito</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden lg:block font-headline font-bold text-[14px] text-neutral-ink hover:text-primary-deep transition-colors">Iniciar sesión</button>
+<button class="bg-primary hover:bg-primary-deep text-white font-headline font-black text-[14px] py-2.5 px-6 rounded-full shadow-[0_12px_32_rgba(121,200,208,0.4)] active:translate-y-[1px] transition-all">Unirme al Parche</button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden bg-gradient-to-b from-primary-mist to-neutral-paper">
+<div class="max-w-[1200px] mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+<div class="relative z-10 space-y-8">
+<h1 class="text-5xl md:text-6xl lg:text-7xl font-display font-black leading-[1.05] tracking-tight text-neutral-ink">
+                Cuidado profesional para tu <span class="text-primary-deep italic font-hand text-6xl md:text-8xl">peludo</span>, sin salir de casa.
+            </h1>
+<p class="text-lg md:text-xl text-neutral-ink-muted max-w-lg">
+                Peluquería, adiestramiento y paseos a domicilio con el amor y la dedicación que ellos merecen. Calidad certificada en tu hogar.
+            </p>
+<div class="flex flex-col sm:flex-row gap-4 pt-4">
+<button class="bg-primary hover:bg-primary-deep text-white font-headline font-black text-lg py-4 px-10 rounded-full shadow-[0_12px_32_rgba(121,200,208,0.4)] active:translate-y-[1px] transition-all">
+                    Ver servicios
+                </button>
+</div>
+<div class="flex items-center gap-4 pt-6 text-sm font-medium text-neutral-ink-muted">
+<span class="flex -space-x-3">
+<img alt="Usuario" class="w-10 h-10 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfVykzFj_nIGlqfePPRmWimLLySJctL88DR428yIzhB4OoKrBiR1df6q7iwgDjbzz_PmhGzEApQ51y5K6fdF1TPhW5Uq2uDDbFftGFjiAoLMC-D92qC8RUZPOaixhbgTmYTNO0LRNdei3sfvfcQjxxzsG4lvbAG88LsdU03DMmaRxKXooxarO0PGrrIN1TFTn9PGOwDYizI5hXjWbtbZ8bUub4C4jTg-o6Qc6Zu95bSBacXWrCIosalwu8h1lr7zEwd-doY0tbKmQ"/>
+<img alt="Usuario" class="w-10 h-10 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsjTdJOdn450arc60ws8WjJRBRtRvM2Q2QMbQlF7aP7J2xQ1VS3QaYPCGrotoII5cE8TMMKpoXyVNd2o5IC3utvPnFDzZBwzInNf2tvp2xV1OixOw_UEuN-885bBYHUoxrUKVLW4OcEZbNtHN1luDHGo1WUo6z6_ACW4kwDoqzWPR0ob5rkbLpH2sQznNvWhiojInhw_ob84ttfxDWwdNIRprfxeRc5JVm96-0kZFW4tnFIEoD_8I8uwhZQIdJDLzq0bt8cQ5ydfg"/>
+<img alt="Usuario" class="w-10 h-10 rounded-full border-2 border-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC66yh7ohFCLcsQ8BeqQUEqPTxUM-hMgVNJz3oYOWPm4pmr7Gt4Uqm4pp6WVXaf-otnmw5Ip_dAVebKtjeO0hbmQ-vdB4uwE_cAftzuJNovchGt1P9y67V82ZDh9Mtcf5s35nuv3EOEihUKBfUFegNsF_uevw164_8Va53-NmFx9fI9Iqudisfiz68fM2HRfSSKjmfpXJr51Cd_KHW6khEWIRHLP__V7GItPqqXWGbGE8fsoLHq68g2h5l6S4wZnr1FRuQ1_oQkBXM"/>
+</span>
+<p class="">+5,000 padres de peludos confían en nosotros</p>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -top-12 -right-12 w-64 h-64 bg-primary-soft rounded-full filter blur-3xl opacity-30"></div>
+<div class="absolute -bottom-12 -left-12 w-48 h-48 bg-accent-marigold rounded-full filter blur-3xl opacity-20"></div>
+<!-- Service Slider -->
+<div class="relative rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl rotate-1 aspect-[4/5] lg:aspect-square bg-neutral-bone">
+<div class="absolute inset-0 transition-all duration-700 ease-soft slide-inactive" id="slide-0">
+<img alt="Peluquería Canina a Domicilio" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0uhq0z1AvZF3R1ORmoY-TWhOSEGKh4ww1fw_4oL0rZ15jAUVlM72POEBwDwSTBKM2w7yw4ZKabuukHxhQvr7oMPtbdHh_EGayKr7EvaRdlvp9GEx-ko-LtMv6B0C7cqbBIyfkh7VZGXCsTdMcDWVsxF4mFxQBWO65zU_U2gVlHSTDqdtFTh7Zu6Fwo-vtfhLRDXI8ewlpTwtx_JNNV9x95memTccplRDmpFZ1uLQdPE5_iXqxI4OlwTuTbU"/>
+</div>
+<div class="absolute inset-0 transition-all duration-700 ease-soft slide-active" id="slide-1">
+<img alt="Adiestramiento Canino a Domicilio" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ug4CUnnlaenJz_gJ-yxpxMtryFE2LAPXYShfWDPM_uMW9ugfng6PTq0nmWunUewTWcfUj5G2_bsULQstUL0D0J_dG6prSafEnJEnCJ1fiaOd8ffxtx1nk5q_4ZGAM7M9RKKyLH3BNLmrVNx-7UCOhEQBxFPUCAV_yDJqqYhRRQRgrrc8X_Lif9uHqxi52bTKbTS0XNuaidPXunEGUfHdu0RTV9h_DAJDZRtN-4isiNWDH_7MTk_UpqtoQ"/>
+</div>
+<!-- Verified Badge Overlay -->
+<div class="absolute bottom-6 left-6 right-6 p-4 glass rounded-xl border border-white/40 shadow-lg z-10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-deep flex items-center justify-center text-white">
+<span class="material-symbols-outlined">verified</span>
+</div>
+<div>
+<p class="text-xs font-bold text-primary-ink uppercase tracking-wider">Servicio Verificado</p>
+<p class="text-sm font-medium text-neutral-ink" id="slide-caption">Adiestramiento Canino a Domicilio</p>
+</div>
+</div>
+</div>
+<!-- Navigation Dots -->
+<div class="absolute bottom-24 right-8 flex gap-2 z-20">
+<button class="w-2.5 h-2.5 rounded-full bg-white/50 shadow-sm transition-all duration-300" id="dot-0" onclick="goToSlide(0)"></button>
+<button class="w-2.5 h-2.5 rounded-full bg-white hover:bg-white shadow-sm transition-all duration-300 ring-2 ring-primary" id="dot-1" onclick="goToSlide(1)"></button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<script>
+    let currentSlide = 0;
+    const slides = [
+        { id: 'slide-0', caption: 'Peluquería Canina a Domicilio' },
+        { id: 'slide-1', caption: 'Adiestramiento Canino a Domicilio' }
+    ];
+
+    function goToSlide(index) {
+        document.getElementById(`slide-${currentSlide}`).classList.remove('slide-active');
+        document.getElementById(`slide-${currentSlide}`).classList.add('slide-inactive');
+        document.getElementById(`dot-${currentSlide}`).classList.remove('ring-2', 'ring-primary');
+        document.getElementById(`dot-${currentSlide}`).classList.replace('bg-white', 'bg-white/50');
+
+        currentSlide = index;
+        document.getElementById(`slide-${currentSlide}`).classList.remove('slide-inactive');
+        document.getElementById(`slide-${currentSlide}`).classList.add('slide-active');
+        document.getElementById(`dot-${currentSlide}`).classList.add('ring-2', 'ring-primary');
+        document.getElementById(`dot-${currentSlide}`).classList.replace('bg-white/50', 'bg-white');
+        
+        const captionElem = document.getElementById('slide-caption');
+        if (captionElem) captionElem.textContent = slides[currentSlide].caption;
+    }
+
+    setInterval(() => {
+        let next = (currentSlide + 1) % slides.length;
+        goToSlide(next);
+    }, 5000);
+</script>
+<!-- Services Grid -->
+<section class="py-24 bg-neutral-paper">
+<div class="max-w-[1200px] mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-4xl md:text-5xl font-display font-black text-neutral-ink mb-4">Servicios a tu medida</h2>
+<p class="text-neutral-ink-muted max-w-2xl mx-auto text-lg italic">
+                Traemos el bienestar directamente a tu puerta con expertos apasionados.
+            </p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"><!-- Service 1: Peluquería y Baño -->
+<div class="group bg-white rounded-lg border border-neutral-ink/5 shadow-md hover:shadow-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Peluquería y Baño" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida/ADBb0uhq0z1AvZF3R1ORmoY-TWhOSEGKh4ww1fw_4oL0rZ15jAUVlM72POEBwDwSTBKM2w7yw4ZKabuukHxhQvr7oMPtbdHh_EGayKr7EvaRdlvp9GEx-ko-LtMv6B0C7cqbBIyfkh7VZGXCsTdMcDWVsxF4mFxQBWO65zU_U2gVlHSTDqdtFTh7Zu6Fwo-vtfhLRDXI8ewlpTwtx_JNNV9x95memTccplRDmpFZ1uLQdPE5_iXqxI4OlwTuTbU"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest text-primary-ink border border-primary-soft">Peluquería</div>
+</div>
+<div class="p-6 space-y-3">
+<h3 class="text-xl font-display font-black text-neutral-ink">Peluquería y Baño</h3>
+<p class="text-neutral-ink-muted text-sm leading-relaxed">Aseo completo para tu peludo con cuidado y amor, utilizando productos premium biodegradables.</p>
+<div class="flex items-center justify-between pt-4 border-t border-neutral-ink/5">
+<span class="text-sm font-bold text-neutral-ink">Desde $45.000</span>
+<a class="text-primary-deep font-bold text-sm flex items-center gap-1 hover:underline underline-offset-4" href="#">
+                            Reservar <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Service 2: Adiestramiento -->
+<div class="group bg-white rounded-lg border border-neutral-ink/5 shadow-md hover:shadow-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Adiestramiento" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida/ADBb0ug4CUnnlaenJz_gJ-yxpxMtryFE2LAPXYShfWDPM_uMW9ugfng6PTq0nmWunUewTWcfUj5G2_bsULQstUL0D0J_dG6prSafEnJEnCJ1fiaOd8ffxtx1nk5q_4ZGAM7M9RKKyLH3BNLmrVNx-7UCOhEQBxFPUCAV_yDJqqYhRRQRgrrc8X_Lif9uHqxi52bTKbTS0XNuaidPXunEGUfHdu0RTV9h_DAJDZRtN-4isiNWDH_7MTk_UpqtoQ"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest text-primary-ink border border-primary-soft">Educación</div>
+</div>
+<div class="p-6 space-y-3">
+<h3 class="text-xl font-display font-black text-neutral-ink">Adiestramiento</h3>
+<p class="text-neutral-ink-muted text-sm leading-relaxed">Educación en positivo para una convivencia armoniosa. Sesiones personalizadas en tu hogar.</p>
+<div class="flex items-center justify-between pt-4 border-t border-neutral-ink/5">
+<span class="text-sm font-bold text-neutral-ink">Desde $60.000</span>
+<a class="text-primary-deep font-bold text-sm flex items-center gap-1 hover:underline underline-offset-4" href="#">
+                            Ver planes <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Service 3: Paseos -->
+<div class="group bg-white rounded-lg border border-neutral-ink/5 shadow-md hover:shadow-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Paseos" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida/ADBb0ujsTT4mM3NXIGV-ZP0uaoKp72LyQgPTcNEiO5W-hUzaAr43_n0dnbwUVrVpOrnPArDYNiTGv9LtUc2UzFpVTTAaSyC6QsxytQFZ2-EuJhZVhMJxI7MtGNHHhNSQZUU4EarBY07VjgChRN2OCFJyoKXS9qNNvNT2lH96cTQqyFXOYVunVgyxWPK7L8pE3-wFn-s69cxFnhrhfFq9OS5CEBgjy25ZHx4pY2n5OtM5QWTzMOf_z-3gMYniJw"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest text-primary-ink border border-primary-soft">Bienestar</div>
+</div>
+<div class="p-6 space-y-3">
+<h3 class="text-xl font-display font-black text-neutral-ink">Paseos</h3>
+<p class="text-neutral-ink-muted text-sm leading-relaxed">Paseos recreativos diseñados para liberar energía y socializar de forma segura y divertida.</p>
+<div class="flex items-center justify-between pt-4 border-t border-neutral-ink/5">
+<span class="text-sm font-bold text-neutral-ink">Desde $15.000</span>
+<a class="text-primary-deep font-bold text-sm flex items-center gap-1 hover:underline underline-offset-4" href="#">
+                            Agendar <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Service 4: Cuidador -->
+<div class="group bg-white rounded-lg border border-neutral-ink/5 shadow-md hover:shadow-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Cuidador" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida/ADBb0ugVtay7uSgmf1QnaDSNHb3dslhwK-gLr5nMAqf-AIVDtnKecgGS8_RTBmS3pOluV39uc3kx6gZhjYhiKmCBTr2eqq6Jz2rUMkP617ezW6aFi6GH6aJ2LOWU0i3GXtFTV6ODG1e5Zhj3M5H5Q4C4wOoPg4Z11HFeEGoQIYs3OBM_YH_sIvUTZop9BLYkChGVaQB33zkvNG5PYvgKuWtF-wXV5azffwBtnDXwvtv8z68CarpJSKAyZ2F0D8w"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest text-primary-ink border border-primary-soft">Cuidado</div>
+</div>
+<div class="p-6 space-y-3">
+<h3 class="text-xl font-display font-black text-neutral-ink">Cuidador</h3>
+<p class="text-neutral-ink-muted text-sm leading-relaxed">Compañía y cuidados especializados en casa para que nunca se sientan solos cuando tú no estés.</p>
+<div class="flex items-center justify-between pt-4 border-t border-neutral-ink/5">
+<span class="text-sm font-bold text-neutral-ink">Desde $40.000</span>
+<a class="text-primary-deep font-bold text-sm flex items-center gap-1 hover:underline underline-offset-4" href="#">
+                            Ver más <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Service 5: Fotografía y Video -->
+<div class="group bg-white rounded-lg border border-neutral-ink/5 shadow-md hover:shadow-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Fotografía y Video" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXti5jBSQNQfa6ABwlyd8Rmp1Dq40Jo0lHYQonsaB_znUxMZ-YPl7qmU6TnYBMM79HGyWUFoB-uMjK0oiYJgLS_VuvHoQ2O5dMncNSxr3YuEBs4PFu1fStmiAo3SXgVK8vl82LvwCXQqWjmAFTSOLw4WP_Us5xWJTR_iEoeYSQXMgQuFSk5DxvWbEWMD2BTiXqwzi36xz1ZYCHA-yznu1hB8eGW22gRorosG5yW3pxR75eBXlx6JkbTU7ynC_7i2bn0Ic7-CkO3Qc"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest text-primary-ink border border-primary-soft">Recuerdos</div>
+</div>
+<div class="p-6 space-y-3">
+<h3 class="text-xl font-display font-black text-neutral-ink">Fotografía y Video</h3>
+<p class="text-neutral-ink-muted text-sm leading-relaxed">Sesiones fotográficas temáticas para capturar la esencia y alegría de tu mascota para siempre.</p>
+<div class="flex items-center justify-between pt-4 border-t border-neutral-ink/5">
+<span class="text-sm font-bold text-neutral-ink">Desde $120.000</span>
+<a class="text-primary-deep font-bold text-sm flex items-center gap-1 hover:underline underline-offset-4" href="#">
+                            Ver galería <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Service 6: Repostería -->
+<div class="group bg-white rounded-lg border border-neutral-ink/5 shadow-md hover:shadow-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Repostería" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlLGpw-aeJeUbWdYxKqJR8S5Q20cME8AsLHtC-RpuDiqqIZsMKEyqT7Mx_b7Kr-7e2jntFTyuLGSRt6hvfaGzZ2p9DziKQoSTaAYNZJUI8Y9XSHn65SeBPmzdMvxHj9IP-sSdWyaQpwi_mNm5y2ePfayeDIkSIuN6tOOEk4zUYvWjCfSB5izhpa-u9lGRt5E6506QmlFDYfAuj_KULR_OPGl6ibOmWNwosFx3M_S9uA_RQyHjtWMig8zhaOJmicgZWXz6wdOU0lR4"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest text-primary-ink border border-primary-soft">Snacks</div>
+</div>
+<div class="p-6 space-y-3">
+<h3 class="text-xl font-display font-black text-neutral-ink">Repostería</h3>
+<p class="text-neutral-ink-muted text-sm leading-relaxed">Pastelería artesanal 100% natural y apta para mascotas. ¡Endulza sus días de forma saludable!</p>
+<div class="flex items-center justify-between pt-4 border-t border-neutral-ink/5">
+<span class="text-sm font-bold text-neutral-ink">Desde $15.000</span>
+<a class="text-primary-deep font-bold text-sm flex items-center gap-1 hover:underline underline-offset-4" href="#">
+                            Ver menú <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Service 7: Fiestas Caninas -->
+<div class="group bg-white rounded-lg border border-neutral-ink/5 shadow-md hover:shadow-lg hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Fiestas Caninas" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiLBg_mZ4zVameN9F4EF98xrVQkN5WXZd1OWns96wwqjGIIEMoBdps7bc3ODOnhKJjsyjUhLloTi3E3tuRhYWwhxZGEizS-BUbyu7-bF0SlwcgpFrqL2ba93PfWMDGajjM1mzyUWL5q6UvccTpCe_HrGw8Mgg_xqzLT9Lt0gzjXwy0W2kSxPhXccT0eqKDrwhDGczjFyKsu7FQYbLkNO2GfMDAr5gNaVtU4lduZdTmnUXNNioaMDCNcNrXbgtcP1j9Gw8JldmPEiE"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest text-primary-ink border border-primary-soft">Social</div>
+</div>
+<div class="p-6 space-y-3">
+<h3 class="text-xl font-display font-black text-neutral-ink">Fiestas Caninas</h3>
+<p class="text-neutral-ink-muted text-sm leading-relaxed">Organizamos el cumpleaños perfecto para tu peludo con juegos, decoración y mucha diversión.</p>
+<div class="flex items-center justify-between pt-4 border-t border-neutral-ink/5">
+<span class="text-sm font-bold text-neutral-ink">Desde $180.000</span>
+<a class="text-primary-deep font-bold text-sm flex items-center gap-1 hover:underline underline-offset-4" href="#">
+                            Cotizar <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div></div>
+</div>
+</section>
+<!-- Shop Preview - REDESIGNED: Neutral Bone Background + Enhanced Product Cards -->
+<section class="py-24 bg-neutral-bone border-y border-neutral-ink/5">
+<div class="max-w-[1200px] mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center">
+<div class="lg:col-span-4 space-y-6">
+<span class="text-accent-orange font-bold text-sm uppercase tracking-[0.2em]">Exclusivo Tienda</span>
+<h2 class="text-4xl md:text-5xl font-display font-black text-neutral-ink leading-tight">Diversión y estilo para tu peludo</h2>
+<p class="text-neutral-ink-muted text-lg">Descubre nuestra selección premium de juguetes, accesorios y productos diseñados para enriquecer el día a día de tu mascota con la mejor calidad.</p>
+<button class="bg-primary hover:bg-primary-deep text-white font-headline font-black py-4 px-10 rounded-full shadow-[0_12px_24px_rgba(121,200,208,0.3)] transition-all group flex items-center">
+                Ir a la tienda
+                <span class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">shopping_bag</span>
+</button>
+</div>
+<div class="lg:col-span-8">
+<!-- Category Filters -->
+<div class="flex flex-wrap items-center gap-2 mb-8">
+<button class="px-5 py-2 rounded-full text-xs font-bold bg-primary text-white shadow-md transition-all">Todos</button>
+<button class="px-5 py-2 rounded-full text-xs font-bold bg-white text-neutral-ink-muted border border-neutral-ink/10 hover:border-primary-soft hover:text-primary-deep transition-all">Juguetes</button>
+<button class="px-5 py-2 rounded-full text-xs font-bold bg-white text-neutral-ink-muted border border-neutral-ink/10 hover:border-primary-soft hover:text-primary-deep transition-all">Accesorios</button>
+<button class="px-5 py-2 rounded-full text-xs font-bold bg-white text-neutral-ink-muted border border-neutral-ink/10 hover:border-primary-soft hover:text-primary-deep transition-all">Higiene</button>
+<button class="px-5 py-2 rounded-full text-xs font-bold bg-white text-neutral-ink-muted border border-neutral-ink/10 hover:border-primary-soft hover:text-primary-deep transition-all">Ropa</button>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:grid-cols-4">
+<!-- Product 1 -->
+<div class="group bg-white rounded-2xl p-0 border border-neutral-ink/5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"><div class="aspect-square w-full bg-neutral-bone flex items-center justify-center relative overflow-hidden"><img alt="Kong Classic L" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGNAxXHY3aZxDM787g8WAJH83tBQ-FwZ2tdoK4G0KBrD_vzYVCpIL7fdV093xRYnLQdNYduaG0Sd7iMxFipbjBTvKMbIHFRyAQ-XwbyujfKT7YItWu8VXUWLQW1VT1W8Oda2bmh44K9VqeO6bEGl1Wkt9HbSIlsSs510eoND94pxT_PbJORUENbkyaQ59dlBTmlNrjorAV9w_jhjX5BWRn68X61qtbFKiuYQzmK4WeButN5vzjF4QTSeC1mI4OdNoNlDDcSQ7ibf4"/></div><div class="p-5"><div class="space-y-1 mb-4"><span class="text-[10px] font-black uppercase tracking-wider text-primary-ink px-2 py-0.5 bg-primary-soft/30 rounded-full">Kong</span><h4 class="text-base font-black text-neutral-ink pt-1">Kong Classic L</h4><p class="text-lg font-bold text-primary-deep">$42.900</p></div><button class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-deep transition-colors">Ver más</button></div></div>
+<!-- Product 2 -->
+<div class="group bg-white rounded-2xl p-0 border border-neutral-ink/5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"><div class="aspect-square w-full bg-neutral-bone flex items-center justify-center relative overflow-hidden"><img alt="Kit de Aseo Pro" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSsO-mRHfE6K488UYzol5uYlIrBnNHCTRlEalplPBnQoUFSQ0ikugPJKctR57j4KUSxh6rjWHIG3JouYUpY997j7nqQIOoPClpKeixq1MBOdGxrnKDaJ7GwqKgyE-7QhUUjDYcd7sNMZ0A_doPF7D8UbxUidSCv3uao1nLGkwDt3zWgaQ88HWWbQR-VeshNJtg4iDaW4hdGvxjD_WW9C1kMlyV-lZbgBI8uG_tfzni2TJSR4f1eh6ZEOVvCReVUCbwKd5ohfVC25c"/></div><div class="p-5"><div class="space-y-1 mb-4"><span class="text-[10px] font-black uppercase tracking-wider text-primary-ink px-2 py-0.5 bg-primary-soft/30 rounded-full">Pawfect</span><h4 class="text-base font-black text-neutral-ink pt-1">Kit de Aseo Pro</h4><p class="text-lg font-bold text-primary-deep">$38.000</p></div><button class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-deep transition-colors">Ver más</button></div></div>
+<!-- Product 3 -->
+<div class="group bg-white rounded-2xl p-0 border border-neutral-ink/5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"><div class="aspect-square w-full bg-neutral-bone flex items-center justify-center relative overflow-hidden"><img alt="Pechera Ergonómica" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsqZR-ZbHuX5tmZO36qpFNuzWWdUnme0I_gHV4O65cl4GPdapjZyek4RiZuwSC5uIgPiJ6KBR8bSG9n9OtMdrtDh_g7TeC3mjrg2eev1nPcAoSczos7cRdHI6NVFnPj8wjAFuKx0qo7lH-jzXTQHcu79vyCaRurTLQBdBoBMwJ0GtPSo7ycUQg2kOKfMrhApWCDy78hEMWFY251CZJKwgsK8M3mTKVGR36DqWlrMMaXu85Hwe_pmrNcPQ2oThFLOUsl214gH9e5vs"/></div><div class="p-5"><div class="space-y-1 mb-4"><span class="text-[10px] font-black uppercase tracking-wider text-primary-ink px-2 py-0.5 bg-primary-soft/30 rounded-full">Ruffwear</span><h4 class="text-base font-black text-neutral-ink pt-1">Pechera Ergonómica</h4><p class="text-lg font-bold text-primary-deep">$65.000</p></div><button class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-deep transition-colors">Ver más</button></div></div>
+<!-- Product 4 -->
+<div class="group bg-white rounded-2xl p-0 border border-neutral-ink/5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"><div class="aspect-square w-full bg-neutral-bone flex items-center justify-center relative overflow-hidden"><img alt="Pelota Ultra Resistente" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDm_NqSsSVYJZHxBwnLYV2duP2s84expqokp2RYNiXiBydm8LsUWBcZWjAYl6cGT7CHMoV4tasjIdLn359qmDhCk-rq-nQJIHeytwKDDdFYe-Oa8cHFqnLcnmD9P3g0u7fmOrPg15ZHUXEIgxvFm0Y7AORRn0w-CDTqcQQ_Nt8WbJHAPg54iVnBIQMqAEpN-IhqW1-mQlzFv6umDdH68pdzhsj33z0dUdSWmkeBdq4W9h7fbMipQjVKmYHGDdcC52yafo8zJMHFEJM"/></div><div class="p-5"><div class="space-y-1 mb-4"><span class="text-[10px] font-black uppercase tracking-wider text-primary-ink px-2 py-0.5 bg-primary-soft/30 rounded-full">Ruffwear</span><h4 class="text-base font-black text-neutral-ink pt-1">Pelota Ultra Resistente</h4><p class="text-lg font-bold text-primary-deep">$28.000</p></div><button class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-deep transition-colors">Ver más</button></div></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Directory Section - REDESIGNED: Pill/Circular Categories + Light Theme -->
+<section class="py-24 bg-neutral-paper">
+<div class="max-w-[1200px] mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
+<div class="max-w-2xl">
+<span class="inline-block px-3 py-1 bg-primary-mist text-primary-ink text-[11px] font-black uppercase tracking-widest rounded-full mb-4">Directorio Verificado</span>
+<h2 class="text-4xl font-display font-black text-neutral-ink mb-4">Especialistas cerca de ti</h2>
+<p class="text-neutral-ink-muted text-lg">Encuentra clínicas veterinarias, laboratorios y boutiques aliadas en nuestro directorio verificado.</p>
+</div>
+<a class="text-primary-deep font-black flex items-center gap-2 group whitespace-nowrap bg-primary-mist/50 hover:bg-primary-soft/50 py-3 px-6 rounded-full transition-all" href="#">
+                Explorar directorio completo
+                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<!-- Directory Pill 1 -->
+<a class="group flex flex-col items-center text-center space-y-4" href="#">
+<div class="w-28 h-28 md:w-36 md:h-36 rounded-full bg-primary-mist/60 flex items-center justify-center group-hover:bg-primary-soft group-hover:shadow-lg transition-all duration-300">
+<span class="material-symbols-outlined text-4xl md:text-5xl text-primary-deep group-hover:scale-110 transition-transform">medical_services</span>
+</div>
+<div>
+<h4 class="font-black text-neutral-ink text-lg">Clínicas 24h</h4>
+<p class="text-xs text-neutral-ink-muted font-medium">Urgencias y especialistas</p>
+</div>
+</a>
+<!-- Directory Pill 2 -->
+<a class="group flex flex-col items-center text-center space-y-4" href="#">
+<div class="w-28 h-28 md:w-36 md:h-36 rounded-full bg-accent-marigold/10 flex items-center justify-center group-hover:bg-accent-marigold/30 group-hover:shadow-lg transition-all duration-300">
+<span class="material-symbols-outlined text-4xl md:text-5xl text-accent-orange group-hover:scale-110 transition-transform">camera_enhance</span>
+</div>
+<div>
+<h4 class="font-black text-neutral-ink text-lg">Fotografía</h4>
+<p class="text-xs text-neutral-ink-muted font-medium">Captura momentos únicos</p>
+</div>
+</a>
+<!-- Directory Pill 3 -->
+<a class="group flex flex-col items-center text-center space-y-4" href="#">
+<div class="w-28 h-28 md:w-36 md:h-36 rounded-full bg-accent-coral/10 flex items-center justify-center group-hover:bg-accent-coral/30 group-hover:shadow-lg transition-all duration-300">
+<span class="material-symbols-outlined text-4xl md:text-5xl text-accent-coral group-hover:scale-110 transition-transform">cake</span>
+</div>
+<div>
+<h4 class="font-black text-neutral-ink text-lg">Repostería</h4>
+<p class="text-xs text-neutral-ink-muted font-medium">Pasteles y fiestas</p>
+</div>
+</a>
+<!-- Directory Pill 4 -->
+<a class="group flex flex-col items-center text-center space-y-4" href="#">
+<div class="w-28 h-28 md:w-36 md:h-36 rounded-full bg-primary-mist/60 flex items-center justify-center group-hover:bg-primary-soft group-hover:shadow-lg transition-all duration-300">
+<span class="material-symbols-outlined text-4xl md:text-5xl text-primary-deep group-hover:scale-110 transition-transform">local_hospital</span>
+</div>
+<div>
+<h4 class="font-black text-neutral-ink text-lg">Laboratorios</h4>
+<p class="text-xs text-neutral-ink-muted font-medium">Exámenes a domicilio</p>
+</div>
+</a>
+</div>
+</div>
+</section>
+<!-- Bento Section: Join Community -->
+<!-- Testimonials Section -->
+<section class="py-24 bg-primary-mist/30 overflow-hidden">
+<div class="max-w-[1200px] mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-4xl md:text-5xl font-display font-black text-neutral-ink mb-4">Voces del Parche</h2>
+<p class="text-neutral-ink-muted max-w-2xl mx-auto text-lg">
+        Lo que dicen los padres de mascotas sobre nosotros
+      </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Testimonial 1 -->
+<div class="bg-white p-8 rounded-2xl shadow-sm border border-primary-soft/20 flex flex-col items-center text-center group hover:shadow-md transition-shadow">
+<div class="w-20 h-20 rounded-full overflow-hidden mb-6 ring-4 ring-primary-soft">
+<img alt="Isabel Martínez" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuI3edkbXNIj3NzCLaDuYEY4Fi-w3zR1bSWKEnm2eZfyeFfSCCZcSsYPy7nmFu-mfdy-XsKyT1H6vr4G4mJ-5xyn322Ucaps7AUX_KRcyOU5ugKj48PwGSL3yN9SrgRGzXAF0jCm8DWUGKzLLE46QTYoidTlwwDU2YgdVDx8rlRDpxxR-7hI1uRbF93U0fsyGFuRxo3bB7dyTaFt0NhnOXdXpOcUQjM6J17pbl_6ycYEqwQmBqBPRVDin5fXWh7dxblBW4vBT1M8E"/>
+</div>
+<p class="text-neutral-ink-muted italic mb-6 leading-relaxed">
+          "El servicio de peluquería a domicilio es increíble. Bruno solía estresarse mucho en las veterinarias, pero ahora está feliz y relajado en casa. ¡Quedó hermoso!"
+        </p>
+<div>
+<h4 class="font-black text-neutral-ink text-lg uppercase tracking-tight">Isabel Martínez</h4>
+<p class="text-primary-deep font-bold text-sm">Mamá de Bruno</p>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="bg-white p-8 rounded-2xl shadow-sm border border-primary-soft/20 flex flex-col items-center text-center group hover:shadow-md transition-shadow">
+<div class="w-20 h-20 rounded-full overflow-hidden mb-6 ring-4 ring-primary-soft">
+<img alt="Ricardo Sierra" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBa0olpoqbbGhsURjxOTOED-SqE87LczLh_umSxB9tyvVDkZaJE5UzQNrkyOA6TqGM2bPzlJUBQXGXfRk7EUq8t1QP639BGJrNnlXvYxZNvMeMfwW7UGLc3Sj7-5XtuPQxwnr7W2YcD2HWOwVG9ZwjIc4ZWoyZ0nl5ldCVTAPGav70bVMJp3_z7bL4UsNCM4mOLJpVnWsNxEp_PnftBm7GzXZCKNo2tMKFZiDLciCjGE76ywJ5J3MZETqSXD7DfFSv1yRP1Rhu4b4A"/>
+</div>
+<p class="text-neutral-ink-muted italic mb-6 leading-relaxed">
+          "Los paseadores de Parche Peludo son muy profesionales. Luna siempre llega cansada y feliz. Me da mucha tranquilidad recibir las fotos de su recorrido."
+        </p>
+<div>
+<h4 class="font-black text-neutral-ink text-lg uppercase tracking-tight">Ricardo Sierra</h4>
+<p class="text-primary-deep font-bold text-sm">Papá de Luna</p>
+</div>
+</div>
+<!-- Testimonial 3 -->
+<div class="bg-white p-8 rounded-2xl shadow-sm border border-primary-soft/20 flex flex-col items-center text-center group hover:shadow-md transition-shadow">
+<div class="w-20 h-20 rounded-full overflow-hidden mb-6 ring-4 ring-primary-soft">
+<img alt="Carolina Gómez" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9etzgH7u16lgkFN9ogSD8uK7F4nKNDwK2J_FgefV-30UYM0h7kjbdMsXPQ3lxhAC6Z8a0uwpBFq9Ku3MENT5B-PX4nKg0RcK91rw0-dK2rlPqdgdG3rhkJAH3K8yO50SWP1rAgMkxoN_xXHjhSycKOwlFhFPKUzsuRcSoveBbWpw2rXAPOnVBEhFOUsWS9ya1N3jrM4v5I6NnZTEVolPLFHC-eDg-nhvyjmaGwNajcWOsSceBZ_OabxK8P6xZH-w_NurOnnerwuI"/>
+</div>
+<p class="text-neutral-ink-muted italic mb-6 leading-relaxed">
+          "El adiestramiento cambió nuestra vida. Aprendimos a entender mejor a nuestra gata y la convivencia en el apartamento ha mejorado muchísimo. ¡Recomendados!"
+        </p>
+<div>
+<h4 class="font-black text-neutral-ink text-lg uppercase tracking-tight">Carolina Gómez</h4>
+<p class="text-primary-deep font-bold text-sm">Mamá de Miau</p>
+</div>
+</div>
+</div>
+</div>
+</section><section class="py-24 bg-neutral-ink relative overflow-hidden">
+<div class="absolute inset-0 bg-pattern opacity-5"></div>
+<div class="max-w-[1200px] mx-auto px-6 relative z-10">
+<div class="text-center mb-16">
+<h2 class="text-4xl md:text-6xl font-display font-black text-white mb-6 leading-tight">Sé parte del Parche</h2>
+<p class="text-white/60 text-xl max-w-2xl mx-auto">Únete a la plataforma líder para profesionales y negocios de mascotas en Colombia.</p>
+</div>
+<div class="grid md:grid-cols-2 gap-8">
+<div class="group relative overflow-hidden rounded-3xl bg-primary/10 border border-white/10 p-8 md:p-12 hover:bg-primary/20 transition-all">
+<div class="relative z-20 flex flex-col h-full">
+<h3 class="text-3xl font-display font-black text-white mb-4">Soy Independiente</h3>
+<p class="text-white/70 text-lg mb-8 max-w-sm">
+                        ¿Eres paseador, adiestrador o peluquero? Crece tu alcance y gestiona tus clientes de forma profesional.
+                    </p>
+<div class="mt-auto">
+<button class="bg-primary hover:bg-primary-deep text-white font-black py-4 px-8 rounded-full transition-all flex items-center gap-3">
+                            Empezar registro <span class="material-symbols-outlined">rocket_launch</span>
+</button>
+</div>
+</div>
+<div class="absolute -right-12 -bottom-12 w-64 h-64 opacity-20 grayscale group-hover:grayscale-0 group-hover:opacity-40 transition-all">
+<span class="material-symbols-outlined text-[200px] text-white" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+</div>
+<div class="group relative overflow-hidden rounded-3xl bg-accent-marigold/10 border border-white/10 p-8 md:p-12 hover:bg-accent-marigold/20 transition-all">
+<div class="relative z-20 flex flex-col h-full">
+<h3 class="text-3xl font-display font-black text-white mb-4">Soy Negocio</h3>
+<p class="text-white/70 text-lg mb-8 max-w-sm">
+                        Posiciona tu clínica, tienda o marca. Llega a miles de padres de mascotas que buscan lo mejor.
+                    </p>
+<div class="mt-auto">
+<button class="bg-accent-marigold hover:bg-accent-orange text-neutral-ink font-black py-4 px-8 rounded-full transition-all flex items-center gap-3">
+                            Afiliar mi negocio <span class="material-symbols-outlined">store</span>
+</button>
+</div>
+</div>
+<div class="absolute -right-12 -bottom-12 w-64 h-64 opacity-20 grayscale group-hover:grayscale-0 group-hover:opacity-40 transition-all">
+<span class="material-symbols-outlined text-[200px] text-white" style="font-variation-settings: 'FILL' 1;">business</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Values Section -->
+<section class="py-24 bg-[#FFFBF5] relative overflow-hidden">
+<!-- Decorative organic blobs background -->
+<div class="absolute -top-20 -left-20 w-96 h-96 bg-primary-mist/50 blob-shape -z-0"></div>
+<div class="absolute top-1/2 -right-40 w-[500px] h-[500px] bg-accent-marigold/10 blob-shape-alt -z-0"></div>
+<!-- Doodle accents -->
+<div class="absolute top-20 right-[15%] text-primary-deep/20 opacity-40">
+<span class="material-symbols-outlined text-7xl rotate-12">pets</span>
+</div>
+<div class="absolute bottom-40 left-[10%] text-accent-coral/20 opacity-40">
+<span class="material-symbols-outlined text-8xl -rotate-12">favorite</span>
+</div>
+<div class="max-w-[1200px] mx-auto px-6 relative z-10">
+<div class="max-w-4xl mx-auto text-center mb-16 space-y-6">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-soft/30 text-primary-ink text-sm font-black uppercase tracking-widest mb-4">
+<span class="material-symbols-outlined text-lg">volunteer_activism</span> Impacto Social
+            </div>
+<h2 class="text-5xl md:text-6xl font-display font-black text-neutral-ink tracking-tight">Nuestro <span class="text-primary-deep">#PropositoPeludo</span></h2>
+<p class="text-lg md:text-xl text-neutral-ink-muted leading-relaxed font-medium">
+                Aportamos al bienestar de los animales que <span class="text-primary-ink font-bold">mas</span> lo necesitan. Destinamos un porcentaje (%) de nuestras ganancias a fundaciones e iniciativas sociales en pro de estos peludos sumando <span class="text-primary-ink font-bold">asi</span> nuestro aporte y el de ustedes a causas que los beneficien.
+            </p>
+</div>
+<div class="space-y-16">
+<div class="relative text-center">
+<p class="inline-block relative font-headline font-bold text-neutral-ink text-xl md:text-2xl italic">
+                    Queremos asegurar que todos los #Peludos, sin ninguna <span class="text-primary-deep not-italic font-black">excepcion</span>, tengan asegurado:
+                    <svg class="absolute -bottom-4 left-0 w-full h-3 text-primary-soft/60" preserveaspectratio="none" viewbox="0 0 400 20"><path d="M0,10 Q100,20 200,10 T400,10" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"></path></svg>
+</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+<!-- Alimentaci3n Card -->
+<div class="group relative bg-white p-5 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] hover:shadow-[0_30px_60px_rgba(121,200,208,0.15)] transition-all duration-500 hover:-translate-y-2">
+<div class="relative overflow-hidden rounded-[2rem] aspect-[4/5] mb-8">
+<img alt="Alimentaci3n animal" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxPzh9CL_xle0r8Muo031OoNLdN826Nvk165sXJxGfCXgTqNXvm-GRnfLXrVTsZTRMikTwHaYN8AZYmjU_YdDAP4bnR0mcDCXk2KnmhHvLR8AkNJF0ugNMetxGc8US3A7Yu8LsGZ3qiwdWXYwL4sDjnhNN8CIORZt4SwIixlC2P8eMlH496ZwQys0CqSUgo2n3HzG2AKlTeqnkAKbQNQPC5LtUxr-QdrCSPp6ieMut-rO7T-Bdg728EDt06hfh3o40upymA3gsK9o"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+<!-- Bubble icon -->
+<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:bg-primary-mist transition-colors">
+<span class="material-symbols-outlined text-3xl text-primary" style="font-variation-settings: 'FILL' 1;">pet_supplies</span>
+</div>
+</div>
+<div class="text-center pb-4">
+<h4 class="text-2xl font-display font-black text-neutral-ink mb-3">Alimentaci3n animal</h4>
+<p class="text-neutral-ink-muted text-sm px-4">Nutrici3n digna para peludos en proceso de rescate y refugios locales.</p>
+</div>
+</div>
+<!-- Salud Card -->
+<div class="group relative bg-white p-5 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] hover:shadow-[0_30px_60px_rgba(121,200,208,0.15)] transition-all duration-500 hover:-translate-y-2">
+<div class="relative overflow-hidden rounded-[2rem] aspect-[4/5] mb-8">
+<img alt="Salud" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsGD7JcXJrjw4RcrzkrKZcHYxl8yIkNAWSWWy5_AyJt-uAYBBYTzAjeLiQZpt4pzHDxO0TdfUGdbROZTBHEKNZKyaYXDI_OW-fQDxoSzXCls5ETDrNogjk6tb4WTlcRw39fsSkIuwlgNA2ArYG9XIHqJrx4-02euNxe2r198xaOnmL82oA9eqfQHU9MdwpnYCi9YGdWvnEearuxTxpBLrcIwmHTGijudyoysa6BH_0MywhlngQ-ga1Cf-HRwy_wi0hL4BEb-RnzSs"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+<!-- Bubble icon -->
+<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:bg-primary-mist transition-colors">
+<span class="material-symbols-outlined text-3xl text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+</div>
+<div class="text-center pb-4">
+<h4 class="text-2xl font-display font-black text-neutral-ink mb-3">Salud</h4>
+<p class="text-neutral-ink-muted text-sm px-4">Acceso a medicina veterinaria preventiva y tratamientos de emergencia.</p>
+</div>
+</div>
+<!-- Hogar Card -->
+<div class="group relative bg-white p-5 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] hover:shadow-[0_30px_60px_rgba(121,200,208,0.15)] transition-all duration-500 hover:-translate-y-2">
+<div class="relative overflow-hidden rounded-[2rem] aspect-[4/5] mb-8">
+<img alt="Hogar" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcff8mCy7GaAjRDB9YctRzoL-CWzDcpOKD34LYN2H0nSJ-GXNmE-2MP1amtuwisNcI_bkSab3YDhXY3HuEAB0Ek-wSvMCq27Y0QFfJfxt2LcBv_ljxadxBn-hpJNDutHaFXtKSjEPio0HnsJd8P1ty9Lc0cU0kxv0DRAXkFqAi5v67HbNOQP0fJ2fDHuA38AiGXipO50EcUoYAYJk0v_EqaXtWVorPvleQLnSRSYZutsvAHrXt-oFn1UTlOfdD4zmEM-JvpFpbaMo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+<!-- Bubble icon -->
+<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:bg-primary-mist transition-colors">
+<span class="material-symbols-outlined text-3xl text-primary" style="font-variation-settings: 'FILL' 1;">home_health</span>
+</div>
+</div>
+<div class="text-center pb-4">
+<h4 class="text-2xl font-display font-black text-neutral-ink mb-3">Hogar</h4>
+<p class="text-neutral-ink-muted text-sm px-4">Mejora de instalaciones en refugios y fomento de la adopci3n responsable.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section><section class="py-24 bg-white">
+<div class="max-w-[800px] mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-4xl md:text-5xl font-display font-black text-neutral-ink">Preguntas Frecuentes</h2>
+</div>
+<div class="space-y-0 border-t border-neutral-ink/10">
+<!-- FAQ Item 1 -->
+<div class="border-b border-neutral-ink/10">
+<button class="w-full py-6 flex items-center justify-between text-left group">
+<span class="text-lg md:text-xl font-bold text-neutral-ink group-hover:text-primary-deep transition-colors">¿Qué es Parche Peludo?</span>
+<span class="material-symbols-outlined text-neutral-ink-faint group-hover:text-primary-deep transition-transform duration-300">expand_more</span>
+</button>
+</div>
+<!-- FAQ Item 2 -->
+<div class="border-b border-neutral-ink/10">
+<button class="w-full py-6 flex items-center justify-between text-left group">
+<span class="text-lg md:text-xl font-bold text-neutral-ink group-hover:text-primary-deep transition-colors">±Cómo funciona la reserva de servicios?</span>
+<span class="material-symbols-outlined text-neutral-ink-faint group-hover:text-primary-deep transition-transform duration-300">expand_more</span>
+</button>
+</div>
+<!-- FAQ Item 3 -->
+<div class="border-b border-neutral-ink/10">
+<button class="w-full py-6 flex items-center justify-between text-left group">
+<span class="text-lg md:text-xl font-bold text-neutral-ink group-hover:text-primary-deep transition-colors">±Cómo puedo encontrar un profesional verificado?</span>
+<span class="material-symbols-outlined text-neutral-ink-faint group-hover:text-primary-deep transition-transform duration-300">expand_more</span>
+</button>
+</div>
+<!-- FAQ Item 4 -->
+<div class="border-b border-neutral-ink/10">
+<button class="w-full py-6 flex items-center justify-between text-left group">
+<span class="text-lg md:text-xl font-bold text-neutral-ink group-hover:text-primary-deep transition-colors">±Cuáles son los métodos de pago aceptados?</span>
+<span class="material-symbols-outlined text-neutral-ink-faint group-hover:text-primary-deep transition-transform duration-300">expand_more</span>
+</button>
+</div>
+<!-- FAQ Item 5 -->
+<div class="border-b border-neutral-ink/10">
+<button class="w-full py-6 flex items-center justify-between text-left group">
+<span class="text-lg md:text-xl font-bold text-neutral-ink group-hover:text-primary-deep transition-colors">±Cómo promueven una experiencia segura para mi mascota?</span>
+<span class="material-symbols-outlined text-neutral-ink-faint group-hover:text-primary-deep transition-transform duration-300">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-neutral-bone">
+<div class="max-w-[1200px] mx-auto px-6">
+<div class="grid md:grid-cols-3 gap-12">
+<div class="text-center space-y-4">
+<div class="w-16 h-16 bg-white rounded-2xl shadow-sm mx-auto flex items-center justify-center text-primary-deep">
+<span class="material-symbols-outlined text-3xl">verified_user</span>
+</div>
+<h3 class="text-xl font-black text-neutral-ink">Profesionalismo</h3>
+<p class="text-neutral-ink-muted">Aliados verificados con certificaciones y experiencia comprobada en el cuidado animal.</p>
+</div>
+<div class="text-center space-y-4">
+<div class="w-16 h-16 bg-white rounded-2xl shadow-sm mx-auto flex items-center justify-center text-primary-deep">
+<span class="material-symbols-outlined text-3xl">favorite</span>
+</div>
+<h3 class="text-xl font-black text-neutral-ink">Confianza</h3>
+<p class="text-neutral-ink-muted">Cuidamos a tu peludo en la comodidad de tu hogar, garantizando transparencia y tranquilidad.</p>
+</div>
+<div class="text-center space-y-4">
+<div class="w-16 h-16 bg-white rounded-2xl shadow-sm mx-auto flex items-center justify-center text-primary-deep">
+<span class="material-symbols-outlined text-3xl">volunteer_activism</span>
+</div>
+<h3 class="text-xl font-black text-neutral-ink">Propósito Social</h3>
+<p class="text-neutral-ink-muted">Destinamos un porcentaje de nuestros ingresos a refugios y fundaciones de mascotas en Colombia.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-neutral-ink pt-20 pb-10 text-white">
+<div class="max-w-[1200px] mx-auto px-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+<div class="space-y-6">
+<a class="flex items-center gap-2" href="/">
+<span class="font-display font-black text-2xl">Parche Peludo</span>
+</a>
+<p class="text-white/60 text-sm leading-relaxed">
+                    La comunidad especializada en mascotas más grande de Colombia. Conectando amor con servicios de alta calidad.
+                </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">share</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">thumb_up</span>
+</a>
+</div>
+</div>
+<div class="space-y-6">
+<h4 class="font-black text-lg">Para Padres</h4>
+<ul class="space-y-4 text-white/60 text-sm">
+<li class=""><a class="hover:text-primary transition-colors" href="#">Servicios a domicilio</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Tienda Pet</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Directorio Médico</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Blog y Consejos</a></li>
+</ul>
+</div>
+<div class="space-y-6">
+<h4 class="font-black text-lg">Aliados</h4>
+<ul class="space-y-4 text-white/60 text-sm">
+<li class=""><a class="hover:text-primary transition-colors" href="#">Inscribirme como Independiente</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Inscribirme como Negocio</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Publicidad</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Portal de Socio</a></li>
+</ul>
+</div>
+<div class="space-y-6">
+<h4 class="font-black text-lg">Legal</h4>
+<ul class="space-y-4 text-white/60 text-sm">
+<li class=""><a class="hover:text-primary transition-colors" href="#">Sobre Nosotros</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Términos y Condiciones</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Política de Datos</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Contacto</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+</div></div></footer>
+<script>
+  document.querySelectorAll('section.bg-neutral-bone .flex-wrap.items-center.gap-2 button').forEach(button => {
+    button.addEventListener('click', () => {
+      const category = button.textContent.trim();
+      const buttons = document.querySelectorAll('section.bg-neutral-bone .flex-wrap.items-center.gap-2 button');
+      const cards = document.querySelectorAll('section.bg-neutral-bone .grid.grid-cols-1.sm\\:grid-cols-2.gap-6.lg\\:grid-cols-4 > div');
+
+      // Update active button styling
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-primary', 'text-white', 'shadow-md');
+        btn.classList.add('bg-white', 'text-neutral-ink-muted', 'border', 'border-neutral-ink/10');
+      });
+      button.classList.add('bg-primary', 'text-white', 'shadow-md');
+      button.classList.remove('bg-white', 'text-neutral-ink-muted', 'border', 'border-neutral-ink/10');
+
+      // Filter cards
+      cards.forEach(card => {
+        const cardCategory = card.querySelector('span.text-\\[10px\\].font-black.uppercase').textContent.trim();
+        if (category === 'Todos' || cardCategory.toLowerCase() === category.toLowerCase()) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+</script></body></html>
+
