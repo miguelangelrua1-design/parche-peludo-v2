@@ -5,7 +5,7 @@ Description:  Tema Hijo personalizado para la optimizacion visual de Parche Pelu
 Author:       AntiGravity & Claude Code (Advanced Agentic Coding)
 Author URI:   https://google.com
 Template:     listeo
-Version:      2.0.0
+Version:      2.0.5
 License:      GNU General Public License v2 or later
 License URI:  http://www.gnu.org/licenses/gpl-2.0.html
 Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
@@ -309,6 +309,11 @@ Text Domain:  listeo-child
 .ppv2-hero > .elementor-container,
 .elementor-top-section:has(.ppv2-hero-title) > .elementor-container {
   align-items: center !important;
+  /* El Hero es flex: sin esto, el contenedor (item flex) no se encoge y en
+     tableta conserva su max-width (1024px), desbordando y cortando el slider.
+     width:100% lo limita al ancho disponible; en PC el max-width sigue topando
+     igual (verificado: el ancho de escritorio no cambia). */
+  width: 100% !important;
 }
 
 .ppv2-hero-title,
@@ -786,6 +791,9 @@ Text Domain:  listeo-child
   transition: transform var(--dur-base) var(--ease-soft), box-shadow var(--dur-base) var(--ease-soft) !important;
 }
 .ppv2-shop-products ul.products li.product:hover { transform: translateY(-4px) !important; box-shadow: var(--shadow-lg) !important; }
+/* Filtro de la Tienda: ocultar productos que no son de la categoría activa.
+   Mayor especificidad + !important para vencer al display:flex !important de arriba. */
+.ppv2-shop-products ul.products li.product.ppv2-hidden { display: none !important; }
 
 /* Estructura real de la tarjeta WooCommerce de Listeo */
 .ppv2-shop-products li.product .mediaholder {
@@ -864,6 +872,27 @@ Text Domain:  listeo-child
 .ppv2-trust-item .elementor-icon-box-description { color: var(--ink-muted) !important; font-size: 15px !important; line-height: 1.6 !important; margin: 0 !important; }
 
 /* ==========================================================================
+   AJUSTES TABLETA — Home V2 (768–1024px)
+   ========================================================================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Hero apilado como en móvil: el slider baja debajo del texto.
+     En tableta Elementor mantiene las 2 columnas lado a lado; aquí las
+     llevamos a ancho completo para que se apilen (texto arriba, slider abajo). */
+  .ppv2-hero,
+  .elementor-top-section:has(.ppv2-hero-title) {
+    min-height: 0 !important;
+    display: block !important;
+    padding-top: 40px !important;
+    padding-bottom: 48px !important;
+  }
+  .elementor-top-section:has(.ppv2-hero-title) > .elementor-container > .elementor-column {
+    width: 100% !important;
+  }
+  /* Aire entre el texto y el slider apilado */
+  .elementor-column:has(.ppv2-hero-slider) { margin-top: 24px !important; }
+}
+
+/* ==========================================================================
    AJUSTES MÓVIL — Home V2 (≤767px). Solo visualización, sin nuevos componentes.
    ========================================================================== */
 @media (max-width: 767px) {
@@ -903,3 +932,296 @@ Text Domain:  listeo-child
   /* Evitar desbordes horizontales por imágenes/elementos */
   .ppv2-hero-slider, .ppv2-sc-img, .ppv2-pp-img { max-width: 100% !important; }
 }
+
+/* ==========================================================================
+   REDISEÑO LISTADO INDIVIDUAL (single-listing) — FASE 0: base + color de marca
+   Reestiliza SOLO las páginas de detalle de listado (body.single-listing),
+   sobre los componentes que Listeo ya genera. No crea componentes nuevos ni
+   altera funcionalidad/administración. Se conservan en verde los indicadores
+   semánticos (punto "en línea" del chat, mensajes de éxito/cupón) y el botón
+   de WhatsApp (color propio del canal).
+   ========================================================================== */
+
+/* Sello "Listado verificado": verde de Listeo → teal de marca (teal-deep para
+   que el texto blanco mantenga buen contraste). */
+.single-listing .verified-badge {
+  background: var(--teal-deep) !important;
+}
+
+/* Badges de precio "Empieza desde…" (titlebar y widget de reserva) */
+.single-listing .listing-pricing-tag,
+.single-listing .booking-pricing-tag {
+  background: var(--teal-mist) !important;
+  color: var(--teal-ink) !important;
+  border-color: var(--teal-soft) !important;
+}
+
+/* Icono de etiqueta dentro de los badges de precio */
+.single-listing .listing-pricing-tag i.fa-tag,
+.single-listing .booking-pricing-tag i.fa-tag,
+.single-listing .listing-pricing-tag .fa-tag,
+.single-listing .booking-pricing-tag .fa-tag {
+  background: var(--teal-parche) !important;
+  color: var(--paper) !important;
+}
+
+/* Etiqueta destacada (nav-tag) */
+.single-listing .nav-tag {
+  background: var(--teal-parche) !important;
+}
+
+/* ==========================================================================
+   FASE 1: Cabecera del listado (titlebar) — reestiliza los elementos que ya
+   genera Listeo: caja de logo, pills de categoría, título, dirección y reseñas.
+   No se tocan las estrellas (la calificación depende de su color base).
+   ========================================================================== */
+
+/* Caja del logo: redondeada con borde sutil */
+.single-listing #titlebar .listing-logo {
+  border-radius: var(--r-lg) !important;
+  border: 1px solid var(--ink-line-2) !important;
+  background: var(--paper) !important;
+  box-shadow: var(--shadow-sm) !important;
+  padding: 8px !important;
+}
+
+/* Fila de etiquetas: alineación y separación consistentes */
+.single-listing #titlebar .listing-titlebar-tags {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 10px !important;
+}
+
+/* Pills de categoría/ubicación → teal de marca */
+.single-listing #titlebar .listing-titlebar-tags .listing-tag {
+  background: var(--teal-mist) !important;
+  border: 1px solid var(--teal-soft) !important;
+  border-radius: var(--r-pill) !important;
+  padding: 6px 14px !important;
+  margin: 0 !important;
+}
+.single-listing #titlebar .listing-titlebar-tags .listing-tag a {
+  color: var(--teal-ink) !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+}
+.single-listing #titlebar .listing-titlebar-tags .listing-tag a:hover {
+  color: var(--teal-deep) !important;
+  text-decoration: none !important;
+}
+
+/* Título grande y con peso de marca (hoy Ubuntu 400/28px → 800 y mayor) */
+.single-listing #titlebar h1 {
+  font-family: var(--font-display) !important;
+  font-weight: 800 !important;
+  font-size: clamp(28px, 3.4vw, 40px) !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--ink) !important;
+  margin: 6px 0 8px 0 !important;
+}
+
+/* Dirección: texto suave + pin teal */
+.single-listing #titlebar .listing-address {
+  color: var(--ink-muted) !important;
+  font-size: 15px !important;
+}
+.single-listing #titlebar .listing-address .fa-map-marker {
+  color: var(--teal-deep) !important;
+}
+
+/* Contador de reseñas legible */
+.single-listing #titlebar .rating-counter a {
+  color: var(--ink-muted) !important;
+  font-weight: 600 !important;
+}
+
+/* ==========================================================================
+   FASES 3–8: Secciones del listado (galería, características, precios, FAQ,
+   opiniones, ubicación y sidebar de reserva). Reestiliza SOLO componentes que
+   Listeo ya genera, acotado a .single-listing. Sin componentes nuevos ni
+   cambios de funcionalidad. (No se toca la barra de navegación de contenidos.)
+   ========================================================================== */
+
+/* Títulos de sección (Características, Precios, FAQ, …) */
+.single-listing .listing-desc-headline {
+  font-family: var(--font-display) !important;
+  font-weight: 800 !important;
+  color: var(--ink) !important;
+  font-size: clamp(20px, 2.2vw, 26px) !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Texto de descripción del listado */
+.single-listing #listing-overview > p {
+  color: var(--ink-muted) !important;
+  line-height: 1.7 !important;
+  font-size: 16px !important;
+}
+
+/* --- FASE 3: Galería (carrusel slick existente) --- */
+.single-listing #listing-gallery .listing-slider-small,
+.single-listing #listing-gallery .listing-slider-small img {
+  border-radius: var(--r-xl) !important;
+}
+.single-listing #listing-gallery .listing-slider-small { overflow: hidden !important; }
+.single-listing #listing-gallery .slick-prev,
+.single-listing #listing-gallery .slick-next {
+  background: var(--paper) !important;
+  color: var(--teal-ink) !important;
+  width: 44px !important; height: 44px !important;
+  border-radius: 50% !important;
+  box-shadow: var(--shadow-md) !important;
+  z-index: 5 !important;
+}
+.single-listing #listing-gallery .slick-prev:hover,
+.single-listing #listing-gallery .slick-next:hover {
+  background: var(--teal-parche) !important;
+  color: var(--paper) !important;
+}
+
+/* --- FASE 4: Características (features → tarjetas) --- */
+.single-listing ul.listing-features.checkboxes {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)) !important;
+  gap: 12px !important;
+  list-style: none !important;
+  margin: 0 !important; padding: 0 !important;
+}
+.single-listing ul.listing-features.checkboxes li.feature-has-icon {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  background: var(--teal-mist) !important;
+  border: 1px solid var(--teal-soft) !important;
+  border-radius: var(--r-md) !important;
+  padding: 14px 16px !important;
+  margin: 0 !important;
+  width: auto !important;
+}
+.single-listing ul.listing-features li.feature-has-icon .feature-svg-icon svg { width: 24px !important; height: 24px !important; }
+.single-listing ul.listing-features li.feature-has-icon .feature-svg-icon svg path { fill: var(--teal-deep) !important; }
+.single-listing ul.listing-features li.feature-has-icon a,
+.single-listing ul.listing-features li.feature-has-icon { color: var(--ink) !important; font-weight: 700 !important; font-size: 14px !important; }
+
+/* --- FASE 5: Precios (grupos + ítems → tarjetas) --- */
+.single-listing #listing-pricing-list .pricing-list-container h4 {
+  font-family: var(--font-display) !important;
+  font-weight: 800 !important;
+  color: var(--teal-ink) !important;
+  font-size: 16px !important;
+  margin: 22px 0 12px 0 !important;
+  padding-bottom: 8px !important;
+  border-bottom: 2px solid var(--teal-mist) !important;
+}
+.single-listing #listing-pricing-list .pricing-list-container ul { list-style: none !important; margin: 0 !important; padding: 0 !important; }
+.single-listing #listing-pricing-list .pricing-list-container ul li {
+  border: 1px solid var(--ink-line-2) !important;
+  border-radius: var(--r-lg) !important;
+  padding: 14px 18px !important;
+  margin: 0 0 10px 0 !important;
+  transition: box-shadow var(--dur-base) var(--ease-soft) !important;
+}
+.single-listing #listing-pricing-list .pricing-list-container ul li:hover { box-shadow: var(--shadow-md) !important; }
+.single-listing #listing-pricing-list .pricing-menu-details h5 {
+  font-family: var(--font-display) !important; font-weight: 700 !important; color: var(--ink) !important; font-size: 15px !important; margin: 0 0 4px 0 !important;
+}
+.single-listing #listing-pricing-list .pricing-menu-price { color: var(--teal-deep) !important; font-weight: 800 !important; }
+
+/* --- FASE 6: FAQ (acordeón jQuery UI) --- */
+.single-listing #listing-faq .fp-accordion .ui-accordion-header {
+  background: var(--paper) !important;
+  border: 1px solid var(--ink-line-2) !important;
+  border-radius: var(--r-md) !important;
+  padding: 16px 18px !important;
+  margin-bottom: 10px !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+.single-listing #listing-faq .fp-accordion .ui-accordion-header.ui-state-active {
+  background: var(--teal-mist) !important;
+  border-color: var(--teal-soft) !important;
+  color: var(--teal-ink) !important;
+}
+.single-listing #listing-faq .fp-accordion .ui-accordion-header .fa-angle-down {
+  transition: transform var(--dur-base) var(--ease-soft) !important;
+  color: var(--teal-deep) !important;
+}
+.single-listing #listing-faq .fp-accordion .ui-accordion-header.ui-state-active .fa-angle-down { transform: rotate(180deg) !important; }
+.single-listing #listing-faq .fp-accordion .ui-accordion-content {
+  border: 1px solid var(--teal-soft) !important;
+  border-radius: var(--r-md) !important;
+  margin: -4px 0 10px 0 !important;
+  padding: 14px 18px !important;
+  color: var(--ink-muted) !important;
+  background: var(--paper) !important;
+}
+
+/* --- FASE 7: Opiniones (tarjetas) --- */
+.single-listing #listing-google-reviews .google-reviews-summary {
+  background: var(--bone) !important;
+  border: 1px solid var(--ink-line-2) !important;
+  border-radius: var(--r-lg) !important;
+  padding: 18px 20px !important;
+}
+.single-listing #listing-google-reviews .comments li,
+.single-listing #listing-reviews .comments li {
+  background: var(--bone) !important;
+  border: 0 !important;
+  border-radius: var(--r-lg) !important;
+  padding: 18px 20px !important;
+  margin-bottom: 14px !important;
+}
+
+/* --- Ubicación (mapa redondeado) --- */
+.single-listing #listing-location #singleListingMap,
+.single-listing #listing-location .listing-map,
+.single-listing #listing-location .google-map-container {
+  border-radius: var(--r-xl) !important;
+  overflow: hidden !important;
+}
+
+/* --- FASE 8: Sidebar — widgets como tarjetas + formulario de reserva --- */
+.single-listing .listeo-single-listing-sidebar .listing-widget {
+  background: var(--paper) !important;
+  border: 1px solid var(--ink-line-2) !important;
+  border-radius: var(--r-xl) !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: 26px !important;
+  margin-bottom: 24px !important;
+}
+.single-listing .listeo-single-listing-sidebar .widget-title {
+  font-family: var(--font-display) !important; font-weight: 800 !important; color: var(--ink) !important;
+}
+.single-listing .listeo-single-listing-sidebar .widget-title i { color: var(--teal-deep) !important; }
+/* Campos del formulario */
+.single-listing .listeo-single-listing-sidebar .with-forms input,
+.single-listing .listeo-single-listing-sidebar .with-forms select,
+.single-listing .listeo-single-listing-sidebar input.input-text {
+  border-radius: var(--r-md) !important;
+  background: var(--teal-mist) !important;
+  border: 1px solid var(--teal-soft) !important;
+}
+.single-listing .listeo-single-listing-sidebar .with-forms input:focus,
+.single-listing .listeo-single-listing-sidebar .with-forms select:focus {
+  border-color: var(--teal-parche) !important;
+  box-shadow: 0 0 0 3px rgba(121,200,208,.25) !important;
+}
+/* Botón principal (reserva) → teal; el de cupón "Aplicar" queda secundario */
+.single-listing .listeo-single-listing-sidebar .button:not(.listeo-booking-widget-apply_new_coupon),
+.single-listing #form-booking button[type="submit"] {
+  background: var(--teal-parche) !important;
+  color: var(--paper) !important;
+  border-radius: var(--r-pill) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 800 !important;
+}
+.single-listing .listeo-single-listing-sidebar .button:not(.listeo-booking-widget-apply_new_coupon):hover,
+.single-listing #form-booking button[type="submit"]:hover { background: var(--teal-deep) !important; }

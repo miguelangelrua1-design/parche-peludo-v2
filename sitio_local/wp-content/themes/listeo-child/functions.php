@@ -67,7 +67,9 @@ function ppv2_shop_filter_script() {
 			pill.classList.add('is-active');
 			shop.querySelectorAll('li.product').forEach(function (li) {
 				var show = (cat === 'all') || li.classList.contains('product_cat-' + cat);
-				li.style.display = show ? '' : 'none';
+				// Clase (no estilo en línea): el CSS oculta con !important y mayor
+				// especificidad para ganar a la regla base display:flex !important del carrusel.
+				li.classList.toggle('ppv2-hidden', !show);
 			});
 		}, true);
 	});
