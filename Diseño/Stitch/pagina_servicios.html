@@ -1,0 +1,473 @@
+﻿<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Servicios | Parche Peludo — El mejor parche para tu mascota</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400;1,700&amp;family=Caveat:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=Public+Sans:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              'teal-parche': '#79C8D0',
+              'teal-deep': '#4AA5AD',
+              'teal-soft': '#BEE3E7',
+              'teal-mist': '#E8F4F6',
+              'teal-ink': '#1E5D64',
+              'paper': '#FFFFFF',
+              'bone': '#F7F3EC',
+              'ink': '#1E2E33',
+              'ink-muted': '#5A6B70',
+              'ink-faint': '#8E9A9E',
+              'marigold': '#FFD166',
+              'coral': '#E85D75',
+              'orange': '#F2994A',
+            },
+            borderRadius: {
+              'sm': '6px',
+              'md': '12px',
+              'lg': '20px',
+              'xl': '28px',
+              '2xl': '40px',
+              'pill': '999px',
+            },
+            fontFamily: {
+              'display': ['Ubuntu', 'sans-serif'],
+              'body': ['Inter', 'sans-serif'],
+              'hand': ['Caveat', 'cursive'],
+              'headline': ['Public Sans', 'sans-serif'],
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+      }
+      .active-nav-link {
+        color: #4AA5AD;
+        font-weight: 700;
+        border-bottom: 2px solid #79C8D0;
+        padding-bottom: 4px;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(30, 46, 51, 0.08);
+      }
+      .bg-pattern {
+        background-color: #ffffff;
+        background-image: radial-gradient(#79C8D0 0.5px, transparent 0.5px), radial-gradient(#79C8D0 0.5px, #ffffff 0.5px);
+        background-size: 20px 20px;
+        background-position: 0 0, 10px 10px;
+        opacity: 0.15;
+      }
+      .nav-blur {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+    </style>
+</head>
+<body class="bg-paper font-body text-ink antialiased">
+<!-- TopNavBar Official -->
+<header class="fixed top-0 w-full z-50 h-[72px] bg-white/92 border-b border-ink-line-2 shadow-sm nav-blur">
+<div class="flex justify-between items-center max-w-[1200px] mx-auto px-6 w-full h-full">
+<a class="flex items-center gap-2" href="#">
+<img alt="Parche Peludo Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4VeH1IFMfPIPAhbXd0PPubcW1OOImAEO4IviJ9eEYxLe4xeRBUxR8309FjnZqOiVR0XLNl7E-sBifSvfitTw0LIP749OKcHehDE8aptF7Pa4NdCrQ6ik57TwL-1LOVg0F9KWkyj2JiLTvnLqVEsl7bQIsc6WTE7_GeirhMkcjW2FqeLCHbx0888dkGidjx8i12E7QTY64PvR-gCcvGROZ_UxblJXt7pzNkL2aZIkckCgR2lu07tcKyShDPlJ6p7vgrlLpzYssR8g">
+</a>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-ink dark:text-white font-semibold hover:text-teal-deep transition-colors duration-220" href="#">Inicio</a>
+<a class="text-teal-deep font-bold border-b-2 border-teal-parche pb-1" href="#">Servicios</a>
+<a class="text-ink dark:text-white font-semibold hover:text-teal-deep transition-colors duration-220" href="#">Tienda</a>
+<a class="text-ink dark:text-white font-semibold hover:text-teal-deep transition-colors duration-220" href="#">Directorio</a>
+<a class="text-ink dark:text-white font-semibold hover:text-teal-deep transition-colors duration-220" href="#">Propósito</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-ink font-semibold hover:text-teal-deep transition-colors text-[14px]">Iniciar sesión</button>
+<button class="bg-teal-parche text-white font-black py-2.5 px-5 rounded-full shadow-[0_12px_32px_rgba(121,200,208,0.40)] hover:bg-teal-deep transition-all duration-220 active:translate-y-[1px] text-[14px]">Unirme al Parche</button>
+</div>
+</div>
+</header>
+<main class="mt-[72px] pb-24">
+<!-- Hero Section Minimal -->
+<!-- Tabs Navigation -->
+<div class="sticky top-[72px] z-40 bg-white shadow-sm border-b border-ink-line-2">
+<div class="max-w-[1200px] mx-auto px-6">
+<div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-2">
+<button class="flex-shrink-0 flex items-center gap-2 px-6 py-3 rounded-full bg-teal-mist text-teal-ink font-bold text-sm transition-all duration-220">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+                        Todos
+                    </button>
+<button class="flex-shrink-0 flex items-center gap-2 px-5 py-3 rounded-full text-ink-muted hover:bg-teal-mist/50 font-semibold text-sm transition-all duration-220">
+<span class="material-symbols-outlined text-[20px]">content_cut</span>
+                        Peluquería y Baño
+                    </button>
+<button class="flex-shrink-0 flex items-center gap-2 px-5 py-3 rounded-full text-ink-muted hover:bg-teal-mist/50 font-semibold text-sm transition-all duration-220">
+<span class="material-symbols-outlined text-[20px]">award_star</span>
+                        Adiestramiento
+                    </button>
+<button class="flex-shrink-0 flex items-center gap-2 px-5 py-3 rounded-full text-ink-muted hover:bg-teal-mist/50 font-semibold text-sm transition-all duration-220">
+<span class="material-symbols-outlined text-[20px]">footprint</span>
+                        Paseos
+                    </button>
+<button class="flex-shrink-0 flex items-center gap-2 px-5 py-3 rounded-full text-ink-muted hover:bg-teal-mist/50 font-semibold text-sm transition-all duration-220">
+<span class="material-symbols-outlined text-[20px]">home</span>
+                        Cuidador
+                    </button>
+<button class="flex-shrink-0 flex items-center gap-2 px-5 py-3 rounded-full text-ink-muted hover:bg-teal-mist/50 font-semibold text-sm transition-all duration-220">
+<span class="material-symbols-outlined text-[20px]">videocam</span>
+                        Fotografía y Video
+                    </button>
+<button class="flex-shrink-0 flex items-center gap-2 px-5 py-3 rounded-full text-ink-muted hover:bg-teal-mist/50 font-semibold text-sm transition-all duration-220">
+<span class="material-symbols-outlined text-[20px]">cake</span>
+                        Repostería
+                    </button>
+<button class="flex-shrink-0 flex items-center gap-2 px-5 py-3 rounded-full text-ink-muted hover:bg-teal-mist/50 font-semibold text-sm transition-all duration-220">
+<span class="material-symbols-outlined text-[20px]">celebration</span>
+                        Fiestas Caninas
+                    </button>
+</div>
+<div class="absolute right-6 top-1/2 -translate-y-1/2 flex items-center pointer-events-none bg-gradient-to-l from-white via-white/80 to-transparent pl-12 pr-2 h-full">
+<span class="material-symbols-outlined text-ink-faint animate-pulse">chevron_right</span>
+</div></div>
+</div>
+<!-- Main Content Area -->
+<div class="max-w-[1200px] mx-auto px-6 mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Services Grid -->
+<div class="lg:col-span-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Peluquería -->
+<div class="group bg-paper rounded-lg border border-ink-line-2 shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Peluquería y Baño" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/ADBb0uhq0z1AvZF3R1ORmoY-TWhOSEGKh4ww1fw_4oL0rZ15jAUVlM72POEBwDwSTBKM2w7yw4ZKabuukHxhQvr7oMPtbdHh_EGayKr7EvaRdlvp9GEx-ko-LtMv6B0C7cqbBIyfkh7VZGXCsTdMcDWVsxF4mFxQBWO65zU_U2gVlHSTDqdtFTh7Zu6Fwo-vtfhLRDXI8ewlpTwtx_JNNV9x95memTccplRDmpFZ1uLQdPE5_iXqxI4OlwTuTbU">
+<div class="absolute top-4 left-4">
+<span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black text-teal-ink border border-teal-soft flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> VERIFICADO
+                                </span>
+</div>
+<button class="absolute top-4 right-4 w-9 h-9 bg-white rounded-full flex items-center justify-center text-coral shadow-sm active:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<span class="text-teal-deep font-black text-[11px] tracking-widest uppercase">HIGIENE</span>
+<h3 class="text-fs-xl font-display font-black text-ink mt-1">Peluquería y Baño</h3>
+<p class="text-sm text-ink-muted mt-2 line-clamp-2">Aseo profesional para tu peludo con cuidado y amor, directamente en la comodidad de tu domicilio.</p>
+<div class="flex flex-wrap gap-2 mt-4">
+<span class="bg-teal-mist text-teal-ink text-[11px] font-bold px-2 py-1 rounded-full border border-teal-soft">Corte de uñas</span>
+<span class="bg-teal-mist text-teal-ink text-[11px] font-bold px-2 py-1 rounded-full border border-teal-soft">Limpieza de oídos</span>
+</div>
+<div class="flex items-center justify-between mt-6 pt-4 border-t border-ink-line-2">
+<span class="text-ink font-black text-sm">Desde $45.000</span>
+<div class="flex items-center gap-1 font-bold text-sm">
+<span class="material-symbols-outlined text-marigold text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">4.9</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<a class="text-teal-deep font-bold text-xs flex items-center gap-1 hover:underline" href="#">
+    Ver más <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
+</div></div>
+</div>
+<!-- Adiestramiento -->
+<div class="group bg-paper rounded-lg border border-ink-line-2 shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden"><div class="absolute top-4 left-4">
+<span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black text-teal-ink border border-teal-soft flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> VERIFICADO
+                                </span>
+</div>
+<img alt="Adiestramiento" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/ADBb0ug4CUnnlaenJz_gJ-yxpxMtryFE2LAPXYShfWDPM_uMW9ugfng6PTq0nmWunUewTWcfUj5G2_bsULQstUL0D0J_dG6prSafEnJEnCJ1fiaOd8ffxtx1nk5q_4ZGAM7M9RKKyLH3BNLmrVNx-7UCOhEQBxFPUCAV_yDJqqYhRRQRgrrc8X_Lif9uHqxi52bTKbTS0XNuaidPXunEGUfHdu0RTV9h_DAJDZRtN-4isiNWDH_7MTk_UpqtoQ">
+<div class="absolute top-4 left-4">
+<span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black text-teal-ink border border-teal-soft flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> VERIFICADO
+                                </span>
+</div>
+</div>
+<div class="p-6">
+<span class="text-teal-deep font-black text-[11px] tracking-widest uppercase">COMPORTAMIENTO</span>
+<h3 class="text-fs-xl font-display font-black text-ink mt-1">Adiestramiento</h3>
+<p class="text-sm text-ink-muted mt-2 line-clamp-2">Educación personalizada donde tu peludo aprenderá y se divertirá con refuerzo positivo.</p>
+<div class="flex flex-wrap gap-2 mt-4">
+<span class="bg-teal-mist text-teal-ink text-[11px] font-bold px-2 py-1 rounded-full border border-teal-soft">Básico</span>
+<span class="bg-teal-mist text-teal-ink text-[11px] font-bold px-2 py-1 rounded-full border border-teal-soft">Socialización</span>
+</div>
+<div class="flex items-center justify-between mt-6 pt-4 border-t border-ink-line-2">
+<span class="text-ink font-black text-sm">Desde $60.000</span>
+<div class="flex items-center gap-1 font-bold text-sm">
+<span class="material-symbols-outlined text-marigold text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">5.0</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<a class="text-teal-deep font-bold text-xs flex items-center gap-1 hover:underline" href="#">
+    Ver más <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
+</div></div>
+</div>
+<!-- Paseos -->
+<div class="group bg-paper rounded-lg border border-ink-line-2 shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden"><div class="absolute top-4 left-4">
+<span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black text-teal-ink border border-teal-soft flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> VERIFICADO
+                                </span>
+</div>
+<img alt="Paseos" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/ADBb0ujsTT4mM3NXIGV-ZP0uaoKp72LyQgPTcNEiO5W-hUzaAr43_n0dnbwUVrVpOrnPArDYNiTGv9LtUc2UzFpVTTAaSyC6QsxytQFZ2-EuJhZVhMJxI7MtGNHHhNSQZUU4EarBY07VjgChRN2OCFJyoKXS9qNNvNT2lH96cTQqyFXOYVunVgyxWPK7L8pE3-wFn-s69cxFnhrhfFq9OS5CEBgjy25ZHx4pY2n5OtM5QWTzMOf_z-3gMYniJw">
+</div>
+<div class="p-6">
+<span class="text-teal-deep font-black text-[11px] tracking-widest uppercase">BIENESTAR</span>
+<h3 class="text-fs-xl font-display font-black text-ink mt-1">Paseos</h3>
+<p class="text-sm text-ink-muted mt-2 line-clamp-2">Dale bienestar a tu peludo a través de paseos controlados y llenos de nuevos olores.</p>
+<div class="flex flex-wrap gap-2 mt-4">
+<span class="bg-teal-mist text-teal-ink text-[11px] font-bold px-2 py-1 rounded-full border border-teal-soft">Rastreo GPS</span>
+<span class="bg-teal-mist text-teal-ink text-[11px] font-bold px-2 py-1 rounded-full border border-teal-soft">Fotos</span>
+</div>
+<div class="flex items-center justify-between mt-6 pt-4 border-t border-ink-line-2">
+<span class="text-ink font-black text-sm">Desde $12.000</span>
+<div class="flex items-center gap-1 font-bold text-sm">
+<span class="material-symbols-outlined text-marigold text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">4.8</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<a class="text-teal-deep font-bold text-xs flex items-center gap-1 hover:underline" href="#">
+    Ver más <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
+</div></div>
+</div>
+<!-- Cuidador -->
+<div class="group bg-paper rounded-lg border border-ink-line-2 shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden"><div class="absolute top-4 left-4">
+<span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black text-teal-ink border border-teal-soft flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> VERIFICADO
+                                </span>
+</div>
+<img alt="Cuidador" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/ADBb0ugVtay7uSgmf1QnaDSNHb3dslhwK-gLr5nMAqf-AIVDtnKecgGS8_RTBmS3pOluV39uc3kx6gZhjYhiKmCBTr2eqq6Jz2rUMkP617ezW6aFi6GH6aJ2LOWU0i3GXtFTV6ODG1e5Zhj3M5H5Q4C4wOoPg4Z11HFeEGoQIYs3OBM_YH_sIvUTZop9BLYkChGVaQB33zkvNG5PYvgKuWtF-wXV5azffwBtnDXwvtv8z68CarpJSKAyZ2F0D8w">
+</div>
+<div class="p-6">
+<span class="text-teal-deep font-black text-[11px] tracking-widest uppercase">CUIDADO</span>
+<h3 class="text-fs-xl font-display font-black text-ink mt-1">Cuidador / Sitter</h3>
+<p class="text-sm text-ink-muted mt-2 line-clamp-2">Cuidado seguro de tu peludo en su propio hogar o en casa del cuidador verificado.</p>
+<div class="flex flex-wrap gap-2 mt-4">
+<span class="bg-teal-mist text-teal-ink text-[11px] font-bold px-2 py-1 rounded-full border border-teal-soft">24/7</span>
+<span class="bg-teal-mist text-teal-ink text-[11px] font-bold px-2 py-1 rounded-full border border-teal-soft">Cuidado Médico</span>
+</div>
+<div class="flex items-center justify-between mt-6 pt-4 border-t border-ink-line-2">
+<span class="text-ink font-black text-sm">Desde $55.000</span>
+<div class="flex items-center gap-1 font-bold text-sm">
+<span class="material-symbols-outlined text-marigold text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">4.9</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<a class="text-teal-deep font-bold text-xs flex items-center gap-1 hover:underline" href="#">
+    Ver más <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
+</div></div>
+</div>
+<!-- Fotografía -->
+<div class="group bg-paper rounded-lg border border-ink-line-2 shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden"><div class="absolute top-4 left-4">
+<span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black text-teal-ink border border-teal-soft flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> VERIFICADO
+                                </span>
+</div>
+<img alt="Fotografía" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/ADBb0uiEelFyDMVQLFhrzSd7TApotRwDfxXZ3vUBrEo_PBghuPFyQJCOsz0h2DNP6VKJTqmCXvMxD-JM1pt3IrJ5olLJuGWs-epn0izsZYCpP-ViI4WqHpL-o6mul4mvxbdf0BNOUJJIRPheUx7FIhTyF3M7svFopkRzCUWo3iOTRPe0UIe05WHRF86V2HHGoEZrsi_ydiJwVguoGzEOhC0i4taKLqVGYC_-ppKg3IPspt7ZC6MshBqYGCh-Z6U">
+</div>
+<div class="p-6">
+<span class="text-teal-deep font-black text-[11px] tracking-widest uppercase">OTROS</span>
+<h3 class="text-fs-xl font-display font-black text-ink mt-1">Fotografía y Video</h3>
+<p class="text-sm text-ink-muted mt-2 line-clamp-2">Captura la esencia de tu mascota con sesiones profesionales y sets temáticos.</p>
+<div class="flex items-center justify-between mt-6 pt-4 border-t border-ink-line-2">
+<span class="text-ink font-black text-sm">Desde $120.000</span>
+<div class="flex items-center gap-1 font-bold text-sm">
+<span class="material-symbols-outlined text-marigold text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">5.0</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<a class="text-teal-deep font-bold text-xs flex items-center gap-1 hover:underline" href="#">
+    Ver más <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
+</div></div>
+</div>
+<!-- Repostería -->
+<div class="group bg-paper rounded-lg border border-ink-line-2 shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+<div class="relative aspect-[4/3] overflow-hidden"><div class="absolute top-4 left-4">
+<span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-black text-teal-ink border border-teal-soft flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> VERIFICADO
+                                </span>
+</div>
+<img alt="Repostería" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/ADBb0ugmflNzxpSHPqjqId7qp229SxkkZeu1WOjxwdeQwmAIrH5IUPkrGdX_k_Q8jjTiIYsluNknLhlcp03eqQ75N9jBQyqizahYLtpSq4woHaW56BHRP0wg3hvPzbjbzWCHt18oLc2n5YZV-qfskLzw0KB1s2GEaGThuo7snxRljEDqKmqzbmGUCFpql0oSBTqORqkHIpW93aGzNv1WVteX5ojs4WkrBG-iuZM3BMeAXd6PU0OWPqm0fOAZy6g">
+</div>
+<div class="p-6">
+<span class="text-teal-deep font-black text-[11px] tracking-widest uppercase">OTROS</span>
+<h3 class="text-fs-xl font-display font-black text-ink mt-1">Repostería Canina</h3>
+<p class="text-sm text-ink-muted mt-2 line-clamp-2">Snacks, pasteles y treats 100% naturales diseñados para la salud de tu mascota.</p>
+<div class="flex items-center justify-between mt-6 pt-4 border-t border-ink-line-2">
+<span class="text-ink font-black text-sm">Desde $25.000</span>
+<div class="flex items-center gap-1 font-bold text-sm">
+<span class="material-symbols-outlined text-marigold text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">4.7</span>
+</div>
+</div>
+<div class="mt-4 flex justify-end">
+<a class="text-teal-deep font-bold text-xs flex items-center gap-1 hover:underline" href="#">
+    Ver más <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
+</div></div>
+</div>
+</div>
+</div>
+<!-- Sticky Sidebar -->
+<aside class="lg:col-span-4 sticky top-40">
+<div class="glass-card rounded-xl p-8 shadow-xl border border-teal-soft/30 overflow-hidden relative">
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-teal-parche/10 rounded-full blur-3xl"></div>
+<h2 class="text-fs-2xl font-display font-black text-ink leading-tight">¿Listo para consentir a tu peludo?</h2>
+<p class="text-ink-muted text-sm mt-4">Agenda el servicio que necesitas en menos de 2 minutos. Nosotros nos encargamos del resto.</p>
+<div class="mt-8 space-y-4">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-teal-mist flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-teal-ink">shield</span>
+</div>
+<div>
+<h4 class="font-bold text-sm text-ink">Profesionales Verificados</h4>
+<p class="text-xs text-ink-faint">Todos nuestros aliados pasan por un riguroso proceso de validación.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-teal-mist flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-teal-ink">credit_card</span>
+</div>
+<div>
+<h4 class="font-bold text-sm text-ink">Pago Seguro</h4>
+<p class="text-xs text-ink-faint">Paga con tarjeta, PSE o efectivo con total seguridad.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-teal-mist flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-teal-ink">support_agent</span>
+</div>
+<div>
+<h4 class="font-bold text-sm text-ink">Soporte El Parche</h4>
+<p class="text-xs text-ink-faint">Te acompañamos antes, durante y después del servicio.</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-10 bg-teal-parche text-white font-black py-4 rounded-full shadow-lg shadow-teal-parche/30 hover:bg-teal-deep transition-all duration-220 text-md active:scale-95">
+                        Agendar servicio ahora
+                    </button>
+<div class="mt-6 text-center">
+<p class="text-xs text-ink-muted">¿Tienes dudas? <a class="text-teal-deep font-bold underline" href="#">Habla con un asesor</a></p>
+</div>
+</div>
+<!-- Ad Banner -->
+<div class="mt-8 rounded-xl bg-ink p-6 text-white relative overflow-hidden group">
+<div class="relative z-10">
+<h4 class="font-display font-black text-lg leading-tight">Únete al #PropósitoPeludo</h4>
+<p class="text-xs text-white/70 mt-2">Parte de tu reserva se destina a fundaciones de rescate en Colombia.</p>
+<button class="mt-4 text-xs font-bold flex items-center gap-2 group-hover:translate-x-2 transition-transform">
+                            Conocer más <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="absolute right-0 bottom-0 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-7xl" style="font-variation-settings: 'FILL' 1;">pets</span>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer Restoration -->
+<footer class="bg-ink text-white/80 py-16 w-full mt-24 border-t border-white/10">
+<div class="max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+<!-- Brand Column -->
+<div class="col-span-1">
+<img alt="Logo" class="h-10 w-auto invert brightness-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4VeH1IFMfPIPAhbXd0PPubcW1OOImAEO4IviJ9eEYxLe4xeRBUxR8309FjnZqOiVR0XLNl7E-sBifSvfitTw0LIP749OKcHehDE8aptF7Pa4NdCrQ6ik57TwL-1LOVg0F9KWkyj2JiLTvnLqVEsl7bQIsc6WTE7_GeirhMkcjW2FqeLCHbx0888dkGidjx8i12E7QTY64PvR-gCcvGROZ_UxblJXt7pzNkL2aZIkckCgR2lu07tcKyShDPlJ6p7vgrlLpzYssR8g">
+<p class="mt-6 text-sm leading-relaxed">Mejoramos la vida de los peludos y sus papás conectándolos con el mejor ecosistema de servicios en Colombia.</p>
+<div class="flex gap-4 mt-6">
+<a class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-teal-parche transition-colors" href="#">
+<span class="material-symbols-outlined text-white text-[20px]">public</span>
+</a>
+<a class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-teal-parche transition-colors" href="#">
+<span class="material-symbols-outlined text-white text-[20px]">chat</span>
+</a>
+</div>
+</div>
+<!-- Links Column 1 -->
+<div>
+<h5 class="text-white font-black text-sm uppercase tracking-widest mb-6">Comunidad</h5>
+<ul class="space-y-4 text-sm">
+<li class=""><a class="hover:text-teal-parche transition-colors" href="#">Foro Mascotas</a></li>
+<li class=""><a class="hover:text-teal-parche transition-colors" href="#">Blog Peludo</a></li>
+<li class=""><a class="hover:text-teal-parche transition-colors" href="#">Eventos</a></li>
+<li class=""><a class="hover:text-teal-parche transition-colors" href="#">Galería</a></li>
+</ul>
+</div>
+<!-- Links Column 2 -->
+<div>
+<h5 class="text-white font-black text-sm uppercase tracking-widest mb-6">Colabora</h5>
+<ul class="space-y-4 text-sm">
+<li class=""><a class="hover:text-teal-parche transition-colors" href="#">Inscribirme como Independiente</a></li>
+<li class=""><a class="hover:text-teal-parche transition-colors" href="#">Inscribirme como Negocio</a></li>
+<li class=""><a class="hover:text-teal-parche transition-colors" href="#">Publicidad</a></li>
+<li class=""><a class="hover:text-teal-parche transition-colors" href="#">Fundaciones</a></li>
+</ul>
+</div>
+<!-- Contact Column -->
+<div>
+<h5 class="text-white font-black text-sm uppercase tracking-widest mb-6">Contacto</h5>
+<ul class="space-y-4 text-sm">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-teal-parche text-[20px]">location_on</span>
+                        Medellín, Colombia
+                    </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-teal-parche text-[20px]">mail</span>
+                        atencion@parchepeludo.com
+                    </li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-teal-parche text-[20px]">phone_iphone</span>
+                        +57 301 277 3594
+                    </li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1200px] mx-auto px-6 mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/40">
+<p class="">© 2025 Parche Peludo — Con amor para los peludos de Colombia.</p>
+<div class="flex gap-6">
+<a class="hover:text-white" href="#">Términos y Condiciones</a>
+<a class="hover:text-white" href="#">Política de Privacidad</a>
+</div>
+</div>
+</footer>
+<!-- Chat Widget Apolo -->
+<div class="fixed bottom-6 right-6 z-[100] group">
+<div class="absolute -top-12 right-0 bg-white px-4 py-2 rounded-lg shadow-lg text-sm font-bold text-ink opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-teal-soft">
+            ¡Hola! ¿Te puedo ayudar? 🐾
+        </div>
+<button class="w-14 h-14 bg-teal-parche rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-white text-[32px]" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</button>
+</div>
+<script>
+        // Simple micro-interaction for active tab
+        const tabButtons = document.querySelectorAll('button.flex-shrink-0');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('bg-teal-mist', 'text-teal-ink', 'font-bold');
+                    btn.classList.add('text-ink-muted', 'font-semibold');
+                    btn.classList.remove('hover:bg-teal-mist/50');
+                });
+                button.classList.add('bg-teal-mist', 'text-teal-ink', 'font-bold');
+                button.classList.remove('text-ink-muted', 'font-semibold');
+            });
+        });
+    </script>
+</body></html>
+
