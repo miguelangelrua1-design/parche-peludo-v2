@@ -5,7 +5,7 @@ Description:  Tema Hijo personalizado para la optimizacion visual de Parche Pelu
 Author:       AntiGravity & Claude Code (Advanced Agentic Coding)
 Author URI:   https://google.com
 Template:     listeo
-Version:      2.0.5
+Version:      2.0.17
 License:      GNU General Public License v2 or later
 License URI:  http://www.gnu.org/licenses/gpl-2.0.html
 Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
@@ -343,12 +343,21 @@ Text Domain:  listeo-child
   color: var(--ink-muted) !important;
 }
 
-/* Imagen del hero (caso imagen única): redondeada, con sombra y leve rotación */
+/* Imagen del hero (caso imagen única): redondeada, con sombra y leve rotación.
+   Micro-interacción: al hacer hover suaviza la rotación a 0deg y escala 1.02
+   con cubic-bezier(.2,.8,.2,1) para sensación premium. */
 .ppv2-hero-media img {
   border-radius: var(--r-2xl) !important;
   box-shadow: var(--shadow-xl) !important;
   object-fit: cover !important;
-  transform: rotate(1deg);
+  transform: rotate(1deg) scale(1);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  will-change: transform;
+}
+.ppv2-hero-media img:hover {
+  transform: rotate(0deg) scale(1.02) !important;
+  box-shadow: var(--shadow-2xl, 0 24px 48px rgba(30,46,51,.14), 0 8px 16px rgba(30,46,51,.08)) !important;
 }
 
 /* Slider del hero (Carrusel de imágenes de Elementor) */
@@ -356,6 +365,14 @@ Text Domain:  listeo-child
   border-radius: var(--r-2xl) !important;
   box-shadow: var(--shadow-xl) !important;
   overflow: hidden !important;
+  transform: rotate(0deg) scale(1);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  will-change: transform;
+}
+.ppv2-hero-slider .elementor-image-carousel-wrapper:hover {
+  transform: rotate(0deg) scale(1.02) !important;
+  box-shadow: var(--shadow-2xl, 0 24px 48px rgba(30,46,51,.14), 0 8px 16px rgba(30,46,51,.08)) !important;
 }
 .ppv2-hero-slider .swiper-slide img {
   height: clamp(260px, 44vh, 440px) !important;
@@ -506,8 +523,10 @@ Text Domain:  listeo-child
   .ppv2-dir-item .elementor-icon-box-title { font-size: 16px !important; }
 
   /* --- Testimonios: carrusel horizontal deslizable (tarjetas ~85%).
-     Prefijo .elementor-1555 para ganar especificidad sobre el flex-wrap de Elementor --- */
-  .elementor-1555 .elementor-top-section:has(.ppv2-tst-avatar) > .elementor-container {
+     Prefijo .ppv2-home-page para ganar especificidad sobre el flex-wrap de Elementor.
+     Esta clase se asigna manualmente en Ajustes de Página de Elementor (no usar
+     IDs como .elementor-NNNN porque cambian al clonar/migrar). --- */
+  .ppv2-home-page .elementor-top-section:has(.ppv2-tst-avatar) > .elementor-container {
     flex-wrap: nowrap !important;
     overflow-x: auto !important;
     scroll-snap-type: x mandatory !important;
@@ -515,8 +534,8 @@ Text Domain:  listeo-child
     padding-bottom: 10px !important;
     -webkit-overflow-scrolling: touch;
   }
-  .elementor-1555 .elementor-top-section:has(.ppv2-tst-avatar) > .elementor-container::-webkit-scrollbar { display: none; }
-  .elementor-1555 .elementor-top-section:has(.ppv2-tst-avatar) > .elementor-container > .elementor-column {
+  .ppv2-home-page .elementor-top-section:has(.ppv2-tst-avatar) > .elementor-container::-webkit-scrollbar { display: none; }
+  .ppv2-home-page .elementor-top-section:has(.ppv2-tst-avatar) > .elementor-container > .elementor-column {
     width: 85% !important; max-width: 85% !important; flex: 0 0 85% !important;
     scroll-snap-align: center !important;
   }
@@ -753,7 +772,21 @@ Text Domain:  listeo-child
 .ppv2-pp-img img { width: 100% !important; aspect-ratio: 4/5 !important; object-fit: cover !important; border-radius: var(--r-xl) !important; display: block !important; }
 .ppv2-pp-bubble { margin-top: -36px !important; z-index: 2 !important; position: relative; width: auto !important; }
 .ppv2-pp-bubble .elementor-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--paper); box-shadow: var(--shadow-md); display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+/* Color por defecto del icono (1ª tarjeta = Alimentación = teal-parche) */
 .ppv2-pp-bubble .elementor-icon i, .ppv2-pp-bubble .elementor-icon svg { font-size: 28px !important; color: var(--teal-parche) !important; }
+/* Variantes de color por causa (orden visual del prototipo):
+   - Columna 1 (Alimentación) → teal-parche (heredado de la regla anterior)
+   - Columna 2 (Salud)        → coral
+   - Columna 3 (Hogar)        → marigold
+   Se selecciona por posición de columna dentro del top-section que contiene la imagen .ppv2-pp-img. */
+.elementor-top-section:has(.ppv2-pp-img) > .elementor-container > .elementor-column:nth-child(2) .ppv2-pp-bubble .elementor-icon i,
+.elementor-top-section:has(.ppv2-pp-img) > .elementor-container > .elementor-column:nth-child(2) .ppv2-pp-bubble .elementor-icon svg {
+  color: var(--coral) !important;
+}
+.elementor-top-section:has(.ppv2-pp-img) > .elementor-container > .elementor-column:nth-child(3) .ppv2-pp-bubble .elementor-icon i,
+.elementor-top-section:has(.ppv2-pp-img) > .elementor-container > .elementor-column:nth-child(3) .ppv2-pp-bubble .elementor-icon svg {
+  color: var(--marigold) !important;
+}
 .ppv2-pp-title { padding-top: 16px !important; margin: 0 !important; }
 .ppv2-pp-title .elementor-heading-title { font-family: var(--font-display) !important; font-weight: 800 !important; font-size: 24px !important; color: var(--ink) !important; }
 .ppv2-pp-desc, .ppv2-pp-desc .elementor-widget-container { color: var(--ink-muted) !important; font-size: 14px !important; line-height: 1.6 !important; padding: 0 8px; }
@@ -833,11 +866,11 @@ Text Domain:  listeo-child
 
 /* Tienda en móvil: carrusel horizontal deslizable (prefijo para ganar especificidad) */
 @media (max-width: 767px) {
-  .elementor-1555 .ppv2-shop-products ul.products {
+  .ppv2-home-page .ppv2-shop-products ul.products {
     display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important;
     scroll-snap-type: x mandatory !important; gap: 14px !important; padding-bottom: 10px !important; -webkit-overflow-scrolling: touch;
   }
-  .elementor-1555 .ppv2-shop-products ul.products > li.product { min-width: 72% !important; max-width: 72% !important; flex: 0 0 72% !important; scroll-snap-align: center !important; }
+  .ppv2-home-page .ppv2-shop-products ul.products > li.product { min-width: 72% !important; max-width: 72% !important; flex: 0 0 72% !important; scroll-snap-align: center !important; }
   .ppv2-shop-products ul.products::-webkit-scrollbar { display: none; }
 }
 
@@ -866,10 +899,22 @@ Text Domain:  listeo-child
   width: 64px !important; height: 64px !important; border-radius: var(--r-lg) !important;
   background: var(--paper) !important; box-shadow: var(--shadow-sm) !important;
   display: flex !important; align-items: center !important; justify-content: center !important; margin: 0 auto 16px !important;
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+              background 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  will-change: transform;
 }
 .ppv2-trust-item .elementor-icon i, .ppv2-trust-item .elementor-icon svg { font-size: 28px !important; color: var(--teal-deep) !important; }
 .ppv2-trust-item .elementor-icon-box-title { font-family: var(--font-display) !important; font-weight: 800 !important; font-size: 20px !important; color: var(--ink) !important; margin: 0 0 8px !important; }
 .ppv2-trust-item .elementor-icon-box-description { color: var(--ink-muted) !important; font-size: 15px !important; line-height: 1.6 !important; margin: 0 !important; }
+/* Hover micro-interacción: al pasar el cursor por la tarjeta del trío, el ícono
+   se eleva -2px, cambia su fondo a teal-mist y gana sombra media. */
+.ppv2-trust-item:hover .elementor-icon,
+.ppv2-trust-item .elementor-icon-box-wrapper:hover .elementor-icon {
+  transform: translateY(-2px) !important;
+  background: var(--teal-mist) !important;
+  box-shadow: var(--shadow-md) !important;
+}
 
 /* ==========================================================================
    AJUSTES TABLETA — Home V2 (768–1024px)
@@ -1062,25 +1107,94 @@ Text Domain:  listeo-child
   font-size: 16px !important;
 }
 
-/* --- FASE 3: Galería (carrusel slick existente) --- */
-.single-listing #listing-gallery .listing-slider-small,
-.single-listing #listing-gallery .listing-slider-small img {
-  border-radius: var(--r-xl) !important;
+/* --- FASE 3: Galería bento nativa de Listeo, reorganizada 75/25 (prototipo) --- */
+.single-listing #single-listing-grid-gallery {
+  display: grid !important;
+  grid-template-columns: 3fr 1fr !important;
+  gap: 16px !important;
+  height: 500px !important;
 }
-.single-listing #listing-gallery .listing-slider-small { overflow: hidden !important; }
-.single-listing #listing-gallery .slick-prev,
-.single-listing #listing-gallery .slick-next {
-  background: var(--paper) !important;
-  color: var(--teal-ink) !important;
-  width: 44px !important; height: 44px !important;
-  border-radius: 50% !important;
-  box-shadow: var(--shadow-md) !important;
-  z-index: 5 !important;
+.single-listing #single-listing-grid-gallery .slg-half {
+  width: auto !important;
+  height: 100% !important;
+  margin: 0 !important; padding: 0 !important;
+  float: none !important;
+  min-width: 0 !important;
 }
-.single-listing #listing-gallery .slick-prev:hover,
-.single-listing #listing-gallery .slick-next:hover {
-  background: var(--teal-parche) !important;
+.single-listing #single-listing-grid-gallery .slg-half img,
+.single-listing #single-listing-grid-gallery a.slg-gallery-img {
+  border-radius: 24px !important;
+  display: block !important;
+}
+.single-listing #single-listing-grid-gallery .slg-half:first-of-type a.slg-gallery-img,
+.single-listing #single-listing-grid-gallery .slg-half:first-of-type img {
+  width: 100% !important; height: 100% !important; object-fit: cover !important;
+}
+/* Columna derecha: 2 imágenes apiladas verticalmente */
+.single-listing #single-listing-grid-gallery .slg-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  width: 100% !important; height: 100% !important;
+}
+.single-listing #single-listing-grid-gallery .slg-grid-top,
+.single-listing #single-listing-grid-gallery .slg-grid-bottom {
+  display: block !important;
+  width: 100% !important;
+  flex: 1 1 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+}
+.single-listing #single-listing-grid-gallery .slg-grid-top a.slg-gallery-img,
+.single-listing #single-listing-grid-gallery .slg-grid-bottom a.slg-gallery-img,
+.single-listing #single-listing-grid-gallery .slg-grid-top img,
+.single-listing #single-listing-grid-gallery .slg-grid-bottom img {
+  width: 100% !important; height: 100% !important; object-fit: cover !important;
+}
+/* slg-grid-top tiene 2 .slg-grid-inner en Listeo: dejar solo la primera */
+.single-listing #single-listing-grid-gallery .slg-grid-top > .slg-grid-inner:nth-of-type(n+2) {
+  display: none !important;
+}
+.single-listing #single-listing-grid-gallery .slg-grid-inner {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important; padding: 0 !important;
+}
+.single-listing #single-listing-grid-gallery .slg-grid-inner img,
+.single-listing #single-listing-grid-gallery .slg-grid-inner a.slg-gallery-img {
+  width: 100% !important; height: 100% !important; object-fit: cover !important;
+  border-radius: 24px !important;
+  display: block !important;
+}
+/* Botón del carrusel viejo: ocultar si todavía aparece */
+.single-listing #single-listing-grid-gallery .slg-button { display: none !important; }
+
+/* Overlay "+N fotos" sobre la última imagen visible del bento
+   (decorativo: deja pasar el clic al enlace de la imagen para que abra el lightbox) */
+.single-listing #single-listing-grid-gallery .slg-grid-bottom .slg-grid-inner { position: relative !important; }
+.single-listing #single-listing-grid-gallery .ppv2-more-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(30, 46, 51, 0.55) !important;
+  border-radius: 24px !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+  transition: background var(--dur-base, .22s) ease !important;
+}
+/* Efecto hover en el contenedor padre (el clic pasa al enlace que abre el popup) */
+.single-listing #single-listing-grid-gallery .slg-grid-bottom .slg-grid-inner:hover .ppv2-more-overlay {
+  background: rgba(30, 46, 51, 0.7) !important;
+}
+.single-listing #single-listing-grid-gallery .ppv2-more-overlay span {
   color: var(--paper) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 800 !important;
+  font-size: 18px !important;
+  letter-spacing: -0.01em !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
 }
 
 /* --- FASE 4: Características (features → tarjetas) --- */
@@ -1131,15 +1245,25 @@ Text Domain:  listeo-child
 }
 .single-listing #listing-pricing-list .pricing-menu-price { color: var(--teal-deep) !important; font-weight: 800 !important; }
 
-/* --- FASE 6: FAQ (acordeón jQuery UI) --- */
+/* --- FASE 6: FAQ (acordeón jQuery UI) — radius 24px estilo prototipo --- */
+/* Quitar el rectángulo exterior heredado de jQuery UI (.ui-accordion) */
+.single-listing #listing-faq .fp-accordion,
+.single-listing #listing-faq .fp-accordion .ui-accordion {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
 .single-listing #listing-faq .fp-accordion .ui-accordion-header {
   background: var(--paper) !important;
   border: 1px solid var(--ink-line-2) !important;
-  border-radius: var(--r-md) !important;
-  padding: 16px 18px !important;
-  margin-bottom: 10px !important;
+  border-radius: 24px !important;
+  padding: 16px 20px !important;
+  margin-bottom: 12px !important;
   font-family: var(--font-display) !important;
   font-weight: 700 !important;
+  font-size: 16px !important;
   color: var(--ink) !important;
   display: flex !important;
   justify-content: space-between !important;
@@ -1156,28 +1280,684 @@ Text Domain:  listeo-child
 }
 .single-listing #listing-faq .fp-accordion .ui-accordion-header.ui-state-active .fa-angle-down { transform: rotate(180deg) !important; }
 .single-listing #listing-faq .fp-accordion .ui-accordion-content {
-  border: 1px solid var(--teal-soft) !important;
-  border-radius: var(--r-md) !important;
-  margin: -4px 0 10px 0 !important;
-  padding: 14px 18px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  margin: -4px 0 12px 0 !important;
+  padding: 12px 20px 16px 20px !important;
   color: var(--ink-muted) !important;
-  background: var(--paper) !important;
+  background: transparent !important;
 }
 
-/* --- FASE 7: Opiniones (tarjetas) --- */
+/* "Añadir opinión": colapsado por defecto. Muestra solo un botón; al hacer
+   clic se expande el formulario. */
+.single-listing #add-review .listing-desc-headline,
+.single-listing #add-review .comment-respond { display: none !important; }
+.single-listing #add-review.is-open .listing-desc-headline,
+.single-listing #add-review.is-open .comment-respond { display: block !important; }
+/* Botón siempre visible — al abrir cambia a "× Cerrar"; al cerrar vuelve a "+ Añadir Opinión" */
+.single-listing #add-review.is-open .ppv2-add-review-btn { margin-bottom: 16px !important; }
+
+.single-listing .ppv2-add-review-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 auto !important;
+  padding: 12px 24px !important;
+  background: transparent !important;
+  color: var(--teal-ink) !important;
+  border: 2px solid var(--teal-parche) !important;
+  border-radius: var(--r-pill) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  transition: background var(--dur-base, .22s) ease !important;
+}
+.single-listing .ppv2-add-review-btn:hover { background: var(--teal-mist) !important; }
+.single-listing .ppv2-add-review-btn__icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 20px !important; height: 20px !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  color: var(--teal-deep) !important;
+  font-weight: 800 !important;
+}
+.single-listing #add-review { text-align: center !important; margin-top: 0 !important; }
+.single-listing #add-review.is-open { text-align: left !important; position: relative !important; margin-top: 16px !important; }
+/* Estado colapsado: mantener el recuadro gris del fondo (heredado de Listeo) pero
+   pegarlo al contenedor de Opiniones de Google (sin gap entre ambos). */
+.single-listing #add-review:not(.is-open) {
+  padding: 24px 36px !important;
+  margin-top: 0 !important;
+  /* 46px = mismo gap que entre "Sobre {Nombre}" y "Preguntas frecuentes" */
+  margin-bottom: 46px !important;
+}
+
+/* === Rediseño del formulario "Añadir opinión" (prototipo anadir_opinion.html) ===
+   El form ya tiene los mismos campos en Listeo (Servicio, Calidad-Precio,
+   Ubicación, Espacio, Agregar Fotos, Comentario, Enviar). Solo es restyle. */
+
+/* Card wrapper del formulario expandido */
+.single-listing #add-review.is-open .comment-respond {
+  background: var(--paper) !important;
+  border: 1px solid var(--ink-line) !important;
+  border-radius: 20px !important;
+  box-shadow: var(--shadow-md) !important;
+  padding: 36px 40px !important;
+  margin-top: 0 !important;
+}
+
+/* Botón "× Cerrar" flotante en la esquina superior derecha del card */
+.single-listing #add-review.is-open .ppv2-add-review-btn {
+  position: absolute !important;
+  top: 24px !important;
+  right: 24px !important;
+  z-index: 5 !important;
+  padding: 8px 18px !important;
+  font-size: 13px !important;
+  border-width: 2px !important;
+  border-color: var(--teal-mist) !important;
+  background: var(--paper) !important;
+  margin: 0 !important;
+}
+.single-listing #add-review.is-open .ppv2-add-review-btn:hover {
+  background: var(--teal-mist) !important;
+  border-color: var(--teal-soft) !important;
+}
+
+/* Título "Añadir opinión" como h1 grande estilo prototipo */
+.single-listing #add-review.is-open .listing-desc-headline {
+  font-family: var(--font-display) !important;
+  font-weight: 800 !important;
+  font-size: clamp(30px, 3.2vw, 40px) !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--ink) !important;
+  margin: 0 0 12px 0 !important;
+  padding-right: 110px !important; /* espacio para el botón Cerrar */
+}
+
+/* Subtítulo "Conectado como..." */
+.single-listing #add-review .comment-respond .logged-in-as {
+  font-size: 15px !important;
+  color: var(--ink-muted) !important;
+  margin: 0 0 20px 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom: 0 !important;
+  line-height: 1.5 !important;
+}
+.single-listing #add-review .comment-respond .logged-in-as a {
+  color: var(--teal-deep) !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+}
+.single-listing #add-review .comment-respond .logged-in-as a:hover {
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+}
+.single-listing #add-review .comment-respond .logged-in-as .required,
+.single-listing #add-review .comment-respond .required { color: #E85D75 !important; }
+
+/* Grid de criterios de calificación (2 columnas) */
+.single-listing #add-review .sub-ratings-container {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 24px !important;
+  margin: 0 0 8px 0 !important;
+  padding-bottom: 8px !important;
+}
+/* Cada criterio (Listeo usa .add-sub-rating con .sub-rating-title + .sub-rating-stars) */
+.single-listing #add-review .sub-ratings-container > .add-sub-rating,
+.single-listing #add-review .sub-ratings-container > * {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+.single-listing #add-review .sub-rating-title {
+  width: auto !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+  white-space: nowrap !important;
+  float: none !important;
+}
+/* El help icon "?" de Listeo (i.tip) */
+.single-listing #add-review .sub-rating-title .tip {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 16px !important; height: 16px !important;
+  font-size: 11px !important;
+  background: var(--ink-line-2) !important;
+  color: var(--ink-faint) !important;
+  border-radius: 50% !important;
+  font-style: normal !important;
+  cursor: help !important;
+  margin: 0 !important;
+}
+.single-listing #add-review .sub-rating-title .tip::after { content: '?' !important; }
+.single-listing #add-review .sub-ratings-container strong,
+.single-listing #add-review .sub-ratings-container .rating-label {
+  font-family: var(--font-sans) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+}
+
+/* Estrellas del rating (input rating de Listeo) — quitar el width:126px fijo */
+.single-listing #add-review .sub-rating-stars,
+.single-listing #add-review .leave-rating {
+  width: auto !important;
+  max-width: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+}
+.single-listing #add-review .leave-rating .clearfix,
+.single-listing #add-review .sub-rating-stars .clearfix { display: none !important; }
+.single-listing #add-review .star-cb-group,
+.single-listing #add-review .star-rating-wrapper { display: inline-flex !important; align-items: center !important; gap: 4px !important; }
+.single-listing #add-review .star-cb-group .star,
+.single-listing #add-review .star,
+.single-listing #add-review label[for*="star"] {
+  color: var(--teal-mist) !important;
+  font-size: 22px !important;
+  cursor: pointer !important;
+  transition: color 220ms ease !important;
+}
+.single-listing #add-review .star-cb-group .star.active,
+.single-listing #add-review .star.active,
+.single-listing #add-review .star-cb-group input:checked ~ .star {
+  color: #FFD166 !important;
+}
+
+/* Botón "Agregar Fotos" — outline teal-parche pill (clase real de Listeo: .uploadButton-button) */
+.single-listing #add-review .uploadButton-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: transparent !important;
+  border: 2px solid var(--teal-parche) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  padding: 8px 20px !important;
+  border-radius: var(--r-pill) !important;
+  cursor: pointer !important;
+  transition: all 220ms ease !important;
+  margin: 0 !important;
+  width: auto !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  box-shadow: none !important;
+  line-height: 1.4 !important;
+}
+/* Contenedor padre del label (.uploadButton): sin margen extra heredado de Listeo */
+.single-listing #add-review .uploadButton { margin: 0 !important; padding: 0 !important; }
+.single-listing #add-review .uploadButton .uploadButton-input { margin: 0 !important; }
+/* Ocultar el placeholder "no file chosen" cuando está vacío (Listeo reserva 42px) */
+.single-listing #add-review .uploadButton .uploadButton-file-name:empty { display: none !important; }
+.single-listing #add-review .uploadButton .uploadButton-file-name { min-height: 0 !important; margin: 0 !important; padding: 0 !important; }
+.single-listing #add-review .uploadButton-button:hover {
+  background: var(--teal-mist) !important;
+  border-color: var(--teal-deep) !important;
+}
+.single-listing #add-review .uploadButton-button .icon-feather-image { color: var(--teal-ink) !important; }
+.single-listing #add-review .uploadButton-button.ripple-effect::before { display: none !important; }
+
+/* Comentario: label + textarea (sin border-top duplicado; ya lo da .sub-ratings-container) */
+.single-listing #add-review .comment-form-comment {
+  margin: 8px 0 12px 0 !important;
+  padding-top: 8px !important;
+  border-top: 0 !important;
+}
+.single-listing #add-review .comment-form-comment label {
+  display: block !important;
+  font-family: var(--font-sans) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+  margin-bottom: 8px !important;
+}
+.single-listing #add-review .comment-form-comment textarea {
+  width: 100% !important;
+  background: var(--teal-mist) !important;
+  border: 1px solid var(--ink-line) !important;
+  border-radius: 8px !important;
+  padding: 14px 16px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 15px !important;
+  color: var(--ink) !important;
+  height: 100px !important;
+  min-height: 80px !important;
+  resize: vertical !important;
+  transition: border-color 220ms ease, box-shadow 220ms ease !important;
+}
+.single-listing #add-review .comment-form-comment textarea::placeholder { color: var(--ink-faint) !important; }
+.single-listing #add-review .comment-form-comment textarea:focus {
+  outline: none !important;
+  border-color: var(--teal-parche) !important;
+  box-shadow: 0 0 0 3px rgba(121,200,208,0.20) !important;
+}
+
+/* Botón "Enviar Reseña" — teal-parche pill, sombra suave (sin halo grande) */
+.single-listing #add-review .form-submit input[type="submit"],
+.single-listing #add-review .form-submit button[type="submit"] {
+  background: var(--teal-parche) !important;
+  color: var(--paper) !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 800 !important;
+  font-size: 15px !important;
+  padding: 12px 28px !important;
+  border-radius: var(--r-pill) !important;
+  border: 0 !important;
+  box-shadow: var(--shadow-sm) !important;
+  cursor: pointer !important;
+  transition: background 220ms ease, box-shadow 220ms ease, transform 80ms ease !important;
+  line-height: 1.3 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+.single-listing #add-review .form-submit input[type="submit"]:hover,
+.single-listing #add-review .form-submit button[type="submit"]:hover {
+  background: var(--teal-deep) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+.single-listing #add-review .form-submit input[type="submit"]:active,
+.single-listing #add-review .form-submit button[type="submit"]:active {
+  transform: translateY(1px) !important;
+}
+.single-listing #add-review .form-submit { margin: 16px 0 0 0 !important; }
+
+/* ==========================================================================
+   FASE 7 — OPINIONES DE GOOGLE (maquetacion segun prototipos Stitch)
+   Archivos de referencia:
+     · Diseño/Stitch/resenas_google_compactada.html
+     · Diseño/Stitch/resenas_google_vista_desplegada.html
+   Tokens traducidos del prototipo:
+     border-ink-line-2     → var(--ink-line-2)   (rgba(30,46,51,.06))
+     rounded-2xl           → var(--r-lg) 20px    (visualmente equivalente)
+     star-filled / marigold→ var(--marigold)     (#FFD166)
+     hover translateY(-2px)→ transition cubic-bezier(.2,.8,.2,1) 0.22s
+   ========================================================================== */
+
+/* ---- Resumen Google (tarjeta superior: logo G + 4,6 + estrellas + chevron) ---- */
 .single-listing #listing-google-reviews .google-reviews-summary {
   background: var(--bone) !important;
-  border: 1px solid var(--ink-line-2) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
   border-radius: var(--r-lg) !important;
-  padding: 18px 20px !important;
+  padding: 24px 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 24px !important;
+  position: relative !important;
+  transition: background-color 220ms ease, border-color 220ms ease !important;
 }
+
+/* Logo de Google: pequena caja blanca con sombra sutil dentro del resumen */
+.single-listing #listing-google-reviews .google-reviews-summary > a,
+.single-listing #listing-google-reviews .google-reviews-summary .google-reviews-logo {
+  background: var(--paper) !important;
+  border: 1px solid var(--ink-line-2) !important;
+  border-radius: var(--r-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+  padding: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+}
+.single-listing #listing-google-reviews .google-reviews-summary img[src*="google-reviews-logo"] {
+  width: 40px !important;
+  height: 40px !important;
+  display: block !important;
+}
+
+/* Cifra 4,6 grande + bloque tipografico de la calificacion */
+.single-listing #listing-google-reviews .google-reviews-summary .google-reviews-summary-content,
+.single-listing #listing-google-reviews .google-reviews-summary .google-reviews-rating-block {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+.single-listing #listing-google-reviews .google-reviews-rating,
+.single-listing #listing-google-reviews .google-reviews-summary strong {
+  font-family: var(--font-display) !important;
+  font-size: 32px !important;
+  font-weight: 900 !important;
+  color: var(--ink) !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.01em !important;
+}
+.single-listing #listing-google-reviews .google-reviews-count,
+.single-listing #listing-google-reviews .google-reviews-summary > p {
+  color: var(--ink-muted) !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  margin: 4px 0 0 0 !important;
+}
+
+/* ---- Comportamiento colapsable suave (acordeon) ---- */
+.single-listing #listing-google-reviews.ppv2-collapsible .google-reviews-summary {
+  cursor: pointer !important;
+  user-select: none !important;
+}
+.single-listing #listing-google-reviews.ppv2-collapsible .google-reviews-summary:hover {
+  background: var(--teal-mist) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Animacion suave del acordeon: max-height + opacidad con cubic-bezier
+   replicando el comportamiento del prototipo compactado. */
+.single-listing #listing-google-reviews .comments,
+.single-listing #listing-google-reviews section.comments,
+.single-listing #listing-google-reviews .google-reviews-read-more.bottom {
+  max-height: 5000px !important;
+  opacity: 1 !important;
+  overflow: hidden !important;
+  transition:
+    max-height 500ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 300ms ease,
+    margin 300ms ease,
+    padding 300ms ease !important;
+}
+.single-listing #listing-google-reviews.is-collapsed .comments,
+.single-listing #listing-google-reviews.is-collapsed section.comments,
+.single-listing #listing-google-reviews.is-collapsed .google-reviews-read-more.bottom {
+  max-height: 0 !important;
+  opacity: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  pointer-events: none !important;
+}
+/* Cuando está colapsada, mantener un gap reducido con Añadir Opinión */
+.single-listing #listing-google-reviews.is-collapsed .google-reviews-summary {
+  margin-bottom: 0 !important;
+}
+.single-listing #listing-google-reviews.is-collapsed { margin-bottom: 32px !important; }
+/* Placeholder de reseñas nativas (vacío en Naturalia): no debe ocupar espacio */
+.single-listing #listing-reviews.listing-reviews-placeholder {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+/* Sección "Añadir opinión" colapsada: sin padding/margin enormes */
+.single-listing #add-review { padding-bottom: 0 !important; }
+.single-listing #add-review:not(.is-open) { margin-bottom: 46px !important; }
+
+/* Botón "Leer más opiniones / Cerrar opiniones" (pill texto + chevron)
+   Replicando el prototipo: bg transparente, border ink/20, rounded-full,
+   font-display bold, padding px-6 py-2.5, hover bg ink/5. */
+.single-listing #listing-google-reviews .ppv2-google-toggle {
+  position: absolute !important;
+  top: 50% !important;
+  right: 22px !important;
+  transform: translateY(-50%) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 10px 22px !important;
+  background: transparent !important;
+  border: 1px solid rgba(30, 46, 51, 0.20) !important;
+  border-radius: var(--r-pill) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-display) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transition: background 220ms ease, border-color 220ms ease, transform 120ms ease !important;
+  white-space: nowrap !important;
+}
+.single-listing #listing-google-reviews .ppv2-google-toggle:hover {
+  background: rgba(30, 46, 51, 0.05) !important;
+  border-color: rgba(30, 46, 51, 0.40) !important;
+}
+.single-listing #listing-google-reviews .ppv2-google-toggle:active {
+  transform: translateY(-50%) translateY(1px) !important;
+}
+.single-listing #listing-google-reviews .ppv2-google-toggle-icon {
+  font-size: 14px !important;
+  line-height: 1 !important;
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+
+/* ---- Lista de reseñas: stack vertical con ritmo de 16px ---- */
+.single-listing #listing-google-reviews .comments,
+.single-listing #listing-google-reviews section.comments {
+  list-style: none !important;
+  margin: 24px 0 0 0 !important;
+  padding: 24px 0 0 0 !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+/* ---- Tarjeta de reseña individual (li) ---- */
+/* Usamos CSS Grid + display:contents para tomar la estructura plana de Listeo
+   (li > .avatar + .comment-content) y reorganizarla como en el prototipo:
+   header (avatar + nombre/fecha + estrellas) arriba, parrafo abajo full-width. */
 .single-listing #listing-google-reviews .comments li,
 .single-listing #listing-reviews .comments li {
-  background: var(--bone) !important;
-  border: 0 !important;
+  background: var(--paper) !important;
+  border: 1px solid var(--ink-line-2) !important;
   border-radius: var(--r-lg) !important;
-  padding: 18px 20px !important;
-  margin-bottom: 14px !important;
+  padding: 24px !important;
+  margin: 0 !important;
+  box-shadow: var(--shadow-sm) !important;
+  list-style: none !important;
+  display: grid !important;
+  grid-template-columns: auto 1fr !important;
+  grid-template-areas:
+    "avatar header"
+    "body   body" !important;
+  column-gap: 16px !important;
+  row-gap: 16px !important;
+  align-items: start !important;
+  cursor: default !important;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 0.22s ease !important;
+}
+/* Hover suave: la tarjeta sube 2px y la sombra se intensifica */
+.single-listing #listing-google-reviews .comments li:hover,
+.single-listing #listing-reviews .comments li:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-md) !important;
+  border-color: rgba(30, 46, 51, 0.10) !important;
+}
+/* Todas las tarjetas con fondo blanco (sin alternancia bone/50)
+   — el usuario prefiere uniformidad visual sobre la variación del prototipo. */
+
+/* Avatar: cuadrado 48x48 redondo, borde teal-soft (prototipo) */
+.single-listing #listing-google-reviews .avatar,
+.single-listing #listing-reviews .avatar {
+  grid-area: avatar !important;
+  position: static !important;
+  width: 48px !important;
+  height: 48px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  top: auto !important; left: auto !important; right: auto !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  border: 2px solid var(--teal-soft) !important;
+  background: var(--paper) !important;
+  flex: 0 0 auto !important;
+}
+.single-listing #listing-google-reviews .avatar img,
+.single-listing #listing-reviews .avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* comment-content: hace display:contents para que sus hijos participen del grid del li */
+.single-listing #listing-google-reviews .comments li > .comment-content,
+.single-listing #listing-reviews .comments li > .comment-content {
+  display: contents !important;
+}
+/* Quitar la flecha decorativa */
+.single-listing #listing-google-reviews .arrow-comment,
+.single-listing #listing-reviews .arrow-comment {
+  display: none !important;
+}
+
+/* Header de la reseña: nombre + fecha izquierda, estrellas derecha
+   Usamos grid interno con 2 columnas y 2 filas para apilar el nombre/fecha
+   en la columna 1 y las estrellas spanneando ambas filas en la columna 2. */
+.single-listing #listing-google-reviews .comments li .comment-by,
+.single-listing #listing-reviews .comments li .comment-by {
+  grid-area: header !important;
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  grid-template-rows: auto auto !important;
+  column-gap: 16px !important;
+  row-gap: 2px !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+.single-listing #listing-google-reviews .comments li .comment-by h5,
+.single-listing #listing-reviews .comments li .comment-by h5 {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  color: var(--ink) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.3 !important;
+}
+.single-listing #listing-google-reviews .comments li .comment-by .date,
+.single-listing #listing-reviews .comments li .comment-by .date {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  color: var(--ink-faint) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.3 !important;
+}
+.single-listing #listing-google-reviews .comments li .comment-by .star-rating,
+.single-listing #listing-reviews .comments li .comment-by .star-rating {
+  grid-column: 2 !important;
+  grid-row: 1 / -1 !important;
+  align-self: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  width: auto !important;
+  height: auto !important;
+  /* Separación respecto al borde derecho de la tarjeta (visualmente más aire) */
+  margin: 0 8px 0 0 !important;
+  padding: 0 !important;
+}
+
+/* Estrellas en color marigold del sistema de diseño (prototipo) */
+.single-listing #listing-google-reviews .comments li .star::before,
+.single-listing #listing-reviews .comments li .star::before {
+  color: var(--marigold) !important;
+  font-size: 18px !important;
+}
+.single-listing #listing-google-reviews .comments li .star,
+.single-listing #listing-reviews .comments li .star {
+  width: 18px !important;
+  height: 18px !important;
+  line-height: 1 !important;
+}
+
+/* Parrafo del review: full width, line-height suelto */
+.single-listing #listing-google-reviews .comments li > .comment-content > p,
+.single-listing #listing-google-reviews .comments li p.comment-text,
+.single-listing #listing-reviews .comments li > .comment-content > p {
+  grid-area: body !important;
+  color: var(--ink-muted) !important;
+  line-height: 1.625 !important;
+  font-size: 14px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+/* Si la reseña no incluye texto (el reviewer solo dio estrellas en Google),
+   ocultamos el parrafo vacio y colapsamos el grid para que la tarjeta no
+   muestre un area vacia debajo del header. Listeo a veces incluye whitespace
+   asi que combinamos :empty con la regla ppv2-empty-p marcada por JS. */
+.single-listing #listing-google-reviews .comments li > .comment-content > p:empty,
+.single-listing #listing-google-reviews .comments li > .comment-content > p.ppv2-empty-p {
+  display: none !important;
+}
+.single-listing #listing-google-reviews .comments li:has(> .comment-content > p.ppv2-empty-p),
+.single-listing #listing-google-reviews .comments li:has(> .comment-content > p:empty) {
+  /* Solo el header — sin row-gap fantasma y con padding vertical compacto */
+  grid-template-areas: "avatar header" !important;
+  grid-template-rows: auto !important;
+  row-gap: 0 !important;
+  padding-top: 18px !important;
+  padding-bottom: 18px !important;
+}
+
+/* ---- Botones inferiores (Leer mas + Añadir opinion en Google) ---- */
+.single-listing #listing-google-reviews .google-reviews-read-more.bottom {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+  margin-top: 24px !important;
+  padding-top: 8px !important;
+  text-align: center !important;
+}
+.single-listing #listing-google-reviews .google-reviews-read-more.bottom > a {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 12px 28px !important;
+  background: var(--paper) !important;
+  border: 2px solid var(--teal-parche) !important;
+  border-radius: var(--r-pill) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  text-decoration: none !important;
+  transition: background 220ms ease, transform 120ms ease, box-shadow 220ms ease !important;
+}
+.single-listing #listing-google-reviews .google-reviews-read-more.bottom > a:hover {
+  background: var(--teal-mist) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+.single-listing #listing-google-reviews .google-reviews-read-more.bottom > a:active {
+  transform: translateY(1px) !important;
+}
+.single-listing #listing-google-reviews .google-reviews-read-more.bottom > a img {
+  width: 18px !important;
+  height: 18px !important;
 }
 
 /* --- Ubicación (mapa redondeado) --- */
@@ -1225,3 +2005,756 @@ Text Domain:  listeo-child
 }
 .single-listing .listeo-single-listing-sidebar .button:not(.listeo-booking-widget-apply_new_coupon):hover,
 .single-listing #form-booking button[type="submit"]:hover { background: var(--teal-deep) !important; }
+
+/* ==========================================================================
+   REFINAMIENTO DETALLE DE LISTADO — más aire, jerarquía y pulido para acercar
+   al prototipo. Solo CSS sobre componentes existentes, en .single-listing.
+   ========================================================================== */
+
+/* Ritmo: más aire entre secciones de contenido */
+.single-listing .listing-section { margin-bottom: 46px !important; }
+.single-listing .listing-desc-headline {
+  font-size: clamp(22px, 2.5vw, 28px) !important;
+  margin-top: 0 !important; margin-bottom: 22px !important;
+}
+
+/* Cabecera: título mucho más grande/pesado para acercarse al prototipo
+   (Ubuntu maxea en 700 — se compensa con tamaño + tracking ajustado) */
+.single-listing #titlebar h1 {
+  font-size: 40px !important;
+  font-weight: 700 !important;
+  margin: 0 0 8px 0 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.025em !important;
+}
+
+/* Ocultar pills de categoría y el badge de precio "Empieza desde…" en la
+   cabecera. El contenedor entero queda oculto (las pills no se muestran). */
+.single-listing #titlebar .listing-titlebar-tags { display: none !important; }
+.single-listing #titlebar .listing-pricing-tag { display: none !important; }
+/* Ocultar <br> legacy de Listeo que mete espacio extra */
+.single-listing #titlebar .listing-titlebar-title > br { display: none !important; }
+
+/* Cabezote en columna, todo pegado a la izquierda (sin logo box lateral).
+   Sin padding heredado de Listeo (70px top/55px bot) para que meta-top
+   inicie al mismo nivel que la caja de Reserva del sidebar. */
+.single-listing #titlebar {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  padding-top: 0 !important;
+  padding-bottom: 16px !important;
+  margin-top: 0 !important;
+}
+/* Espacio superior antes de que ambas columnas inicien (aire al cargar la página) */
+.single-listing .container.directorio { padding-top: 32px !important; }
+.single-listing #titlebar .listing-titlebar-title {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* Fila "Prestado por [logo + nombre]" debajo del título */
+.single-listing #titlebar .ppv2-prestado-por {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin: 0 0 14px 0 !important;
+  font-family: var(--font-sans) !important;
+  font-size: 14px !important;
+  color: var(--ink-muted) !important;
+}
+.single-listing #titlebar .ppv2-prestado-por .ppv2-prestado-label { font-weight: 500 !important; }
+.single-listing #titlebar .ppv2-prestado-por .ppv2-provider-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  background: var(--bone) !important;
+  padding: 3px 12px 3px 3px !important;
+  border-radius: var(--r-pill) !important;
+  border: 1px solid var(--ink-line-2) !important;
+}
+.single-listing #titlebar .ppv2-prestado-por .ppv2-provider-chip .listing-logo {
+  display: inline-block !important;
+  width: 24px !important;
+  height: 24px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: var(--paper) !important;
+  box-shadow: none !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  flex: 0 0 auto !important;
+}
+.single-listing #titlebar .ppv2-prestado-por .ppv2-provider-chip .listing-logo img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+.single-listing #titlebar .ppv2-prestado-por .ppv2-provider-name {
+  font-family: var(--font-display) !important;
+  font-weight: 800 !important;
+  color: var(--ink) !important;
+  font-size: 13px !important;
+}
+
+/* Botón de favorito flotando arriba-derecha de la columna de contenido */
+.single-listing .listeo-single-listing-content { position: relative !important; }
+.single-listing .listing-widget.widget_buttons {
+  position: absolute !important;
+  top: 8px !important;
+  right: 14px !important;
+  z-index: 5 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  width: auto !important;
+}
+.single-listing .listing-widget.widget_buttons .listing-share {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+/* Ocultar texto del botón ("Marca este listado") y el contador ("X persona…") */
+.single-listing .like-button .bookmark-btn-title,
+.single-listing #bookmarks-counter { display: none !important; }
+
+/* Estilo del corazón: redondo, compacto, alineado al chip */
+.single-listing .like-button.listeo_core-bookmark-it {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: var(--paper) !important;
+  border: 1px solid var(--ink-line-2) !important;
+  box-shadow: var(--shadow-sm) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+}
+.single-listing .like-button .like-icon { color: #E85D75 !important; margin: 0 !important; }
+.single-listing #titlebar .listing-titlebar-tags { margin-bottom: 14px !important; gap: 10px !important; }
+.single-listing #titlebar .star-rating,
+.single-listing #titlebar .rating-counter {
+  background: transparent !important; padding: 0 !important; box-shadow: none !important; border: 0 !important;
+}
+.single-listing #titlebar .listing-address { margin: 0 0 8px 0 !important; font-size: 14px !important; }
+
+/* Características: listado simple a 2 columnas (icono + texto), estilo prototipo
+   móvil "Sobre Parche Peludo" — sin tarjetas, sin fondo. */
+.single-listing ul.listing-features.checkboxes {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 240px)) !important;
+  gap: 14px 25px !important;
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.single-listing ul.listing-features.checkboxes li.feature-has-icon {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  text-align: left !important;
+  gap: 12px !important;
+  padding: 6px 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  width: auto !important;
+}
+.single-listing ul.listing-features li.feature-has-icon .feature-svg-icon {
+  flex: 0 0 auto !important;
+  line-height: 0 !important;
+  position: static !important;
+  top: auto !important; left: auto !important; right: auto !important;
+}
+.single-listing ul.listing-features li.feature-has-icon .feature-svg-icon svg { width: 20px !important; height: 20px !important; }
+.single-listing ul.listing-features li.feature-has-icon .feature-svg-icon svg path { fill: var(--teal-deep) !important; }
+.single-listing ul.listing-features li.feature-has-icon a {
+  font-family: var(--font-sans) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--ink) !important;
+}
+
+/* Descripción del listado más legible y aireada */
+.single-listing #listing-overview > p { font-size: 17px !important; line-height: 1.75 !important; }
+
+/* Sidebar: más padding y presencia */
+.single-listing .listeo-single-listing-sidebar .listing-widget { padding: 30px !important; margin-bottom: 26px !important; }
+.single-listing .listeo-single-listing-sidebar .widget-title { font-size: 20px !important; margin-bottom: 20px !important; }
+.single-listing .listeo-single-listing-sidebar .with-forms input,
+.single-listing .listeo-single-listing-sidebar .with-forms select { padding: 13px 16px !important; font-size: 15px !important; }
+.single-listing .listeo-single-listing-sidebar .button:not(.listeo-booking-widget-apply_new_coupon) { padding: 15px 20px !important; font-size: 16px !important; }
+
+/* Cabecera: fila superior con sello verificado (chip) + calificación + corazón,
+   movidos por JS desde el sidebar y desde debajo del título. Una sola fila. */
+.single-listing #titlebar .ppv2-meta-top {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 14px !important;
+  margin: 0 0 16px 0 !important;
+  width: 100% !important;
+}
+/* Estrellas: se muestran las 5 con su nivel de relleno real (4.6 → 4 + media). */
+/* Corazón dentro de meta-top: empujado a la derecha, alineado al chip.
+   Resetea el width:300px que Listeo aplica a .listing-widget. */
+.single-listing #titlebar .ppv2-meta-top .listing-widget.widget_buttons {
+  position: static !important;
+  margin: 0 0 0 auto !important;
+  padding: 0 !important;
+  width: auto !important;
+  max-width: none !important;
+  flex: 0 0 auto !important;
+  top: auto !important; right: auto !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.single-listing #titlebar .ppv2-meta-top .listing-share {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  width: auto !important;
+}
+.single-listing .ppv2-meta-top .star-rating {
+  display: inline-flex !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  margin: 0 !important;
+  gap: 8px !important;
+}
+/* Mantener el orden visual natural de las estrellas (media a la derecha) y
+   empujar el contador "4.6 (92 reseñas)" al final con order. */
+.single-listing .ppv2-meta-top .star-rating .star { order: 0 !important; }
+.single-listing .ppv2-meta-top .star-rating .rating-counter {
+  order: 99 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+/* Chip no debe encogerse ni partir su texto */
+.single-listing .ppv2-meta-top .verified-badge {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+/* Sello verificado → chip pequeño (dimensiones exactas del prototipo) */
+.single-listing .ppv2-meta-top .verified-badge {
+  background: var(--teal-mist) !important;
+  color: var(--teal-ink) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 4px 12px !important;
+  border-radius: var(--r-pill) !important;
+  border: 0 !important;
+  font-family: var(--font-display) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .04em !important;
+  box-shadow: none !important;
+  cursor: default !important;
+  line-height: 1.4 !important;
+}
+.single-listing .ppv2-meta-top .verified-badge i { color: var(--teal-deep) !important; font-size: 14px !important; }
+
+/* Tooltip del chip "Servicio Verificado" — texto completo, redondeado */
+.single-listing .ppv2-meta-top .verified-badge.with-tip { position: relative !important; overflow: visible !important; }
+.single-listing .ppv2-meta-top .verified-badge .tip-content {
+  display: none;
+  position: absolute !important;
+  top: calc(100% + 10px) !important;
+  left: 0 !important;
+  right: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  background: var(--ink) !important;
+  color: var(--paper) !important;
+  padding: 10px 14px !important;
+  border-radius: var(--r-md) !important;
+  font-family: var(--font-sans) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  white-space: normal !important;
+  width: 260px !important;
+  max-width: 260px !important;
+  height: max-content !important;
+  min-height: 0 !important;
+  line-height: 1.45 !important;
+  z-index: 100 !important;
+  box-shadow: 0 12px 28px rgba(30,46,51,0.25) !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+/* Ocultar la flecha/triángulo de Listeo (no necesario en esta versión) */
+.single-listing .ppv2-meta-top .verified-badge .tip-content::before,
+.single-listing .ppv2-meta-top .verified-badge .tip-content::after { display: none !important; }
+.single-listing .ppv2-meta-top .verified-badge.with-tip:hover .tip-content { display: block !important; }
+
+/* Hover en el bloque de reseñas: subrayado para indicar cliqueable */
+.single-listing .ppv2-meta-top .star-rating { cursor: pointer !important; }
+.single-listing .ppv2-meta-top .star-rating:hover .rating-counter a {
+  text-decoration: underline !important;
+  text-decoration-color: var(--teal-deep) !important;
+  text-decoration-thickness: 1.5px !important;
+  text-underline-offset: 3px !important;
+}
+
+/* Fila de ubicación: pill ciudad + dirección, alineadas a la izquierda */
+.single-listing #titlebar .ppv2-location-row {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin: 0 0 8px 0 !important;
+}
+.single-listing #titlebar .ppv2-location-row .listing-tag {
+  background: var(--teal-mist) !important;
+  border: 1px solid var(--teal-soft) !important;
+  border-radius: var(--r-pill) !important;
+  padding: 4px 12px !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+.single-listing #titlebar .ppv2-location-row .listing-tag a {
+  color: var(--teal-ink) !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+}
+.single-listing #titlebar .ppv2-location-row > span:has(a.listing-address) { margin: 0 !important; }
+/* Calificación dentro de la fila superior: limpia e inline */
+.single-listing .ppv2-meta-top .star-rating { background: transparent !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; }
+
+/* ============================================================================
+   Columna derecha (sidebar): widgets "Enviar mensaje" y "Horarios"
+   Daban sensacion de "comprimidos": el boton submit era ilegible (texto
+   blanco sobre fondo teal-mist) y las filas de horarios estaban muy juntas.
+   Aqui aireamos los componentes y arreglamos contraste/jerarquia.
+   ============================================================================ */
+
+/* Separacion vertical mas generosa entre widgets de la sidebar (32px) */
+.single-listing .listeo-single-listing-sidebar .listing-widget,
+.single-listing .listeo-single-listing-sidebar .sidebar-widget {
+  margin-bottom: 32px !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget:last-child,
+.single-listing .listeo-single-listing-sidebar .sidebar-widget:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Padding interno con mas aire (de 30px a 36px lateral / 32px vertical) */
+.single-listing .listeo-single-listing-sidebar .listing-widget.boxed-widget {
+  padding: 32px 36px !important;
+}
+
+/* Titulo de widget: jerarquia consistente y mas aire abajo */
+.single-listing .listeo-single-listing-sidebar .listing-widget .widget-title {
+  font-family: var(--font-sans) !important;
+  font-weight: 800 !important;
+  font-size: 20px !important;
+  color: var(--ink) !important;
+  margin: 0 0 24px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget .widget-title i {
+  color: var(--teal-parche) !important;
+  font-size: 22px !important;
+}
+
+/* ---- Widget "Enviar mensaje" (Contact / wpcf7) ---- */
+/* Boton submit: pill teal-parche legible, full width */
+.single-listing #widget_contact_widget_listeo-3 .wpcf7-submit,
+.single-listing .listing-widget.message-vendor .wpcf7-submit,
+.single-listing .listeo-single-listing-sidebar .wpcf7-submit {
+  width: 100% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  height: auto !important;
+  padding: 16px 24px !important;
+  margin-top: 8px !important;
+  background: var(--teal-parche) !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+  font-family: var(--font-sans) !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.2px !important;
+  border: 2px solid var(--teal-parche) !important;
+  border-radius: var(--r-pill) !important;
+  box-shadow: 0 8px 22px rgba(121, 200, 208, 0.32) !important;
+  transition: background 180ms ease, transform 120ms ease, box-shadow 180ms ease !important;
+  cursor: pointer !important;
+}
+.single-listing #widget_contact_widget_listeo-3 .wpcf7-submit:hover,
+.single-listing .listing-widget.message-vendor .wpcf7-submit:hover,
+.single-listing .listeo-single-listing-sidebar .wpcf7-submit:hover {
+  background: var(--teal-deep) !important;
+  border-color: var(--teal-deep) !important;
+  box-shadow: 0 12px 26px rgba(74, 165, 173, 0.36) !important;
+}
+.single-listing #widget_contact_widget_listeo-3 .wpcf7-submit:active,
+.single-listing .listing-widget.message-vendor .wpcf7-submit:active,
+.single-listing .listeo-single-listing-sidebar .wpcf7-submit:active {
+  transform: translateY(1px) !important;
+  box-shadow: 0 4px 10px rgba(74, 165, 173, 0.28) !important;
+}
+
+/* Inputs del formulario de mensaje: padding mas comodo y separacion entre campos */
+.single-listing #widget_contact_widget_listeo-3 .wpcf7-form-control:not(.wpcf7-submit),
+.single-listing .listing-widget.message-vendor input[type="text"],
+.single-listing .listing-widget.message-vendor input[type="email"],
+.single-listing .listing-widget.message-vendor input[type="tel"],
+.single-listing .listing-widget.message-vendor textarea {
+  background: var(--teal-mist) !important;
+  border: 1px solid transparent !important;
+  border-radius: 14px !important;
+  padding: 14px 18px !important;
+  margin-bottom: 12px !important;
+  font-size: 14px !important;
+  color: var(--ink) !important;
+  transition: border-color 160ms ease, background 160ms ease !important;
+}
+.single-listing #widget_contact_widget_listeo-3 .wpcf7-form-control:not(.wpcf7-submit):focus,
+.single-listing .listing-widget.message-vendor input:focus,
+.single-listing .listing-widget.message-vendor textarea:focus {
+  background: #FFFFFF !important;
+  border-color: var(--teal-parche) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(121, 200, 208, 0.18) !important;
+}
+.single-listing #widget_contact_widget_listeo-3 textarea,
+.single-listing .listing-widget.message-vendor textarea {
+  min-height: 120px !important;
+  resize: vertical !important;
+}
+
+/* ---- Widget "Horarios" (Opening Hours) ---- */
+/* Cada fila Lunes/Martes/... con mas aire vertical + separador sutil */
+.single-listing #widget_opening_hours-2 ul,
+.single-listing .listing-widget.opening-hours ul {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.single-listing #widget_opening_hours-2 ul li,
+.single-listing .listing-widget.opening-hours ul li {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 12px 0 !important;
+  border-bottom: 1px solid var(--ink-line, rgba(30, 46, 51, 0.08)) !important;
+  font-size: 14px !important;
+  color: var(--ink) !important;
+  line-height: 1.4 !important;
+}
+.single-listing #widget_opening_hours-2 ul li:last-child,
+.single-listing .listing-widget.opening-hours ul li:last-child {
+  border-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+.single-listing #widget_opening_hours-2 ul li:first-child,
+.single-listing .listing-widget.opening-hours ul li:first-child {
+  padding-top: 0 !important;
+}
+.single-listing #widget_opening_hours-2 ul li span,
+.single-listing .listing-widget.opening-hours ul li span {
+  color: var(--ink-muted) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  white-space: nowrap !important;
+}
+/* Dia actual destacado en teal */
+.single-listing #widget_opening_hours-2 ul li.today,
+.single-listing #widget_opening_hours-2 ul li.current-day,
+.single-listing .listing-widget.opening-hours ul li.today,
+.single-listing .listing-widget.opening-hours ul li.current-day {
+  color: var(--teal-ink) !important;
+  font-weight: 800 !important;
+}
+.single-listing #widget_opening_hours-2 ul li.today span,
+.single-listing #widget_opening_hours-2 ul li.current-day span,
+.single-listing .listing-widget.opening-hours ul li.today span,
+.single-listing .listing-widget.opening-hours ul li.current-day span {
+  color: var(--teal-ink) !important;
+  font-weight: 800 !important;
+}
+/* Badge "Ahora Abierto" en la esquina */
+.single-listing #widget_opening_hours-2 .listing-badge,
+.single-listing .listing-widget.opening-hours .listing-badge {
+  font-family: var(--font-sans) !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.4px !important;
+  text-transform: uppercase !important;
+}
+
+/* ============================================================================
+   Widgets colapsables de la sidebar (Enviar mensaje + Horarios)
+   - Por defecto cerrados: apariencia tipo "boton/pill" segun prototipo.
+   - Click expande el cuerpo del widget.
+   ============================================================================ */
+
+/* Transicion suave de color/borde al alternar estados (sin animar padding:
+   animarlo provoca que valores nuevos no se apliquen correctamente en este DOM) */
+.single-listing .listeo-single-listing-sidebar .listing-widget.ppv2-collapsible {
+  transition: border-color 200ms ease, background 200ms ease !important;
+}
+
+/* Titulo (acordeon header): cursor, layout flex.
+   Anular border-bottom y padding-bottom heredados de Listeo cuando esta colapsado. */
+.single-listing .listeo-single-listing-sidebar .listing-widget.ppv2-collapsible .widget-title {
+  cursor: pointer !important;
+  user-select: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin: 0 !important;
+  transition: color 160ms ease !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.ppv2-collapsible.is-collapsed .widget-title {
+  border-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.ppv2-collapsible:not(.is-collapsed) .widget-title {
+  margin-bottom: 20px !important;
+}
+
+/* Chevron: rotacion + color al abrir */
+.single-listing .listeo-single-listing-sidebar .listing-widget.ppv2-collapsible .ppv2-widget-chevron {
+  margin-left: auto !important;
+  font-size: 18px !important;
+  color: var(--ink-muted) !important;
+  transition: transform 220ms ease, color 160ms ease !important;
+  line-height: 1 !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.ppv2-collapsible:not(.is-collapsed) .ppv2-widget-chevron {
+  transform: rotate(180deg) !important;
+  color: var(--teal-ink) !important;
+}
+
+/* COLAPSADO: ocultar el cuerpo del widget */
+.single-listing .listeo-single-listing-sidebar .listing-widget.ppv2-collapsible.is-collapsed > *:not(.widget-title) {
+  display: none !important;
+}
+
+/* ============================================================================
+   Estilo COLAPSADO segun prototipo (anadir_opinion / servicio_detalle):
+   - Enviar Mensaje: outline 2px teal-parche, esquinas 14px, contenido CENTRADO
+   - Ver horarios:   outline 1px ink/10,    esquinas 14px, icon-text + chevron
+   ============================================================================ */
+
+/* --- Reglas comunes para ambos botones colapsados (altura, alineacion) --- */
+.single-listing .listeo-single-listing-sidebar .listing-widget.ppv2-collapsible.is-collapsed .widget-title {
+  /* Altura interna fija: 24px de contenido (icon 20x20 + texto 16/24 line-height) */
+  min-height: 24px !important;
+  line-height: 24px !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.ppv2-collapsible.is-collapsed .widget-title i {
+  /* Forzar el icono a renderizar su caja completa (Listeo a veces lo deja a line-height:0) */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 1 !important;
+  font-size: 18px !important;
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.ppv2-collapsible.is-collapsed .ppv2-widget-title-text {
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  /* Pequeno tweak vertical para compensar el descender de la fuente y centrar
+     visualmente el texto con el icono cuadrado. El offset se ajusta por widget
+     porque cada set de iconos (FontAwesome vs Simple Line Icons) tiene un
+     baseline distinto dentro de su EM-box. */
+  position: relative !important;
+  top: 1px !important;
+}
+/* MSG (FontAwesome envelope): el icono renderiza ligeramente alto en su caja,
+   asi que el texto debe subir 1px para coincidir con el centro del icono. */
+.single-listing .listeo-single-listing-sidebar .listing-widget.message-vendor.ppv2-collapsible.is-collapsed .ppv2-widget-title-text {
+  top: -1px !important;
+}
+
+/* --- Enviar Mensaje (colapsado) --- */
+.single-listing .listeo-single-listing-sidebar .listing-widget.message-vendor.ppv2-collapsible.is-collapsed {
+  background: var(--paper) !important;
+  border: 2px solid var(--teal-parche) !important;
+  border-radius: 14px !important;
+  /* Padding vertical 16px = py-4 del prototipo. Altura total = 16+24+16+4(border)=60px */
+  padding: 16px 22px !important;
+  box-shadow: 0 1px 2px rgba(30, 46, 51, 0.04) !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.message-vendor.ppv2-collapsible.is-collapsed:hover {
+  background: var(--teal-mist) !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.message-vendor.ppv2-collapsible.is-collapsed .widget-title {
+  justify-content: center !important;
+  gap: 10px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  color: var(--teal-ink) !important;
+  position: relative !important; /* contexto para el chevron absoluto */
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.message-vendor.ppv2-collapsible.is-collapsed .widget-title i {
+  color: var(--teal-ink) !important;
+}
+/* Chevron del widget Enviar Mensaje en estado COLAPSADO:
+   se ancla a la esquina derecha del pill sin romper el centrado del icono+texto.
+   Esto comunica la affordance de "abrir" manteniendo la apariencia CTA del prototipo. */
+.single-listing .listeo-single-listing-sidebar .listing-widget.message-vendor.ppv2-collapsible.is-collapsed .ppv2-widget-chevron {
+  position: absolute !important;
+  right: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  margin-left: 0 !important;
+  color: var(--teal-ink) !important;
+  font-size: 16px !important;
+}
+/* En estado EXPANDIDO el chevron mantiene flujo normal (margin-left:auto),
+   pero rota a 180° (heredado de la regla general .ppv2-collapsible:not(.is-collapsed)).
+   Para que la rotación funcione sin saltar (porque en colapsado tiene transform translateY),
+   redeclaramos explicitamente la combinacion en estado abierto. */
+.single-listing .listeo-single-listing-sidebar .listing-widget.message-vendor.ppv2-collapsible:not(.is-collapsed) .ppv2-widget-chevron {
+  position: static !important;
+  transform: rotate(180deg) !important;
+  margin-left: auto !important;
+  color: var(--teal-ink) !important;
+}
+
+/* --- Ver horarios (colapsado) --- */
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours.ppv2-collapsible.is-collapsed {
+  background: var(--paper) !important;
+  border: 1px solid rgba(30, 46, 51, 0.12) !important;
+  border-radius: 14px !important;
+  /* Padding 16.5px vertical para igualar la altura visible al boton MSG.
+     MSG = 16+24+16+4(border 2*2) = 60. HRS necesita 16.5+24+16.5+2(border 1*2) = 59 -> ~60 */
+  padding: 16.5px 20px !important;
+  box-shadow: 0 1px 2px rgba(30, 46, 51, 0.04) !important;
+  overflow: hidden !important; /* recortar ribbon si llegara a desbordar */
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours.ppv2-collapsible.is-collapsed:hover {
+  background: rgba(232, 244, 246, 0.45) !important;
+  border-color: var(--teal-soft) !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours.ppv2-collapsible.is-collapsed .widget-title {
+  gap: 12px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours.ppv2-collapsible.is-collapsed .widget-title i {
+  color: var(--teal-parche) !important;
+}
+/* === Badge "Ahora Abierto / Ahora Cerrado" como mini-pill inline =========
+   Por defecto Listeo lo renderiza como un ribbon diagonal en la esquina; aqui
+   lo reseteamos a una etiqueta inline pequena que vive dentro del header del
+   widget Horarios, visible tanto colapsado como expandido.
+   Colores por defecto: verde (--success) para abierto, coral (--coral) cerrado. */
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title .listing-badge {
+  position: static !important;
+  transform: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  height: auto !important;
+  top: auto !important;
+  right: auto !important;
+  margin: 0 0 0 auto !important; /* empuja el badge a la derecha */
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.3px !important;
+  text-transform: uppercase !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+/* Variante ABIERTO: verde de la paleta de marca */
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title .listing-badge.now-open {
+  background: var(--success, #14A985) !important;
+  color: #FFFFFF !important;
+}
+/* Variante CERRADO: coral de la paleta de marca */
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title .listing-badge.now-closed {
+  background: var(--coral, #E85D75) !important;
+  color: #FFFFFF !important;
+}
+/* Reservar espacio antes del chevron para que el badge no quede pegado al icono */
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours.ppv2-collapsible .widget-title .listing-badge + .ppv2-widget-chevron {
+  margin-left: 10px !important;
+}
+
+/* ============================================================================
+   Sidebar sticky: offset bajo el header fijo + compensacion del padding interno
+   ----------------------------------------------------------------------------
+   Listeo aplica:
+     - position: sticky; top: 0   (la columna se pega DETRAS del header fijo)
+     - padding-top: 90px          (crea la alineacion visual con el bloque del
+                                   titulo de la izquierda en la posicion natural)
+   El usuario pidio:
+     1) Que la altura visual del primer widget (Reservar) NO cambie respecto
+        a la posicion natural en la carga inicial.
+     2) Que cuando el componente quede "pegado" al header durante el scroll,
+        deje un respiro de 16px entre el header y la caja.
+   Como la posicion natural del sidebar (~y=55) queda DEBAJO del umbral 128,
+   sticky se engancha de inmediato. Para que el primer widget aterrice
+   exactamente donde estaba antes (~y=145), reducimos el padding-top del
+   sidebar al complemento exacto:
+     y_widget = sidebar.top + padding_top  ->  145 = 128 + 17
+   ============================================================================ */
+body.single-listing .listeo-single-listing-sidebar {
+  top: 96px !important;          /* visitor: 80 header + 16 gap */
+  padding-top: 17px !important;  /* 96 + 17 = 113 (alineado con el titulo sin admin bar) */
+}
+body.single-listing.admin-bar .listeo-single-listing-sidebar {
+  top: 128px !important;         /* logged-in: 32 admin + 80 header + 16 gap */
+  padding-top: 17px !important;  /* 128 + 17 = 145 (alineado con el bloque del titulo) */
+}
+
+/* ============================================================================
+   Ocultar barra de navegación interna del detalle de listado
+   (tabs: Resumen | Galería | Precios | Ubicación | FAQ | Opiniones de Google | Añadir opinión)
+   Listeo genera DOS instancias de .listing-nav-container:
+     1. La versión inline dentro del contenido del listado.
+     2. Una versión clonada que se appende al <body> y se vuelve sticky al
+        hacer scroll (clases .cloned + .stick).
+   Esta regla oculta ambas. Solo aplica en single-listing — no afecta otras
+   plantillas del tema. Los anchors (#listing-overview, #listing-gallery, etc.)
+   siguen existiendo en el DOM, así que cualquier deep-link externo a una
+   sección sigue funcionando.
+   ============================================================================ */
+body.single-listing .listing-nav-container,
+body.single-listing #listing-nav {
+  display: none !important;
+}
