@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Opiniones - Parche Peludo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400;1,700&amp;family=Caveat:wght@400;500;600;700&amp;family=Public+Sans:wght@400;600;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        'teal-parche': '#79C8D0',
+                        'teal-deep': '#4AA5AD',
+                        'teal-soft': '#BEE3E7',
+                        'teal-mist': '#E8F4F6',
+                        'teal-ink': '#1E5D64',
+                        'paper': '#FFFFFF',
+                        'bone': '#F7F3EC',
+                        'ink': '#1E2E33',
+                        'ink-muted': '#5A6B70',
+                        'ink-faint': '#8E9A9E',
+                        'marigold': '#FFD166',
+                        'coral': '#E85D75'
+                    },
+                    borderRadius: {
+                        'DEFAULT': '0.5rem',
+                        'lg': '1rem',
+                        'xl': '1.5rem',
+                        '2xl': '2.5rem',
+                        'full': '9999px'
+                    },
+                    fontFamily: {
+                        display: ['Ubuntu', 'Public Sans', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                        hand: ['Caveat', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFFFF;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .star-filled {
+            font-variation-settings: 'FILL' 1;
+            color: #FFD166;
+        }
+        .google-reviews-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .review-card:hover {
+            transform: translateY(-2px);
+            transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-paper text-ink selection:bg-teal-soft selection:text-ink">
+<!-- TopNavBar (Shared Component) -->
+<main class="px-6 pt-6 pb-6">
+<div class="google-reviews-container max-w-3xl">
+<!-- Header Section -->
+<div class="mb-8">
+<h2 class="font-display font-black text-3xl md:text-4xl text-ink mb-6 tracking-tight">Opiniones de Google</h2>
+<div class="bg-bone rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 border justify-between border-black/10">
+<div class="bg-white p-4 rounded-xl shadow-sm border border-ink-line-2 flex items-center justify-center">
+<svg class="w-12 h-12" viewbox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+</div>
+<div class="text-center md:text-left">
+<div class="flex items-center justify-center md:justify-start gap-3 mb-1">
+<span class="text-4xl font-black text-ink">4,6</span>
+<div class="flex">
+<span class="material-symbols-outlined star-filled">star</span>
+<span class="material-symbols-outlined star-filled">star</span>
+<span class="material-symbols-outlined star-filled">star</span>
+<span class="material-symbols-outlined star-filled">star</span>
+<span class="material-symbols-outlined text-marigold" style='font-variation-settings: "FILL" 0.5;'>star_half</span>
+</div>
+</div>
+<p class="text-ink-muted font-medium">92 opiniones</p>
+</div><button class="hidden md:flex items-center justify-center gap-2 px-6 py-2.5 bg-transparent border border-ink/20 text-ink font-display font-bold rounded-full hover:bg-ink/5 hover:border-ink/40 transition-all duration-300 active:translate-y-[1px]">Cerrar opiniones<span class="material-symbols-outlined">keyboard_arrow_up</span></button>
+</div><div class="mt-8 flex justify-center">
+</div>
+</div>
+<!-- Reviews List -->
+<div class="transition-all duration-500 ease-in-out border-t border-black/5" id="reviews-accordion" style="max-height: none; overflow: visible;">
+<div class="space-y-4 pt-6">
+<!-- Review 1 -->
+<div class="review-card bg-white border border-ink-line-2 rounded-2xl p-6 shadow-sm transition-all cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-teal-soft">
+<img alt="Andrea Villarreal" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHkkVwqM2vEjlPS5WZ5p-NP_0tXG7pYDhHbltgp4JffMjy9hL9UPBmGhEd9Z5cKLfTwU_yd13BrZEZ6JNX39Xr16MX_ZRNC0mUNLtIOwZf373KHW6ceIgMXpu35wz_cuCS8xD4Sc9uY_3UTGQX1A6h3QFRT5ZkUnPuTAie6B2fAU9YvlVVWK2Sv5c03xiaA3dw3MYlvj6uyCOdZxDpbf09fqz-DsAU8QHge-ppXDnaafnD-4NEr-IooX8186JNO3heCDpSKxJVDMg"/>
+</div>
+<div>
+<h4 class="font-display font-bold text-ink">Andrea Villarreal</h4>
+<p class="text-ink-faint text-xs">7 meses atrás</p>
+</div>
+</div>
+<div class="flex">
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+</div>
+</div>
+<p class="text-ink-muted leading-relaxed italic">"Me encanta como dejan a mi perra sasha, el servicio es muy puntual y amoroso."</p>
+</div>
+<!-- Review 2 -->
+<div class="review-card bg-bone/50 border border-ink-line-2 rounded-2xl p-6 shadow-sm transition-all cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-indigo-500 flex items-center justify-center text-white font-black text-xl">A</div>
+<div>
+<h4 class="font-display font-bold text-ink">Administrador Asualpa</h4>
+<p class="text-ink-faint text-xs">10 meses atrás</p>
+</div>
+</div>
+<div class="flex">
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+</div>
+</div>
+<p class="text-ink-muted leading-relaxed">Excelente atención y gran disponibilidad de alimentos y todo lo necesario para nuestras mascotas! Recomendado 100%.</p>
+</div>
+<!-- Review 3 -->
+<div class="review-card bg-white border border-ink-line-2 rounded-2xl p-6 shadow-sm transition-all cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-teal-soft">
+<img alt="Sebastian Tobon Acosta" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCvPV3tk2iJaoUfpxgCSKLfaHZO0BLwVhqTFs7uDNDFaKhk4aOysYZBBhUmmeb2wP3O1ai90n8Th07iZ3hqOcydc8-HQkGAsd3PPXg9LWr_htb0p54UeO9870bwYr-hMTnXf6aKffxdkznO2BjZqtFbhDTrzr0igwz2lh4UWalCdlQeF4c6FiJPWgVBUVdnWOzkTyh2eizsRDs364FJYRRkUDeVZNEvrTroKKSgNngZ77KrerxrsrNXs8_Dy-btTxFbaRihrkcC0A"/>
+</div>
+<div>
+<h4 class="font-display font-bold text-ink">Sebastian Tobon Acosta</h4>
+<p class="text-ink-faint text-xs">un año atrás</p>
+</div>
+</div>
+<div class="flex">
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined text-ink-line-2 text-[20px]">star</span>
+</div>
+</div>
+<p class="text-ink-muted leading-relaxed">Muy buen servicio en general, el personal es muy amable y conocen bien su trabajo. Solo un pequeño detalle con la hora pero lo resolvieron rápido.</p>
+</div>
+<!-- Review 4 -->
+<div class="review-card bg-white border border-ink-line-2 rounded-2xl p-6 shadow-sm transition-all cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-teal-soft">
+<img alt="John Faber Zapata" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0syaC9Lto3ElZok2zr6f-w0ChgYc3fQTE88wouNDCb1tyyZ0ySu1ol3WJFMbqTuKGX5_YavepbJvkDsqBczR42q-aL36iXjER8VtVkDCe8seOPnt-qmmkvLChAangkmAVs9ZLIwwcde8pH5bf6Eg0GWBsE5XRx_FRLND1fD1C3sh-4DaLyfdyF_AjCRRly9Hs20vcUxlFCyDT_scsqFBba5QB1GbiorrkosOQFfBwgvjzEXbo_W8yul4kzk1uhc9daH3480Xep-k"/>
+</div>
+<div>
+<h4 class="font-display font-bold text-ink">John Faber Zapata</h4>
+<p class="text-ink-faint text-xs">2 años atrás</p>
+</div>
+</div>
+<div class="flex">
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+</div>
+</div>
+<p class="text-ink-muted leading-relaxed">Muy buen servicio. Recomendó 100%.</p>
+</div>
+<!-- Review 5 -->
+<div class="review-card bg-white border border-ink-line-2 rounded-2xl p-6 shadow-sm transition-all cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-teal-soft">
+<img alt="Harold Cano" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIaIxqquJ62g5hf-QUjyA1NXmM_s7YLQH9qPmkZdoHzKQdoMqtCP1jjJt6xn__XYJt_zALjYjn0kgSssZ3R2t_NQFDVlWgyVfFG0sMMbtLV_2vqdIcE40l81o7m0w5jL2LNKC4-AbOMbUXEe9uPYFrcoli2GAsMLe-XX3L-ccRY_FJ9RhBv0i5xNdgQB5yAH7WvoBnlIHrmwC9E-YmzOjKIK2z7lLRGB4GzoBNnSHF_ngpWb2Kg6wiV1vR7SbWq6GnI1W37soHChY"/>
+</div>
+<div>
+<h4 class="font-display font-bold text-ink">Harold Cano</h4>
+<p class="text-ink-faint text-xs">2 años atrás</p>
+</div>
+</div>
+<div class="flex">
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+<span class="material-symbols-outlined star-filled text-[20px]">star</span>
+</div>
+</div>
+<p class="text-ink-muted leading-relaxed italic">"Excelente opción para quienes buscamos lo mejor para nuestros peludos en la ciudad."</p>
+</div>
+<div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"><button class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-transparent border border-ink/20 text-ink font-display font-bold rounded-full hover:bg-ink/5 hover:border-ink/40 transition-all duration-300">
+<svg class="w-5 h-5" viewbox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+    Leer más opiniones
+</button>
+<button class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-transparent border border-ink/20 text-ink font-display font-bold rounded-full hover:bg-ink/5 hover:border-ink/40 transition-all duration-300">
+<svg class="w-5 h-5" viewbox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+    Añadir opinión en Google
+</button></div></div>
+</div>
+<!-- Footer Buttons -->
+</div>
+</main>
+<!-- Footer (Shared Component) -->
+<!-- Apolo Floating Button -->
+<script>
+        // Simple interactive effect for star ratings on hover
+        document.querySelectorAll('.review-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const stars = card.querySelectorAll('.star-filled');
+                stars.forEach((star, i) => {
+                    setTimeout(() => {
+                        star.style.transform = 'scale(1.2)';
+                        setTimeout(() => star.style.transform = 'scale(1)', 100);
+                    }, i * 50);
+                });
+            });
+        });
+    </script>
+<script>
+(function() {
+    const btn = document.getElementById('toggle-reviews-btn');
+    const accordion = document.getElementById('reviews-accordion');
+    const text = document.getElementById('toggle-text');
+    const icon = document.getElementById('toggle-icon');
+    
+    if (btn && accordion) {
+        btn.addEventListener('click', () => {
+            const isOpen = accordion.style.maxHeight !== '0px' && accordion.style.maxHeight !== '';
+            if (isOpen) {
+                accordion.style.maxHeight = '0px';
+                text.textContent = 'Ver opiniones recientes';
+                icon.textContent = 'expand_more';
+            } else {
+                accordion.style.maxHeight = accordion.scrollHeight + 'px';
+                text.textContent = 'Cerrar opiniones';
+                icon.textContent = 'expand_less';
+            }
+        });
+    }
+})();
+</script>
+</body></html>

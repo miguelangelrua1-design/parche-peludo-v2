@@ -1,0 +1,245 @@
+﻿<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Añadir Opinión - Parche Peludo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400;1,700&amp;family=Caveat:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "teal-parche": "#79C8D0",
+                        "teal-deep": "#4AA5AD",
+                        "teal-soft": "#BEE3E7",
+                        "teal-mist": "#E8F4F6",
+                        "teal-ink": "#1E5D64",
+                        "paper": "#FFFFFF",
+                        "bone": "#F7F3EC",
+                        "ink": "#1E2E33",
+                        "ink-muted": "#5A6B70",
+                        "ink-faint": "#8E9A9E",
+                        "ink-line": "rgba(30,46,51,.10)",
+                        "ink-line-2": "rgba(30,46,51,.06)",
+                        "marigold": "#FFD166",
+                        "coral": "#E85D75",
+                        "orange": "#F2994A",
+                        "night": "#2D3A59",
+                        "success": "#14A985",
+                        "warning": "#F2994A",
+                        "danger": "#E85D75",
+                        "info": "#4AA5AD"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "sm": "6px",
+                        "md": "12px",
+                        "lg": "20px",
+                        "xl": "28px",
+                        "2xl": "40px",
+                        "pill": "9999px"
+                    },
+                    spacing: {
+                        "s-1": "4px",
+                        "s-2": "8px",
+                        "s-3": "12px",
+                        "s-4": "16px",
+                        "s-5": "20px",
+                        "s-6": "24px",
+                        "s-8": "32px",
+                        "s-10": "40px",
+                        "s-12": "48px",
+                        "s-16": "64px",
+                        "s-20": "80px",
+                        "s-24": "96px",
+                        "s-32": "128px"
+                    },
+                    fontFamily: {
+                        "display": ["Ubuntu", "sans-serif"],
+                        "sans": ["Ubuntu", "sans-serif"],
+                        "hand": ["Caveat", "cursive"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"]
+                    },
+                    fontSize: {
+                        "xs": ["12px", { lineHeight: "1.5", letterSpacing: "0.04em" }],
+                        "sm": ["14px", { lineHeight: "1.5" }],
+                        "base": ["16px", { lineHeight: "1.5" }],
+                        "md": ["18px", { lineHeight: "1.5" }],
+                        "lg": ["20px", { lineHeight: "1.25" }],
+                        "xl": ["24px", { lineHeight: "1.25" }],
+                        "2xl": ["32px", { lineHeight: "1.25" }],
+                        "3xl": ["40px", { lineHeight: "1.25", letterSpacing: "-0.02em" }],
+                        "4xl": ["56px", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+                        "5xl": ["72px", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+                        "6xl": ["96px", { lineHeight: "0.95", letterSpacing: "-0.02em" }]
+                    },
+                    boxShadow: {
+                        "sm": "0 1px 2px rgba(30,46,51,.06), 0 1px 3px rgba(30,46,51,.04)",
+                        "md": "0 4px 12px rgba(30,46,51,.08), 0 2px 4px rgba(30,46,51,.04)",
+                        "lg": "0 12px 32px rgba(30,46,51,.10), 0 4px 8px rgba(30,46,51,.06)",
+                        "xl": "0 24px 48px rgba(30,46,51,.14), 0 8px 16px rgba(30,46,51,.06)",
+                        "teal": "0 12px 32px rgba(121,200,208,.40)",
+                        "inner-placeholder": "inset 0 0 0 1px rgba(30,46,51,.06)"
+                    },
+                    transitionTimingFunction: {
+                        "soft": "cubic-bezier(.2,.8,.2,1)",
+                        "out": "cubic-bezier(.16,1,.3,1)"
+                    },
+                    transitionDuration: {
+                        "fast": "150ms",
+                        "base": "220ms",
+                        "slow": "320ms"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Ubuntu', sans-serif; background-color: var(--bone); color: var(--ink); }
+        .bg-bone { background-color: #F7F3EC; }
+        .text-wrap-balance { text-wrap: balance; }
+        .text-wrap-pretty { text-wrap: pretty; }
+        
+        /* Star Rating Hover Effects */
+        .star-rating .star { cursor: pointer; color: #E8F4F6; transition: color 220ms cubic-bezier(.2,.8,.2,1); }
+        .star-rating .star:hover,
+        .star-rating .star:hover ~ .star,
+        .star-rating:not(:hover) .star.active { color: #FFD166; }
+        
+        /* Custom scrollbar for textarea */
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-track { background: #E8F4F6; border-radius: 4px; }
+        textarea::-webkit-scrollbar-thumb { background: rgba(30,46,51,.2); border-radius: 4px; }
+        textarea::-webkit-scrollbar-thumb:hover { background: rgba(30,46,51,.4); }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen selection:bg-teal-soft selection:text-ink justify-center">
+<!-- TopNavBar -->
+
+<!-- Main Content -->
+<main class="flex-grow py-s-16 px-s-6 w-full max-w-[720px] mx-auto flex flex-col gap-s-8">
+<div class="bg-paper rounded-lg p-s-8 md:p-s-10 shadow-md border border-ink-line relative">
+<!-- Botón Cerrar -->
+<button class="absolute top-s-6 right-s-6 flex items-center gap-s-2 px-s-4 py-2 border-2 border-teal-mist rounded-pill text-sm font-bold text-ink hover:bg-teal-mist hover:border-teal-soft transition-all duration-base ease-soft active:translate-y-[1px]" type="button">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-4 h-4"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg> Cerrar
+            </button>
+<!-- Encabezado del Formulario -->
+<div class="mb-s-8 pr-s-24">
+<h1 class="text-3xl font-black text-ink mb-s-2 tracking-tight text-wrap-balance">Añadir opinión</h1>
+<p class="text-base text-ink-muted text-wrap-pretty">
+                    Conectado como miguelangel.rua1@gmail.com. 
+                    <a class="text-teal-deep hover:text-ink hover:underline underline-offset-4 transition-colors duration-soft font-medium" href="#">Edita tu perfil</a>. 
+                    <a class="text-teal-deep hover:text-ink hover:underline underline-offset-4 transition-colors duration-soft font-medium" href="#">¿Salir?</a> 
+                    Los campos obligatorios están marcados con <span class="text-danger">*</span>
+</p>
+</div>
+<hr class="border-ink-line-2 my-s-6">
+<!-- Formulario -->
+<form class="flex flex-col gap-s-8">
+<!-- Calificaciones (Grid) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-s-6">
+<!-- Servicio -->
+<div class="flex flex-col gap-s-2">
+<div class="flex items-center gap-s-1">
+<span class="text-sm font-semibold text-ink">Servicio</span>
+<span class="text-danger text-sm">*</span>
+<button class="text-ink-faint hover:text-teal-deep transition-colors duration-fast ml-1" title="Califica la calidad del servicio recibido" type="button">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="help-circle" aria-hidden="true" class="lucide lucide-help-circle w-[14px] h-[14px]"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
+</button>
+</div>
+<div class="flex items-center gap-1 star-rating group">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+</div>
+</div>
+<!-- Relación Calidad-Precio -->
+<div class="flex flex-col gap-s-2">
+<div class="flex items-center gap-s-1">
+<span class="text-sm font-semibold text-ink">Relación Calidad-Precio</span>
+<span class="text-danger text-sm">*</span>
+<button class="text-ink-faint hover:text-teal-deep transition-colors duration-fast ml-1" title="¿El precio fue justo para lo que recibiste?" type="button">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="help-circle" aria-hidden="true" class="lucide lucide-help-circle w-[14px] h-[14px]"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
+</button>
+</div>
+<div class="flex items-center gap-1 star-rating group">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+</div>
+</div>
+<!-- Ubicación -->
+<div class="flex flex-col gap-s-2">
+<div class="flex items-center gap-s-1">
+<span class="text-sm font-semibold text-ink">Ubicación</span>
+<span class="text-danger text-sm">*</span>
+<button class="text-ink-faint hover:text-teal-deep transition-colors duration-fast ml-1" title="Facilidad para llegar y zona" type="button">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="help-circle" aria-hidden="true" class="lucide lucide-help-circle w-[14px] h-[14px]"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
+</button>
+</div>
+<div class="flex items-center gap-1 star-rating group">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+</div>
+</div>
+<!-- Espacio -->
+<div class="flex flex-col gap-s-2">
+<div class="flex items-center gap-s-1">
+<span class="text-sm font-semibold text-ink">Espacio</span>
+<span class="text-danger text-sm">*</span>
+<button class="text-ink-faint hover:text-teal-deep transition-colors duration-fast ml-1" title="Higiene y comodidad de las instalaciones" type="button">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="help-circle" aria-hidden="true" class="lucide lucide-help-circle w-[14px] h-[14px]"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
+</button>
+</div>
+<div class="flex items-center gap-1 star-rating group">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star active fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="star" aria-hidden="true" class="lucide lucide-star w-6 h-6 star fill-current"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
+</div>
+</div>
+</div>
+<!-- Botón Agregar Fotos -->
+<div>
+<button class="inline-flex items-center justify-center gap-s-2 bg-transparent border-2 border-teal-parche text-ink font-bold text-sm px-s-5 py-[9px] rounded-pill hover:bg-teal-mist hover:border-teal-deep transition-all duration-base ease-soft active:translate-y-[1px]" type="button">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="camera" aria-hidden="true" class="lucide lucide-camera w-4 h-4 text-teal-ink"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"></path><circle cx="12" cy="13" r="3"></circle></svg> Agregar Fotos
+                    </button>
+</div>
+<hr class="border-ink-line-2">
+<!-- Comentario -->
+<div class="flex flex-col gap-s-2">
+<label class="text-sm font-semibold text-ink" for="comentario">
+                        Comentario <span class="text-danger">*</span>
+</label>
+<textarea class="w-full bg-teal-mist border border-ink-line rounded-sm p-s-4 text-base text-ink placeholder:text-ink-faint focus:border-teal-parche focus:ring-0 focus:outline-none focus:shadow-[0_0_0_3px_rgba(121,200,208,0.20)] transition-all duration-base ease-soft resize-y" id="comentario" name="comentario" placeholder="Cuéntanos tu experiencia con este peludo-prestador..." rows="6"></textarea>
+</div>
+<!-- Enviar CTA -->
+<div class="pt-s-4">
+<button class="w-full md:w-auto inline-flex items-center justify-center font-sans font-black text-base px-s-6 py-s-3 rounded-pill bg-teal-parche text-paper shadow-teal hover:bg-teal-deep hover:shadow-md transition-all duration-base ease-soft active:translate-y-[1px] active:shadow-sm" type="submit">
+                        Enviar Reseña
+                    </button>
+</div>
+</form>
+</div>
+</main>
+<!-- Footer -->
+
+<script>
+        lucide.createIcons();
+    </script>
+
+
+</body></html>
+
