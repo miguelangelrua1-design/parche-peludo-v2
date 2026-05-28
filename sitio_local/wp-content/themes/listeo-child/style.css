@@ -3192,9 +3192,73 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
   }
   /* Nota: en pantallas más estrechas el flex-wrap del padre + flex:1 1 auto
      hará que el rating salte a la siguiente línea automáticamente. */
-  /* ❤ favorito alineado a la derecha del row */
+
+  /* ❤ FAVORITO en MOBILE: lo sacamos de la meta-top y lo flotamos sobre la
+     galería en la esquina superior derecha, como pill circular pequeño.
+     Para que `position:absolute` ancle al área de la galería, hacemos que
+     el contenedor de contenido (.listeo-single-listing-content) sea
+     `position:relative` — la galería es el primer hijo (order:-1) así que
+     `top:12px right:12px` cae sobre su esquina superior derecha. */
+  body.single-listing .listeo-single-listing-content {
+    position: relative !important;
+  }
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons {
-    margin-left: auto !important;
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    z-index: 50 !important;
+  }
+  /* Pill circular blanco translúcido alrededor del corazón para que destaque
+     sobre las imágenes y sea cliqueable cómodamente */
+  body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons .listing-share {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+  /* Botón bookmark/favorito interior: limpiar styling heredado de Listeo */
+  body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons .bookmark-btn,
+  body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons a.like-icon,
+  body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons a {
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    line-height: 1 !important;
+  }
+  /* Icono del corazón: tamaño reducido para el pill 38px */
+  body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons .bookmark-btn i,
+  body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons i,
+  body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons svg {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+    line-height: 1 !important;
+  }
+  /* Ocultar cualquier label de texto que acompañe al corazón en la sidebar
+     original ("Marcar este listado", "Guardar", contador, etc.) */
+  body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons .bookmark-btn-title,
+  body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons .like-text,
+  body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons #bookmarks-counter {
+    display: none !important;
   }
 
   /* Row 3: Prestado por — items-center gap-3 */
