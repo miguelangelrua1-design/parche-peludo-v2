@@ -3252,6 +3252,9 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
+  body.single-listing #add-review.is-open {
+    margin-bottom: 48px !important;
+  }
   body.single-listing #add-review.is-open .comment-respond {
     padding: 24px 20px !important;
     border-radius: 24px !important;
