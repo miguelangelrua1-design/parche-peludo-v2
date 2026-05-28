@@ -131,14 +131,40 @@ function ppv2_listing_header_reorder() {
 
 			// === Inicializar Slider Móvil de la Galería si tiene múltiples imágenes ===
 			if (gallery) {
-				var photos = gallery.querySelectorAll('a.slg-gallery-img, .slg-half img, .slg-grid img, img.listeo-gallery-img, .listeo-gallery-img img');
+				// Buscar TODOS los anchors con la URL de la foto (la fuente más confiable
+				// porque siempre apunta a la imagen full-res), y como fallback los <img>.
+				// Incluye soporte para lazy-load (data-src, data-original, data-lazy-src).
+				var photos = gallery.querySelectorAll('a.slg-gallery-img, a.listeo-gallery-img, .slg-half img, .slg-grid img, img.listeo-gallery-img, .listeo-gallery-img img, .slg-half a, .slg-grid a');
 				var photoUrls = [];
-				photos.forEach(function(img) {
-					var url = img.getAttribute('href') || img.getAttribute('src') || (img.querySelector('img') ? img.querySelector('img').getAttribute('src') : null);
+				function extractUrl(el) {
+					if (!el) return null;
+					// Anchors: href apunta a la imagen full-res
+					var href = el.getAttribute('href');
+					if (href && href !== '#' && /\.(jpe?g|png|webp|gif|avif)(\?.*)?$/i.test(href)) return href;
+					// IMG con src, data-src, data-original, data-lazy-src (Listeo + lazy-load plugins)
+					var src = el.getAttribute('src') || el.getAttribute('data-src') ||
+					          el.getAttribute('data-original') || el.getAttribute('data-lazy-src');
+					if (src && src.indexOf('data:image') !== 0) return src;
+					// Buscar IMG anidado
+					var nested = el.querySelector('img');
+					if (nested) return extractUrl(nested);
+					// Background-image inline style
+					var bg = el.style && el.style.backgroundImage;
+					if (bg && bg.indexOf('url(') === 0) {
+						return bg.slice(4, -1).replace(/['"]/g, '');
+					}
+					return null;
+				}
+				photos.forEach(function(el) {
+					var url = extractUrl(el);
 					if (url && photoUrls.indexOf(url) === -1) {
 						photoUrls.push(url);
 					}
 				});
+				// Log diagnóstico (visible en Safari Web Inspector / Chrome console)
+				if (window.console && window.console.log) {
+					console.log('[ppv2-mobile-slider] photos detectadas:', photos.length, 'URLs únicas:', photoUrls.length, photoUrls);
+				}
 
 				if (photoUrls.length > 1) {
 					gallery.innerHTML = '';
@@ -703,56 +729,19 @@ function ppv2_listing_header_reorder() {
 add_action( 'wp_footer', 'ppv2_listing_header_reorder', 100 );
 
 /**
- * Inyecta la barra inferior fija en móvil para reservar y chatear,
- * imitando el prototipo de Stitch (pagina_servicio_detalle_movil.html).
+ * Barra inferior fija de móvil — DESACTIVADA por feedback de Miguel.
+ * (En la versión actual la sidebar Reservar + Enviar Mensaje ya bajan
+ * como bloque completo debajo del contenido en mobile, así que el CTA
+ * sticky duplicaba la acción y aparecía en posiciones confusas sobre
+ * el contenido. Se desactiva el hook para no inyectar el HTML.)
+ *
+ * Si en el futuro se quiere reactivar, basta con descomentar la línea
+ * `add_action` al final y revisar el posicionamiento `bottom` + `safe-area`.
  */
 function ppv2_listing_mobile_bottom_bar() {
-	if ( ! is_singular( 'listing' ) ) {
-		return;
-	}
-	?>
-	<!-- Fixed Bottom Action Bar for Mobile -->
-	<div class="ppv2-mobile-bottom-bar">
-		<button class="ppv2-mobile-bottom-bar__chat-btn" aria-label="Chat con el prestador">
-			<i class="sl sl-icon-bubble"></i>
-		</button>
-		<button class="ppv2-mobile-bottom-bar__reserve-btn">
-			Solicitar Reserva
-			<i class="sl sl-icon-calendar"></i>
-		</button>
-	</div>
-	<script>
-	document.addEventListener('DOMContentLoaded', function () {
-		var chatBtn = document.querySelector('.ppv2-mobile-bottom-bar__chat-btn');
-		var reserveBtn = document.querySelector('.ppv2-mobile-bottom-bar__reserve-btn');
-
-		if (chatBtn) {
-			chatBtn.addEventListener('click', function (e) {
-				e.preventDefault();
-				var msgWidget = document.querySelector('.listing-widget.message-vendor');
-				if (msgWidget) {
-					msgWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-					// Si está colapsado, expandirlo
-					if (msgWidget.classList.contains('is-collapsed')) {
-						var title = msgWidget.querySelector('.widget-title');
-						if (title) { title.click(); }
-					}
-				}
-			});
-		}
-
-		if (reserveBtn) {
-			reserveBtn.addEventListener('click', function (e) {
-				e.preventDefault();
-				var bookingWidget = document.querySelector('.listing-widget.boxed-widget, #booking-widget-anchor, .boxed-widget');
-				if (bookingWidget) {
-					bookingWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-				}
-			});
-		}
-	});
-	</script>
-	<?php
+	// Función mantenida vacía para preservar el nombre y poder reactivarla
+	// con un solo cambio. No imprime nada.
+	return;
 }
-add_action( 'wp_footer', 'ppv2_listing_mobile_bottom_bar', 110 );
+// add_action( 'wp_footer', 'ppv2_listing_mobile_bottom_bar', 110 );  // desactivado a propósito
 

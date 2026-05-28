@@ -2928,6 +2928,19 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     display: none !important;
   }
 
+  /* Ocultar el heading "Galería" y su contenedor (Listeo a veces inyecta
+     un <h2>Galería</h2> + wrapper que en mobile aparece como caja vacía
+     antes del slider real). Estos NO son la galería de imágenes — son
+     títulos decorativos que no queremos en mobile. */
+  body.single-listing .listeo-grid-gallery-title,
+  body.single-listing .listeo-grid-gallery-title-container,
+  body.single-listing #listing-gallery > h2,
+  body.single-listing #listing-gallery > h3,
+  body.single-listing .listing-section:has(> .listeo-single-listing-gallery-grid) > h2,
+  body.single-listing .listing-section:has(> .listeo-single-listing-gallery-grid) > h3 {
+    display: none !important;
+  }
+
   body.single-listing .listeo-single-listing-content {
     display: flex !important;
     flex-direction: column !important;
@@ -3128,13 +3141,17 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     margin: 0 0 8px 0 !important; /* mb-2 = 8px */
   }
 
-  /* Row 1: Meta-top — items-center gap-2 mb-4 */
+  /* Row 1: Meta-top — items-center gap-2 mb-4
+     En mobile estrecho (iPhone 15: 393px), el chip verified + 5 estrellas +
+     "4.6 (92 reseñas)" no caben en una sola línea. Forzamos el .star-rating
+     completo a romper a la siguiente línea para que nada se corte. */
   body.single-listing .ppv2-meta-top {
     display: flex !important;
     flex-wrap: wrap !important;
     gap: 8px !important;
     align-items: center !important;
     margin-bottom: 16px !important; /* mb-4 */
+    overflow: visible !important;
   }
   body.single-listing .ppv2-meta-top .verified-badge {
     font-size: 11px !important; /* text-[11px] */
@@ -3143,18 +3160,38 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     letter-spacing: 0.05em !important;
     text-transform: uppercase !important;
     font-weight: 800 !important;
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
   }
+  /* El rating completo (estrellas + 4.6 + reseñas) se trata como un solo
+     bloque que puede romper a la siguiente línea si no cabe */
   body.single-listing .ppv2-meta-top .star-rating {
     transform: none !important;
     margin: 0 !important;
+    display: inline-flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+    overflow: visible !important;
   }
   body.single-listing .ppv2-meta-top .star-rating .star::before {
-    font-size: 14px !important; /* text-sm en el prototipo */
+    font-size: 13px !important; /* reducido para que caben las 5 estrellas */
   }
   body.single-listing .ppv2-meta-top .rating-counter {
     font-size: 13px !important;
     font-weight: 500 !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
   }
+  /* Si el rating no cabe a la derecha del verified, forzar romper línea */
+  body.single-listing .ppv2-meta-top .star-rating {
+    flex: 1 1 auto !important;
+    justify-content: flex-start !important;
+  }
+  /* Nota: en pantallas más estrechas el flex-wrap del padre + flex:1 1 auto
+     hará que el rating salte a la siguiente línea automáticamente. */
   /* ❤ favorito alineado a la derecha del row */
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons {
     margin-left: auto !important;
