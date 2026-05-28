@@ -1654,9 +1654,11 @@ Text Domain:  listeo-child
   cursor: pointer !important;
   user-select: none !important;
 }
-.single-listing #listing-google-reviews.ppv2-collapsible .google-reviews-summary:hover {
-  background: var(--teal-mist) !important;
-  border-color: rgba(0, 0, 0, 0.15) !important;
+@media (hover: hover) {
+  .single-listing #listing-google-reviews.ppv2-collapsible .google-reviews-summary:hover {
+    background: var(--teal-mist) !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+  }
 }
 
 /* Animacion suave del acordeon: max-height + opacidad con cubic-bezier
