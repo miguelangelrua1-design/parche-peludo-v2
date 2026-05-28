@@ -729,19 +729,131 @@ function ppv2_listing_header_reorder() {
 add_action( 'wp_footer', 'ppv2_listing_header_reorder', 100 );
 
 /**
- * Barra inferior fija de móvil — DESACTIVADA por feedback de Miguel.
- * (En la versión actual la sidebar Reservar + Enviar Mensaje ya bajan
- * como bloque completo debajo del contenido en mobile, así que el CTA
- * sticky duplicaba la acción y aparecía en posiciones confusas sobre
- * el contenido. Se desactiva el hook para no inyectar el HTML.)
+ * Barra inferior fija de móvil + Bottom Sheet de Reservar.
  *
- * Si en el futuro se quiere reactivar, basta con descomentar la línea
- * `add_action` al final y revisar el posicionamiento `bottom` + `safe-area`.
+ * - La barra contiene un botón "Reservar Ahora" anclado al bottom del viewport
+ *   con safe-area-inset para iPhone con home-indicator.
+ * - Al hacer click se abre un panel deslizante (bottom sheet) que ocupa el
+ *   ~80% de la pantalla, dejando ~20% arriba de espacio respirable.
+ * - El sheet TOMA prestado el widget Reservar de la sidebar (mueve el nodo),
+ *   así toda la lógica de booking (form-booking, calendarios, AJAX) sigue
+ *   funcionando sin duplicar HTML ni perder event listeners.
+ * - Cierre por: tap en backdrop, tap en botón ×, tap en handle, tecla Escape.
  */
 function ppv2_listing_mobile_bottom_bar() {
-	// Función mantenida vacía para preservar el nombre y poder reactivarla
-	// con un solo cambio. No imprime nada.
-	return;
+	if ( ! is_singular( 'listing' ) ) {
+		return;
+	}
+	?>
+	<!-- Barra inferior fija (mobile-only via CSS) -->
+	<div class="ppv2-mobile-bottom-bar" id="ppv2-mobile-bottom-bar" aria-hidden="false">
+		<button type="button" class="ppv2-mobile-bottom-bar__reserve-btn" data-ppv2-open-reservar>
+			<i class="sl sl-icon-calendar"></i>
+			<span>Reservar Ahora</span>
+		</button>
+	</div>
+
+	<!-- Bottom Sheet del widget Reservar (mobile-only) -->
+	<div class="ppv2-bottom-sheet" id="ppv2-reservar-sheet" hidden>
+		<div class="ppv2-bottom-sheet__backdrop" data-ppv2-close-sheet></div>
+		<div class="ppv2-bottom-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="ppv2-reservar-sheet-title">
+			<div class="ppv2-bottom-sheet__handle" data-ppv2-close-sheet aria-hidden="true"></div>
+			<div class="ppv2-bottom-sheet__header">
+				<h3 id="ppv2-reservar-sheet-title" class="ppv2-bottom-sheet__title">Reservar</h3>
+				<button type="button" class="ppv2-bottom-sheet__close" data-ppv2-close-sheet aria-label="Cerrar">×</button>
+			</div>
+			<div class="ppv2-bottom-sheet__content" id="ppv2-reservar-sheet-content"></div>
+		</div>
+	</div>
+
+	<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		var sheet = document.getElementById('ppv2-reservar-sheet');
+		var sheetContent = document.getElementById('ppv2-reservar-sheet-content');
+		if (!sheet || !sheetContent) return;
+
+		// Referencias guardadas para devolver el widget Reservar a su lugar
+		// original cuando se cierra el sheet.
+		var bookingWidget = null;
+		var originalParent = null;
+		var originalNextSibling = null;
+
+		function findBookingWidget() {
+			return document.querySelector('.listeo-single-listing-sidebar .listing-widget.booking-widget')
+				|| document.querySelector('.listeo-single-listing-sidebar #widget_booking_listings-3')
+				|| document.querySelector('.listeo-single-listing-sidebar .listing-widget.boxed-widget.booking-widget');
+		}
+
+		function openSheet() {
+			bookingWidget = findBookingWidget();
+			if (!bookingWidget) {
+				console.warn('[ppv2-reservar-sheet] booking widget no encontrado');
+				return;
+			}
+			// Guardar posición original para restaurar al cerrar
+			originalParent = bookingWidget.parentNode;
+			originalNextSibling = bookingWidget.nextSibling;
+			// Mover el widget dentro del sheet content
+			sheetContent.appendChild(bookingWidget);
+			// Mostrar el sheet (display:flex) primero, luego en el siguiente frame
+			// añadir .is-open para que el transform animado interpole correctamente.
+			sheet.removeAttribute('hidden');
+			// Forzar un reflow para que la transición se aplique desde el estado inicial
+			void sheet.offsetWidth;
+			sheet.classList.add('is-open');
+			document.body.classList.add('ppv2-sheet-open');
+			// Foco accesible al botón cerrar
+			var closeBtn = sheet.querySelector('.ppv2-bottom-sheet__close');
+			if (closeBtn) setTimeout(function(){ closeBtn.focus(); }, 320);
+		}
+
+		function closeSheet() {
+			sheet.classList.remove('is-open');
+			document.body.classList.remove('ppv2-sheet-open');
+			// Esperar a que termine la animación de salida antes de devolver el
+			// widget a la sidebar y ocultar el sheet completamente.
+			setTimeout(function () {
+				if (bookingWidget && originalParent) {
+					if (originalNextSibling && originalNextSibling.parentNode === originalParent) {
+						originalParent.insertBefore(bookingWidget, originalNextSibling);
+					} else {
+						originalParent.appendChild(bookingWidget);
+					}
+				}
+				sheet.setAttribute('hidden', '');
+				bookingWidget = null;
+				originalParent = null;
+				originalNextSibling = null;
+			}, 340); // un poco más que la duración de la transición (320ms)
+		}
+
+		// Click en el botón "Reservar Ahora" de la barra inferior
+		var openTriggers = document.querySelectorAll('[data-ppv2-open-reservar]');
+		openTriggers.forEach(function (btn) {
+			btn.addEventListener('click', function (e) {
+				e.preventDefault();
+				openSheet();
+			});
+		});
+
+		// Click en backdrop, handle o botón × cierran el sheet
+		var closeTriggers = sheet.querySelectorAll('[data-ppv2-close-sheet]');
+		closeTriggers.forEach(function (el) {
+			el.addEventListener('click', function (e) {
+				e.preventDefault();
+				closeSheet();
+			});
+		});
+
+		// Tecla Escape cierra el sheet
+		document.addEventListener('keydown', function (e) {
+			if (e.key === 'Escape' && sheet.classList.contains('is-open')) {
+				closeSheet();
+			}
+		});
+	});
+	</script>
+	<?php
 }
-// add_action( 'wp_footer', 'ppv2_listing_mobile_bottom_bar', 110 );  // desactivado a propósito
+add_action( 'wp_footer', 'ppv2_listing_mobile_bottom_bar', 110 );
 

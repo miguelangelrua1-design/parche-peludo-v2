@@ -3574,3 +3574,207 @@ body.single-listing .listing-nav-container,
 body.single-listing #listing-nav {
   display: none !important;
 }
+
+/* ============================================================================
+   BARRA INFERIOR + BOTTOM SHEET DE RESERVA (mobile-only)
+   ----------------------------------------------------------------------------
+   La barra fija en mobile contiene un botón "Reservar Ahora" que abre un
+   panel deslizante desde abajo (80% de la pantalla) con el widget Reservar
+   completo dentro. El widget se MUEVE (no se clona) desde la sidebar al
+   sheet al abrir, preservando todos los event listeners del booking form.
+   ============================================================================ */
+
+/* Default desktop: barra y sheet ocultos */
+.ppv2-mobile-bottom-bar,
+.ppv2-bottom-sheet {
+  display: none;
+}
+
+@media (max-width: 767px) {
+
+  /* ---- Barra inferior fija ---- */
+  body.single-listing .ppv2-mobile-bottom-bar {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 100 !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    border-top: 1px solid var(--ink-line-2) !important;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) 16px !important;
+    align-items: center !important;
+    gap: 12px !important;
+    transition: opacity 220ms ease, transform 220ms ease !important;
+  }
+  /* Botón principal "Reservar Ahora" (pill teal-parche full-width) */
+  body.single-listing .ppv2-mobile-bottom-bar__reserve-btn {
+    flex: 1 1 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    background: var(--teal-parche) !important;
+    color: var(--paper) !important;
+    font-family: var(--font-display) !important;
+    font-weight: 800 !important;
+    font-size: 15px !important;
+    letter-spacing: 0.01em !important;
+    padding: 14px 24px !important;
+    border-radius: 999px !important;
+    border: none !important;
+    box-shadow: 0 4px 16px rgba(121, 200, 208, 0.40) !important;
+    cursor: pointer !important;
+    transition: transform 120ms ease, background 220ms ease !important;
+  }
+  body.single-listing .ppv2-mobile-bottom-bar__reserve-btn:active {
+    transform: scale(0.98) !important;
+    background: var(--teal-deep) !important;
+  }
+  body.single-listing .ppv2-mobile-bottom-bar__reserve-btn i {
+    font-size: 16px !important;
+    line-height: 1 !important;
+  }
+  /* Cuando el sheet está abierto, la barra se desvanece (no es necesaria) */
+  body.ppv2-sheet-open .ppv2-mobile-bottom-bar {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(8px) !important;
+  }
+  /* Reservar espacio al final del body para que la barra no tape contenido */
+  body.single-listing {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* ---- Bottom Sheet ---- */
+  body.single-listing .ppv2-bottom-sheet {
+    display: flex !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    pointer-events: none !important;
+  }
+  body.single-listing .ppv2-bottom-sheet[hidden] {
+    display: none !important;
+  }
+  /* Backdrop oscuro semitransparente */
+  body.single-listing .ppv2-bottom-sheet__backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.50) !important;
+    opacity: 0 !important;
+    transition: opacity 280ms cubic-bezier(0.32, 0.72, 0, 1) !important;
+    pointer-events: auto !important;
+  }
+  body.single-listing .ppv2-bottom-sheet.is-open .ppv2-bottom-sheet__backdrop {
+    opacity: 1 !important;
+  }
+  /* Panel: 80vh fijo, slide up animado */
+  body.single-listing .ppv2-bottom-sheet__panel {
+    position: relative !important;
+    width: 100% !important;
+    height: 80vh !important;
+    max-height: 80vh !important;
+    background: var(--paper) !important;
+    border-radius: 24px 24px 0 0 !important;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.18) !important;
+    transform: translateY(100%) !important;
+    transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    pointer-events: auto !important;
+    overflow: hidden !important;
+  }
+  body.single-listing .ppv2-bottom-sheet.is-open .ppv2-bottom-sheet__panel {
+    transform: translateY(0) !important;
+  }
+  /* Handle (barrita gris superior) — affordance de drag/cierre */
+  body.single-listing .ppv2-bottom-sheet__handle {
+    width: 40px !important;
+    height: 4px !important;
+    background: rgba(0, 0, 0, 0.22) !important;
+    border-radius: 99px !important;
+    margin: 12px auto 6px !important;
+    flex-shrink: 0 !important;
+    cursor: pointer !important;
+  }
+  /* Header del sheet: título + botón × */
+  body.single-listing .ppv2-bottom-sheet__header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 8px 20px 12px !important;
+    flex-shrink: 0 !important;
+    border-bottom: 1px solid var(--ink-line-2) !important;
+  }
+  body.single-listing .ppv2-bottom-sheet__title {
+    font-family: var(--font-display) !important;
+    font-weight: 900 !important;
+    font-size: 22px !important;
+    color: var(--ink) !important;
+    margin: 0 !important;
+    letter-spacing: -0.01em !important;
+  }
+  body.single-listing .ppv2-bottom-sheet__close {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: rgba(0, 0, 0, 0.06) !important;
+    border: none !important;
+    color: var(--ink) !important;
+    font-size: 22px !important;
+    font-weight: 300 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+    transition: background 160ms ease !important;
+  }
+  body.single-listing .ppv2-bottom-sheet__close:hover,
+  body.single-listing .ppv2-bottom-sheet__close:active {
+    background: rgba(0, 0, 0, 0.12) !important;
+  }
+  /* Contenedor scrollable para el contenido del Reservar widget */
+  body.single-listing .ppv2-bottom-sheet__content {
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 16px 20px calc(20px + env(safe-area-inset-bottom, 0px)) 20px !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+  }
+  /* El widget Reservar DENTRO del sheet: limpiar sticky/shadow/borders
+     heredados de la sidebar para que se vea integrado al panel */
+  body.single-listing .ppv2-bottom-sheet__content .listing-widget,
+  body.single-listing .ppv2-bottom-sheet__content .listing-widget.booking-widget,
+  body.single-listing .ppv2-bottom-sheet__content #widget_booking_listings-3 {
+    position: static !important;
+    top: auto !important;
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  /* Ocultar el título "Reservar" duplicado del widget (el sheet ya tiene su propio título) */
+  body.single-listing .ppv2-bottom-sheet__content .listing-widget .widget-title {
+    display: none !important;
+  }
+  /* Cuando el sheet está abierto, bloquear el scroll del body */
+  body.ppv2-sheet-open {
+    overflow: hidden !important;
+    touch-action: none !important;
+  }
+}
