@@ -284,7 +284,7 @@ function ppv2_listing_header_reorder() {
 		if (overviewSection && !overviewSection.querySelector('.ppv2-overview-headline')) {
 			var descHead = document.createElement('h2');
 			descHead.className = 'listing-desc-headline ppv2-overview-headline';
-			descHead.textContent = 'Descripción';
+			descHead.textContent = 'Sobre el servicio';
 			overviewSection.insertBefore(descHead, overviewSection.firstChild);
 		}
 
