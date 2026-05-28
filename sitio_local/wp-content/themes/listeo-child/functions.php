@@ -548,3 +548,58 @@ function ppv2_listing_header_reorder() {
 	<?php
 }
 add_action( 'wp_footer', 'ppv2_listing_header_reorder', 100 );
+
+/**
+ * Inyecta la barra inferior fija en móvil para reservar y chatear,
+ * imitando el prototipo de Stitch (pagina_servicio_detalle_movil.html).
+ */
+function ppv2_listing_mobile_bottom_bar() {
+	if ( ! is_singular( 'listing' ) ) {
+		return;
+	}
+	?>
+	<!-- Fixed Bottom Action Bar for Mobile -->
+	<div class="ppv2-mobile-bottom-bar">
+		<button class="ppv2-mobile-bottom-bar__chat-btn" aria-label="Chat con el prestador">
+			<i class="sl sl-icon-bubble"></i>
+		</button>
+		<button class="ppv2-mobile-bottom-bar__reserve-btn">
+			Solicitar Reserva
+			<i class="sl sl-icon-calendar"></i>
+		</button>
+	</div>
+	<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		var chatBtn = document.querySelector('.ppv2-mobile-bottom-bar__chat-btn');
+		var reserveBtn = document.querySelector('.ppv2-mobile-bottom-bar__reserve-btn');
+
+		if (chatBtn) {
+			chatBtn.addEventListener('click', function (e) {
+				e.preventDefault();
+				var msgWidget = document.querySelector('.listing-widget.message-vendor');
+				if (msgWidget) {
+					msgWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					// Si está colapsado, expandirlo
+					if (msgWidget.classList.contains('is-collapsed')) {
+						var title = msgWidget.querySelector('.widget-title');
+						if (title) { title.click(); }
+					}
+				}
+			});
+		}
+
+		if (reserveBtn) {
+			reserveBtn.addEventListener('click', function (e) {
+				e.preventDefault();
+				var bookingWidget = document.querySelector('.listing-widget.boxed-widget, #booking-widget-anchor, .boxed-widget');
+				if (bookingWidget) {
+					bookingWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				}
+			});
+		}
+	});
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_listing_mobile_bottom_bar', 110 );
+
