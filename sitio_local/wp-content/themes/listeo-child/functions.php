@@ -102,13 +102,24 @@ function ppv2_listing_header_reorder() {
 		var cover = document.querySelector('#listing-gallery.listeo-grid-gallery-title');
 		var bento = document.querySelector('.listeo-single-listing-gallery-grid');
 		var content = document.querySelector('.col-lg-8.listeo-single-listing-content');
-		if (cover && content && !content.contains(cover)) {
-			content.insertBefore(cover, content.firstChild);
-		}
-		if (bento && content && !content.contains(bento)) {
-			// colocar la galería justo después de la cabecera (ya movida)
-			var after = (cover && cover.parentElement === content) ? cover.nextSibling : content.firstChild;
-			content.insertBefore(bento, after);
+		
+		// En móvil: colocar la galería de primero en la página (antes del #titlebar)
+		// para lograr una vista full-bleed y orden idéntico al prototipo.
+		if (window.innerWidth < 768) {
+			var titlebar = document.getElementById('titlebar');
+			var gallery = bento || cover;
+			if (titlebar && gallery && titlebar.parentNode) {
+				titlebar.parentNode.insertBefore(gallery, titlebar);
+			}
+		} else {
+			// En desktop: mantener la galería dentro de la columna de contenido
+			if (cover && content && !content.contains(cover)) {
+				content.insertBefore(cover, content.firstChild);
+			}
+			if (bento && content && !content.contains(bento)) {
+				var after = (cover && cover.parentElement === content) ? cover.nextSibling : content.firstChild;
+				content.insertBefore(bento, after);
+			}
 		}
 		// Disparar resize para que cualquier slider/grid responsivo recalcule
 		try { window.dispatchEvent(new Event('resize')); } catch(e) {}

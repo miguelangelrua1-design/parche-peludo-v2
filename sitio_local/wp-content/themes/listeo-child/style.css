@@ -2948,7 +2948,11 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
   body.single-listing #listing-gallery a,
   body.single-listing .listeo-grid-gallery-title img,
   body.single-listing .listeo-grid-gallery-title a,
-  body.single-listing .listeo-grid-gallery-title-container img {
+  body.single-listing .listeo-grid-gallery-title-container img,
+  body.single-listing #listing-gallery *,
+  body.single-listing #single-listing-grid-gallery *,
+  body.single-listing .listeo-single-listing-gallery-grid *,
+  body.single-listing .listeo-grid-gallery-title * {
     border-radius: 0 !important;
     width: 100% !important;
     height: 100% !important;
@@ -2958,6 +2962,10 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     display: block !important;
     border: none !important;
     box-shadow: none !important;
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    float: none !important;
   }
   body.single-listing #single-listing-grid-gallery .slg-grid {
     display: none !important;
