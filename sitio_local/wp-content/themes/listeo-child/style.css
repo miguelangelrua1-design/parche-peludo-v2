@@ -3117,7 +3117,7 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     color: var(--teal-deep) !important;
   }
 
-  /* Sobre {Nombre} — grid-cols-1 gap-y-10 en el prototipo, transformado a Bento-lite */
+  /* Sobre {Nombre} — grid-cols-1 gap-y-4 en el prototipo (lista limpia, sin fondo ni bordes) */
   body.single-listing #ppv2-listing-features ul.listing-features.checkboxes,
   body.single-listing #ppv2-listing-features ul.listing-features {
     display: grid !important;
@@ -3131,41 +3131,45 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
   body.single-listing #ppv2-listing-features ul.listing-features li.feature-has-icon {
     display: flex !important;
     align-items: center !important;
-    gap: 16px !important;
-    padding: 16px !important; /* p-4 */
+    gap: 12px !important;
+    padding: 6px 0 !important;
     margin: 0 !important;
-    background: var(--teal-mist) !important;
-    border: 1px solid var(--teal-soft) !important;
-    border-radius: 12px !important; /* rounded-xl */
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
   body.single-listing #ppv2-listing-features ul.listing-features.checkboxes li.feature-has-icon .feature-svg-icon,
   body.single-listing #ppv2-listing-features ul.listing-features li.feature-has-icon .feature-svg-icon {
-    background: var(--paper) !important;
-    padding: 8px !important;
-    border-radius: 8px !important;
-    box-shadow: var(--shadow-sm) !important;
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 40px !important;
-    height: 40px !important;
+    width: 24px !important;
+    height: 24px !important;
     flex-shrink: 0 !important;
     box-sizing: border-box !important;
     position: static !important;
   }
   body.single-listing #ppv2-listing-features ul.listing-features.checkboxes li.feature-has-icon .feature-svg-icon svg,
   body.single-listing #ppv2-listing-features ul.listing-features li.feature-has-icon .feature-svg-icon svg {
-    width: 24px !important;
-    height: 24px !important;
+    width: 20px !important;
+    height: 20px !important;
     display: block !important;
+  }
+  body.single-listing #ppv2-listing-features ul.listing-features.checkboxes li.feature-has-icon .feature-svg-icon svg path,
+  body.single-listing #ppv2-listing-features ul.listing-features li.feature-has-icon .feature-svg-icon svg path {
+    fill: var(--teal-deep) !important;
   }
   body.single-listing #ppv2-listing-features ul.listing-features.checkboxes li.feature-has-icon a,
   body.single-listing #ppv2-listing-features ul.listing-features li.feature-has-icon a {
     font-size: 15px !important;
-    font-weight: 800 !important;
+    font-weight: 500 !important;
     color: var(--ink) !important;
     text-decoration: none !important;
   }
