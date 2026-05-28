@@ -99,7 +99,7 @@ function ppv2_listing_header_reorder() {
 		//   al inicio de la columna de contenido, en el orden del prototipo:
 		//   [cabecera] → [galería] → [nav, características, ...]. Así el bloque de
 		//   reserva queda a la derecha desde arriba, en paralelo, como el prototipo.
-		var cover = document.querySelector('#listing-gallery.listeo-grid-gallery-title');
+		var cover = document.getElementById('listing-gallery');
 		var bento = document.querySelector('.listeo-single-listing-gallery-grid');
 		var content = document.querySelector('.col-lg-8.listeo-single-listing-content');
 		
@@ -108,8 +108,25 @@ function ppv2_listing_header_reorder() {
 		if (window.innerWidth < 768) {
 			var titlebar = document.getElementById('titlebar');
 			var gallery = bento || cover;
-			if (titlebar && gallery && titlebar.parentNode) {
-				titlebar.parentNode.insertBefore(gallery, titlebar);
+			
+			if (bento) {
+				// Caso de múltiples imágenes (bento grid)
+				if (cover) {
+					cover.style.setProperty('display', 'none', 'important');
+				}
+				if (titlebar && bento && titlebar.parentNode) {
+					// Nos aseguramos de sacar titlebar si estuviera dentro de cover originally
+					if (cover && cover.contains(titlebar)) {
+						cover.parentNode.insertBefore(titlebar, cover.nextSibling);
+					}
+					// Colocamos el slider bento antes del titlebar (lo primero en verse)
+					titlebar.parentNode.insertBefore(bento, titlebar);
+				}
+			} else {
+				// Caso de cover único
+				if (cover && titlebar && cover.contains(titlebar)) {
+					cover.parentNode.insertBefore(titlebar, cover.nextSibling);
+				}
 			}
 
 			// === Inicializar Slider Móvil de la Galería si tiene múltiples imágenes ===
@@ -125,7 +142,7 @@ function ppv2_listing_header_reorder() {
 
 				if (photoUrls.length > 1) {
 					gallery.innerHTML = '';
-					gallery.className = 'ppv2-mobile-slider-container';
+					gallery.classList.add('ppv2-mobile-slider-container');
 
 					var track = document.createElement('div');
 					track.className = 'ppv2-mobile-slider-track';
@@ -133,10 +150,18 @@ function ppv2_listing_header_reorder() {
 					photoUrls.forEach(function(url, idx) {
 						var slide = document.createElement('div');
 						slide.className = 'ppv2-mobile-slider-slide';
+						
+						// Envoltura de link para restaurar la ventana modal (popup lightbox)
+						var link = document.createElement('a');
+						link.href = url;
+						link.className = 'slg-gallery-img listeo-gallery-img';
+						
 						var img = document.createElement('img');
 						img.src = url;
 						img.alt = 'Imagen ' + (idx + 1);
-						slide.appendChild(img);
+						
+						link.appendChild(img);
+						slide.appendChild(link);
 						track.appendChild(slide);
 					});
 					gallery.appendChild(track);
@@ -215,6 +240,17 @@ function ppv2_listing_header_reorder() {
 					});
 					
 					setTimeout(updateNavigation, 100);
+
+					// Re-inicializar Magnific Popup si está disponible para restaurar la vista lightbox en móvil
+					if (window.jQuery && typeof window.jQuery.fn.magnificPopup === 'function') {
+						window.jQuery(gallery).magnificPopup({
+							delegate: 'a.slg-gallery-img, a.listeo-gallery-img',
+							type: 'image',
+							gallery: {
+								enabled: true
+							}
+						});
+					}
 				}
 			}
 		} else {

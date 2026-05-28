@@ -2919,6 +2919,13 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
      hijos con `order`. La galería gana order: -1 → aparece arriba del titlebar.
      Resto de secciones queda en su orden natural (order: 0 por defecto).
      ============================================================================ */
+  /* Si la página contiene el grid bento de fotos múltiples, ocultamos por CSS el cover individual */
+  body.single-listing:has(#single-listing-grid-gallery) #listing-gallery,
+  body.single-listing:has(.listeo-single-listing-gallery-grid) #listing-gallery,
+  body.single-listing:has(.ppv2-mobile-slider-container) #listing-gallery {
+    display: none !important;
+  }
+
   body.single-listing .listeo-single-listing-content {
     display: flex !important;
     flex-direction: column !important;
@@ -2940,6 +2947,9 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     box-shadow: none !important;
     overflow: hidden !important;
     float: none !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
   }
   body.single-listing #single-listing-grid-gallery .slg-half,
   body.single-listing #single-listing-grid-gallery .slg-half img,
@@ -2949,10 +2959,10 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
   body.single-listing .listeo-grid-gallery-title img,
   body.single-listing .listeo-grid-gallery-title a,
   body.single-listing .listeo-grid-gallery-title-container img,
-  body.single-listing #listing-gallery *,
-  body.single-listing #single-listing-grid-gallery *,
-  body.single-listing .listeo-single-listing-gallery-grid *,
-  body.single-listing .listeo-grid-gallery-title * {
+  body.single-listing #listing-gallery *:not(.ppv2-mobile-slider-track):not(.ppv2-mobile-slider-slide):not(.ppv2-slider-arrow):not(.ppv2-slider-dots):not(.ppv2-slider-dot):not(#titlebar):not(#titlebar *),
+  body.single-listing #single-listing-grid-gallery *:not(.ppv2-mobile-slider-track):not(.ppv2-mobile-slider-slide):not(.ppv2-slider-arrow):not(.ppv2-slider-dots):not(.ppv2-slider-dot):not(#titlebar):not(#titlebar *),
+  body.single-listing .listeo-single-listing-gallery-grid *:not(.ppv2-mobile-slider-track):not(.ppv2-mobile-slider-slide):not(.ppv2-slider-arrow):not(.ppv2-slider-dots):not(.ppv2-slider-dot):not(#titlebar):not(#titlebar *),
+  body.single-listing .listeo-grid-gallery-title *:not(.ppv2-mobile-slider-track):not(.ppv2-mobile-slider-slide):not(.ppv2-slider-arrow):not(.ppv2-slider-dots):not(.ppv2-slider-dot):not(#titlebar):not(#titlebar *) {
     border-radius: 0 !important;
     width: 100% !important;
     height: 100% !important;
@@ -3006,6 +3016,15 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     padding: 0 !important;
   }
   
+  body.single-listing .ppv2-mobile-slider-slide a {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+  }
+  
   body.single-listing .ppv2-mobile-slider-slide img {
     width: 100% !important;
     height: 100% !important;
@@ -3014,6 +3033,14 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     display: block !important;
   }
   
+  /* Ocultar las flechas del slider móvil en la página cuando el popup lightbox (Magnific Popup) está abierto */
+  html.mfp-zoom-out-cur .ppv2-slider-arrow,
+  body.mfp-active .ppv2-slider-arrow,
+  .mfp-wrap .ppv2-slider-arrow,
+  .mfp-bg .ppv2-slider-arrow {
+    display: none !important;
+  }
+
   body.single-listing .ppv2-slider-arrow {
     position: absolute !important;
     top: 50% !important;
@@ -3196,7 +3223,7 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     margin: 0 0 16px 0 !important;
   }
   body.single-listing #listing-overview {
-    margin-bottom: 24px !important; /* Reducido de 48px a 24px */
+    margin-bottom: 12px !important; /* Reducido de 24px a 12px para evitar excesivo espacio con Planes y Precios */
   }
 
   /* Planes y Precios — items con p-5 rounded-xl border ink/10 */
@@ -3287,28 +3314,38 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
      E. Opiniones de Google
      ============================================================================ */
   body.single-listing #listing-google-reviews .google-reviews-summary {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 16px !important;
-    padding: 24px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 20px !important;
+    padding: 20px 24px !important;
     position: relative !important;
   }
-  /* Logo Google + Rating block centrados arriba */
+  /* Logo Google a la izquierda y bloque de puntuación a la derecha */
   body.single-listing #listing-google-reviews .google-reviews-summary > a,
   body.single-listing #listing-google-reviews .google-reviews-summary .google-reviews-logo {
     align-self: center !important;
+    margin: 0 !important;
+    flex: 0 0 auto !important;
   }
   body.single-listing #listing-google-reviews .google-reviews-summary > div:not(.google-reviews-read-more) {
-    text-align: center !important;
+    text-align: left !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    flex: 1 1 auto !important;
   }
-  /* Toggle "Leer más opiniones": full-width, statico al final del summary */
+  /* Toggle "Leer más opiniones": full-width, estático al final del summary */
   body.single-listing #listing-google-reviews .ppv2-google-toggle {
     position: static !important;
     transform: none !important;
     width: 100% !important;
-    margin: 8px 0 0 0 !important;
+    margin: 16px 0 0 0 !important;
     padding: 12px 20px !important;
     font-size: 13px !important;
+    flex: 0 0 100% !important;
   }
   body.single-listing #listing-google-reviews .ppv2-google-toggle:active {
     transform: translateY(1px) !important;
