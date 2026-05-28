@@ -2923,30 +2923,30 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     display: flex !important;
     flex-direction: column !important;
   }
-  body.single-listing .listeo-single-listing-gallery-grid,
-  body.single-listing .listeo-single-listing-content > .listeo-single-listing-gallery-grid {
+  body.single-listing #single-listing-grid-gallery {
     order: -1 !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    height: 280px !important;
+    margin: 0 0 24px 0 !important;
     padding: 0 !important;
-    margin: 0 0 24px 0 !important; /* solo separación inferior con el titlebar */
     width: 100% !important;
     max-width: 100% !important;
     border-radius: 0 !important;
-    gap: 8px !important;
-    /* Prototipo usa grid-cols-4 con col-span-3 + col-span-1 → ratio 3:1 */
-    grid-template-columns: 3fr 1fr !important;
-    height: 380px !important; /* h-[500px] del prototipo, ajustado a portrait mobile */
-    aspect-ratio: auto !important;
-    max-height: none !important;
     overflow: hidden !important;
   }
-  body.single-listing .listeo-single-listing-gallery-grid .slg-half,
-  body.single-listing .listeo-single-listing-gallery-grid .slg-grid-top .slg-grid-inner,
-  body.single-listing .listeo-single-listing-gallery-grid .slg-grid-bottom .slg-grid-inner {
+  body.single-listing #single-listing-grid-gallery .slg-half,
+  body.single-listing #single-listing-grid-gallery .slg-half img,
+  body.single-listing #single-listing-grid-gallery a.slg-gallery-img {
     border-radius: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-  body.single-listing .listeo-single-listing-gallery-grid .ppv2-more-overlay span {
-    font-size: 14px !important;
-    font-weight: 700 !important;
+  body.single-listing #single-listing-grid-gallery .slg-grid {
+    display: none !important;
   }
 
   /* ============================================================================
