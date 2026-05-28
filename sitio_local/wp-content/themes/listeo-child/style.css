@@ -2971,6 +2971,112 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     display: none !important;
   }
 
+  /* --- Slider Móvil de Galería Nivel Pro (Estilo Stitch) --- */
+  body.single-listing .ppv2-mobile-slider-container {
+    position: relative !important;
+    width: 100% !important;
+    height: 280px !important;
+    overflow: visible !important;
+    margin: 0 0 32px 0 !important;
+    padding: 0 !important;
+    order: -1 !important;
+  }
+  
+  body.single-listing .ppv2-mobile-slider-track {
+    display: flex !important;
+    width: 100% !important;
+    height: 280px !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  body.single-listing .ppv2-mobile-slider-track::-webkit-scrollbar {
+    display: none !important;
+  }
+  
+  body.single-listing .ppv2-mobile-slider-slide {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    height: 280px !important;
+    scroll-snap-align: start !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  body.single-listing .ppv2-mobile-slider-slide img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 0 !important;
+    display: block !important;
+  }
+  
+  body.single-listing .ppv2-slider-arrow {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    border: 1px solid var(--ink-line) !important;
+    box-shadow: var(--shadow-md) !important;
+    color: var(--ink) !important;
+    font-size: 28px !important;
+    font-weight: 300 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    z-index: 99 !important;
+    outline: none !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    transition: transform 0.1s ease !important;
+  }
+  body.single-listing .ppv2-slider-arrow:active {
+    transform: translateY(-50%) scale(0.9) !important;
+  }
+  
+  body.single-listing .ppv2-slider-arrow--prev {
+    left: 16px !important;
+    padding-right: 3px !important;
+  }
+  
+  body.single-listing .ppv2-slider-arrow--next {
+    right: 16px !important;
+    padding-left: 3px !important;
+  }
+  
+  body.single-listing .ppv2-slider-dots {
+    position: absolute !important;
+    bottom: -20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: flex !important;
+    gap: 8px !important;
+    z-index: 99 !important;
+  }
+  
+  body.single-listing .ppv2-slider-dot {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background: var(--teal-soft) !important;
+    transition: all 0.25s ease !important;
+    cursor: pointer !important;
+    border: 1px solid var(--teal-soft) !important;
+  }
+  
+  body.single-listing .ppv2-slider-dot.is-active {
+    background: var(--teal-deep) !important;
+    border-color: var(--teal-deep) !important;
+    transform: scale(1.2) !important;
+  }
+
   /* ============================================================================
      C. Titlebar — replicando exactamente el header del prototipo:
         Row 1: Verified chip + estrellas + rating + (N reseñas)   gap-2 mb-4
@@ -3088,6 +3194,9 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     line-height: 1.65 !important;
     color: var(--ink-muted) !important;
     margin: 0 0 16px 0 !important;
+  }
+  body.single-listing #listing-overview {
+    margin-bottom: 24px !important; /* Reducido de 48px a 24px */
   }
 
   /* Planes y Precios — items con p-5 rounded-xl border ink/10 */
