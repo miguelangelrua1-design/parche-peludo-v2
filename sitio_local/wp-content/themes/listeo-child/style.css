@@ -2191,14 +2191,15 @@ Text Domain:  listeo-child
    #listing-google-reviews, así el clic sigue llevando a las reseñas de Google. */
 .single-listing .ppv2-reviews-full { display: inline !important; }
 .single-listing .ppv2-reviews-short { display: none !important; }
-/* Tamaño y peso del texto de reseñas: igual de grande que "4.6" (14px) pero
-   en peso LIGHT (300), no semibold. */
+/* Texto de reseñas: mismo tamaño que "4.6" (14px), en BOLD (700) incluyendo los
+   paréntesis, y con un espacio antes del "(" (margin-left). */
 .single-listing .ppv2-meta-top .rating-counter .ppv2-reviews-full,
 .single-listing .ppv2-meta-top .rating-counter .ppv2-reviews-short,
 .single-listing .rating-counter .ppv2-reviews-full,
 .single-listing .rating-counter .ppv2-reviews-short {
   font-size: 14px !important;   /* mismo tamaño que el "4.6" */
-  font-weight: 300 !important;  /* light */
+  font-weight: 700 !important;  /* bold (incluye los paréntesis) */
+  margin-left: 4px !important;  /* espacio entre "4.6" y "(" */
 }
 
 .single-listing #titlebar .listing-titlebar-tags { margin-bottom: 14px !important; gap: 10px !important; }
