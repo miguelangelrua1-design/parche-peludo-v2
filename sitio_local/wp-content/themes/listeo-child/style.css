@@ -2123,24 +2123,30 @@ Text Domain:  listeo-child
 /* ============================================================================
    Botón Favorito: SOLO el corazón (sin texto) en TODOS los estados/viewports
    ----------------------------------------------------------------------------
-   - Logueado: el label va en <b class="bookmark-btn-title"> ("Marcado") + un
-     contador #bookmarks-counter → se ocultan con display:none.
-   - NO logueado: el texto ("Iniciar Sesión Para Marcar Artículos") es un NODO
-     DE TEXTO SUELTO dentro del <button> (no una clase), por eso display:none
-     no lo alcanza. Lo ocultamos con font-size:0 en el botón y restauramos el
-     tamaño SOLO en el icono .like-icon.
-   El clic conserva su lógica nativa de Listeo: si no hay sesión, abre el modal
-   de inicio de sesión (no tocamos el JS del botón).
+   Estructura real de Listeo (verificada):
+     · LOGUEADO:    <button class="like-button ...">
+                      <span class="like-icon"></span>
+                      <b class="bookmark-btn-title">Marcado</b>
+                    </button>
+     · NO LOGUEADO: <button class="like-button-notlogged sign-in popup-...">
+                      <span class="like-icon"></span>
+                      <b class="bookmark-btn-title">Iniciar Sesión Para Marcar Artículos</b>
+                    </button>
+   CLAVE: sin sesión el botón es `.like-button-notlogged` (clase DISTINTA a
+   `.like-button`), por eso las reglas atadas a `.like-button` no lo alcanzaban.
+   Usamos [class*="like-button"] para cubrir AMBOS, y desligamos el display:none
+   del texto de la clase del botón (el <b> existe en los dos estados).
+   El clic conserva su lógica nativa: sin sesión, .sign-in.popup-with-zoom-anim
+   abre el modal de inicio de sesión (no tocamos el JS).
    ============================================================================ */
-.single-listing .like-button .bookmark-btn-title,
-.single-listing #bookmarks-counter,
-.single-listing .listing-widget.widget_buttons #bookmarks-counter { display: none !important; }
+/* Ocultar el texto (ambos estados) y el contador */
+.single-listing .listing-widget.widget_buttons .bookmark-btn-title,
+.single-listing .listing-widget.widget_buttons #bookmarks-counter,
+.single-listing #bookmarks-counter { display: none !important; }
 
-/* El botón como pill circular compacto — aplica logueado Y no logueado
-   (generalizado a .like-button, no solo a .listeo_core-bookmark-it). */
-.single-listing .listing-widget.widget_buttons .like-button,
-.single-listing .like-button.listeo_core-bookmark-it {
-  font-size: 0 !important;            /* oculta el texto suelto del estado no-logueado */
+/* El botón como pill circular compacto — cubre .like-button Y .like-button-notlogged */
+.single-listing .listing-widget.widget_buttons [class*="like-button"] {
+  font-size: 0 !important;            /* fallback: oculta cualquier texto suelto */
   width: 34px !important;
   height: 34px !important;
   min-width: 34px !important;
@@ -2159,8 +2165,7 @@ Text Domain:  listeo-child
   line-height: 1 !important;
 }
 /* Restaurar el corazón (el font-size:0 del botón lo había anulado) */
-.single-listing .listing-widget.widget_buttons .like-button .like-icon,
-.single-listing .like-button .like-icon {
+.single-listing .listing-widget.widget_buttons [class*="like-button"] .like-icon {
   font-size: 17px !important;
   line-height: 1 !important;
   color: #E85D75 !important;
