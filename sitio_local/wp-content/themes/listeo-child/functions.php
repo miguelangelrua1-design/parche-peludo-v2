@@ -733,16 +733,18 @@ function ppv2_listing_header_reorder() {
 add_action( 'wp_footer', 'ppv2_listing_header_reorder', 100 );
 
 /**
- * Reposiciona el botón Favorito según el ancho de pantalla, de forma robusta:
- *   - Móvil (<=767px): mueve el corazón a una fila flex junto al <h1> del
- *     título ("Naturalia" izquierda, corazón derecha). Así la fila meta-top
- *     recupera todo el ancho y "4.6 (92 reseñas)" se ve completo.
- *   - Escritorio (>=768px): deshace el cambio y devuelve el corazón a meta-top.
+ * Contador de reseñas responsivo: prepara DOS variantes del texto dentro del
+ * mismo enlace (que apunta a #listing-google-reviews), para alternarlas por CSS:
+ *   - Escritorio: "(92 reseñas)"  (.ppv2-reviews-full)
+ *   - Móvil:      "(92)"           (.ppv2-reviews-short)
+ * Así en móvil se libera espacio en la fila de estrellas y el corazón (que se
+ * queda en flujo al final de esa fila) no tapa el texto. El número se extrae
+ * dinámicamente del DOM (no se quema). El enlace conserva su href, por lo que
+ * el clic sigue llevando a la sección de reseñas de Google.
  *
- * Usa matchMedia + listener, así que REACCIONA cuando el ancho cruza 768px
- * (incluido activar/desactivar el modo móvil de DevTools) SIN necesidad de
- * recargar. Es una IIFE independiente: aunque el handler principal fallara,
- * esto se ejecuta igual. Reintenta hasta que exista .ppv2-meta-top.
+ * El corazón ya NO se mueve por JS: vive en .ppv2-meta-top y se posiciona en
+ * flujo (CSS: order:99 + margin-left:auto + align-items:center del contenedor),
+ * así queda al final de la fila y verticalmente centrado con las estrellas.
  * Prioridad 101: corre después del reorder principal (100).
  */
 function ppv2_listing_fav_position() {
@@ -751,78 +753,42 @@ function ppv2_listing_fav_position() {
 	}
 	?>
 	<script>
-	(function () {
-		var MQ = window.matchMedia('(max-width: 767px)');
+	document.addEventListener('DOMContentLoaded', function () {
+		function setupReviewCount(tries) {
+			var counter = document.querySelector('.ppv2-meta-top .rating-counter')
+				|| document.querySelector('#titlebar .rating-counter');
+			if (!counter) {
+				if (tries > 0) setTimeout(function () { setupReviewCount(tries - 1); }, 100);
+				return;
+			}
+			if (counter.querySelector('.ppv2-reviews-short')) return; // ya preparado
 
-		function titleBlock() { return document.querySelector('#titlebar .listing-titlebar-title'); }
-		function getFav() {
-			return document.querySelector('.listing-titlebar-title .listing-widget.widget_buttons')
-				|| document.querySelector('.ppv2-meta-top .listing-widget.widget_buttons')
-				|| document.querySelector('#titlebar .listing-widget.widget_buttons');
-		}
-
-		function applyFavPosition() {
-			var tb = titleBlock();
-			if (!tb) return;
-			var h1 = tb.querySelector('h1');
-			var fav = getFav();
-			if (!h1 || !fav) return;
-			var metaTop = tb.querySelector('.ppv2-meta-top');
-			var titleRow = tb.querySelector('.ppv2-title-row');
-
-			if (MQ.matches) {
-				// --- MÓVIL: corazón junto al título ---
-				if (!titleRow) {
-					titleRow = document.createElement('div');
-					titleRow.className = 'ppv2-title-row';
-					h1.parentNode.insertBefore(titleRow, h1); // ocupa el lugar del h1
-					titleRow.appendChild(h1);                 // título a la izquierda
-				}
-				if (fav.parentElement !== titleRow) {
-					fav.classList.add('ppv2-fav-title');
-					// Limpiar inline styles heredados del paso por meta-top
-					fav.style.removeProperty('margin');
-					fav.style.removeProperty('width');
-					fav.style.removeProperty('min-width');
-					fav.style.removeProperty('max-width');
-					fav.style.removeProperty('padding');
-					titleRow.appendChild(fav);                // corazón a la derecha
-				}
-			} else {
-				// --- ESCRITORIO: deshacer (devolver corazón a meta-top) ---
-				if (titleRow) {
-					fav.classList.remove('ppv2-fav-title');
-					if (metaTop) {
-						metaTop.appendChild(fav);             // corazón vuelve a meta-top
+			// Buscar el nodo de texto que contiene "(N reseñas)" dentro de algún <a>
+			var links = counter.querySelectorAll('a');
+			for (var i = 0; i < links.length; i++) {
+				var a = links[i];
+				for (var j = 0; j < a.childNodes.length; j++) {
+					var n = a.childNodes[j];
+					if (n.nodeType === 3 && /\(\s*\d+\s*rese/i.test(n.nodeValue)) {
+						var m = n.nodeValue.match(/(\d+)/);
+						var num = m ? m[1] : '';
+						var full = document.createElement('span');
+						full.className = 'ppv2-reviews-full';
+						full.textContent = '(' + num + ' reseñas)';
+						var short = document.createElement('span');
+						short.className = 'ppv2-reviews-short';
+						short.textContent = '(' + num + ')';
+						var space = document.createTextNode(' ');
+						a.replaceChild(short, n);   // el nodo de texto -> variante corta
+						a.insertBefore(full, short); // variante larga antes
+						a.insertBefore(space, full); // espacio tras "4.6"
+						return;
 					}
-					tb.insertBefore(h1, titleRow);            // h1 vuelve a su lugar
-					titleRow.parentNode.removeChild(titleRow);
 				}
 			}
 		}
-
-		// Esperar a que el reorder principal cree .ppv2-meta-top antes del 1er ajuste
-		function init(tries) {
-			if (document.querySelector('.ppv2-meta-top') || tries <= 0) {
-				applyFavPosition();
-			} else {
-				setTimeout(function () { init(tries - 1); }, 100);
-			}
-		}
-
-		if (document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', function () { init(25); });
-		} else {
-			init(25);
-		}
-
-		// Reaccionar a cambios de ancho / modo móvil sin recargar
-		if (MQ.addEventListener) {
-			MQ.addEventListener('change', applyFavPosition);
-		} else if (MQ.addListener) {
-			MQ.addListener(applyFavPosition); // navegadores antiguos
-		}
-	})();
+		setupReviewCount(25);
+	});
 	</script>
 	<?php
 }

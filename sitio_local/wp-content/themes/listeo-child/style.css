@@ -2185,6 +2185,13 @@ Text Domain:  listeo-child
   display: block !important;
   line-height: 1 !important;
 }
+
+/* Contador de reseñas responsivo (JS crea ambas variantes dentro del enlace):
+   Escritorio → "(92 reseñas)";  Móvil → "(92)". El enlace conserva su href a
+   #listing-google-reviews, así el clic sigue llevando a las reseñas de Google. */
+.single-listing .ppv2-reviews-full { display: inline !important; }
+.single-listing .ppv2-reviews-short { display: none !important; }
+
 .single-listing #titlebar .listing-titlebar-tags { margin-bottom: 14px !important; gap: 10px !important; }
 .single-listing #titlebar .star-rating,
 .single-listing #titlebar .rating-counter {
@@ -3304,6 +3311,10 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     overflow: visible !important;
     text-overflow: clip !important;
   }
+  /* MÓVIL: mostrar solo el número "(92)", ocultar la palabra "reseñas",
+     para liberar espacio y que el corazón (al final de la fila) no la tape. */
+  body.single-listing .ppv2-reviews-full { display: none !important; }
+  body.single-listing .ppv2-reviews-short { display: inline !important; }
   /* Si el rating no cabe a la derecha del verified, forzar romper línea */
   body.single-listing .ppv2-meta-top .star-rating {
     flex: 1 1 auto !important;
