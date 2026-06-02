@@ -723,37 +723,110 @@ function ppv2_listing_header_reorder() {
 			}
 		}
 
-		// === MÓVIL: corazón Favorito a la derecha del título "Naturalia" ===
-		// El favorito en la fila meta-top empujaba/cortaba el texto "(92 reseñas)".
-		// En móvil lo movemos a una fila flex junto al <h1>: título a la izquierda,
-		// corazón a la derecha. Así la fila meta-top recupera todo el ancho y la
-		// calificación se ve completa. (Solo toca el encabezado; el carrusel queda
-		// intacto.) Se ejecuta al final, DESPUÉS de "Prestado por", para no alterar
-		// la posición de h1.parentNode que esa lógica usa.
-		if (window.innerWidth < 768) {
-			var favBtnT = document.querySelector('.ppv2-meta-top .listing-widget.widget_buttons')
-				|| document.querySelector('.listing-titlebar-title .listing-widget.widget_buttons');
-			var h1T = document.querySelector('#titlebar .listing-titlebar-title h1');
-			if (favBtnT && h1T && h1T.parentNode && !document.querySelector('.ppv2-title-row')) {
-				var titleRow = document.createElement('div');
-				titleRow.className = 'ppv2-title-row';
-				h1T.parentNode.insertBefore(titleRow, h1T); // ocupa el lugar del h1
-				titleRow.appendChild(h1T);                  // título a la izquierda
-				favBtnT.classList.add('ppv2-fav-title');
-				// Limpiar estilos inline que quedaron del paso por meta-top
-				favBtnT.style.removeProperty('margin');
-				favBtnT.style.removeProperty('width');
-				favBtnT.style.removeProperty('min-width');
-				favBtnT.style.removeProperty('max-width');
-				favBtnT.style.removeProperty('padding');
-				titleRow.appendChild(favBtnT);              // corazón a la derecha
-			}
-		}
+		// (El reposicionamiento móvil del favorito a la derecha del título se
+		//  maneja en ppv2_listing_fav_position(), con matchMedia, para que
+		//  reaccione al cambio de ancho/modo-móvil aunque no se recargue.)
 	});
 	</script>
 	<?php
 }
 add_action( 'wp_footer', 'ppv2_listing_header_reorder', 100 );
+
+/**
+ * Reposiciona el botón Favorito según el ancho de pantalla, de forma robusta:
+ *   - Móvil (<=767px): mueve el corazón a una fila flex junto al <h1> del
+ *     título ("Naturalia" izquierda, corazón derecha). Así la fila meta-top
+ *     recupera todo el ancho y "4.6 (92 reseñas)" se ve completo.
+ *   - Escritorio (>=768px): deshace el cambio y devuelve el corazón a meta-top.
+ *
+ * Usa matchMedia + listener, así que REACCIONA cuando el ancho cruza 768px
+ * (incluido activar/desactivar el modo móvil de DevTools) SIN necesidad de
+ * recargar. Es una IIFE independiente: aunque el handler principal fallara,
+ * esto se ejecuta igual. Reintenta hasta que exista .ppv2-meta-top.
+ * Prioridad 101: corre después del reorder principal (100).
+ */
+function ppv2_listing_fav_position() {
+	if ( ! is_singular( 'listing' ) ) {
+		return;
+	}
+	?>
+	<script>
+	(function () {
+		var MQ = window.matchMedia('(max-width: 767px)');
+
+		function titleBlock() { return document.querySelector('#titlebar .listing-titlebar-title'); }
+		function getFav() {
+			return document.querySelector('.listing-titlebar-title .listing-widget.widget_buttons')
+				|| document.querySelector('.ppv2-meta-top .listing-widget.widget_buttons')
+				|| document.querySelector('#titlebar .listing-widget.widget_buttons');
+		}
+
+		function applyFavPosition() {
+			var tb = titleBlock();
+			if (!tb) return;
+			var h1 = tb.querySelector('h1');
+			var fav = getFav();
+			if (!h1 || !fav) return;
+			var metaTop = tb.querySelector('.ppv2-meta-top');
+			var titleRow = tb.querySelector('.ppv2-title-row');
+
+			if (MQ.matches) {
+				// --- MÓVIL: corazón junto al título ---
+				if (!titleRow) {
+					titleRow = document.createElement('div');
+					titleRow.className = 'ppv2-title-row';
+					h1.parentNode.insertBefore(titleRow, h1); // ocupa el lugar del h1
+					titleRow.appendChild(h1);                 // título a la izquierda
+				}
+				if (fav.parentElement !== titleRow) {
+					fav.classList.add('ppv2-fav-title');
+					// Limpiar inline styles heredados del paso por meta-top
+					fav.style.removeProperty('margin');
+					fav.style.removeProperty('width');
+					fav.style.removeProperty('min-width');
+					fav.style.removeProperty('max-width');
+					fav.style.removeProperty('padding');
+					titleRow.appendChild(fav);                // corazón a la derecha
+				}
+			} else {
+				// --- ESCRITORIO: deshacer (devolver corazón a meta-top) ---
+				if (titleRow) {
+					fav.classList.remove('ppv2-fav-title');
+					if (metaTop) {
+						metaTop.appendChild(fav);             // corazón vuelve a meta-top
+					}
+					tb.insertBefore(h1, titleRow);            // h1 vuelve a su lugar
+					titleRow.parentNode.removeChild(titleRow);
+				}
+			}
+		}
+
+		// Esperar a que el reorder principal cree .ppv2-meta-top antes del 1er ajuste
+		function init(tries) {
+			if (document.querySelector('.ppv2-meta-top') || tries <= 0) {
+				applyFavPosition();
+			} else {
+				setTimeout(function () { init(tries - 1); }, 100);
+			}
+		}
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', function () { init(25); });
+		} else {
+			init(25);
+		}
+
+		// Reaccionar a cambios de ancho / modo móvil sin recargar
+		if (MQ.addEventListener) {
+			MQ.addEventListener('change', applyFavPosition);
+		} else if (MQ.addListener) {
+			MQ.addListener(applyFavPosition); // navegadores antiguos
+		}
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_listing_fav_position', 101 );
 
 /**
  * Barra inferior fija de móvil + Bottom Sheet de Reservar.
