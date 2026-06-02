@@ -2164,12 +2164,26 @@ Text Domain:  listeo-child
   overflow: hidden !important;
   line-height: 1 !important;
 }
-/* Restaurar el corazón (el font-size:0 del botón lo había anulado) */
+/* Restaurar el corazón (el font-size:0 del botón lo había anulado) y centrarlo
+   perfecto en el círculo. El glifo de Font Awesome se asienta sobre la línea
+   base y quedaba ~3px arriba del centro; lo compensamos con un translateY. */
 .single-listing .listing-widget.widget_buttons [class*="like-button"] .like-icon {
   font-size: 17px !important;
   line-height: 1 !important;
   color: #E85D75 !important;
   margin: 0 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 17px !important;
+  height: 17px !important;
+  vertical-align: middle !important;
+  transform: translateY(3px) !important; /* baja el glifo al centro óptico */
+}
+.single-listing .listing-widget.widget_buttons [class*="like-button"] .like-icon::before {
+  display: block !important;
+  line-height: 1 !important;
 }
 .single-listing #titlebar .listing-titlebar-tags { margin-bottom: 14px !important; gap: 10px !important; }
 .single-listing #titlebar .star-rating,
