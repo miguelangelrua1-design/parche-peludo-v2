@@ -3770,12 +3770,30 @@ body.single-listing #listing-nav {
     display: none !important;
   }
 
-  /* ---- Botón de Mensaje en la barra nativa (a la izquierda de "Reservar ahora") ---- */
-  /* El lado derecho de la barra contiene ahora [botón mensaje] + [Reservar ahora] */
+  /* ---- Botón de Mensaje en la barra nativa (a la izquierda de "Reservar") ---- */
+  /* El lado derecho de la barra contiene ahora [botón mensaje] + [Reservar] */
   body.single-listing .booking-sticky-footer .bsf-right {
     display: flex !important;
     align-items: center !important;
     gap: 10px !important;
+  }
+  /* Botón "Reservar": azul principal (#79c8d0), texto en una sola línea, más ancho. */
+  body.single-listing .booking-sticky-footer .bsf-right a.button,
+  body.single-listing .booking-sticky-footer .bsf-right .button {
+    background: #79c8d0 !important;        /* --teal-parche */
+    color: #FFFFFF !important;
+    white-space: nowrap !important;        /* texto en una sola línea */
+    flex: 1 0 auto !important;             /* el botón ocupa el ancho disponible */
+    text-align: center !important;
+    padding: 14px 28px !important;
+    border-radius: 999px !important;
+    border: none !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+  }
+  body.single-listing .booking-sticky-footer .bsf-right a.button:hover,
+  body.single-listing .booking-sticky-footer .bsf-right .button:hover {
+    background: var(--teal-deep, #4AA5AD) !important;
   }
   body.single-listing .ppv2-bsf-message-btn {
     flex: 0 0 auto !important;

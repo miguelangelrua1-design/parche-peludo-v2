@@ -841,7 +841,20 @@ function ppv2_listing_mobile_bottom_bar() {
 					el.innerHTML = el.innerHTML.replace(/Comenzando\s+/i, '');
 				}
 			}
-			// Inyectar el botón de Mensaje a la IZQUIERDA de "Reservar ahora".
+			// Acortar "Reservar ahora" -> "Reservar" (sin tocar posibles iconos hijos).
+			function fixReserveText() {
+				var a = document.querySelector('.booking-sticky-footer .bsf-right a, .booking-sticky-footer .bsf-right .button');
+				if (!a) return;
+				for (var i = 0; i < a.childNodes.length; i++) {
+					var n = a.childNodes[i];
+					if (n.nodeType === 3 && /Reservar\s+ahora/i.test(n.nodeValue)) {
+						n.nodeValue = n.nodeValue.replace(/Reservar\s+ahora/i, 'Reservar');
+					}
+				}
+			}
+			// Inyectar el botón de Mensaje a la IZQUIERDA de "Reservar". Usa el
+			// MISMO icono que el título de la sección Enviar Mensaje (fa-envelope-o,
+			// sobre cerrado).
 			function injectMessageBtn() {
 				var bsfRight = document.querySelector('.booking-sticky-footer .bsf-right');
 				if (!bsfRight || bsfRight.querySelector('.ppv2-bsf-message-btn')) return;
@@ -849,7 +862,7 @@ function ppv2_listing_mobile_bottom_bar() {
 				btn.type = 'button';
 				btn.className = 'ppv2-bsf-message-btn';
 				btn.setAttribute('aria-label', 'Enviar mensaje');
-				btn.innerHTML = '<i class="sl sl-icon-envelope-open" aria-hidden="true"></i>';
+				btn.innerHTML = '<i class="fa fa-envelope-o" aria-hidden="true"></i>';
 				btn.addEventListener('click', function (e) {
 					e.preventDefault();
 					e.stopImmediatePropagation();
@@ -857,7 +870,7 @@ function ppv2_listing_mobile_bottom_bar() {
 				});
 				bsfRight.insertBefore(btn, bsfRight.firstChild); // izquierda del botón Reservar
 			}
-			function applyAll() { fixPrice(); injectMessageBtn(); }
+			function applyAll() { fixPrice(); fixReserveText(); injectMessageBtn(); }
 			function watch(tries) {
 				var bar = document.querySelector('.booking-sticky-footer');
 				if (bar) {
