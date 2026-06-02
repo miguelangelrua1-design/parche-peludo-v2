@@ -830,6 +830,33 @@ function ppv2_listing_mobile_bottom_bar() {
 
 	<script>
 	document.addEventListener('DOMContentLoaded', function () {
+		// Barra nativa de Listeo: cambiar "Comenzando desde $40.000" -> "desde $40.000".
+		// Solo se elimina la palabra "Comenzando"; el precio (dinámico) se conserva.
+		// Listeo re-renderiza la sticky footer tarde (en window.load), pisando el
+		// cambio; por eso observamos la barra con MutationObserver y re-aplicamos.
+		(function () {
+			function fixPrice() {
+				var el = document.querySelector('.booking-sticky-footer .bsf-left h4');
+				if (el && /Comenzando/i.test(el.innerHTML)) {
+					el.innerHTML = el.innerHTML.replace(/Comenzando\s+/i, '');
+				}
+			}
+			function watch(tries) {
+				var bar = document.querySelector('.booking-sticky-footer');
+				if (bar) {
+					fixPrice();
+					// Re-aplicar si Listeo re-renderiza el contenido de la barra.
+					var obs = new MutationObserver(function () { fixPrice(); });
+					obs.observe(bar, { childList: true, subtree: true, characterData: true });
+				} else if (tries > 0) {
+					setTimeout(function () { watch(tries - 1); }, 100);
+				}
+			}
+			watch(30);
+			// Refuerzo: re-aplicar tras window.load (cuando Listeo suele inicializar).
+			window.addEventListener('load', function () { setTimeout(fixPrice, 100); });
+		})();
+
 		var sheet = document.getElementById('ppv2-reservar-sheet');
 		var sheetContent = document.getElementById('ppv2-reservar-sheet-content');
 		if (!sheet || !sheetContent) return;
