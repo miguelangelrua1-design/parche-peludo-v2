@@ -3764,9 +3764,10 @@ body.single-listing #listing-nav {
     pointer-events: none !important;
     transform: translateY(8px) !important;
   }
-  /* Reservar espacio al final del body para que la barra no tape contenido */
-  body.single-listing {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+  /* Ocultar la BARRA NATIVA de Listeo (.booking-sticky-footer) cuando el sheet
+     está abierto, para que no asome por debajo del panel. */
+  body.ppv2-sheet-open .booking-sticky-footer {
+    display: none !important;
   }
 
   /* ---- Bottom Sheet ---- */

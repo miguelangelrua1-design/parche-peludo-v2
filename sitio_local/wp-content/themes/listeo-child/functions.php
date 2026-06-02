@@ -795,31 +795,27 @@ function ppv2_listing_fav_position() {
 add_action( 'wp_footer', 'ppv2_listing_fav_position', 101 );
 
 /**
- * Barra inferior fija de móvil + Bottom Sheet de Reservar.
+ * Bottom Sheet de Reservar (móvil) conectado a la BARRA NATIVA de Listeo.
  *
- * - La barra contiene un botón "Reservar Ahora" anclado al bottom del viewport
- *   con safe-area-inset para iPhone con home-indicator.
- * - Al hacer click se abre un panel deslizante (bottom sheet) que ocupa el
- *   ~80% de la pantalla, dejando ~20% arriba de espacio respirable.
+ * - NO inyecta barra propia: usa la barra nativa `.booking-sticky-footer`
+ *   (la que muestra el precio + "Reservar ahora") que Listeo ya pinta en móvil.
+ * - Intercepta el clic de su botón "Reservar ahora" (que por defecto hace
+ *   scroll a #booking-widget-anchor) y en su lugar abre un panel deslizante
+ *   (bottom sheet) que ocupa ~80% de la pantalla.
  * - El sheet TOMA prestado el widget Reservar de la sidebar (mueve el nodo),
- *   así toda la lógica de booking (form-booking, calendarios, AJAX) sigue
- *   funcionando sin duplicar HTML ni perder event listeners.
+ *   así toda la lógica de booking (form, calendarios, AJAX, login) sigue
+ *   funcionando sin duplicar HTML ni perder event listeners. Al cerrar, lo
+ *   devuelve a su lugar.
  * - Cierre por: tap en backdrop, tap en botón ×, tap en handle, tecla Escape.
+ * - Solo móvil: la barra nativa solo existe en móvil y el CSS del sheet está
+ *   bajo @media (max-width:767px); el escritorio no se ve afectado.
  */
 function ppv2_listing_mobile_bottom_bar() {
 	if ( ! is_singular( 'listing' ) ) {
 		return;
 	}
 	?>
-	<!-- Barra inferior fija (mobile-only via CSS) -->
-	<div class="ppv2-mobile-bottom-bar" id="ppv2-mobile-bottom-bar" aria-hidden="false">
-		<button type="button" class="ppv2-mobile-bottom-bar__reserve-btn" data-ppv2-open-reservar>
-			<i class="sl sl-icon-calendar"></i>
-			<span>Reservar Ahora</span>
-		</button>
-	</div>
-
-	<!-- Bottom Sheet del widget Reservar (mobile-only) -->
+	<!-- Bottom Sheet del widget Reservar (mobile-only). La barra es la nativa de Listeo. -->
 	<div class="ppv2-bottom-sheet" id="ppv2-reservar-sheet" hidden>
 		<div class="ppv2-bottom-sheet__backdrop" data-ppv2-close-sheet></div>
 		<div class="ppv2-bottom-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="ppv2-reservar-sheet-title">
@@ -893,14 +889,23 @@ function ppv2_listing_mobile_bottom_bar() {
 			}, 340); // un poco más que la duración de la transición (320ms)
 		}
 
-		// Click en el botón "Reservar Ahora" de la barra inferior
-		var openTriggers = document.querySelectorAll('[data-ppv2-open-reservar]');
-		openTriggers.forEach(function (btn) {
-			btn.addEventListener('click', function (e) {
-				e.preventDefault();
-				openSheet();
-			});
-		});
+		// Interceptar el botón "Reservar ahora" de la BARRA NATIVA de Listeo
+		// (.booking-sticky-footer). Por defecto ese enlace hace scroll suave a
+		// #booking-widget-anchor; lo reemplazamos por abrir el panel deslizante.
+		// Delegación en FASE DE CAPTURA para correr ANTES del handler de scroll
+		// de Listeo y poder cancelarlo (stopImmediatePropagation). Funciona aunque
+		// la barra se pinte/recargue después del DOMContentLoaded.
+		var NATIVE_BAR_SEL = '.booking-sticky-footer a, .booking-sticky-footer .button, [data-ppv2-open-reservar]';
+		document.addEventListener('click', function (e) {
+			var trigger = e.target.closest(NATIVE_BAR_SEL);
+			if (!trigger) return;
+			// Solo en móvil (la barra nativa solo aparece en móvil, pero por
+			// seguridad respetamos el breakpoint del sheet).
+			if (!window.matchMedia('(max-width: 767px)').matches) return;
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			openSheet();
+		}, true); // true = captura
 
 		// Click en backdrop, handle o botón × cierran el sheet
 		var closeTriggers = sheet.querySelectorAll('[data-ppv2-close-sheet]');
