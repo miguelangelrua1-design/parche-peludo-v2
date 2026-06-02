@@ -723,36 +723,10 @@ function ppv2_listing_header_reorder() {
 			}
 		}
 
-		// === MÓVIL: botón Favorito como overlay flotante sobre el carrusel ===
-		// IMPORTANTE: NO lo metemos DENTRO de la galería, porque el CSS de la
-		// galería tiene un reset wildcard (.gallery-grid *) que fuerza width/
-		// height:100% a todos sus descendientes y rompería el carrusel.
-		// En su lugar lo colocamos como HERMANO inmediatamente DESPUÉS de la
-		// galería (hijo directo de la columna de contenido). La columna es
-		// position:relative (ver CSS), la galería es full-bleed arriba del
-		// todo, así que `position:absolute; top:12px; right:12px` aterriza en
-		// la esquina superior derecha del carrusel SIN tocar su mecanismo.
-		if (window.innerWidth < 768) {
-			var favBtn = document.querySelector('.ppv2-meta-top .listing-widget.widget_buttons')
-				|| document.querySelector('.listing-titlebar .listing-widget.widget_buttons')
-				|| document.querySelector('.listing-widget.widget_buttons');
-			// Galería/carrusel de referencia (para insertarse justo después).
-			var galleryHost = document.querySelector('.ppv2-mobile-slider-container')
-				|| document.querySelector('.listeo-single-listing-gallery-grid')
-				|| document.getElementById('single-listing-grid-gallery')
-				|| document.getElementById('listing-gallery');
-			if (favBtn && galleryHost && galleryHost.parentNode && !favBtn.classList.contains('ppv2-fav-over-gallery')) {
-				favBtn.classList.add('ppv2-fav-over-gallery');
-				// Limpiar estilos inline que quedaron al moverse a meta-top
-				favBtn.style.removeProperty('margin');
-				favBtn.style.removeProperty('width');
-				favBtn.style.removeProperty('max-width');
-				favBtn.style.removeProperty('min-width');
-				favBtn.style.removeProperty('padding');
-				// Insertar como hermano del carrusel (NO como hijo), en la columna.
-				galleryHost.parentNode.insertBefore(favBtn, galleryHost.nextSibling);
-			}
-		}
+		// NOTA: el botón Favorito se deja en su fila del encabezado (.ppv2-meta-top).
+		// Intentos previos de moverlo "sobre el carrusel" rompían el slider móvil
+		// (reset wildcard de la galería) o quedaban mal anclados. El estilo móvil
+		// del favorito (pequeño, sin label) se controla solo por CSS en .ppv2-meta-top.
 	});
 	</script>
 	<?php

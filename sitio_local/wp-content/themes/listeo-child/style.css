@@ -3193,47 +3193,37 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
   /* Nota: en pantallas más estrechas el flex-wrap del padre + flex:1 1 auto
      hará que el rating salte a la siguiente línea automáticamente. */
 
-  /* ❤ FAVORITO en MOBILE: lo sacamos de la meta-top y lo flotamos sobre la
-     galería en la esquina superior derecha, como pill circular pequeño.
-     Para que `position:absolute` ancle al área de la galería, hacemos que
-     el contenedor de contenido (.listeo-single-listing-content) sea
-     `position:relative` — la galería es el primer hijo (order:-1) así que
-     `top:12px right:12px` cae sobre su esquina superior derecha. */
-  body.single-listing .listeo-single-listing-content {
-    position: relative !important;
-  }
+  /* ❤ FAVORITO en MOBILE: corazón pequeño al final de la fila del encabezado.
+     Se queda en .ppv2-meta-top (NO se mueve al carrusel: eso rompía el slider).
+     Mostramos SOLO el icono del corazón; el texto largo del logged-out
+     ("Iniciar Sesión Para Marcar Artículos") se oculta con el truco font-size:0
+     en el enlace, restaurando el tamaño en el icono. Estable y siempre visible. */
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons {
-    position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
-    margin: 0 !important;
+    position: static !important;
+    margin: 0 0 0 auto !important; /* empuja el corazón al extremo derecho de la fila */
     padding: 0 !important;
     width: auto !important;
     min-width: 0 !important;
     max-width: none !important;
-    z-index: 50 !important;
+    flex: 0 0 auto !important;
+    order: 99 !important; /* siempre al final de la fila, después de las estrellas */
   }
-  /* Pill circular blanco translúcido alrededor del corazón para que destaque
-     sobre las imágenes y sea cliqueable cómodamente */
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons .listing-share {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border-radius: 50% !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
-    width: 38px !important;
-    height: 38px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    width: auto !important;
+    height: auto !important;
     min-width: 0 !important;
-    padding: 0 !important;
     margin: 0 !important;
-    display: flex !important;
+    padding: 0 !important;
+    display: inline-flex !important;
     align-items: center !important;
-    justify-content: center !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
   }
-  /* Botón bookmark/favorito interior: limpiar styling heredado de Listeo */
+  /* Enlace del bookmark: font-size:0 oculta el texto suelto (logged-out) */
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons .bookmark-btn,
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons a.like-icon,
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons a {
+    font-size: 0 !important;
     width: auto !important;
     height: auto !important;
     min-width: 0 !important;
@@ -3243,18 +3233,19 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     box-shadow: none !important;
     border: 0 !important;
     line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
   }
-  /* Icono del corazón: tamaño reducido para el pill 38px */
+  /* Icono del corazón: restaurar tamaño (el font-size:0 del padre lo había anulado) */
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons .bookmark-btn i,
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons i,
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons svg {
-    font-size: 16px !important;
-    width: 16px !important;
-    height: 16px !important;
+    font-size: 18px !important;
+    width: auto !important;
+    height: auto !important;
     line-height: 1 !important;
   }
-  /* Ocultar cualquier label de texto que acompañe al corazón en la sidebar
-     original ("Marcar este listado", "Guardar", contador, etc.) */
+  /* Ocultar contador / labels con su propia clase, por si acaso */
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons .bookmark-btn-title,
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons .like-text,
   body.single-listing .ppv2-meta-top > .listing-widget.widget_buttons #bookmarks-counter {
@@ -3778,79 +3769,6 @@ body.single-listing #listing-nav {
     touch-action: none !important;
   }
 
-  /* ============================================================================
-     FAVORITO sobre el CARRUSEL (mobile) — overlay esquina superior derecha
-     ----------------------------------------------------------------------------
-     El JS mueve .listing-widget.widget_buttons DENTRO del contenedor del
-     carrusel y le añade la clase .ppv2-fav-over-gallery. Aquí lo posicionamos
-     absoluto, sin tocar el track/flechas/puntos del slider.
-     ============================================================================ */
-  /* Asegurar que el contenedor del carrusel/galería ancle el overlay */
-  body.single-listing .ppv2-mobile-slider-container,
-  body.single-listing .listeo-single-listing-gallery-grid,
-  body.single-listing #single-listing-grid-gallery,
-  body.single-listing #listing-gallery {
-    position: relative !important;
-  }
-
-  body.single-listing .ppv2-fav-over-gallery {
-    position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
-    left: auto !important;
-    bottom: auto !important;
-    z-index: 60 !important; /* sobre las imágenes; las flechas (z99) van al centro, no chocan */
-    margin: 0 !important;
-    padding: 0 !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    height: auto !important;
-    display: block !important;
-  }
-  /* Pill circular blanco translúcido alrededor del corazón */
-  body.single-listing .ppv2-fav-over-gallery .listing-share {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border-radius: 50% !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
-    width: 38px !important;
-    height: 38px !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
-  }
-  /* Botón bookmark interior: limpiar styling heredado de la sidebar */
-  body.single-listing .ppv2-fav-over-gallery .bookmark-btn,
-  body.single-listing .ppv2-fav-over-gallery a.like-icon,
-  body.single-listing .ppv2-fav-over-gallery a {
-    width: auto !important;
-    height: auto !important;
-    min-width: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border: 0 !important;
-    line-height: 1 !important;
-  }
-  /* Icono del corazón */
-  body.single-listing .ppv2-fav-over-gallery .bookmark-btn i,
-  body.single-listing .ppv2-fav-over-gallery i,
-  body.single-listing .ppv2-fav-over-gallery svg {
-    font-size: 16px !important;
-    width: 16px !important;
-    height: 16px !important;
-    line-height: 1 !important;
-  }
-  /* Ocultar labels de texto / contador heredados */
-  body.single-listing .ppv2-fav-over-gallery .bookmark-btn-title,
-  body.single-listing .ppv2-fav-over-gallery .like-text,
-  body.single-listing .ppv2-fav-over-gallery #bookmarks-counter {
-    display: none !important;
-  }
+  /* (El bloque "FAVORITO sobre el CARRUSEL" se retiró: el favorito ahora se
+     queda estable en la fila del encabezado .ppv2-meta-top — ver más arriba.) */
 }
