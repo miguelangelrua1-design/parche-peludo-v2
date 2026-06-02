@@ -3777,4 +3777,80 @@ body.single-listing #listing-nav {
     overflow: hidden !important;
     touch-action: none !important;
   }
+
+  /* ============================================================================
+     FAVORITO sobre el CARRUSEL (mobile) — overlay esquina superior derecha
+     ----------------------------------------------------------------------------
+     El JS mueve .listing-widget.widget_buttons DENTRO del contenedor del
+     carrusel y le añade la clase .ppv2-fav-over-gallery. Aquí lo posicionamos
+     absoluto, sin tocar el track/flechas/puntos del slider.
+     ============================================================================ */
+  /* Asegurar que el contenedor del carrusel/galería ancle el overlay */
+  body.single-listing .ppv2-mobile-slider-container,
+  body.single-listing .listeo-single-listing-gallery-grid,
+  body.single-listing #single-listing-grid-gallery,
+  body.single-listing #listing-gallery {
+    position: relative !important;
+  }
+
+  body.single-listing .ppv2-fav-over-gallery {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    left: auto !important;
+    bottom: auto !important;
+    z-index: 60 !important; /* sobre las imágenes; las flechas (z99) van al centro, no chocan */
+    margin: 0 !important;
+    padding: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    display: block !important;
+  }
+  /* Pill circular blanco translúcido alrededor del corazón */
+  body.single-listing .ppv2-fav-over-gallery .listing-share {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+  /* Botón bookmark interior: limpiar styling heredado de la sidebar */
+  body.single-listing .ppv2-fav-over-gallery .bookmark-btn,
+  body.single-listing .ppv2-fav-over-gallery a.like-icon,
+  body.single-listing .ppv2-fav-over-gallery a {
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    line-height: 1 !important;
+  }
+  /* Icono del corazón */
+  body.single-listing .ppv2-fav-over-gallery .bookmark-btn i,
+  body.single-listing .ppv2-fav-over-gallery i,
+  body.single-listing .ppv2-fav-over-gallery svg {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+    line-height: 1 !important;
+  }
+  /* Ocultar labels de texto / contador heredados */
+  body.single-listing .ppv2-fav-over-gallery .bookmark-btn-title,
+  body.single-listing .ppv2-fav-over-gallery .like-text,
+  body.single-listing .ppv2-fav-over-gallery #bookmarks-counter {
+    display: none !important;
+  }
 }

@@ -722,6 +722,34 @@ function ppv2_listing_header_reorder() {
 				}
 			}
 		}
+
+		// === MÓVIL: botón Favorito como overlay encima del carrusel ===
+		// En móvil movemos el botón de favorito (que vive en .ppv2-meta-top)
+		// DENTRO del contenedor del carrusel/galería, como hijo-overlay igual
+		// que las flechas y los puntos del slider. Así queda anclado a la
+		// esquina superior derecha del carrusel SIN tocar el mecanismo del
+		// slider (el track es un hijo aparte). Esto además elimina el solape
+		// con el texto "4.6 (92 reseñas)" de la fila meta-top.
+		if (window.innerWidth < 768) {
+			var favBtn = document.querySelector('.ppv2-meta-top .listing-widget.widget_buttons')
+				|| document.querySelector('.listing-titlebar .listing-widget.widget_buttons')
+				|| document.querySelector('.listing-widget.widget_buttons');
+			// Contenedor del carrusel (slider multi-foto) o la galería/cover móvil.
+			var galleryHost = document.querySelector('.ppv2-mobile-slider-container')
+				|| document.querySelector('.listeo-single-listing-gallery-grid')
+				|| document.getElementById('single-listing-grid-gallery')
+				|| document.getElementById('listing-gallery');
+			if (favBtn && galleryHost && favBtn.parentElement !== galleryHost) {
+				favBtn.classList.add('ppv2-fav-over-gallery');
+				// Limpiar estilos inline que quedaron al moverse a meta-top
+				favBtn.style.removeProperty('margin');
+				favBtn.style.removeProperty('width');
+				favBtn.style.removeProperty('max-width');
+				favBtn.style.removeProperty('min-width');
+				favBtn.style.removeProperty('padding');
+				galleryHost.appendChild(favBtn); // overlay: último hijo del carrusel
+			}
+		}
 	});
 	</script>
 	<?php
