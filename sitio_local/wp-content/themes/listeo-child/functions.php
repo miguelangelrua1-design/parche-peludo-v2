@@ -841,12 +841,30 @@ function ppv2_listing_mobile_bottom_bar() {
 					el.innerHTML = el.innerHTML.replace(/Comenzando\s+/i, '');
 				}
 			}
+			// Inyectar el botón de Mensaje a la IZQUIERDA de "Reservar ahora".
+			function injectMessageBtn() {
+				var bsfRight = document.querySelector('.booking-sticky-footer .bsf-right');
+				if (!bsfRight || bsfRight.querySelector('.ppv2-bsf-message-btn')) return;
+				var btn = document.createElement('button');
+				btn.type = 'button';
+				btn.className = 'ppv2-bsf-message-btn';
+				btn.setAttribute('aria-label', 'Enviar mensaje');
+				btn.innerHTML = '<i class="sl sl-icon-envelope-open" aria-hidden="true"></i>';
+				btn.addEventListener('click', function (e) {
+					e.preventDefault();
+					e.stopImmediatePropagation();
+					openSheet('message'); // openSheet está hoisteada en este scope
+				});
+				bsfRight.insertBefore(btn, bsfRight.firstChild); // izquierda del botón Reservar
+			}
+			function applyAll() { fixPrice(); injectMessageBtn(); }
 			function watch(tries) {
 				var bar = document.querySelector('.booking-sticky-footer');
 				if (bar) {
-					fixPrice();
-					// Re-aplicar si Listeo re-renderiza el contenido de la barra.
-					var obs = new MutationObserver(function () { fixPrice(); });
+					applyAll();
+					// Re-aplicar si Listeo re-renderiza el contenido de la barra
+					// (vuelve a quitar "Comenzando" y re-inyecta el botón de mensaje).
+					var obs = new MutationObserver(applyAll);
 					obs.observe(bar, { childList: true, subtree: true, characterData: true });
 				} else if (tries > 0) {
 					setTimeout(function () { watch(tries - 1); }, 100);
@@ -854,41 +872,58 @@ function ppv2_listing_mobile_bottom_bar() {
 			}
 			watch(30);
 			// Refuerzo: re-aplicar tras window.load (cuando Listeo suele inicializar).
-			window.addEventListener('load', function () { setTimeout(fixPrice, 100); });
+			window.addEventListener('load', function () { setTimeout(applyAll, 100); });
 		})();
 
 		var sheet = document.getElementById('ppv2-reservar-sheet');
 		var sheetContent = document.getElementById('ppv2-reservar-sheet-content');
 		if (!sheet || !sheetContent) return;
 
-		// Referencias guardadas para devolver el widget Reservar a su lugar
-		// original cuando se cierra el sheet.
-		var bookingWidget = null;
+		// Estado del sheet: qué widget está dentro, su tipo y posición original.
+		// El MISMO panel sirve para "Reservar" y "Enviar Mensaje": al abrir, se
+		// mueve el widget nativo correspondiente desde la sidebar; al cerrar, se
+		// devuelve a su lugar (restaurando su estado colapsado si lo tenía).
+		var currentWidget = null;
+		var currentType = null;
+		var widgetWasCollapsed = false;
 		var originalParent = null;
 		var originalNextSibling = null;
 
-		function findBookingWidget() {
+		function getWidget(type) {
+			if (type === 'message') {
+				return document.querySelector('.listeo-single-listing-sidebar .listing-widget.message-vendor')
+					|| document.querySelector('.listeo-single-listing-sidebar #widget_contact_widget_listeo-3');
+			}
 			return document.querySelector('.listeo-single-listing-sidebar .listing-widget.booking-widget')
 				|| document.querySelector('.listeo-single-listing-sidebar #widget_booking_listings-3')
 				|| document.querySelector('.listeo-single-listing-sidebar .listing-widget.boxed-widget.booking-widget');
 		}
 
-		function openSheet() {
-			bookingWidget = findBookingWidget();
-			if (!bookingWidget) {
-				console.warn('[ppv2-reservar-sheet] booking widget no encontrado');
+		function openSheet(type) {
+			type = type || 'booking';
+			var widget = getWidget(type);
+			if (!widget) {
+				console.warn('[ppv2-sheet] widget no encontrado para:', type);
 				return;
 			}
+			// Título del panel según el tipo
+			var titleEl = document.getElementById('ppv2-reservar-sheet-title');
+			if (titleEl) titleEl.textContent = (type === 'message') ? 'Enviar Mensaje' : 'Reservar';
+			// Recordar si el widget estaba colapsado (el de mensaje es colapsable);
+			// dentro del sheet lo queremos expandido para ver el formulario.
+			widgetWasCollapsed = widget.classList.contains('is-collapsed');
+			if (widgetWasCollapsed) widget.classList.remove('is-collapsed');
 			// Guardar posición original para restaurar al cerrar
-			originalParent = bookingWidget.parentNode;
-			originalNextSibling = bookingWidget.nextSibling;
+			currentWidget = widget;
+			currentType = type;
+			originalParent = widget.parentNode;
+			originalNextSibling = widget.nextSibling;
 			// Mover el widget dentro del sheet content
-			sheetContent.appendChild(bookingWidget);
-			// Mostrar el sheet (display:flex) primero, luego en el siguiente frame
-			// añadir .is-open para que el transform animado interpole correctamente.
+			sheetContent.appendChild(widget);
+			// Mostrar el sheet (display:flex) y, en el siguiente frame, añadir
+			// .is-open para que el transform animado interpole correctamente.
 			sheet.removeAttribute('hidden');
-			// Forzar un reflow para que la transición se aplique desde el estado inicial
-			void sheet.offsetWidth;
+			void sheet.offsetWidth; // reflow
 			sheet.classList.add('is-open');
 			document.body.classList.add('ppv2-sheet-open');
 			// Foco accesible al botón cerrar
@@ -899,20 +934,32 @@ function ppv2_listing_mobile_bottom_bar() {
 		function closeSheet() {
 			sheet.classList.remove('is-open');
 			document.body.classList.remove('ppv2-sheet-open');
+			// Capturar las referencias LOCALMENTE y limpiar el estado global ya,
+			// para evitar una carrera si se abre otro sheet antes de que termine
+			// la animación de salida (las variables compartidas no se corromperían).
+			var w = currentWidget, op = originalParent, ons = originalNextSibling, wasColl = widgetWasCollapsed;
+			currentWidget = null;
+			currentType = null;
+			originalParent = null;
+			originalNextSibling = null;
+			widgetWasCollapsed = false;
 			// Esperar a que termine la animación de salida antes de devolver el
-			// widget a la sidebar y ocultar el sheet completamente.
+			// widget a la sidebar y ocultar el sheet.
 			setTimeout(function () {
-				if (bookingWidget && originalParent) {
-					if (originalNextSibling && originalNextSibling.parentNode === originalParent) {
-						originalParent.insertBefore(bookingWidget, originalNextSibling);
+				if (w && op) {
+					if (ons && ons.parentNode === op) {
+						op.insertBefore(w, ons);
 					} else {
-						originalParent.appendChild(bookingWidget);
+						op.appendChild(w);
 					}
+					// Restaurar su estado colapsado original (p.ej. el de mensaje
+					// vuelve a su pill colapsada en la sidebar).
+					if (wasColl) w.classList.add('is-collapsed');
 				}
-				sheet.setAttribute('hidden', '');
-				bookingWidget = null;
-				originalParent = null;
-				originalNextSibling = null;
+				// Solo ocultar el sheet si no se reabrió mientras tanto.
+				if (!sheet.classList.contains('is-open')) {
+					sheet.setAttribute('hidden', '');
+				}
 			}, 340); // un poco más que la duración de la transición (320ms)
 		}
 
@@ -931,7 +978,7 @@ function ppv2_listing_mobile_bottom_bar() {
 			if (!window.matchMedia('(max-width: 767px)').matches) return;
 			e.preventDefault();
 			e.stopImmediatePropagation();
-			openSheet();
+			openSheet('booking');
 		}, true); // true = captura
 
 		// Click en backdrop, handle o botón × cierran el sheet

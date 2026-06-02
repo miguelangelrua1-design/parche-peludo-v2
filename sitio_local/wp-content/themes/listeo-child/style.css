@@ -3770,6 +3770,41 @@ body.single-listing #listing-nav {
     display: none !important;
   }
 
+  /* ---- Botón de Mensaje en la barra nativa (a la izquierda de "Reservar ahora") ---- */
+  /* El lado derecho de la barra contiene ahora [botón mensaje] + [Reservar ahora] */
+  body.single-listing .booking-sticky-footer .bsf-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  body.single-listing .ppv2-bsf-message-btn {
+    flex: 0 0 auto !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 50% !important;
+    background: var(--teal-mist) !important;
+    border: 2px solid var(--teal-parche) !important;
+    color: var(--teal-ink) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    box-shadow: none !important;
+    transition: transform 120ms ease, background 200ms ease !important;
+  }
+  body.single-listing .ppv2-bsf-message-btn:active {
+    transform: scale(0.92) !important;
+    background: var(--teal-soft) !important;
+  }
+  body.single-listing .ppv2-bsf-message-btn i {
+    font-size: 20px !important;
+    line-height: 1 !important;
+    color: var(--teal-ink) !important;
+  }
+
   /* ---- Bottom Sheet ---- */
   body.single-listing .ppv2-bottom-sheet {
     display: flex !important;
