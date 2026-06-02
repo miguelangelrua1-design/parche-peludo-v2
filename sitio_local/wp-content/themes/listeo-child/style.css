@@ -3141,6 +3141,78 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     margin: 0 0 8px 0 !important; /* mb-2 = 8px */
   }
 
+  /* ---- Fila Título + Favorito ----
+     El JS envuelve el <h1> y el corazón en .ppv2-title-row: título a la
+     izquierda (ocupa el espacio), corazón a la derecha. Así la fila meta-top
+     queda libre y "4.6 (92 reseñas)" se muestra completo. */
+  body.single-listing .ppv2-title-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin: 0 0 8px 0 !important;
+  }
+  body.single-listing .ppv2-title-row h1 {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    margin: 0 !important; /* el margen inferior lo lleva .ppv2-title-row */
+  }
+  /* Corazón a la derecha del título: pill circular pequeño */
+  body.single-listing .ppv2-fav-title {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  body.single-listing .ppv2-fav-title .listing-share {
+    background: var(--paper) !important;
+    border: 1px solid var(--ink-line-2) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10) !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  /* Enlace bookmark: font-size:0 oculta el texto suelto (logged-out:
+     "Iniciar Sesión Para Marcar Artículos") manteniendo solo el icono. */
+  body.single-listing .ppv2-fav-title .bookmark-btn,
+  body.single-listing .ppv2-fav-title a.like-icon,
+  body.single-listing .ppv2-fav-title a {
+    font-size: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  body.single-listing .ppv2-fav-title .bookmark-btn i,
+  body.single-listing .ppv2-fav-title i,
+  body.single-listing .ppv2-fav-title svg {
+    font-size: 18px !important;
+    width: auto !important;
+    height: auto !important;
+    line-height: 1 !important;
+  }
+  body.single-listing .ppv2-fav-title .bookmark-btn-title,
+  body.single-listing .ppv2-fav-title .like-text,
+  body.single-listing .ppv2-fav-title #bookmarks-counter {
+    display: none !important;
+  }
+
   /* Row 1: Meta-top — items-center gap-2 mb-4
      En mobile estrecho (iPhone 15: 393px), el chip verified + 5 estrellas +
      "4.6 (92 reseñas)" no caben en una sola línea. Forzamos el .star-rating

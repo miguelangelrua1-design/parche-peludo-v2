@@ -723,10 +723,32 @@ function ppv2_listing_header_reorder() {
 			}
 		}
 
-		// NOTA: el botón Favorito se deja en su fila del encabezado (.ppv2-meta-top).
-		// Intentos previos de moverlo "sobre el carrusel" rompían el slider móvil
-		// (reset wildcard de la galería) o quedaban mal anclados. El estilo móvil
-		// del favorito (pequeño, sin label) se controla solo por CSS en .ppv2-meta-top.
+		// === MÓVIL: corazón Favorito a la derecha del título "Naturalia" ===
+		// El favorito en la fila meta-top empujaba/cortaba el texto "(92 reseñas)".
+		// En móvil lo movemos a una fila flex junto al <h1>: título a la izquierda,
+		// corazón a la derecha. Así la fila meta-top recupera todo el ancho y la
+		// calificación se ve completa. (Solo toca el encabezado; el carrusel queda
+		// intacto.) Se ejecuta al final, DESPUÉS de "Prestado por", para no alterar
+		// la posición de h1.parentNode que esa lógica usa.
+		if (window.innerWidth < 768) {
+			var favBtnT = document.querySelector('.ppv2-meta-top .listing-widget.widget_buttons')
+				|| document.querySelector('.listing-titlebar-title .listing-widget.widget_buttons');
+			var h1T = document.querySelector('#titlebar .listing-titlebar-title h1');
+			if (favBtnT && h1T && h1T.parentNode && !document.querySelector('.ppv2-title-row')) {
+				var titleRow = document.createElement('div');
+				titleRow.className = 'ppv2-title-row';
+				h1T.parentNode.insertBefore(titleRow, h1T); // ocupa el lugar del h1
+				titleRow.appendChild(h1T);                  // título a la izquierda
+				favBtnT.classList.add('ppv2-fav-title');
+				// Limpiar estilos inline que quedaron del paso por meta-top
+				favBtnT.style.removeProperty('margin');
+				favBtnT.style.removeProperty('width');
+				favBtnT.style.removeProperty('min-width');
+				favBtnT.style.removeProperty('max-width');
+				favBtnT.style.removeProperty('padding');
+				titleRow.appendChild(favBtnT);              // corazón a la derecha
+			}
+		}
 	});
 	</script>
 	<?php
