@@ -2120,15 +2120,31 @@ Text Domain:  listeo-child
   padding: 0 !important;
   border: 0 !important;
 }
-/* Ocultar texto del botón ("Marca este listado") y el contador ("X persona…") */
+/* ============================================================================
+   Botón Favorito: SOLO el corazón (sin texto) en TODOS los estados/viewports
+   ----------------------------------------------------------------------------
+   - Logueado: el label va en <b class="bookmark-btn-title"> ("Marcado") + un
+     contador #bookmarks-counter → se ocultan con display:none.
+   - NO logueado: el texto ("Iniciar Sesión Para Marcar Artículos") es un NODO
+     DE TEXTO SUELTO dentro del <button> (no una clase), por eso display:none
+     no lo alcanza. Lo ocultamos con font-size:0 en el botón y restauramos el
+     tamaño SOLO en el icono .like-icon.
+   El clic conserva su lógica nativa de Listeo: si no hay sesión, abre el modal
+   de inicio de sesión (no tocamos el JS del botón).
+   ============================================================================ */
 .single-listing .like-button .bookmark-btn-title,
-.single-listing #bookmarks-counter { display: none !important; }
+.single-listing #bookmarks-counter,
+.single-listing .listing-widget.widget_buttons #bookmarks-counter { display: none !important; }
 
-/* Estilo del corazón: redondo, compacto, alineado al chip */
+/* El botón como pill circular compacto — aplica logueado Y no logueado
+   (generalizado a .like-button, no solo a .listeo_core-bookmark-it). */
+.single-listing .listing-widget.widget_buttons .like-button,
 .single-listing .like-button.listeo_core-bookmark-it {
+  font-size: 0 !important;            /* oculta el texto suelto del estado no-logueado */
   width: 34px !important;
   height: 34px !important;
   min-width: 34px !important;
+  max-width: 34px !important;
   padding: 0 !important;
   border-radius: 50% !important;
   background: var(--paper) !important;
@@ -2138,8 +2154,18 @@ Text Domain:  listeo-child
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  line-height: 1 !important;
 }
-.single-listing .like-button .like-icon { color: #E85D75 !important; margin: 0 !important; }
+/* Restaurar el corazón (el font-size:0 del botón lo había anulado) */
+.single-listing .listing-widget.widget_buttons .like-button .like-icon,
+.single-listing .like-button .like-icon {
+  font-size: 17px !important;
+  line-height: 1 !important;
+  color: #E85D75 !important;
+  margin: 0 !important;
+}
 .single-listing #titlebar .listing-titlebar-tags { margin-bottom: 14px !important; gap: 10px !important; }
 .single-listing #titlebar .star-rating,
 .single-listing #titlebar .rating-counter {
@@ -3166,17 +3192,19 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     margin: 0 !important;
     padding: 0 !important;
   }
+  /* Wrapper transparente: el círculo visible lo dibuja el .like-button
+     (regla global), así evitamos círculos anidados. */
   body.single-listing .ppv2-fav-title .listing-share {
-    background: var(--paper) !important;
-    border: 1px solid var(--ink-line-2) !important;
-    border-radius: 50% !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10) !important;
-    width: 40px !important;
-    height: 40px !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    width: auto !important;
+    height: auto !important;
     min-width: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
   }
