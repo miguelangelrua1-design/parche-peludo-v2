@@ -35,6 +35,12 @@ add_action( 'wp_enqueue_scripts', 'listeo_child_enqueue_styles', 99 );
  * la sección en la página, no afecta el resto del sitio.
  */
 function ppv2_shop_filter_script() {
+	// Solo en las páginas que usan el filtro de productos: Home V2 (1555, hoy
+	// portada oficial) y Home Tienda (1610). Evita imprimir el script en todo
+	// el sitio (blog, checkout, listados…).
+	if ( ! is_page( array( 1555, 1610 ) ) && ! is_front_page() ) {
+		return;
+	}
 	?>
 	<script>
 	document.addEventListener('DOMContentLoaded', function () {
@@ -48,7 +54,13 @@ function ppv2_shop_filter_script() {
 			var btn = li.querySelector('a.button');
 			if (btn) {
 				btn.textContent = 'Ver más';
-				if (link && link.href) { btn.href = link.href; }
+				if (link && link.href) {
+					btn.href = link.href;
+				} else {
+					// Sin enlace a la ficha: neutralizar el href "?add-to-cart=ID"
+					// para que "Ver más" no añada el producto al carrito.
+					btn.removeAttribute('href');
+				}
 				btn.classList.remove('add_to_cart_button', 'ajax_add_to_cart');
 				btn.removeAttribute('data-quantity');
 				btn.removeAttribute('data-product_id');
@@ -426,11 +438,29 @@ function ppv2_listing_header_reorder() {
 		// Ejecutar de inmediato
 		adjustGoogleReviewButton();
 
-		// Monitorear cambios en el body por si la sección o los botones de Google se cargan por AJAX
+		// Monitorear SOLO la sección de Google (no todo el body) por si sus
+		// botones se re-renderizan por AJAX. Si la sección aún no existe,
+		// vigilar el body solo hasta que aparezca (máx. 10 s) y acotar entonces.
+		var googleObsTarget = document.getElementById('listing-google-reviews');
 		var observer = new MutationObserver(function() {
 			adjustGoogleReviewButton();
+			if (!googleObsTarget) {
+				var sec = document.getElementById('listing-google-reviews');
+				if (sec) { // apareció por AJAX: re-acotar el observer a la sección
+					observer.disconnect();
+					googleObsTarget = sec;
+					observer.observe(sec, { childList: true, subtree: true });
+				}
+			}
 		});
-		observer.observe(document.body, { childList: true, subtree: true });
+		if (googleObsTarget) {
+			observer.observe(googleObsTarget, { childList: true, subtree: true });
+		} else {
+			observer.observe(document.body, { childList: true, subtree: true });
+			setTimeout(function () {
+				if (!googleObsTarget) observer.disconnect();
+			}, 10000);
+		}
 
 		// Reordenar el FAQ al final del bloque de contenido (orden del prototipo:
 		// descripción → precios → ubicación → reseñas → características → FAQ).
