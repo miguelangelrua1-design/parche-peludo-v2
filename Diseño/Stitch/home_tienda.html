@@ -1,0 +1,876 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Tienda | Parche Peludo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400;1,700&amp;family=Caveat:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Public+Sans:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              teal: {
+                parche: "#79C8D0",
+                deep: "#4AA5AD",
+                soft: "#BEE3E7",
+                mist: "#E8F4F6",
+                ink: "#1E5D64",
+              },
+              ink: {
+                DEFAULT: "#1E2E33",
+                muted: "#5A6B70",
+                faint: "#8E9A9E",
+              },
+              marigold: "#FFD166",
+              coral: "#E85D75",
+              paper: "#FFFFFF",
+              bone: "#F7F3EC",
+            },
+            borderRadius: {
+              "DEFAULT": "0.75rem",
+              "lg": "1.25rem",
+              "xl": "1.75rem",
+              "full": "9999px"
+            },
+            fontFamily: {
+              headline: ["Ubuntu", "sans-serif"],
+              display: ["Ubuntu", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+              label: ["Ubuntu", "sans-serif"]
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #E8F4F6 0%, #FFFFFF 100%);
+        }
+        
+        .product-card-shadow {
+            box-shadow: 0 4px 12px rgba(30,46,51,.08), 0 2px 4px rgba(30,46,51,.04);
+        }
+        
+        .product-card-shadow:hover {
+            box-shadow: 0 12px 32px rgba(30,46,51,.10), 0 4px 8px rgba(30,46,51,.06);
+            transform: translateY(-3px);
+        }
+
+        .autoship-pattern {
+            background-color: #79C8D0;
+            background-image:  radial-gradient(#ffffff 0.8px, transparent 0.8px);
+            background-size: 16px 16px;
+        }
+
+        /* Slider Styles */
+        .slide {
+            display: none;
+        }
+        .slide.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-white font-body text-ink">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 h-[72px] bg-white/92 dark:bg-zinc-900/90 backdrop-blur-md border-b border-[#1E2E33]/10 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-center px-6 max-w-[1200px] mx-auto w-full h-full">
+<div class="flex items-center gap-2">
+<img alt="Parche Peludo Logo" class="w-auto object-contain h-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0cabUTsQlYOy7rYQnEtkBYbOwdhSQVf1uO9Z-0cAZZklEx2Ulbi5O9oZXgSLVh0Zm5fC_GL7yoR7kMBkUNrJpMSFu502IBbtDNmyeIcz-GNgSoohLT7A1hc45kGD7Fy9t_tOmv4sdZbMOrBWwfahHUWv3AfhRBm7PIqF5tS5E0YLApS9UM-jCMJPAKxS7WlYg5_rBk5CRcTXvPero39AN_G6mZrTCvKJrIFS5R7e1dcaUvYeNLqF3dlxLUTbiDUbvQl3G_KuVIG8">
+</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="font-['Ubuntu'] font-bold text-[15px] text-[#1E2E33] dark:text-zinc-300 hover:text-[#4AA5AD] transition-colors duration-220" href="#">Inicio</a>
+<a class="font-['Ubuntu'] font-bold text-[15px] text-[#1E2E33] dark:text-zinc-300 hover:text-[#4AA5AD] transition-colors duration-220" href="#">Servicios</a>
+<a class="font-['Ubuntu'] font-bold text-[15px] text-[#4AA5AD]" href="#">Tienda</a>
+<a class="font-['Ubuntu'] font-bold text-[15px] text-[#1E2E33] dark:text-zinc-300 hover:text-[#4AA5AD] transition-colors duration-220" href="#">Directorio</a>
+<a class="font-['Ubuntu'] font-bold text-[15px] text-[#1E2E33] dark:text-zinc-300 hover:text-[#4AA5AD] transition-colors duration-220" href="#">Propósito</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden sm:block font-['Ubuntu'] font-bold text-[15px] text-[#1E2E33] dark:text-zinc-300 hover:text-[#4AA5AD]">Iniciar sesión</button>
+<button class="bg-teal-parche text-white px-5 py-2.5 rounded-full font-['Ubuntu'] font-bold text-[15px] shadow-[0_12px_32px_rgba(121,200,208,.40)] active:translate-y-[1px] transition-all hover:bg-teal-deep">Unirme al Parche</button>
+</div>
+</div>
+</nav>
+<main class="pt-[72px]">
+<!-- Hero Section with Split Layout -->
+<section class="max-w-[1200px] mx-auto px-6 py-8">
+<div class="flex flex-col md:flex-row gap-4 h-auto md:h-[450px]">
+<!-- Left Column: Slider (70%) -->
+<div class="w-full md:w-[70%] relative rounded-xl md:rounded-2xl overflow-hidden bg-bone shadow-lg h-[350px] md:h-full">
+<!-- Slides Container -->
+<div class="relative w-full h-full" id="hero-slider">
+<!-- Slide 1 -->
+<div class="slide absolute inset-0 w-full h-full transition-opacity duration-1000 active" style="opacity: 1; z-index: 1;">
+<img alt="Dog and owner playing" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLvKP269KjfCR4gWtPIazv_zipHB9Ghr0d6FDRbqpG3z72V-knYFxerKtBHXo9TNQ1K_bLkk2z5o77evp85fJ6LtKxxPeyOC_OMmZ_g0cSaKwgBw_WBOz9XA7Nga-XXclsUcrLuX7zXbPoHpO6Kp_FrMjz93QzBbhbUP8rb3f59KqTbaDyMNVLBcRzVGQWvIRVHvGhrclhmInrNutP4Vqche89Nb7-RUaQEe4pIMQ-Tn7te1JyWuCbYsZg">
+<div class="absolute inset-0 bg-gradient-to-r from-ink/50 via-ink/10 to-transparent"></div>
+<div class="relative h-full flex flex-col justify-center px-8 md:px-12 text-white">
+<div class="inline-flex items-center gap-2 bg-marigold text-ink px-3 py-1.5 rounded-full mb-6 w-fit shadow-md">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">local_shipping</span>
+<span class="text-[10px] font-black uppercase tracking-wider">Envío gratis primera compra</span>
+</div>
+<h1 class="text-3xl md:text-5xl font-black leading-tight mb-4 tracking-tight max-w-lg">Todo lo que tu peludo <span class="italic text-teal-parche">ama</span>, en un solo lugar.</h1>
+<p class="text-white/90 text-sm md:text-base mb-8 max-w-sm font-medium">Selección premium de juguetes, snacks y accesorios.</p>
+<button class="bg-teal-parche text-white px-8 py-3.5 rounded-full font-black text-sm md:text-base shadow-[0_12px_32px_rgba(121,200,208,.40)] hover:bg-teal-deep transition-all w-fit uppercase">Ver Colección 2025</button>
+</div>
+</div>
+<!-- Slide 2 -->
+<div class="slide absolute inset-0 w-full h-full transition-opacity duration-1000" style="opacity: 0; z-index: 0;">
+<img alt="Cat with toy" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzQkRMMeWB0Vu0c4N-tVp_29E9b4YKPIbqlufvsoBB8LS-ohKbJ55zPa6kXxE0MznhltaOfFWQVDe8aucrru0W0hTt7wvrqrkc6QFxi5RGIymlPavVn0Nlm8xwRQium5_JwSg8cHYTYuAmummdqsN33VaPpWmNx5WB-xAjQW1bTZnY9ywSegoJJbMJ_qOeT8P61SESjA7cDYn_wAwXdm-Jgz2oy06XTWVKrfuZPcvVSGnxdnIt-iRI3SbhmWlcPBF1YiMVLDIbky0">
+<div class="absolute inset-0 bg-gradient-to-r from-ink/60 via-ink/20 to-transparent"></div>
+<div class="relative h-full flex flex-col justify-center px-8 md:px-12 text-white">
+<h1 class="text-3xl md:text-5xl font-black leading-tight mb-4 tracking-tight max-w-lg">Especial para <span class="italic text-marigold">Gatos</span> Curiosos.</h1>
+<p class="text-white/90 text-sm md:text-base mb-8 max-w-sm font-medium">Desde rascadores hasta snacks irresistibles para ellos.</p>
+<button class="bg-marigold text-ink px-8 py-3.5 rounded-full font-black text-sm md:text-base shadow-lg hover:bg-yellow-400 transition-all w-fit uppercase">Ver para Gatos</button>
+</div>
+</div>
+</div>
+<!-- Pagination Dots -->
+<div class="absolute bottom-6 inset-x-0 flex justify-center gap-2">
+<button class="dot h-2 rounded-full hover:bg-white transition-all bg-white w-6" onclick="goToSlide(0)"></button>
+<button class="dot h-2 rounded-full hover:bg-white transition-all bg-white/40 w-2" onclick="goToSlide(1)"></button>
+</div>
+</div>
+<!-- Right Column: Static Offer (30%) -->
+<div class="w-full md:w-[30%] relative rounded-xl md:rounded-2xl overflow-hidden shadow-lg h-[250px] md:h-full bg-teal-parche">
+<img alt="Oferta 15% OFF" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLvf2OySK_GnDqGzKAnoonfO7hmLD98XoTDK_aJCxIvHqIVzwkUnvzcyexIipg6aZo2X9qeATFVAQ0PIqi-Z87BTPjhjU7iqreuJHXS2QFaF6g727RI1DR_xBGdIyfo9iwCN3Tsl2_DIzT_pUbk2GRmoUvxNQhTmhUieWRkQqkRvYRJf-Y45rvzRhi7EqevWAMAM3RmSDfS7LPWE8fgk5Sr2koo4nRbrS1rDXIARHddwkc8y_5huIyDqnyM">
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-full px-8 flex justify-center">
+<button class="bg-white text-teal-deep px-6 py-2.5 rounded-full font-black text-xs hover:bg-teal-mist transition-all shadow-md uppercase tracking-wider">Shop Now</button>
+</div>
+</div>
+</div>
+</section><section class="max-w-[1200px] mx-auto px-6 py-4">
+<div class="bg-[#F2F4F7] rounded-xl md:rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4">
+<!-- Prop 1 -->
+<div class="flex items-center gap-4 flex-1">
+<div class="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 bg-[#2D8A01] rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-2xl md:text-3xl">sync</span>
+</div>
+<div>
+<h4 class="font-['Ubuntu'] font-bold text-ink text-sm md:text-base leading-tight">10 % de descuento en tu primer pedido de suscripción*</h4>
+<a class="text-ink-muted text-xs md:text-sm flex items-center gap-1 hover:text-teal-deep transition-colors mt-1" href="#">
+          Ahorra 5% con entregas regulares <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Prop 2 -->
+<div class="flex items-center gap-4 flex-1">
+<div class="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 bg-[#F3E8FF] rounded-full flex items-center justify-center">
+<div class="w-10 h-10 md:w-12 md:h-12 bg-[#9333EA] rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl md:text-2xl" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+</div>
+</div>
+<div>
+<h4 class="font-['Ubuntu'] font-bold text-ink text-sm md:text-base leading-tight">Únete al Club y gana más premios</h4>
+<a class="text-ink-muted text-xs md:text-sm flex items-center gap-1 hover:text-teal-deep transition-colors mt-1" href="#">
+          Regístrate gratis <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Prop 3 -->
+<div class="flex items-center gap-4 flex-1">
+<div class="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 bg-[#3B66A5] rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-2xl md:text-3xl">volunteer_activism</span>
+</div>
+<div>
+<h4 class="font-['Ubuntu'] font-bold text-ink text-sm md:text-base leading-tight">Consejos de expertos para tu mascota</h4>
+<a class="text-ink-muted text-xs md:text-sm flex items-center gap-1 hover:text-teal-deep transition-colors mt-1" href="#">
+          Todo en nuestro Magazine <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Navigation by Species -->
+<section class="py-12 bg-white relative z-20">
+<div class="max-w-[1200px] mx-auto px-6">
+<div class="grid md:grid-cols-2 gap-6">
+<!-- Dogs Banner -->
+<a class="group relative h-64 md:h-80 rounded-xl overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl" href="#">
+<img alt="Todo para Perros" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzX-ekbn1qOxt-w-I_gxIXqIR4XlCppbihIpU4GyXA6uDus2CDJr5pUxTGGPZS62ph8FXM72t14UVDRFOMYAXV_-dm1m-AOo-9-f5vK3ZMbYVPbgLib5Nqd5yabPxl3QGT6oXs50Q7TDixCvnlryS9e44BALDLbtk_kkFyGUla5jjP1hvhidU2gWQHpDFce4K8UHUDsFPm7c0p22CwDYXeFoFLXyO8C28o8L8wknqMsTkVo391c8tFAEsA8FBaRs6tbUvrCP5wSUM">
+<div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent"></div>
+<div class="absolute inset-0 flex items-end p-8">
+<div class="transform transition-transform duration-500 group-hover:translate-x-2">
+<h3 class="text-3xl md:text-4xl font-black text-white font-headline tracking-tight">Todo para Perros</h3>
+<div class="mt-2 w-12 h-1 bg-teal-parche rounded-full transition-all duration-500 group-hover:w-24"></div>
+</div>
+</div>
+</a>
+<!-- Cats Banner -->
+<a class="group relative h-64 md:h-80 rounded-xl overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl" href="#">
+<img alt="Todo para Gatos" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaMOpeexvMjSOHifMlROkDhvha6QCaUJb3BdjgK7PmNDvJPrt8M0Wi630w5HXXlxd9Tk3K0XEwd9pmlmyCJRgG7vSQKaRWuBQg3ILD_bSdni0OQSo5Dk8J55zx7eA_ORkcI83RVLdSraQurpZPsL4jypfX1PDU-EMgh1trWIF3EvRDPKHO0SM6uSAOO6DJfRXzKx9Oo4y3HWt_WYwlXGKJa4SEvJuTih9eq99bdPfFfFBI30vOl60_ZX1c0NZMI-DrSQPRBYFM7Os">
+<div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent"></div>
+<div class="absolute inset-0 flex items-end p-8">
+<div class="transform transition-transform duration-500 group-hover:translate-x-2">
+<h3 class="text-3xl md:text-4xl font-black text-white font-headline tracking-tight">Todo para Gatos</h3>
+<div class="mt-2 w-12 h-1 bg-teal-parche rounded-full transition-all duration-500 group-hover:w-24"></div>
+</div>
+</div>
+</a>
+</div>
+</div>
+</section>
+<!-- Categories Grid -->
+<section class="max-w-[1200px] mx-auto px-6 pt-8 pb-16">
+<div class="flex justify-between items-end mb-10">
+<div>
+<h2 class="text-3xl font-black text-ink mb-2">Comprar por Categoría</h2>
+<p class="text-ink-muted">Encuentra lo que necesitas rápidamente</p>
+</div>
+<a class="text-teal-deep font-bold text-sm hover:underline" href="#">Ver todo</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+<!-- Juguetes -->
+<a class="group block bg-teal-mist/50 rounded-xl text-center border border-teal-soft/30 hover:bg-white hover:border-teal-parche transition-all product-card-shadow py-4 px-4" href="#">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-teal-deep text-2xl">sports_tennis</span>
+</div>
+<span class="font-black text-ink text-sm group-hover:text-teal-deep">Juguetes</span>
+</a>
+<!-- Accesorios -->
+<a class="group block bg-bone/50 rounded-xl text-center border border-ink/5 hover:bg-white hover:border-teal-parche transition-all product-card-shadow py-4 px-4" href="#">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-teal-deep text-2xl">checkroom</span>
+</div>
+<span class="font-black text-ink text-sm group-hover:text-teal-deep">Accesorios</span>
+</a>
+<!-- Higiene -->
+<a class="group block bg-teal-mist/50 rounded-xl text-center border border-teal-soft/30 hover:bg-white hover:border-teal-parche transition-all product-card-shadow py-4 px-4" href="#">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-teal-deep text-2xl">clean_hands</span>
+</div>
+<span class="font-black text-ink text-sm group-hover:text-teal-deep">Higiene</span>
+</a>
+<!-- Snacks -->
+<a class="group block bg-bone/50 rounded-xl text-center border border-ink/5 hover:bg-white hover:border-teal-parche transition-all product-card-shadow py-4 px-4" href="#">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-teal-deep text-2xl">bakery_dining</span>
+</div>
+<span class="font-black text-ink text-sm group-hover:text-teal-deep">Snacks</span>
+</a>
+<!-- Camas -->
+<a class="group block bg-teal-mist/50 rounded-xl text-center border border-teal-soft/30 hover:bg-white hover:border-teal-parche transition-all product-card-shadow py-4 px-4" href="#">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-teal-deep text-2xl">bed</span>
+</div>
+<span class="font-black text-ink text-sm group-hover:text-teal-deep">Camas</span>
+</a>
+<!-- Salud -->
+<a class="group block bg-bone/50 rounded-xl text-center border border-ink/5 hover:bg-white hover:border-teal-parche transition-all product-card-shadow py-4 px-4" href="#">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-teal-deep text-2xl">medical_services</span>
+</div>
+<span class="font-black text-ink text-sm group-hover:text-teal-deep">Salud</span>
+</a>
+</div>
+</section><section class="max-w-[1200px] mx-auto px-6 py-12">
+<div class="flex justify-between items-center mb-8">
+<h2 class="text-3xl font-black text-ink font-headline tracking-tight">Ofertas destacadas de la semana</h2>
+<a class="flex items-center gap-2 font-bold text-ink hover:text-teal-deep transition-colors border-b-2 border-ink hover:border-teal-deep" href="#">
+      Todas las ofertas
+      <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Banner 1 -->
+<div class="bg-[#E8F5E9] rounded-2xl p-6 relative flex items-center min-h-[176px] overflow-hidden group bg-[#E8F4F6]">
+<div class="relative z-10 max-w-[60%]">
+<p class="text-ink font-bold text-lg">Hasta</p>
+<h3 class="text-5xl font-black text-[#1B4332] leading-none my-1">40%</h3>
+<p class="text-3xl font-black text-[#1B4332] uppercase tracking-tighter">DESCUENTO</p>
+</div>
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-full flex justify-center items-center pointer-events-none">
+<img alt="Dog toys offer" class="w-full h-auto max-h-[140px] object-contain object-right transform group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvGHG4dwNHEGtTlEwagWNgvbZqhloG30lZ36NfqnGNcdhWUBfPyD5o_pyjWuY-bnol44_nbAgaZcHMv7IXfzsgmRWskkCydOSKZiVkrq-EAXXE4B5jCp7c014ZEqNRduPg67OvxNWZfaBS6iEKwcmerp3vKgoQZqVdUy1ftwSZywCb2A0VGu0feDh3BQzloeHhZ3JidCR3dTRFV3bB6pLxbAQiWvfmMInPt9Nx9cB_u9aYtf2Xq1a-P9tOe_w4_zeRggDyRYxXVDA">
+</div>
+<button class="absolute bottom-4 right-4 w-10 h-10 text-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform bg-teal-parche">
+<span class="material-symbols-outlined text-xl">arrow_forward</span>
+</button>
+</div>
+<!-- Banner 2 -->
+<div class="bg-[#E8F5E9] rounded-2xl p-6 relative flex items-center min-h-[176px] overflow-hidden group bg-[#E8F4F6]">
+<div class="relative z-10 max-w-[60%]">
+<p class="text-ink-muted text-xs font-bold mb-0.5">Royal Canin</p>
+<p class="text-ink text-xs font-medium mb-3">Sacos más grandes a mejor precio</p>
+<h3 class="text-4xl font-black text-[#1B4332] leading-none mb-1">10 + 2 KG</h3>
+<p class="text-4xl font-black text-[#1B4332] uppercase tracking-tighter">¡GRATIS!</p>
+</div>
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-full flex justify-center items-center pointer-events-none">
+<img alt="Dog food bag offer" class="w-full h-auto max-h-[160px] object-contain object-right transform group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBA_iLxsGRfIed7dkdy1vagc7ASRbfhDnoKX1ELxoBfrhuLJM-RHGEjgqWM4sjchHZog7JPjbsreuKbWDZxG0uoqGlLf_cKtOu73NvBBj-ahT7f2AKrScfaDBkc54eiBw9VhzHv_0aPU0VwdJ2R4TYW8xwimeInE1eTmWvipPG3JCYFAnscyno_TZMNQfRXs7Zs4zGK3_RyaK9O-CfwBv9FgGoOBLYF2Hs4aMJo8f5zhCFwAfvU5A5SEZQ7DzG8Tq8qQ5dsRYHUQN0">
+</div>
+<button class="absolute bottom-4 right-4 w-10 h-10 text-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform bg-teal-parche">
+<span class="material-symbols-outlined text-xl">arrow_forward</span>
+</button>
+</div>
+<!-- Banner 3 -->
+<div class="bg-[#E8F5E9] rounded-2xl p-6 relative flex items-center min-h-[176px] overflow-hidden group bg-[#E8F4F6]">
+<div class="relative z-10 max-w-[60%]">
+<p class="text-ink-muted text-xs font-bold mb-3">Pienso para perros con receta especial</p>
+<h3 class="text-3xl font-black text-[#1B4332] leading-tight">HASTA 10 % DESCUENTO</h3>
+</div>
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-full flex justify-center items-center pointer-events-none">
+<img alt="Cat food bag offer" class="w-full h-auto max-h-[160px] object-contain object-right transform group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTMNQFIxUeqa1NISqrg9A8xw-fCjyaIFUGrQtpVv5lIzlgz5rSmlFM2DmiHacfzx1wnxt1usT9Chx5jazzsedlcPtLp0ABO_zo488rVj7t0n4hYG2ygG8ThYRnO6hHhP9FmvMW0o3MRjfSreP6cdQSh7Xa3_0bZbAbhHx-dDP6hJ0Rj7v56FCyu4i3aJhnAAFlb6Z8cn79apXjLgaKrqFpkJmXIZ435S0H6tB6yKrfF9jACMfChllUPvsJ5P3t4-kr_iDJnVkwZ08">
+</div>
+<button class="absolute bottom-4 right-4 w-10 h-10 text-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform bg-teal-parche">
+<span class="material-symbols-outlined text-xl">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Featured Products Carousel -->
+<!-- Best Sellers -->
+<section class="py-16 bg-teal-mist/30">
+<div class="max-w-[1200px] mx-auto px-6">
+<div class="flex justify-between items-center mb-10">
+<h2 class="text-3xl font-black text-ink">Productos Destacados</h2>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-full border border-teal-parche flex items-center justify-center text-teal-deep hover:bg-teal-parche hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-full border border-teal-parche flex items-center justify-center text-teal-deep hover:bg-teal-parche hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="flex flex-wrap gap-3 mb-8">
+<button class="px-6 py-2 rounded-full font-bold text-sm bg-teal-parche text-white shadow-md hover:bg-teal-deep transition-all">Todos</button>
+<button class="px-6 py-2 rounded-full font-bold text-sm bg-white border border-teal-parche/30 text-teal-deep hover:bg-teal-mist transition-all">Juguetes</button>
+<button class="px-6 py-2 rounded-full font-bold text-sm bg-white border border-teal-parche/30 text-teal-deep hover:bg-teal-mist transition-all">Accesorios</button>
+<button class="px-6 py-2 rounded-full font-bold text-sm bg-white border border-teal-parche/30 text-teal-deep hover:bg-teal-mist transition-all">Higiene</button>
+<button class="px-6 py-2 rounded-full font-bold text-sm bg-white border border-teal-parche/30 text-teal-deep hover:bg-teal-mist transition-all">Snacks</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+<!-- Product 1 -->
+<div class="bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<div class="absolute top-3 left-3 z-10 flex flex-col gap-1">
+<span class="bg-marigold text-ink text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">Nuevo</span>
+</div>
+<button class="absolute top-3 right-3 z-10 w-9 h-9 bg-white/80 backdrop-blur-md shadow-md rounded-full flex items-center justify-center text-coral hover:bg-coral hover:text-white transition-all favorite-btn">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">favorite</span>
+</button>
+<img alt="Juguete Kong" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLsUgA7pyApmsZkQKQsGIFzUo7K6LO_-sV4xeB7Y8_VaOUSHBgo9fYULwIXRRx7edK77EWkw6XVRJDlEUgcNUNG2hV22Br4VnC67l2ZuVWDGaSEGTet1dbwd_UDwxwvCXCWMDTOa2i60T120sAky4j--LJ_bI9PQNpW8C0IEsvH7f-U_64sNM_bHolAtRifNbQj2vIDpp7hhzU_-NLgGAGJzBAZLdD7X8jZ5Dy92zSLwB5wLKj6osp6JA2Y">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Juguetes</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">4.9</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Juguete Kong Classic</h3>
+<div class="flex gap-1 mb-4">
+<span class="w-4 h-4 rounded-full bg-red-600 border border-ink/10 cursor-pointer hover:scale-125 transition-transform"></span>
+<span class="w-4 h-4 rounded-full bg-blue-600 border border-ink/10 cursor-pointer hover:scale-125 transition-transform"></span>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<div>
+<span class="text-lg font-black text-ink">$45.000</span>
+</div>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product 2 -->
+<div class="bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<div class="absolute top-3 left-3 z-10">
+<span class="bg-coral text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">-15% OFF</span>
+</div>
+<button class="absolute top-3 right-3 z-10 w-9 h-9 bg-white/80 backdrop-blur-md shadow-md rounded-full flex items-center justify-center text-coral hover:bg-coral hover:text-white transition-all favorite-btn">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">favorite</span>
+</button>
+<img alt="Arnés Ergonómico" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLuhKjukfGoeLx-Nlz02eRE4I5u5gnzC4kZlI1tl2shfDmbEeWf_TjXg6lmAge3_fcR6GCuTPv9ibDlX9z8QvDELqcTpYgqpI6zNuq69pi6FrS1qJECkF6xk2BqYhBpAxwNFYkz7VzNYrW-4VnwAw4_r0GVf8Up1NvUscCFYkH7Sbp4odKa_Ond3wvJj4-sUu88Z8l-JjnSEyldnXfCjwg6hve7S1n-uwo5hxPoylrpbyrvRunLXgilA-lY">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Accesorios</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">4.8</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Arnés Ergonómico Pro</h3>
+<div class="flex gap-2 mb-4">
+<span class="text-[10px] font-bold px-2 py-0.5 rounded border border-ink/10 text-ink-muted">Talla: M</span>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<div>
+<span class="text-lg font-black text-ink">$76.400</span>
+<span class="block text-[11px] text-ink-faint line-through">$89.900</span>
+</div>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product 3 -->
+<div class="hidden md:flex bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<img alt="Pelota" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLuDqOnl9WwkYIq1dNW2tAYGGolxynCYAH2KFfgT6ty-7c-kg8BpqYC-F4hkNHbp4K-AVRkvLc8IWwEJjdQWg5EL5kpAxcsj1bInTQ5dY_VI-QLr5PL5nXUjTeQf6gPvRPnnoHDR_3yue-6CEBvS7u80YsxtzS3Edpw2PNuWcBi4zzB9OWeo_jDmHgY1pMMFWKSxxc7K1CilGvjHieo6XsF-kW3i6srXz7NuGZS1UgZnLk9WOWkdAAF0vts">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Juguetes</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">4.7</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Pelota Ultra-Resistente</h3>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<span class="text-lg font-black text-ink">$18.000</span>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product 4 -->
+<div class="hidden lg:flex bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<img alt="Kit" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLsujQd6BFsLs_vLI4Je5AOvg4RWHGdD1-_iq8iVF1raMFL5EXnlfQK9qcTdJWzqk53T5GJxFJ7SD8eD89tnBdN1XlWbTpXvVtYvW2y5h0vTu7qetgnU7oAkrRdJhlfNKdW2pXPLDj5t0QdhYNiCDwyTRsLW46RLnvzIG3APaKDN9IkPbADGwqZnto1HDlCg3T6h96heLxDKP3lDdEzJl2qKK9peTXdqhooAYfidP9Q8-KfuSQJNBHV4kew">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Higiene</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">5.0</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Kit de Aseo Premium</h3>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<span class="text-lg font-black text-ink">$64.500</span>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Autoship / Suscripción -->
+<section class="max-w-[1200px] mx-auto px-6 pt-8 pb-16">
+<!-- Main Category Banner -->
+<div class="relative rounded-2xl overflow-hidden mb-8 h-[210px] md:h-[294px] shadow-lg group"><img alt="Todo para Perros" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5W2rzHlYcuWJlMiwv-7WdnblJ4YKwPy3QV6447tuwR_pxRxvHCM9k9W8W7C2slnYSBiAdJ1gGdg9lr_wr4h5d7QnrZICXqOFpJ1XU8i1vCXsR4H83vW8JAklQdSe2QVlshlFXYsdNIEifozpdOU6__r6cfrpcuDPCclUctWTOkcDeZXgbA6cpyAbSiHiUnvXQScnTqZ1D_vQEk_lLBWtY-6-JL6MUgU4pZribjud2N_NlfOhgHpt0r117zrQl1nJiDwFPqRPTvss"><div class="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent flex items-center px-12"></div></div>
+<!-- Sub-category Banners -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+<div class="bg-teal-mist rounded-2xl p-6 h-48 flex items-center relative overflow-hidden group cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+<div class="relative z-10">
+<h3 class="text-2xl font-black text-ink leading-tight">Antiparasitarios<br>para perros</h3>
+</div>
+<img alt="Antiparasitarios" class="absolute right-[-10px] bottom-[-10px] w-44 h-44 object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-lg" src="https://lh3.googleusercontent.com/aida/AP1WRLv-KnqwZf_XlebXSo7a7ofRwg66i-lf7LwIpRUUufnIEPm6TGMu6lAC70QUXXlPon5-lEPyDEqKj7cSPmhPxK2D4PcuUcFQgzl2jrUrT_SvjyhLGsq0Nu5YsOXJPNVuq5SS7cO6N_Af-5WSvx_ph2av9W_IrcavwfcljoBN0FDc6tnziAlwEIu10rP7a7DWiwAOs8bnQeaYtsnpHBNPhl64RWeLqLNNk4TmUy1RKTdeA-gfLnJf_2GNzWw">
+</div>
+<div class="bg-bone rounded-2xl p-6 h-48 flex items-center relative overflow-hidden group cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+<div class="relative z-10">
+<h3 class="text-2xl font-black text-ink leading-tight">Juguetes para<br>perros</h3>
+</div>
+<img alt="Juguetes" class="absolute right-[-20px] bottom-[-20px] w-48 h-48 object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-lg" src="https://lh3.googleusercontent.com/aida/AP1WRLsUgA7pyApmsZkQKQsGIFzUo7K6LO_-sV4xeB7Y8_VaOUSHBgo9fYULwIXRRx7edK77EWkw6XVRJDlEUgcNUNG2hV22Br4VnC67l2ZuVWDGaSEGTet1dbwd_UDwxwvCXCWMDTOa2i60T120sAky4j--LJ_bI9PQNpW8C0IEsvH7f-U_64sNM_bHolAtRifNbQj2vIDpp7hhzU_-NLgGAGJzBAZLdD7X8jZ5Dy92zSLwB5wLKj6osp6JA2Y">
+</div>
+<div class="bg-teal-mist rounded-2xl p-6 h-48 flex items-center relative overflow-hidden group cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+<div class="relative z-10">
+<h3 class="text-2xl font-black text-ink leading-tight">Mordedores para<br>perros</h3>
+</div>
+<img alt="Mordedores" class="absolute right-[-15px] bottom-[-15px] w-44 h-44 object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-lg" src="https://lh3.googleusercontent.com/aida/AP1WRLtcFvNCgSU7IhE36hD5bEliIdP4aGPR1_xZEeUr5KMxu_euvovgdpuZ-5RUP1OmBjcT-EEw-AUUhn_z8gJ64LpHgtF03eMYi6ZlNVxSN15Y9BILdoPXGmpTfxlCDU3hXkrerM_-kGzOcx2BrU_lWF95ELyL3jtm60Gd48HbcLlvWj7NzBe8Kqh0GZUssySb33qG0DhnMo-0LA9uhY_Fq_oA0B8AL-wZOj591ixFEGUZSpk68G92p7jWDMg">
+</div>
+</div>
+<!-- Product Carousel -->
+<div>
+<div class="flex justify-between items-center mb-8">
+<h2 class="text-3xl font-black text-ink">Destacados para Perros</h2>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-full border border-teal-parche flex items-center justify-center text-teal-deep hover:bg-teal-parche hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-full border border-teal-parche flex items-center justify-center text-teal-deep hover:bg-teal-parche hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+<!-- Product 1 -->
+<div class="bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<button class="absolute top-3 right-3 z-10 w-9 h-9 bg-white/80 backdrop-blur-md shadow-md rounded-full flex items-center justify-center text-coral hover:bg-coral hover:text-white transition-all favorite-btn">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">favorite</span>
+</button>
+<img alt="Juguete Kong" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLsUgA7pyApmsZkQKQsGIFzUo7K6LO_-sV4xeB7Y8_VaOUSHBgo9fYULwIXRRx7edK77EWkw6XVRJDlEUgcNUNG2hV22Br4VnC67l2ZuVWDGaSEGTet1dbwd_UDwxwvCXCWMDTOa2i60T120sAky4j--LJ_bI9PQNpW8C0IEsvH7f-U_64sNM_bHolAtRifNbQj2vIDpp7hhzU_-NLgGAGJzBAZLdD7X8jZ5Dy92zSLwB5wLKj6osp6JA2Y">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Juguetes</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">4.9</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Juguete Kong Classic</h3>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<span class="text-lg font-black text-ink">$45.000</span>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product 2 -->
+<div class="bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<button class="absolute top-3 right-3 z-10 w-9 h-9 bg-white/80 backdrop-blur-md shadow-md rounded-full flex items-center justify-center text-coral hover:bg-coral hover:text-white transition-all favorite-btn">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">favorite</span>
+</button>
+<img alt="Pelota" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLuDqOnl9WwkYIq1dNW2tAYGGolxynCYAH2KFfgT6ty-7c-kg8BpqYC-F4hkNHbp4K-AVRkvLc8IWwEJjdQWg5EL5kpAxcsj1bInTQ5dY_VI-QLr5PL5nXUjTeQf6gPvRPnnoHDR_3yue-6CEBvS7u80YsxtzS3Edpw2PNuWcBi4zzB9OWeo_jDmHgY1pMMFWKSxxc7K1CilGvjHieo6XsF-kW3i6srXz7NuGZS1UgZnLk9WOWkdAAF0vts">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Juguetes</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">4.7</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Pelota Ultra-Resistente</h3>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<span class="text-lg font-black text-ink">$18.000</span>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product 3 -->
+<div class="bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<button class="absolute top-3 right-3 z-10 w-9 h-9 bg-white/80 backdrop-blur-md shadow-md rounded-full flex items-center justify-center text-coral hover:bg-coral hover:text-white transition-all favorite-btn">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">favorite</span>
+</button>
+<img alt="Arnés" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLuhKjukfGoeLx-Nlz02eRE4I5u5gnzC4kZlI1tl2shfDmbEeWf_TjXg6lmAge3_fcR6GCuTPv9ibDlX9z8QvDELqcTpYgqpI6zNuq69pi6FrS1qJECkF6xk2BqYhBpAxwNFYkz7VzNYrW-4VnwAw4_r0GVf8Up1NvUscCFYkH7Sbp4odKa_Ond3wvJj4-sUu88Z8l-JjnSEyldnXfCjwg6hve7S1n-uwo5hxPoylrpbyrvRunLXgilA-lY">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Accesorios</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">4.8</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Arnés Ergonómico Pro</h3>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<span class="text-lg font-black text-ink">$76.400</span>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product 4 -->
+<div class="bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<button class="absolute top-3 right-3 z-10 w-9 h-9 bg-white/80 backdrop-blur-md shadow-md rounded-full flex items-center justify-center text-coral hover:bg-coral hover:text-white transition-all favorite-btn">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">favorite</span>
+</button>
+<img alt="Snack" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvGHG4dwNHEGtTlEwagWNgvbZqhloG30lZ36NfqnGNcdhWUBfPyD5o_pyjWuY-bnol44_nbAgaZcHMv7IXfzsgmRWskkCydOSKZiVkrq-EAXXE4B5jCp7c014ZEqNRduPg67OvxNWZfaBS6iEKwcmerp3vKgoQZqVdUy1ftwSZywCb2A0VGu0feDh3BQzloeHhZ3JidCR3dTRFV3bB6pLxbAQiWvfmMInPt9Nx9cB_u9aYtf2Xq1a-P9tOe_w4_zeRggDyRYxXVDA">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Snacks</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">5.0</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Snack Dental Care</h3>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<span class="text-lg font-black text-ink">$12.900</span>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section><section class="max-w-[1200px] mx-auto px-6 pt-8 pb-16">
+<!-- Main Category Banner -->
+<div class="relative rounded-2xl overflow-hidden mb-8 h-[175px] md:h-[245px] shadow-lg group"><img alt="Todo para Gatos" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/AP1WRLu4uHSMpo0-cJTggOPeXHBgHf_VdxDDdpgB-_maYSxPcnMNCrtL53WYpddMO5qMa-EFYG2PAeDtcpTLhLx8zbMvFvrQTQBr7SSZAEhTqcaa-YzY7Un_l7PMmr0gZMZNnfB1sbXrHzcskgVj_24LLxvG6LkzBa0burlRgkFGSmoDtynmMpJc9vgG8dJlfdr-xAQTjKs5dzYa7ZQ4oenehwHQobNdpSxly4VpJTYvjXpnfHIySUvb1QB7zA"><div class="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent flex items-center px-12"><h2 class="text-white text-3xl md:text-5xl font-black uppercase tracking-tighter">Todo para Gatos</h2></div></div>
+<!-- Sub-category Banners -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+<div class="bg-teal-mist rounded-2xl p-6 h-48 flex items-center relative overflow-hidden group cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+<div class="relative z-10">
+<h3 class="text-2xl font-black text-ink leading-tight">Alimento para<br>gatos</h3>
+</div>
+<img alt="Alimento para gatos" class="absolute right-[-10px] bottom-[-10px] w-44 h-44 object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-lg" src="https://lh3.googleusercontent.com/aida/AP1WRLuc6_MI576YXf8Uu0MjupwaGV0IEBIUxwUtQmAp2g8IOpg5nu8p2tGpZEEeHnkIsisIA5Y76dmEkel6omb5du-VXIyc0UPrbkVOEqKLEM_y9mtC7bBlL7G5irp5_Gh8savVG9SiwGLeRIBeKEvoItUK8hYwnzcbXZqGhLdsiQe6Nzk30eSOqhniOmIuWdDHkG04SSm0ea4xQ2bUTpTP17znr0E-Qi2f8NbRUuKl15smZDf1A8jDtft2G5k">
+</div>
+<div class="bg-bone rounded-2xl p-6 h-48 flex items-center relative overflow-hidden group cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+<div class="relative z-10">
+<h3 class="text-2xl font-black text-ink leading-tight">Juguetes para<br>gatos</h3>
+</div>
+<img alt="Juguetes para gatos" class="absolute right-[-20px] bottom-[-20px] w-48 h-48 object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-lg" src="https://lh3.googleusercontent.com/aida/AP1WRLvRispUQKCcebDZRdWy7zN8-JEpTa2NzyTx-xjbSv2YbE5CqYQwpVRfDZEydoIoipGAcKQgCT7sBS5w2uHmaIuPR041F_Q9rjzFf64is9DtTc-l2IsiLmn3V2oVwQHf-YVjF3-FyXkUTjI2LGDJd3TA2T2WIVk111PfUEiDH7FJDcDoGBX8qeDx4u_kooKCdd6mCeRdsw1nIrjAcQZ6XV2w_AaOuWhTdsuOUF9Ve4eghkX36PO3Ok3dcKo">
+</div>
+<div class="bg-teal-mist rounded-2xl p-6 h-48 flex items-center relative overflow-hidden group cursor-pointer shadow-sm hover:shadow-md transition-shadow">
+<div class="relative z-10">
+<h3 class="text-2xl font-black text-ink leading-tight">Higiene para<br>gatos</h3>
+</div>
+<img alt="Higiene para gatos" class="absolute right-[-15px] bottom-[-15px] w-44 h-44 object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-lg" src="https://lh3.googleusercontent.com/aida/AP1WRLvN1_YQY-OLH7rFs4ZzTVqejGNkC0e8IsIQZn3BlfE2FsDKcfQPhR6sY06_o9qB5lfoiyoxtWI1KoRusbVOGt9qrD36F6J4UQaTbbCC-ZSUAZsGUMWUv2Ln2MZmLxs4BGDMV5gLol0h93IBH8AlSc8nUhBSIJf7cfBcvKIKZfZhax9v_5kNOvqgeafiGPcVE3d2k_83Ke6P-dCcJeuOYKatHu-s8BHTHOZabMyMRyIB8KGLNkEqw0ejndY">
+</div>
+</div>
+<!-- Product Carousel -->
+<div>
+<div class="flex justify-between items-center mb-8">
+<h2 class="text-3xl font-black text-ink">Destacados para Gatos</h2>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-full border border-teal-parche flex items-center justify-center text-teal-deep hover:bg-teal-parche hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-full border border-teal-parche flex items-center justify-center text-teal-deep hover:bg-teal-parche hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+<!-- Product 1 -->
+<div class="bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<button class="absolute top-3 right-3 z-10 w-9 h-9 bg-white/80 backdrop-blur-md shadow-md rounded-full flex items-center justify-center text-coral hover:bg-coral hover:text-white transition-all favorite-btn">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">favorite</span>
+</button>
+<img alt="Rascador para Gatos" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLtaz7ZJ9wukrUEG77S4N9I3v45LSXKMZR7u0831FT6ZM6YvS_VedgAIjDpdpsFYoUZXpE57EVlw_lyEg32BB_Nh_H6gXW2E2WdSeavlQKYBJv3L3MRgrNkjuLR-hStdDTOwPhwMiO5abXoLHy9sFWDTT8Tcgz-eQByEosXMg7k7ey_UzpC1R4w_O15N8cMVTXwAo5qTwJaxd81fIplv8kwwZeAYNwyOBzUafT0ceyV6tR0Y4GpTAqVIX7U">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Muebles</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">4.9</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Rascador para Gatos</h3>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<span class="text-lg font-black text-ink">$125.000</span>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product 2 -->
+<div class="bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<button class="absolute top-3 right-3 z-10 w-9 h-9 bg-white/80 backdrop-blur-md shadow-md rounded-full flex items-center justify-center text-coral hover:bg-coral hover:text-white transition-all favorite-btn">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">favorite</span>
+</button>
+<img alt="Arena Sanitaria" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLvN1_YQY-OLH7rFs4ZzTVqejGNkC0e8IsIQZn3BlfE2FsDKcfQPhR6sY06_o9qB5lfoiyoxtWI1KoRusbVOGt9qrD36F6J4UQaTbbCC-ZSUAZsGUMWUv2Ln2MZmLxs4BGDMV5gLol0h93IBH8AlSc8nUhBSIJf7cfBcvKIKZfZhax9v_5kNOvqgeafiGPcVE3d2k_83Ke6P-dCcJeuOYKatHu-s8BHTHOZabMyMRyIB8KGLNkEqw0ejndY">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Higiene</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">4.8</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Arena Sanitaria</h3>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<span class="text-lg font-black text-ink">$38.000</span>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product 3 -->
+<div class="bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<button class="absolute top-3 right-3 z-10 w-9 h-9 bg-white/80 backdrop-blur-md shadow-md rounded-full flex items-center justify-center text-coral hover:bg-coral hover:text-white transition-all favorite-btn">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">favorite</span>
+</button>
+<img alt="Juguete de Plumas" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLvRispUQKCcebDZRdWy7zN8-JEpTa2NzyTx-xjbSv2YbE5CqYQwpVRfDZEydoIoipGAcKQgCT7sBS5w2uHmaIuPR041F_Q9rjzFf64is9DtTc-l2IsiLmn3V2oVwQHf-YVjF3-FyXkUTjI2LGDJd3TA2T2WIVk111PfUEiDH7FJDcDoGBX8qeDx4u_kooKCdd6mCeRdsw1nIrjAcQZ6XV2w_AaOuWhTdsuOUF9Ve4eghkX36PO3Ok3dcKo">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Juguetes</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">5.0</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Juguete de Plumas</h3>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<span class="text-lg font-black text-ink">$15.000</span>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product 4 -->
+<div class="bg-white rounded-xl overflow-hidden product-card-shadow border border-ink/5 flex flex-col group transition-all duration-300">
+<div class="relative aspect-square overflow-hidden bg-white p-6">
+<button class="absolute top-3 right-3 z-10 w-9 h-9 bg-white/80 backdrop-blur-md shadow-md rounded-full flex items-center justify-center text-coral hover:bg-coral hover:text-white transition-all favorite-btn">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 0;">favorite</span>
+</button>
+<img alt="Snack para Gatos" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLsV7jVN9hRvmkw9jylT6zxtVUK2eweBkP8x8M155YB9BMFgIy-EYRpQWGcmMrEjfS_b1RUH0uboj2rTu2NdBe0hzOzegwbSCEUrGvaZmuIrycamOC1qgVImVXKP8c4LCx-e0HHfhBgJaYZOLlYgv4I6x4pgsr4OgaIWJCSaU8aeHlqDjRdwKWVBasiKl1wwh9-KOySS9hSC8FfvgiZFzHuVGN5TXl5bjFkJK0ckDEH4FKS04JdVNPI0lg">
+</div>
+<div class="p-6 flex flex-col flex-grow">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-black text-teal-deep uppercase tracking-widest">Snacks</span>
+<div class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="text-xs font-black text-ink">4.7</span>
+</div>
+</div>
+<h3 class="text-lg font-black text-ink mb-2 leading-tight">Snack para Gatos</h3>
+<div class="mt-auto flex items-center justify-between border-t border-ink/5 pt-4">
+<span class="text-lg font-black text-ink">$10.500</span>
+<button class="bg-teal-parche text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-teal-deep transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Best Sellers -->
+<!-- Our Purpose Section -->
+<section class="py-20 bg-white">
+<div class="max-w-[1200px] mx-auto px-6">
+<div class="text-center mb-16 max-w-3xl mx-auto">
+<h2 class="text-4xl font-black text-ink mb-6">Nuestro <span class="text-teal-deep">#PropósitoPeludo</span></h2>
+<p class="text-ink-muted text-lg">Aportamos al bienestar de los animales que más lo necesitan. Destinamos un porcentaje de nuestras ganancias a fundaciones e iniciativas sociales en pro de estos peludos.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<!-- Pillar 1: Alimentación -->
+<div class="text-center group">
+<div class="mb-6 overflow-hidden rounded-2xl aspect-[4/3] bg-teal-mist/30">
+<img alt="Alimentación" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLvuzbqlY6FFRRIOvS-_UVny1H1CilVde3HLfztwOd2repnkIbe_EY10fiXfJXXE32L9qtfyRl7oZduGvB4fkqGUSFCJNBwtZCduoVn4jnJldLrE85EQPPstRQFC9x_XXdzpoL4tTLjwO4IrPFV96p2KqCrhdhYUYHzzMuY6RePx0es_fCmtO2J2S4j4u2qR0b4zjAKzB2FHOAM4fA1BNmjzhG2mwsif6Bm_9URWc9OUL8Ft7PHDopCfJ3w">
+</div>
+<h3 class="text-2xl font-black text-ink mb-3 group-hover:text-teal-deep transition-colors">Alimentación</h3>
+<p class="text-ink-muted leading-relaxed">Nutrición digna para peludos en proceso de rescate y refugios locales.</p>
+</div>
+<!-- Pillar 2: Salud -->
+<div class="text-center group">
+<div class="mb-6 overflow-hidden rounded-2xl aspect-[4/3] bg-teal-mist/30">
+<img alt="Salud" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLvuzbqlY6FFRRIOvS-_UVny1H1CilVde3HLfztwOd2repnkIbe_EY10fiXfJXXE32L9qtfyRl7oZduGvB4fkqGUSFCJNBwtZCduoVn4jnJldLrE85EQPPstRQFC9x_XXdzpoL4tTLjwO4IrPFV96p2KqCrhdhYUYHzzMuY6RePx0es_fCmtO2J2S4j4u2qR0b4zjAKzB2FHOAM4fA1BNmjzhG2mwsif6Bm_9URWc9OUL8Ft7PHDopCfJ3w">
+</div>
+<h3 class="text-2xl font-black text-ink mb-3 group-hover:text-teal-deep transition-colors">Salud</h3>
+<p class="text-ink-muted leading-relaxed">Acceso a medicina veterinaria preventiva y tratamientos de emergencia.</p>
+</div>
+<!-- Pillar 3: Hogar -->
+<div class="text-center group">
+<div class="mb-6 overflow-hidden rounded-2xl aspect-[4/3] bg-teal-mist/30">
+<img alt="Hogar" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLvjJtit5MjYGcTiuGp8xJLu46V4vTZXYXY5wxqzNCVkKEOPqCuvRGEVjC-o4HUkGl79QJYt1cCbDSwhCRJe-CLJpglKTapOTNkWc7P0T9p3ugd9JwfTIDOAVuFwXW_sUpilHd-8obkRoZIp3ytDrGVg2-FLgndjMpWbYpSyA0DdVhJ4Kp7zSdbdx1INZ6SIx1APzfood_M9zEmPKd3ICsr5wk98q2H_R6vmSFGECp56Nal7DmfHBCybOog">
+</div>
+<h3 class="text-2xl font-black text-ink mb-3 group-hover:text-teal-deep transition-colors">Hogar</h3>
+<p class="text-ink-muted leading-relaxed">Mejora de instalaciones en refugios y fomento de la adopción responsable.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Placeholder for Footer as per request -->
+<section class="py-16 bg-ink relative overflow-hidden">
+<div class="max-w-[1200px] mx-auto px-6 relative z-10">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 text-white">
+<div class="col-span-1 md:col-span-2">
+<img alt="Parche Peludo Logo" class="h-12 mb-6 brightness-0 invert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0cabUTsQlYOy7rYQnEtkBYbOwdhSQVf1uO9Z-0cAZZklEx2Ulbi5O9oZXgSLVh0Zm5fC_GL7yoR7kMBkUNrJpMSFu502IBbtDNmyeIcz-GNgSoohLT7A1hc45kGD7Fy9t_tOmv4sdZbMOrBWwfahHUWv3AfhRBm7PIqF5tS5E0YLApS9UM-jCMJPAKxS7WlYg5_rBk5CRcTXvPero39AN_G6mZrTCvKJrIFS5R7e1dcaUvYeNLqF3dlxLUTbiDUbvQl3G_KuVIG8">
+<p class="text-ink-faint max-w-sm">Dedicados a mejorar la vida de los peludos en Colombia a través de productos de calidad y un propósito real.</p>
+</div>
+<div>
+<h4 class="font-black mb-6">Enlaces</h4>
+<ul class="space-y-4 text-ink-faint">
+<li class=""><a class="hover:text-teal-parche" href="#">Inicio</a></li>
+<li class=""><a class="hover:text-teal-parche" href="#">Tienda</a></li>
+<li class=""><a class="hover:text-teal-parche" href="#">Propósito</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-black mb-6">Contacto</h4>
+<p class="text-ink-faint">hola@parchepeludo.com</p>
+<p class="text-ink-faint">+57 300 000 0000</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+    // Hero Slider Logic
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    
+    function updateSlider() {
+        slides.forEach((slide, index) => {
+            if(index === currentSlide) {
+                slide.classList.add('active');
+                slide.style.opacity = '1';
+                slide.style.zIndex = '1';
+            } else {
+                slide.classList.remove('active');
+                slide.style.opacity = '0';
+                slide.style.zIndex = '0';
+            }
+        });
+        
+        dots.forEach((dot, index) => {
+            if(index === currentSlide) {
+                dot.classList.add('bg-white', 'w-6');
+                dot.classList.remove('bg-white/40', 'w-2');
+            } else {
+                dot.classList.remove('bg-white', 'w-6');
+                dot.classList.add('bg-white/40', 'w-2');
+            }
+        });
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateSlider();
+    }
+
+    function goToSlide(index) {
+        currentSlide = index;
+        updateSlider();
+    }
+
+    // Auto play
+    setInterval(nextSlide, 5000);
+    
+    // Initial call
+    updateSlider();
+
+    // Favorite button toggle
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const icon = this.querySelector('.material-symbols-outlined');
+            const isFilled = icon.style.fontVariationSettings.includes("'FILL' 1");
+            
+            if (isFilled) {
+                icon.style.fontVariationSettings = "'FILL' 0";
+                this.classList.remove('bg-coral', 'text-white');
+                this.classList.add('bg-white/80', 'text-coral');
+            } else {
+                icon.style.fontVariationSettings = "'FILL' 1";
+                this.classList.add('bg-coral', 'text-white');
+                this.classList.remove('bg-white/80', 'text-coral');
+                
+                this.style.transform = 'scale(1.2)';
+                setTimeout(() => this.style.transform = 'scale(1)', 150);
+            }
+        });
+    });
+</script>
+
+
+</body></html>
