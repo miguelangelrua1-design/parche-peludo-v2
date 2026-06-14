@@ -3966,3 +3966,601 @@ body.single-listing #listing-nav {
   /* (El bloque "FAVORITO sobre el CARRUSEL" se retiró: el favorito ahora se
      queda estable en la fila del encabezado .ppv2-meta-top — ver más arriba.) */
 }
+
+/* =====================================================================
+   HOME TIENDA  (página /home-tienda, id 1610)
+   Estilos para que los componentes nativos de Elementor reproduzcan el
+   diseño de Diseño/Stitch/home_tienda.html. Todo scoped a #ppt-*/.ppt-*.
+   ===================================================================== */
+
+/* ---- Hero ---- */
+/* ancho 70/30 + separación real (margen en blanco) entre slider y banner + misma altura */
+#ppt-hero-left, #ppt-hero-offer {
+  position: relative; border-radius: 5px; overflow: hidden;
+  min-height: 300px; flex-grow: 0 !important; flex-shrink: 0 !important;
+}
+/* bordes redondeados (5px) aplicados también al carrusel y al banner internos */
+#ppt-hero-left .ppt-hero-carousel,
+#ppt-hero-left .ppt-hero-carousel .elementor-image-carousel-wrapper,
+#ppt-hero-left .ppt-hero-carousel .swiper,
+#ppt-hero-left .ppt-hero-carousel .swiper-container,
+#ppt-hero-offer > .elementor-element-populated { border-radius: 5px; overflow: hidden; }
+#ppt-hero-left  { flex-basis: calc(70% - 14px) !important; width: calc(70% - 14px) !important; max-width: calc(70% - 14px) !important; margin-right: 14px; }
+#ppt-hero-offer { flex-basis: calc(30% - 14px) !important; width: calc(30% - 14px) !important; max-width: calc(30% - 14px) !important; margin-left: 14px; }
+/* alturas iguales (la fila estira ambas columnas a la más alta) */
+#ppt-hero > .elementor-container { align-items: stretch; }
+/* menos altura: padding y título más compactos */
+#ppt-hero-left > .elementor-element-populated { padding-top: 26px !important; padding-bottom: 26px !important; }
+#ppt-hero-left > .elementor-element-populated,
+#ppt-hero-offer > .elementor-element-populated { position: relative; z-index: 2; height: 100%; }
+#ppt-hero-left::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(100deg, rgba(30,46,51,.62), rgba(30,46,51,.12) 60%, transparent);
+}
+.ppt-hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--marigold, #FFD166); color: var(--ink, #1E2E33);
+  padding: 6px 14px; border-radius: 999px; font-weight: 800;
+  font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+}
+.ppt-hero-h1 .elementor-heading-title {
+  color: #fff !important; font-size: 38px; font-weight: 900; line-height: 1.08;
+  max-width: 540px; margin: 12px 0 8px; letter-spacing: -.5px;
+}
+.ppt-hero-h1 em { color: var(--teal-parche, #79C8D0); font-style: italic; }
+.ppt-hero-sub p { color: rgba(255,255,255,.92); max-width: 360px; font-weight: 500; margin-bottom: 14px; }
+.ppt-btn-primary .elementor-button {
+  background: var(--teal-parche, #79C8D0); color: #fff; border-radius: 999px;
+  font-weight: 900; text-transform: uppercase; padding: 15px 34px;
+  box-shadow: 0 12px 32px rgba(121,200,208,.40);
+}
+.ppt-btn-primary .elementor-button:hover { background: var(--teal-deep, #4AA5AD); }
+#ppt-hero-offer > .elementor-element-populated { display: flex; align-items: flex-end; justify-content: center; }
+.ppt-btn-white .elementor-button {
+  background: #fff; color: var(--teal-deep, #4AA5AD); border-radius: 999px;
+  font-weight: 900; text-transform: uppercase; padding: 12px 26px; box-shadow: 0 6px 16px rgba(0,0,0,.12);
+}
+
+/* ---- Hero Opción B: carrusel nativo de Elementor como fondo + texto encima ---- */
+#ppt-hero-left::before { display: none; } /* anula el overlay viejo del fondo de columna */
+#ppt-hero-left > .elementor-element-populated { position: relative; z-index: 1; } /* contexto de apilado propio */
+#ppt-hero-left .ppt-hero-carousel { position: absolute; inset: 0; z-index: 1; margin: 0; padding: 0; }
+#ppt-hero-left .ppt-hero-carousel,
+#ppt-hero-left .ppt-hero-carousel .elementor-widget-container,
+#ppt-hero-left .ppt-hero-carousel .elementor-image-carousel-wrapper,
+#ppt-hero-left .ppt-hero-carousel .elementor-image-carousel,
+#ppt-hero-left .ppt-hero-carousel .swiper,
+#ppt-hero-left .ppt-hero-carousel .swiper-container,
+#ppt-hero-left .ppt-hero-carousel .swiper-wrapper,
+#ppt-hero-left .ppt-hero-carousel .swiper-slide { height: 100% !important; }
+#ppt-hero-left .ppt-hero-carousel .swiper-slide figure,
+#ppt-hero-left .ppt-hero-carousel .swiper-slide a,
+#ppt-hero-left .ppt-hero-carousel .swiper-slide img {
+  height: 100% !important; width: 100% !important; object-fit: cover !important; border-radius: 0 !important;
+}
+/* degradado DENTRO del carrusel: sobre las imágenes pero DEBAJO de los dots */
+#ppt-hero-left .ppt-hero-carousel .elementor-image-carousel-wrapper,
+#ppt-hero-left .ppt-hero-carousel .swiper,
+#ppt-hero-left .ppt-hero-carousel .swiper-container { position: relative; }
+#ppt-hero-left .ppt-hero-carousel .elementor-image-carousel-wrapper::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(100deg, rgba(30,46,51,.62), rgba(30,46,51,.12) 60%, transparent);
+}
+/* PASADORES (dots) visibles y por encima del degradado */
+#ppt-hero-left .ppt-hero-carousel .swiper-pagination { z-index: 10 !important; bottom: 14px !important; width: 100%; }
+#ppt-hero-left .ppt-hero-carousel .swiper-pagination-bullet {
+  background: #fff !important; opacity: .55; width: 9px; height: 9px; margin: 0 4px !important; box-shadow: 0 1px 3px rgba(0,0,0,.4);
+}
+#ppt-hero-left .ppt-hero-carousel .swiper-pagination-bullet-active { opacity: 1; width: 26px; border-radius: 6px; }
+/* texto, badge y botón por encima del carrusel */
+#ppt-hero-left .elementor-widget:not(.elementor-widget-image-carousel) { position: relative; z-index: 5; }
+
+/* ---- Propuestas de valor: 3 tarjetas SEPARADAS (antes era 1 banda unificada) ---- */
+#ppt-valueprops > .elementor-container { background: transparent; padding: 0; align-items: stretch; }
+#ppt-valueprops .elementor-column > .elementor-element-populated {
+  background: #F2F4F7; border-radius: 12px; padding: 22px 20px; height: 100%;
+  display: flex; flex-direction: column; justify-content: center; /* centra el contenido verticalmente */
+}
+/* icono y texto centrados verticalmente entre sí */
+.ppt-vp-item, .ppt-vp-item .elementor-icon-box-wrapper { width: 100%; }
+.ppt-vp-item .elementor-icon-box-wrapper { align-items: center !important; }
+#ppt-valueprops .elementor-column:not(:first-child) > .elementor-element-populated { margin-left: 10px; }
+#ppt-valueprops .elementor-column:not(:last-child)  > .elementor-element-populated { margin-right: 10px; }
+.ppt-vp-item .elementor-icon-box-wrapper { display: flex; align-items: center; gap: 14px; text-align: left; }
+.ppt-vp-item .elementor-icon-box-icon { margin: 0; }
+.ppt-vp-item .elementor-icon {
+  width: 56px; height: 56px; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center; font-size: 24px;
+}
+.ppt-vp-item .elementor-icon i { color: #fff; }
+.ppt-vp-1 .elementor-icon { background: #2D8A01; }
+.ppt-vp-2 .elementor-icon { background: #9333EA; }
+.ppt-vp-3 .elementor-icon { background: #3B66A5; }
+.ppt-vp-item .elementor-icon-box-title { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.25; margin-bottom: 4px; }
+.ppt-vp-item .elementor-icon-box-description { font-size: 13px; color: var(--ink-muted); }
+
+/* ---- Banners por especie ---- */
+#ppt-species-dog, #ppt-species-cat {
+  position: relative; min-height: 230px; border-radius: var(--r-lg, 1.25rem); overflow: hidden;
+}
+/* separación (espacio en blanco) entre los dos banners */
+#ppt-species .elementor-row,
+#ppt-species > .elementor-container { gap: 28px; }
+#ppt-species .elementor-column { width: calc(50% - 14px) !important; flex: 0 0 calc(50% - 14px) !important; }
+#ppt-species-dog > .elementor-element-populated,
+#ppt-species-cat > .elementor-element-populated { position: relative; z-index: 2; display: flex; align-items: flex-end; }
+#ppt-species-dog::before, #ppt-species-cat::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(to top, rgba(30,46,51,.80), rgba(30,46,51,.15) 50%, transparent);
+}
+.ppt-species-title .elementor-heading-title { color: #fff !important; font-size: 36px; font-weight: 900; letter-spacing: -.5px; }
+
+/* ---- Encabezados de sección ---- */
+.ppt-h2 .elementor-heading-title { font-size: 30px; font-weight: 900; color: var(--ink); letter-spacing: -.5px; margin-bottom: 6px; }
+.ppt-sub p { color: var(--ink-muted); }
+
+/* ---- Grid de categorías ---- */
+/* título y subtítulo juntos (quita el margen grande del widget) */
+#ppt-categories .ppt-h2 { margin-bottom: 8px !important; }
+#ppt-categories .ppt-h2 .elementor-heading-title { margin-bottom: 0; }
+#ppt-categories .ppt-sub { margin-top: 0 !important; }
+#ppt-categories .ppt-sub p { margin: 0; }
+
+/* las 6 categorías suman 100% (estaban en 16%×6=96%) → llegan a los bordes como los banners */
+#ppt-cat-grid .elementor-column { width: 16.666% !important; max-width: 16.666% !important; flex-basis: 16.666% !important; }
+
+/* menos espacio entre subtítulo y tarjetas */
+#ppt-categories { padding-bottom: 2px !important; }
+
+/* layout horizontal: ícono a la izquierda, texto a la derecha (tarjeta más baja) */
+.ppt-cat-item .elementor-icon-box-wrapper {
+  background: var(--teal-mist, #E8F4F6); border: 1px solid rgba(121,200,208,.30);
+  border-radius: var(--r-lg, 1.25rem); padding: 22px 16px; transition: all .25s ease;
+  display: flex !important; flex-direction: row !important; align-items: center; justify-content: center; gap: 12px; text-align: left;
+}
+.ppt-cat-item .elementor-icon-box-content { display: flex; align-items: center; flex: 0 1 auto; }
+/* quita el hueco de la descripción vacía que agrandaba la tarjeta */
+.ppt-cat-item .elementor-icon-box-description { display: none !important; margin: 0 !important; }
+.ppt-cat-item .elementor-icon-box-wrapper:hover {
+  background: #fff; border-color: var(--teal-parche, #79C8D0);
+  box-shadow: 0 10px 26px rgba(30,46,51,.10); transform: translateY(-3px);
+}
+/* círculo del icono centrado + glifo centrado dentro */
+.ppt-cat-item .elementor-icon-box-icon { margin: 0 !important; flex: 0 0 auto; }
+.ppt-cat-item .elementor-icon {
+  display: flex !important; align-items: center; justify-content: center;
+  width: 46px; height: 46px; margin: 0; border-radius: 999px; background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,.06); transition: all .25s ease;
+}
+.ppt-cat-item .elementor-icon i { color: var(--teal-deep, #4AA5AD); font-size: 24px; line-height: 1; }
+.ppt-cat-item .elementor-icon svg { width: 24px; height: 24px; fill: var(--teal-deep, #4AA5AD); }
+/* hover: el círculo se vuelve teal con icono blanco y crece levemente */
+.ppt-cat-item .elementor-icon-box-wrapper:hover .elementor-icon { background: var(--teal-parche, #79C8D0); transform: scale(1.08); box-shadow: 0 6px 16px rgba(121,200,208,.45); }
+.ppt-cat-item .elementor-icon-box-wrapper:hover .elementor-icon i { color: #fff; }
+.ppt-cat-item .elementor-icon-box-wrapper:hover .elementor-icon svg { fill: #fff; }
+.ppt-cat-item .elementor-icon-box-title { font-size: 14px; font-weight: 900; color: var(--ink); margin: 0 !important; line-height: 1.2; }
+
+/* ---- Ofertas destacadas ---- */
+/* homologar altura de las 3 tarjetas (cada caja llena el 100% de su columna) */
+#ppt-offers-grid > .elementor-container { align-items: stretch; }
+#ppt-offers-grid .elementor-column > .elementor-element-populated { height: 100%; }
+#ppt-offers-grid .elementor-widget-html,
+#ppt-offers-grid .elementor-widget-html > .elementor-widget-container { height: 100%; }
+.ppt-offer { position: relative; background: var(--teal-mist, #E8F4F6); border-radius: var(--r-xl, 1.5rem); padding: 24px; min-height: 176px; height: 100%; overflow: hidden; }
+.ppt-offer .o-pre { font-weight: 700; font-size: 18px; color: var(--ink); }
+.ppt-offer .o-big { font-size: 52px; font-weight: 900; color: #1B4332; line-height: 1; margin: 4px 0; }
+.ppt-offer .o-word { font-size: 28px; font-weight: 900; color: #1B4332; text-transform: uppercase; letter-spacing: -1px; }
+.ppt-offer .o-brand { font-size: 12px; font-weight: 700; color: var(--ink-muted); margin-bottom: 2px; }
+.ppt-offer .o-small { font-size: 12px; color: var(--ink); margin-bottom: 10px; line-height: 1.25; }
+.ppt-offer .o-brand { line-height: 1.25; }
+.ppt-offer .o-mid { font-size: 32px; font-weight: 900; color: #1B4332; line-height: 1; margin-bottom: 4px; }
+.ppt-offer .o-mid2 { font-size: 24px; font-weight: 900; color: #1B4332; line-height: 1.15; }
+.ppt-offer .o-arrow { position: absolute; right: 16px; bottom: 16px; width: 40px; height: 40px; border-radius: 999px; background: var(--teal-parche, #79C8D0); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; z-index: 2; }
+/* La flecha ahora es un <a> real: mantener color/decoración y dar hover clickeable */
+.ppt-offer a.o-arrow, .ppt-offer a.o-arrow:focus { color: #fff; text-decoration: none; }
+.ppt-offer a.o-arrow:hover { background: var(--teal-deep, #4AA5AD); color: #fff; transform: scale(1.08); transition: all .2s ease; }
+/* imagen de producto a la derecha de cada banner (como el diseño original) */
+.ppt-offer-1 { background-image: url('/wp-content/uploads/ppv2-tienda/oferta-1.jpg'); }
+.ppt-offer-2 { background-image: url('/wp-content/uploads/ppv2-tienda/oferta-2.jpg'); }
+.ppt-offer-3 { background-image: url('/wp-content/uploads/ppv2-tienda/oferta-3.jpg'); }
+.ppt-offer-1, .ppt-offer-2, .ppt-offer-3 {
+  background-repeat: no-repeat; background-position: right -6px bottom -6px; background-size: auto 78%;
+}
+.ppt-offer > p, .ppt-offer > h3 { max-width: 56%; position: relative; z-index: 1; }
+
+/* ---- Filtros (pills) ---- */
+/* pastillas en UNA sola fila con scroll horizontal (carrusel); barra oculta */
+.ppt-pills { display: flex; gap: 10px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 18px 0 26px; scrollbar-width: none; }
+.ppt-pills::-webkit-scrollbar { display: none; }
+.ppt-pill { flex: 0 0 auto; white-space: nowrap; padding: 8px 22px; border-radius: 999px; background: #fff; border: 1px solid rgba(121,200,208,.30); color: var(--teal-deep, #4AA5AD); font-weight: 700; font-size: 14px; cursor: pointer; }
+.ppt-pill.is-active { background: var(--teal-parche, #79C8D0); color: #fff; border-color: transparent; }
+
+/* tarjetas de producto menos altas (reduce el espacio vacío del área de imagen) — solo esta página */
+.ppt-products li.product .mediaholder { aspect-ratio: 4 / 3 !important; margin-bottom: 8px !important; }
+.ppt-products li.product { padding-top: 12px !important; padding-bottom: 12px !important; }
+.ppt-products li.product .button { margin-top: 10px !important; }
+
+/* reducir espacios vacíos verticales de la sección Productos Destacados */
+#ppt-featured { padding-top: 30px !important; padding-bottom: 34px !important; }
+#ppt-featured .ppt-h2 { margin-bottom: 6px !important; }
+#ppt-featured .elementor-widget-html { margin-bottom: 0 !important; }
+#ppt-featured .ppt-pills { margin: 6px 0 14px !important; }
+
+/* ---- Banners grandes Perro/Gato ---- */
+#ppt-dogs-banner, #ppt-cats-banner { position: relative; border-radius: var(--r-xl, 1.5rem); overflow: hidden; }
+#ppt-dogs-banner > .elementor-widget-wrap, #ppt-cats-banner > .elementor-widget-wrap,
+#ppt-dogs-banner > .elementor-element-populated, #ppt-cats-banner > .elementor-element-populated { position: relative; z-index: 2; }
+#ppt-dogs-banner::before, #ppt-cats-banner::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to right, rgba(0,0,0,.35), transparent); }
+/* banner horizontal a la misma altura que los 3 banners complementarios (150px) */
+#ppt-dogs-banner > .elementor-element-populated, #ppt-cats-banner > .elementor-element-populated { min-height: 150px !important; display: flex; align-items: center; }
+.ppt-bigbanner-title .elementor-heading-title { color: #fff !important; font-size: 42px; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; }
+
+/* ---- Sub-categorías ---- */
+#ppt-dogs-subcats .elementor-column > .elementor-element-populated,
+#ppt-cats-subcats .elementor-column > .elementor-element-populated {
+  background: var(--teal-mist, #E8F4F6); border-radius: var(--r-xl, 1.5rem); min-height: 150px; padding: 24px; display: flex; align-items: center;
+}
+#ppt-sc-2 > .elementor-element-populated, #ppt-scc-2 > .elementor-element-populated { background: var(--bone, #F7F3EC); }
+.ppt-subcat-title .elementor-heading-title { font-size: 22px; font-weight: 900; color: var(--ink); line-height: 1.15; }
+/* separación horizontal entre los 3 banners complementarios */
+#ppt-dogs-subcats .elementor-column:not(:first-child) > .elementor-element-populated,
+#ppt-cats-subcats .elementor-column:not(:first-child) > .elementor-element-populated { margin-left: 10px; }
+#ppt-dogs-subcats .elementor-column:not(:last-child) > .elementor-element-populated,
+#ppt-cats-subcats .elementor-column:not(:last-child) > .elementor-element-populated { margin-right: 10px; }
+/* menos separación vertical entre el banner grande y los 3 complementarios */
+#ppt-dogs, #ppt-cats { padding-bottom: 6px !important; }
+#ppt-dogs-subcats, #ppt-cats-subcats { padding-top: 4px !important; }
+/* las 3 columnas suman 100% (estaban en 33%×3=99%) → el último banner alinea a la derecha con el grande */
+#ppt-dogs-subcats .elementor-column,
+#ppt-cats-subcats .elementor-column { width: 33.333% !important; max-width: 33.333% !important; flex-basis: 33.333% !important; }
+
+/* ---- #PropósitoPeludo ---- */
+#ppt-purpose { text-align: center; }
+.ppt-purpose-h .elementor-heading-title { font-size: 38px; font-weight: 900; color: var(--ink); }
+.ppt-purpose-lead p { color: var(--ink-muted); font-size: 18px; max-width: 760px; margin: 14px auto 0; }
+.ppt-pillar-img img { border-radius: var(--r-lg, 1.25rem); width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.ppt-pillar-title .elementor-heading-title { font-size: 24px; font-weight: 900; color: var(--ink); text-align: center; margin-top: 18px; }
+.ppt-pillar-text p { color: var(--ink-muted); text-align: center; margin-top: 8px; }
+
+/* ============================================================
+   HOME TIENDA — MÓVIL (≤767px): adapta los componentes existentes,
+   apilando las columnas que en escritorio fijé con !important.
+   ============================================================ */
+@media (max-width: 767px) {
+
+  /* --- Hero: apilar carrusel (arriba) y banner de oferta (abajo) --- */
+  #ppt-hero-left, #ppt-hero-offer {
+    width: 100% !important; max-width: 100% !important; flex: 0 0 100% !important;
+    margin: 0 !important;
+  }
+  /* eliminar el espacio entre el header y el hero en móvil */
+  #ppt-hero { padding-top: 0 !important; }
+  #ppt-hero-left { min-height: 240px; margin-bottom: 0 !important; }
+  /* banner de oferta con 15px de margen (arriba, abajo y lados) */
+  #ppt-hero-offer {
+    flex: 0 0 calc(100% - 30px) !important; width: calc(100% - 30px) !important; max-width: calc(100% - 30px) !important;
+    margin: 15px !important; min-height: 366px; /* igual que escritorio, sin recortar */
+  }
+  .ppt-hero-h1 .elementor-heading-title { font-size: 28px; }
+  .ppt-hero-sub p { max-width: 100%; }
+  /* el botón no debe tapar los pasadores: deja aire abajo para los dots */
+  #ppt-hero-left > .elementor-element-populated { padding-bottom: 50px !important; }
+  #ppt-hero-left .ppt-hero-carousel .swiper-pagination { bottom: 16px !important; }
+
+  /* --- Propuestas de valor: MUY COMPACTAS, ícono y texto centrados a la misma altura --- */
+  #ppt-valueprops .elementor-column > .elementor-element-populated { margin: 0 0 8px 0 !important; padding: 6px 14px !important; display: flex !important; justify-content: center !important; }
+  .ppt-vp-item, .ppt-vp-item .elementor-widget-container { width: 100%; }
+  .ppt-vp-item .elementor-icon-box-wrapper { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 11px !important; text-align: left !important; }
+  .ppt-vp-item .elementor-icon-box-icon { margin: 0 !important; padding: 0 !important; flex: 0 0 auto !important; align-self: center !important; }
+  .ppt-vp-item .elementor-icon { width: 40px !important; height: 40px !important; font-size: 18px !important; }
+  .ppt-vp-item .elementor-icon-box-content { text-align: left !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
+  .ppt-vp-item .elementor-icon-box-title { font-size: 13px !important; margin: 0 !important; line-height: 1.2 !important; }
+  .ppt-vp-item .elementor-icon-box-description { font-size: 11.5px !important; margin: 1px 0 0 0 !important; line-height: 1.3 !important; }
+
+  /* --- Banners por especie: apilar (reset del 50%) --- */
+  #ppt-species .elementor-column { width: 100% !important; max-width: 100% !important; flex: 0 0 100% !important; margin-bottom: 14px; }
+  .ppt-species-title .elementor-heading-title { font-size: 28px; }
+
+  /* --- Categorías: 2 por fila --- */
+  #ppt-cat-grid .elementor-column { width: 50% !important; max-width: 50% !important; flex-basis: 50% !important; }
+
+  /* --- Ofertas: carrusel horizontal swipeable (SOLO móvil) --- */
+  #ppt-offers-grid > .elementor-container {
+    display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important; gap: 14px !important; padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch; align-items: stretch !important;
+  }
+  #ppt-offers-grid > .elementor-container::-webkit-scrollbar { height: 6px; }
+  #ppt-offers-grid > .elementor-container::-webkit-scrollbar-thumb { background: var(--teal-soft, #BEE3E7); border-radius: 999px; }
+  #ppt-offers-grid > .elementor-container::-webkit-scrollbar-track { background: transparent; }
+  #ppt-offers-grid .elementor-column {
+    flex: 0 0 82% !important; width: 82% !important; max-width: 82% !important; scroll-snap-align: center !important;
+  }
+  .ppt-offer > p, .ppt-offer > h3 { max-width: 60%; }
+
+  /* --- Sub-categorías Perro/Gato: CARRUSEL horizontal en móvil, altura completa --- */
+  #ppt-dogs-subcats > .elementor-container, #ppt-cats-subcats > .elementor-container {
+    display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important; gap: 14px !important; padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch; align-items: stretch !important;
+  }
+  #ppt-dogs-subcats > .elementor-container::-webkit-scrollbar,
+  #ppt-cats-subcats > .elementor-container::-webkit-scrollbar { height: 6px; }
+  #ppt-dogs-subcats > .elementor-container::-webkit-scrollbar-thumb,
+  #ppt-cats-subcats > .elementor-container::-webkit-scrollbar-thumb { background: var(--teal-soft, #BEE3E7); border-radius: 999px; }
+  #ppt-dogs-subcats .elementor-column, #ppt-cats-subcats .elementor-column {
+    flex: 0 0 70% !important; width: 70% !important; max-width: 70% !important; scroll-snap-align: center !important;
+  }
+  #ppt-dogs-subcats .elementor-column > .elementor-element-populated,
+  #ppt-cats-subcats .elementor-column > .elementor-element-populated { margin: 0 !important; min-height: 150px !important; }
+
+  /* --- Banner grande Perro/Gato: versión "tarjeta teal" igual a los complementarios (móvil) --- */
+  #ppt-dogs-banner > .elementor-element-populated, #ppt-cats-banner > .elementor-element-populated {
+    min-height: 150px !important;
+    background-image: none !important; background-color: var(--teal-mist, #E8F4F6) !important;
+  }
+  #ppt-dogs-banner::before, #ppt-cats-banner::before { display: none !important; }
+  .ppt-bigbanner-title .elementor-heading-title {
+    color: var(--ink) !important; font-size: 26px !important; text-transform: none !important; letter-spacing: 0 !important;
+  }
+
+  /* --- Productos (carrusel horizontal): tarjetas más anchas para swipe --- */
+  .ppt-products ul.products li.product { flex: 0 0 74% !important; min-width: 74% !important; max-width: 74% !important; width: 74% !important; scroll-snap-align: center !important; }
+
+  /* --- Títulos de sección más pequeños --- */
+  .ppt-h2 .elementor-heading-title, .ppt-purpose-h .elementor-heading-title { font-size: 24px; }
+
+  /* --- Menos padding lateral en secciones boxed --- */
+  #ppt-valueprops, #ppt-categories, #ppt-cat-grid, #ppt-offers, #ppt-offers-grid,
+  #ppt-featured, #ppt-dogs, #ppt-dogs-subcats, #ppt-dogs-products,
+  #ppt-cats, #ppt-cats-subcats, #ppt-cats-products { padding-left: 14px !important; padding-right: 14px !important; }
+}
+
+/* ============================================================
+   HOME TIENDA — TABLET (768–1024px). SOLO afecta a esta página
+   (body.page-id-1610) para no tocar Home V2; móvil (≤767px) y
+   escritorio (≥1025px) se mantienen tal cual.
+   ============================================================ */
+@media (min-width: 768px) and (max-width: 1024px) {
+
+  /* --- #PropósitoPeludo: los 3 pilares en UNA sola fila --- */
+  body.page-id-1610 .elementor-top-section:has(.ppv2-pp-img) > .elementor-container {
+    flex-wrap: nowrap !important;
+  }
+  body.page-id-1610 .elementor-top-section:has(.ppv2-pp-img) > .elementor-container > .elementor-column {
+    width: calc(33.333% - 19px) !important;
+    max-width: calc(33.333% - 19px) !important;
+    flex: 0 0 auto !important;
+  }
+
+  /* --- "Comprar por Categoría": 3 pastillas por fila (en vez de 6
+         apretadas). Así el ícono deja de montarse sobre el texto. --- */
+  body.page-id-1610 #ppt-cat-grid .elementor-column {
+    width: 33.333% !important;
+    max-width: 33.333% !important;
+    flex-basis: 33.333% !important;
+    margin-bottom: 14px !important;
+  }
+
+  /* --- Hero: equilibrar a 60/40 (en escritorio es 70/30). El banner
+         derecho recupera ancho y deja de quedar estrecho. --- */
+  body.page-id-1610 #ppt-hero-left {
+    flex-basis: calc(60% - 14px) !important;
+    width: calc(60% - 14px) !important;
+    max-width: calc(60% - 14px) !important;
+  }
+  body.page-id-1610 #ppt-hero-offer {
+    flex-basis: calc(40% - 14px) !important;
+    width: calc(40% - 14px) !important;
+    max-width: calc(40% - 14px) !important;
+  }
+  /* El H1 baja a ~30px para envolver en 2 líneas (en vez de 3). Así la
+     columna izquierda es más baja, el banner derecho no se estira tanto
+     y la patita deja de recortarse. */
+  body.page-id-1610 .ppt-hero-h1 .elementor-heading-title {
+    font-size: 30px !important;
+    line-height: 1.12 !important;
+  }
+  /* La imagen de la patita se mantiene bien encuadrada al achicar la altura */
+  body.page-id-1610 #ppt-hero-offer > .elementor-element-populated {
+    background-position: center center !important;
+    background-size: cover !important;
+  }
+}
+
+/* ============================================================
+   HEADER — Reordenar el menú (solo ESCRITORIO ≥1201px)
+   Objetivo:  [Hamburguesa] · Logo · Buscador · Avatar · [Carrito]
+   - Menú hamburguesa: de PRIMERO a la izquierda, antes del logo.
+   - Carrito: al EXTREMO DERECHO, después del avatar.
+   No se toca el tema padre: solo se reordena por CSS.
+   Por debajo de 1200px el header móvil/tablet queda intacto.
+   ============================================================ */
+@media (min-width: 1201px) {
+
+  /* El contenedor del header pasa a ser una fila flexible, a TODA la altura
+     del header (80px) y centrada, para que todo quede alineado al centro. */
+  /* Altura 54px = la del contenido original (el #header le suma 18+8px de
+     padding → barra total de 80px, su altura previa). NO usar 80px aquí o
+     la barra crecería a 106px. */
+  #header-container.hws-wrapper #header .container {
+    display: flex;
+    align-items: center;
+    height: 54px;
+  }
+
+  /* Hamburguesa: sale de su posición fija a la derecha y se coloca
+     de PRIMERA a la izquierda (order:-1), antes del logo. */
+  #header-container.hws-wrapper .mobile-nav-icons {
+    position: static;
+    order: -1;
+    height: auto;
+    align-self: center;
+    margin-right: 20px;
+  }
+
+  /* Botón de menú compacto y centrado (antes ocupaba los 80px de alto).
+     Altura/ancho fijos para que no se colapse a las 2px de las rayitas. */
+  #header-container.hws-wrapper .desktop-mmenu-trigger {
+    width: 50px;
+    height: 44px;
+    border-radius: 8px;
+  }
+
+  /* La zona logo + buscador + widgets ocupa el resto del ancho y
+     centra verticalmente sus elementos. */
+  #header-container.hws-wrapper .hws-container {
+    width: auto;
+    flex: 1;
+    align-items: center;
+  }
+
+  /* Neutraliza los pequeños desfases verticales que el tema padre
+     aplica a cada elemento, para que TODOS queden al mismo centro. */
+  #header-container.hws-wrapper #logo {
+    margin-top: 0;
+  }
+  #header-container.hws-wrapper .header-search-container {
+    top: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  /* Dentro de los widgets de la derecha, el carrito va de ÚLTIMO
+     para quedar pegado al extremo derecho, después del avatar. */
+  #header-container.hws-wrapper .header-widget {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    top: 0;
+  }
+  /* El avatar de "Mi Cuenta" (.user-name span) está posicionado en ABSOLUTO
+     con top:-8px sobre una caja .user-menu de altura 0, por eso colgaba más
+     abajo que el resto. Le damos altura real a la caja (35px = el avatar) y
+     subimos el avatar 3px para compensar el borde blanco, así su centro
+     coincide con el de los demás botones. */
+  #header-container.hws-wrapper .header-widget .user-menu {
+    top: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    height: 35px;
+  }
+  #header-container.hws-wrapper .header-widget .user-name span {
+    top: -3px;
+  }
+  #header-container.hws-wrapper .header-widget .listeo-cart-container {
+    order: 99;            /* el carrito siempre de último → a la derecha */
+    margin: 0 0 0 23px;   /* la separación pasa al lado izquierdo, sin desfase arriba */
+  }
+}
+
+/* ============================================================
+   MENÚ OFF-CANVAS — Desplegar desde la IZQUIERDA (escritorio ≥1024px)
+   El tema padre lo ancla a la derecha (right:0; translateX(100%)).
+   Lo invertimos para que entre desde el lado izquierdo, en línea con
+   el botón hamburguesa que ahora está a la izquierda.
+   (En móvil el panel ya es de ancho completo y entra desde la izquierda.)
+   ============================================================ */
+@media (min-width: 1024px) {
+  .mobile-navigation-wrapper {
+    left: 0;
+    right: initial;
+    transform: translateX(-100%);   /* cerrado: fuera de pantalla por la izquierda */
+  }
+}
+/* Abierto: vuelve a su sitio (vale para ambos lados) */
+.mobile-nav-open .mobile-navigation-wrapper {
+  transform: translateX(0%);
+}
+
+/* ============================================================
+   HEADER MÓVIL/TABLET (≤1200px) — Reordenar la fila superior
+   Orden izquierda→derecha:
+   1) Hamburguesa  2) Logo  3) Buscador  4) Mi Cuenta  5) Carrito
+   Los íconos viven en 2 contenedores distintos (.hws-container y
+   .mobile-nav-icons), así que los "aplanamos" con display:contents
+   para que TODOS sean items de una misma fila flex y poder intercalarlos.
+   ============================================================ */
+@media (max-width: 1200px) {
+  /* Fila flex única y contexto de posición para el overlay de búsqueda */
+  #header-container.hws-wrapper #header .container {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  /* Aplanar: sus hijos pasan a ser items de .container */
+  #header-container.hws-wrapper .hws-container,
+  #header-container.hws-wrapper .header-widget,
+  #header-container.hws-wrapper .mobile-nav-icons {
+    display: contents;
+  }
+
+  /* Orden deseado */
+  #header-container.hws-wrapper .desktop-mmenu-trigger { order: 1; }
+  #header-container.hws-wrapper #logo { order: 2; }
+  /* El buscador (1er ícono del grupo derecho) absorbe el espacio libre por
+     su izquierda → empuja buscador + Mi Cuenta + carrito juntos a la DERECHA,
+     dejando solo hamburguesa + logo a la izquierda. */
+  #header-container.hws-wrapper .mobile-search-trigger { order: 3; margin-left: auto; }
+  #header-container.hws-wrapper .header-widget .user-menu,
+  #header-container.hws-wrapper .header-widget .sign-in { order: 4; }
+  #header-container.hws-wrapper .listeo-cart-container { order: 5; }
+  #header-container.hws-wrapper .header-search-container { order: 6; }
+
+  /* Botones (buscador + hamburguesa) con tamaño fijo para que no se
+     colapsen al sacarlos de su contenedor absoluto. */
+  #header-container.hws-wrapper .mobile-search-trigger,
+  #header-container.hws-wrapper .desktop-mmenu-trigger {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border-radius: 8px;
+  }
+
+  /* Avatar de "Mi Cuenta": misma corrección de centrado que en escritorio
+     (está en absoluto sobre una caja de altura 0). */
+  #header-container.hws-wrapper .header-widget .user-menu {
+    height: 35px;
+    width: 41px;          /* ancho del avatar, para que ocupe su sitio */
+    flex: 0 0 auto;       /* el tema padre le pone flex:1 y la caja se estiraba
+                             creando un hueco antes del carrito → lo anulamos */
+    top: 0;
+    margin: 0 0 0 14px;   /* anula el margin del tema padre y separa del buscador */
+  }
+  /* En escritorio el avatar se posiciona con left:-28px (lo "jala" sobre el
+     texto oculto); en móvil eso lo solapaba con el buscador → lo anclamos
+     dentro de su propia caja. */
+  #header-container.hws-wrapper .header-widget .user-name span {
+    top: -3px;
+    left: 0;
+    right: auto;
+  }
+
+  /* El overlay del buscador cuelga justo debajo de la barra */
+  #header-container.hws-wrapper .header-search-container {
+    left: 0;
+    top: 100%;
+  }
+
+  /* --- Ajustes de visualización de botones (móvil) --- */
+
+  /* Buscador: sin contenedor con fondo, solo la lupa */
+  #header-container.hws-wrapper .mobile-search-trigger {
+    background: transparent;
+  }
+
+  /* Carrito: más separación respecto a "Mi Cuenta" y un poco más a la
+     derecha (menos margen derecho que lo acerca al borde). */
+  #header-container.hws-wrapper .listeo-cart-container {
+    margin: 0 6px 0 18px;
+  }
+  /* Carrito: contenedor con borde negro y fondo transparente (en vez del
+     círculo gris), y el ícono del carrito en negro. */
+  #header-container.hws-wrapper .listeo-cart-container .mini-cart-button {
+    background: transparent;
+    border: 1px solid #000;
+    color: #000;
+    box-sizing: border-box;
+  }
+}
+
