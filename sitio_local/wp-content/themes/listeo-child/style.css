@@ -4554,14 +4554,9 @@ body.single-listing #listing-nav {
   #header-container.hws-wrapper .listeo-cart-container {
     margin: 0 6px 0 18px;
   }
-  /* Carrito: contenedor con borde negro y fondo transparente (en vez del
-     círculo gris), y el ícono del carrito en negro. */
-  #header-container.hws-wrapper .listeo-cart-container .mini-cart-button {
-    background: transparent;
-    border: 1px solid #000;
-    color: #000;
-    box-sizing: border-box;
-  }
+  /* (El estilo del ícono del carrito —borde negro, fondo transparente, ícono
+     negro— está ahora en una regla GLOBAL más abajo, aplica a escritorio y
+     móvil por igual.) */
 
   /* --- Estado SIN sesión (invitado) --- */
 
@@ -4576,5 +4571,17 @@ body.single-listing #listing-nav {
   .user_not_logged_in #header-container.hws-wrapper .listeo-cart-container {
     display: inline-block;
   }
+}
+
+/* ============================================================
+   CARRITO — Estilo del ícono (TODOS los tamaños: escritorio + móvil)
+   En vez del círculo gris del tema, un contenedor con borde negro y
+   fondo transparente, con el ícono del carrito en negro.
+   ============================================================ */
+#header-container.hws-wrapper .listeo-cart-container .mini-cart-button {
+  background: transparent;
+  border: 1px solid #000;
+  color: #000;
+  box-sizing: border-box;
 }
 
