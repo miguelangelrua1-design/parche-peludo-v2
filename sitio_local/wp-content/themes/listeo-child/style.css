@@ -4562,5 +4562,19 @@ body.single-listing #listing-nav {
     color: #000;
     box-sizing: border-box;
   }
+
+  /* --- Estado SIN sesión (invitado) --- */
+
+  /* "Iniciar Sesión" (.sign-in): el tema le pone flex-grow:1 y se estiraba
+     ocupando todo el ancho, dejando el buscador pegado al logo. Lo fijamos a
+     su tamaño para que el espacio libre vaya antes del buscador (margin-left:
+     auto) y así buscador + cuenta + carrito queden agrupados a la derecha. */
+  #header-container.hws-wrapper .header-widget .sign-in {
+    flex: 0 0 auto;
+  }
+  /* El tema oculta el carrito a los invitados; lo mostramos también sin sesión. */
+  .user_not_logged_in #header-container.hws-wrapper .listeo-cart-container {
+    display: inline-block;
+  }
 }
 
