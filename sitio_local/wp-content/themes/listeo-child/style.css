@@ -4475,6 +4475,18 @@ body.single-listing #listing-nav {
   transform: translateX(0%);
 }
 
+/* Hover del menú lateral (off-canvas): el tema padre lo pone BLANCO (era para
+   fondo oscuro), pero el panel ahora es blanco → texto invisible. Lo cambiamos
+   al teal de marca #79C8D0. */
+.mobile-navigation-list li a:hover,
+.mobile-navigation-list li a:focus,
+.mobile-navigation-list .menu-item-has-children > a:hover:before {
+  color: #79C8D0;
+}
+.mobile-nav-widgets a:hover {
+  color: #79C8D0;
+}
+
 /* ============================================================
    HEADER MÓVIL/TABLET (≤1200px) — Reordenar la fila superior
    Orden izquierda→derecha:
@@ -4595,7 +4607,7 @@ body.single-listing #listing-nav {
    ============================================================ */
 
 /* Helper de ícono Material (usado en widgets HTML) */
-body.page-id-1618 .pps-mi {
+.pps-mi {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-style: normal;
@@ -4608,38 +4620,45 @@ body.page-id-1618 .pps-mi {
 /* Ancho del contenido: más estrecho = más margen a los lados.
    (Se controla el ancho de la sección Y del contenedor interno "boxed"
    de Elementor, que trae su propio máximo ~1140px.) */
-body.page-id-1618 #pps-top.elementor-section,
-body.page-id-1618 #pps-services.elementor-section {
+#pps-top.elementor-section,
+#pps-services.elementor-section {
   max-width: 1040px;
   /* solo centrar horizontalmente: NO resetear margin-top/bottom de abajo */
   margin-left: auto;
   margin-right: auto;
 }
-body.page-id-1618 #pps-top > .elementor-container,
-body.page-id-1618 #pps-services > .elementor-container {
+#pps-top > .elementor-container,
+#pps-services > .elementor-container {
   max-width: 100%;
 }
-body.page-id-1618 #pps-top { margin-top: 40px; margin-bottom: 8px; }
-body.page-id-1618 #pps-services { margin-top: 38px; margin-bottom: 60px; }
+#pps-top { margin-top: 40px; margin-bottom: 8px; }
+#pps-services { margin-top: 38px; margin-bottom: 60px; }
 /* Separación entre la columna de beneficios y la de propósito (escritorio + tablet) */
 @media (min-width: 768px) {
-  body.page-id-1618 #pps-benefits-col { padding-right: 16px; }
+  #pps-benefits-col { padding-right: 16px; }
 }
 /* Las columnas NO se estiran a la altura de la otra (cada una a su contenido)
    → elimina el espacio vacío dentro de las tarjetas de beneficios. */
-body.page-id-1618 #pps-top > .elementor-container { align-items: flex-start; }
+#pps-top > .elementor-container { align-items: flex-start; }
 
 /* ---- Columna de BENEFICIOS: 3 tarjetas en fila (compactas, con espacio) ---- */
-/* .elementor-widget-wrap y .elementor-element-populated son el MISMO elemento
-   en esta versión de Elementor → un solo nivel. */
-body.page-id-1618 #pps-benefits-col > .elementor-widget-wrap {
-  display: flex;
+/* Beneficios en fila. Selector DESCENDIENTE (sin ">" ni ":has()") para que
+   funcione tanto en local (widget-wrap = element-populated juntos) como en
+   producción (element-populated > widget-wrap anidados, otra versión de Elementor). */
+#pps-benefits-col .elementor-widget-wrap {
+  display: flex !important;
   flex-wrap: wrap;
   gap: 20px;
   align-content: stretch;
 }
-body.page-id-1618 .pps-vp {
-  width: calc(33.333% - 14px);
+/* Refuerzo: las tarjetas a 1/3 con margen (por si el gap se pierde) */
+#pps-benefits-col .pps-vp { box-sizing: border-box; }
+.pps-vp {
+  /* 3 tarjetas iguales por fila SIN calc() — LiteSpeed/producción rompe el
+     calc(% - px); con flex no hay ese problema. El gap:20px del contenedor
+     crea la separación. */
+  flex: 1 1 0;
+  min-width: 0;
   margin: 0 !important;
   background: #E8F4F6;
   border: 1px solid #BEE3E7;
@@ -4648,32 +4667,32 @@ body.page-id-1618 .pps-vp {
   display: flex;
   align-items: center;   /* centra el contenido → reparte el vacío de las tarjetas cortas */
 }
-body.page-id-1618 .pps-vp .elementor-icon-box-wrapper {
+.pps-vp .elementor-icon-box-wrapper {
   text-align: center;
   display: flex;
   flex-direction: column;
 }
 /* menos espacio entre el ícono y el título.
    El glifo Material trae una caja de línea alta → la apretamos con line-height. */
-body.page-id-1618 .pps-vp .elementor-icon-box-icon {
+.pps-vp .elementor-icon-box-icon {
   margin-bottom: 0;
   line-height: 1;
 }
-body.page-id-1618 .pps-vp .elementor-icon { line-height: 1; }
-body.page-id-1618 .pps-vp .elementor-icon::before {
+.pps-vp .elementor-icon { line-height: 1; }
+.pps-vp .elementor-icon::before {
   display: block;
   line-height: 0.7;
 }
 /* sube el título para pegarlo al ícono (la caja del glifo deja aire abajo) */
-body.page-id-1618 .pps-vp .elementor-icon-box-content { margin-top: -11px; }
+.pps-vp .elementor-icon-box-content { margin-top: -11px; }
 /* Reemplazar el ícono Font Awesome por el glifo Material exacto */
-body.page-id-1618 .pps-vp .elementor-icon i,
-body.page-id-1618 .pps-vp .elementor-icon svg { display: none; }
-body.page-id-1618 .pps-vp .elementor-icon {
+.pps-vp .elementor-icon i,
+.pps-vp .elementor-icon svg { display: none; }
+.pps-vp .elementor-icon {
   display: inline-flex;
   justify-content: center;
 }
-body.page-id-1618 .pps-vp .elementor-icon::before {
+.pps-vp .elementor-icon::before {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   line-height: 1;
@@ -4682,11 +4701,11 @@ body.page-id-1618 .pps-vp .elementor-icon::before {
   -webkit-font-feature-settings: 'liga';
   font-feature-settings: 'liga';
 }
-body.page-id-1618 .pps-vp-1 .elementor-icon::before { content: "verified"; }
-body.page-id-1618 .pps-vp-2 .elementor-icon::before { content: "support_agent"; }
-body.page-id-1618 .pps-vp-3 .elementor-icon::before { content: "payments"; }
-body.page-id-1618 .pps-vp .elementor-icon-box-title,
-body.page-id-1618 .pps-vp .elementor-icon-box-title * {
+.pps-vp-1 .elementor-icon::before { content: "verified"; }
+.pps-vp-2 .elementor-icon::before { content: "support_agent"; }
+.pps-vp-3 .elementor-icon::before { content: "payments"; }
+.pps-vp .elementor-icon-box-title,
+.pps-vp .elementor-icon-box-title * {
   font-size: 11px;
   font-weight: 700;
   color: #1E5D64;
@@ -4695,7 +4714,7 @@ body.page-id-1618 .pps-vp .elementor-icon-box-title * {
   line-height: 1.2;
   margin: 0;
 }
-body.page-id-1618 .pps-vp .elementor-icon-box-description {
+.pps-vp .elementor-icon-box-description {
   font-size: 11.5px;
   color: #5A6B70;
   line-height: 1.4;
@@ -4704,8 +4723,8 @@ body.page-id-1618 .pps-vp .elementor-icon-box-description {
 
 /* ---- Columna PROPÓSITO: tarjeta oscura ---- */
 /* la columna no se estira a la altura de los beneficios → la tarjeta queda más baja */
-body.page-id-1618 #pps-proposito-col { align-self: flex-start; }
-body.page-id-1618 #pps-proposito-col > .elementor-element-populated {
+#pps-proposito-col { align-self: flex-start; }
+#pps-proposito-col > .elementor-element-populated {
   background: #1E2E33;
   border-radius: 12px;
   padding: 16px 24px;
@@ -4715,19 +4734,19 @@ body.page-id-1618 #pps-proposito-col > .elementor-element-populated {
 }
 /* ícono + título en la MISMA fila (el ::before va antes de un bloque h4,
    por eso lo hacemos flex en una sola línea) */
-body.page-id-1618 .pps-prop-title {
+.pps-prop-title {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-body.page-id-1618 .pps-prop-title,
-body.page-id-1618 .pps-prop-title * {
+.pps-prop-title,
+.pps-prop-title * {
   color: #fff;
   font-size: 20px;
   font-weight: 700;
   margin: 0;
 }
-body.page-id-1618 .pps-prop-title::before {
+.pps-prop-title::before {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   content: "volunteer_activism";
@@ -4737,15 +4756,15 @@ body.page-id-1618 .pps-prop-title::before {
   -webkit-font-feature-settings: 'liga';
   font-feature-settings: 'liga';
 }
-body.page-id-1618 .pps-prop-text,
-body.page-id-1618 .pps-prop-text * {
+.pps-prop-text,
+.pps-prop-text * {
   color: rgba(255, 255, 255, 0.8);
   font-size: 14px;
   margin: 4px 0 0;
   line-height: 1.4;
 }
-body.page-id-1618 .pps-prop-btn { margin-top: 10px; }
-body.page-id-1618 .pps-prop-btn .elementor-button {
+.pps-prop-btn { margin-top: 10px; }
+.pps-prop-btn .elementor-button {
   background: #79C8D0;
   color: #fff;
   border-radius: 999px;
@@ -4753,9 +4772,9 @@ body.page-id-1618 .pps-prop-btn .elementor-button {
   font-size: 13px;
   padding: 10px 22px;
 }
-body.page-id-1618 .pps-prop-btn .elementor-button:hover { background: #4AA5AD; }
+.pps-prop-btn .elementor-button:hover { background: #4AA5AD; }
 /* huella decorativa de fondo */
-body.page-id-1618 #pps-proposito-col > .elementor-element-populated::after {
+#pps-proposito-col > .elementor-element-populated::after {
   font-family: 'Material Symbols Outlined';
   content: "pets";
   position: absolute;
@@ -4769,14 +4788,14 @@ body.page-id-1618 #pps-proposito-col > .elementor-element-populated::after {
 }
 
 /* ---- GRILLA DE SERVICIOS: 3 por fila (escritorio) ---- */
-body.page-id-1618 #pps-services > .elementor-container {
+#pps-services > .elementor-container {
   flex-wrap: wrap;
   gap: 24px;
 }
-body.page-id-1618 #pps-services > .elementor-container > .elementor-column {
+#pps-services > .elementor-container > .elementor-column {
   width: calc(33.333% - 16px);
 }
-body.page-id-1618 #pps-services .elementor-column > .elementor-element-populated {
+#pps-services .elementor-column > .elementor-element-populated {
   padding: 0;
   background: #fff;
   border: 1px solid #E8ECEE;
@@ -4787,13 +4806,13 @@ body.page-id-1618 #pps-services .elementor-column > .elementor-element-populated
   height: 100%;
   position: relative;
 }
-body.page-id-1618 #pps-services .elementor-column > .elementor-element-populated:hover {
+#pps-services .elementor-column > .elementor-element-populated:hover {
   box-shadow: 0 14px 30px rgba(30, 46, 51, 0.12);
   transform: translateY(-3px);
 }
 /* imagen full-bleed */
-body.page-id-1618 .pps-card-img { margin: 0; }
-body.page-id-1618 .pps-card-img img {
+.pps-card-img { margin: 0; }
+.pps-card-img img {
   display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -4802,7 +4821,7 @@ body.page-id-1618 .pps-card-img img {
 /* overlay con badge VERIFICADO + corazón (widget HTML, marcado limpio).
    Se ancla al TOPE de la tarjeta (sobre la imagen). Los widgets de Elementor
    son position:relative por defecto, por eso lo forzamos a absolute top:0. */
-body.page-id-1618 .pps-card-overlay {
+.pps-card-overlay {
   margin: 0;
   position: absolute;
   top: 0;
@@ -4811,7 +4830,7 @@ body.page-id-1618 .pps-card-overlay {
   height: 0;
   z-index: 3;
 }
-body.page-id-1618 .pps-badge {
+.pps-badge {
   position: absolute;
   top: 14px;
   left: 14px;
@@ -4828,8 +4847,8 @@ body.page-id-1618 .pps-badge {
   letter-spacing: 0.02em;
   z-index: 2;
 }
-body.page-id-1618 .pps-badge .pps-mi { font-size: 14px; color: #4AA5AD; }
-body.page-id-1618 .pps-fav {
+.pps-badge .pps-mi { font-size: 14px; color: #4AA5AD; }
+.pps-fav {
   position: absolute;
   top: 14px;
   right: 14px;
@@ -4844,51 +4863,55 @@ body.page-id-1618 .pps-fav {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   z-index: 2;
 }
-body.page-id-1618 .pps-fav .pps-mi { font-size: 18px; }
+.pps-fav .pps-mi { font-size: 18px; }
 /* textos de la tarjeta con padding lateral */
-body.page-id-1618 .pps-card-title,
-body.page-id-1618 .pps-card-desc,
-body.page-id-1618 .pps-card-tags,
-body.page-id-1618 .pps-card-foot,
-body.page-id-1618 .pps-card-more {
+.pps-card-title,
+.pps-card-desc,
+.pps-card-tags,
+.pps-card-foot,
+.pps-card-more {
   padding-left: 24px;
   padding-right: 24px;
   margin: 0;
 }
 /* el margin va en el widget; el reset margin:0 solo en los HIJOS para no pisarlo */
-body.page-id-1618 .pps-card-title { margin: 19px 0 0; }
-body.page-id-1618 .pps-card-title * {
+.pps-card-title { margin: 19px 0 0; }
+.pps-card-title * {
   font-size: 20px;
   font-weight: 900;
   color: #1E2E33;
   line-height: 1.2;
   margin: 0;
 }
-body.page-id-1618 .pps-card-desc { margin: 8px 0 0; }
-body.page-id-1618 .pps-card-desc * {
+.pps-card-desc { margin: 8px 0 0; }
+.pps-card-desc * {
   font-size: 14px;
   color: #5A6B70;
   line-height: 1.5;
   margin: 0;
 }
-/* Enlaces clicables de la tarjeta (imagen, título, descripción): heredan el
-   estilo del texto, sin subrayado ni color de enlace del tema. */
-body.page-id-1618 .pps-card-title a,
-body.page-id-1618 .pps-card-desc a {
-  color: inherit;
+/* Enlaces clicables de la tarjeta (imagen, título, descripción): forzamos el
+   color correcto con !important para ganarle al color de enlace del tema
+   (en producción el tema pintaba estos enlaces de teal). */
+.pps-card-title a {
+  color: #1E2E33 !important;
   text-decoration: none;
 }
-body.page-id-1618 .pps-card-title a:hover { color: #4AA5AD; }
-body.page-id-1618 .pps-card-img a { display: block; }
+.pps-card-desc a {
+  color: #5A6B70 !important;
+  text-decoration: none;
+}
+.pps-card-title a:hover { color: #4AA5AD !important; }
+.pps-card-img a { display: block; }
 /* chips (envueltos en .pps-tags-row → flex fiable) */
-body.page-id-1618 .pps-card-tags { margin-top: 10px; }
-body.page-id-1618 .pps-tags-row {
+.pps-card-tags { margin-top: 10px; }
+.pps-tags-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin: 0;
 }
-body.page-id-1618 .pps-tags-row span {
+.pps-tags-row span {
   background: #E8F4F6;
   color: #1E5D64;
   border: 1px solid #BEE3E7;
@@ -4898,8 +4921,8 @@ body.page-id-1618 .pps-tags-row span {
   border-radius: 999px;
 }
 /* pie: precio + rating (envuelto en .pps-foot-row) */
-body.page-id-1618 .pps-card-foot { margin-top: 10px; }
-body.page-id-1618 .pps-foot-row {
+.pps-card-foot { margin-top: 10px; }
+.pps-foot-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4908,12 +4931,12 @@ body.page-id-1618 .pps-foot-row {
   padding-top: 12px;
   margin: 0;
 }
-body.page-id-1618 .pps-foot-row .pps-price {
+.pps-foot-row .pps-price {
   font-size: 14px;
   font-weight: 900;
   color: #1E2E33;
 }
-body.page-id-1618 .pps-foot-row .pps-rating {
+.pps-foot-row .pps-rating {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -4921,18 +4944,18 @@ body.page-id-1618 .pps-foot-row .pps-rating {
   font-weight: 700;
   color: #1E2E33;
 }
-body.page-id-1618 .pps-foot-row .pps-rating .pps-mi {
+.pps-foot-row .pps-rating .pps-mi {
   font-size: 18px;
   color: #FFD166;
   font-variation-settings: 'FILL' 1;
 }
 /* "Ver más" como enlace a la derecha, en una sola línea */
-body.page-id-1618 .pps-card-more {
+.pps-card-more {
   margin-top: 8px;
   margin-bottom: 14px;
   text-align: right;
 }
-body.page-id-1618 .pps-card-more .elementor-button {
+.pps-card-more .elementor-button {
   background: transparent;
   color: #4AA5AD;
   padding: 0;
@@ -4943,9 +4966,9 @@ body.page-id-1618 .pps-card-more .elementor-button {
   align-items: center;
   white-space: nowrap;
 }
-body.page-id-1618 .pps-card-more .elementor-button:hover { color: #1E5D64; }
-body.page-id-1618 .pps-card-more .elementor-button .elementor-button-text { white-space: nowrap; }
-body.page-id-1618 .pps-card-more .elementor-button::after {
+.pps-card-more .elementor-button:hover { color: #1E5D64; }
+.pps-card-more .elementor-button .elementor-button-text { white-space: nowrap; }
+.pps-card-more .elementor-button::after {
   font-family: 'Material Symbols Outlined';
   content: "arrow_forward";
   margin-left: 5px;
@@ -4960,14 +4983,14 @@ body.page-id-1618 .pps-card-more .elementor-button::after {
 /* Solo en MÓVIL (≤767) se apilan beneficios y propósito.
    En tablet (768–1024) quedan lado a lado, como en escritorio. */
 @media (max-width: 767px) {
-  body.page-id-1618 #pps-top > .elementor-container { flex-wrap: wrap; }
-  body.page-id-1618 #pps-top > .elementor-container > .elementor-column { width: 100%; }
-  body.page-id-1618 #pps-benefits-col { padding-right: 0; }
-  body.page-id-1618 #pps-proposito-col { margin-top: 16px; }
+  #pps-top > .elementor-container { flex-wrap: wrap; }
+  #pps-top > .elementor-container > .elementor-column { width: 100%; }
+  #pps-benefits-col { padding-right: 0; }
+  #pps-proposito-col { margin-top: 16px; }
 }
 @media (max-width: 767px) {
   /* Beneficios: CARRUSEL horizontal — los 3 en una sola fila, desplazable. */
-  body.page-id-1618 #pps-benefits-col > .elementor-widget-wrap {
+  #pps-benefits-col .elementor-widget-wrap {
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -4975,38 +4998,38 @@ body.page-id-1618 .pps-card-more .elementor-button::after {
     padding-bottom: 8px;
     scroll-snap-type: x proximity;
   }
-  body.page-id-1618 .pps-vp {
+  .pps-vp {
     width: 47%;
     flex: 0 0 47%;
     scroll-snap-align: start;
   }
 
   /* #PropósitoPeludo: ancho completo, sin desbordes ni texto cortado. */
-  body.page-id-1618 #pps-proposito-col,
-  body.page-id-1618 #pps-proposito-col > .elementor-element-populated {
+  #pps-proposito-col,
+  #pps-proposito-col > .elementor-element-populated {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
   }
-  body.page-id-1618 .pps-prop-text,
-  body.page-id-1618 .pps-prop-text * { overflow-wrap: anywhere; }
+  .pps-prop-text,
+  .pps-prop-text * { overflow-wrap: anywhere; }
 
   /* Servicios: 2 por fila */
-  body.page-id-1618 #pps-services > .elementor-container > .elementor-column {
+  #pps-services > .elementor-container > .elementor-column {
     width: calc(50% - 12px);
   }
-  body.page-id-1618 .pps-card-title { font-size: 17px; }
-  body.page-id-1618 .pps-card-title,
-  body.page-id-1618 .pps-card-desc,
-  body.page-id-1618 .pps-card-tags,
-  body.page-id-1618 .pps-card-foot,
-  body.page-id-1618 .pps-card-more {
+  .pps-card-title { font-size: 17px; }
+  .pps-card-title,
+  .pps-card-desc,
+  .pps-card-tags,
+  .pps-card-foot,
+  .pps-card-more {
     padding-left: 14px;
     padding-right: 14px;
   }
 
   /* Red de seguridad: ninguna sección provoca scroll horizontal de página
      (el carrusel tiene su propio scroll interno, no se ve afectado). */
-  body.page-id-1618 #pps-top { overflow-x: hidden; margin-top: 9px; }
+  #pps-top { overflow-x: hidden; margin-top: 5px; }
 }
 
