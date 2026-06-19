@@ -5033,3 +5033,283 @@ body.single-listing #listing-nav {
   #pps-top { overflow-x: hidden; margin-top: 5px; }
 }
 
+/* ============================================================================
+   Galería: red de seguridad para redimensionar de MÓVIL → ESCRITORIO sin
+   recargar. El slider móvil (.ppv2-mobile-slider-container) sólo se construye
+   cuando el viewport es < 768px; si el usuario luego ensancha la ventana, esta
+   clase persiste pero las reglas del slider (que viven en @media max-width:767)
+   dejan de aplicar, dejando las imágenes apiladas a tamaño completo. Estas
+   reglas (que SÓLO aplican si esa clase existe a >= 768px, algo que jamás ocurre
+   en una carga normal de escritorio) lo mantienen como un carrusel contenido.
+   ============================================================================ */
+@media (min-width: 768px) {
+  body.single-listing .ppv2-mobile-slider-container {
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  body.single-listing .ppv2-mobile-slider-container .ppv2-mobile-slider-track {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  body.single-listing .ppv2-mobile-slider-container .ppv2-mobile-slider-slide {
+    flex: 0 0 48%;
+    scroll-snap-align: start;
+  }
+  body.single-listing .ppv2-mobile-slider-container .ppv2-mobile-slider-slide img {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+  }
+}
+
+/* ============================================================================
+   Booking Plus: mostrar su modal de reserva como PANEL DESLIZANTE desde abajo
+   (bottom-sheet) en móvil, en lugar del pop-up/overlay centrado a pantalla
+   completa. Se conserva intacto TODO lo de dentro (lógica, pasos, opciones,
+   visual del contenido); SOLO cambia el contenedor (Magnific Popup) y su
+   entrada animada. Aplica igual sea cual sea el disparador: el botón "Reservar"
+   de la barra inferior o el botón "Book Now" del widget.
+
+   Scoping: usamos `:has(#lbp-booking-modal)` para afectar ÚNICAMENTE el popup de
+   Booking Plus — NO el diálogo de acceso (#sign-in-dialog) ni otros popups.
+   ============================================================================ */
+@media (max-width: 768px) {
+  /* El overlay y el contenedor se FIJAN a la ventana (no absolutos al documento),
+     así el panel NO se desplaza al hacer scroll. */
+  .mfp-bg.lbp-mfp-bg,
+  .mfp-wrap:has(#lbp-booking-modal) {
+    position: fixed !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    /* Altura = viewport VISIBLE real. En iOS/Safari `vh` mide la pantalla
+       completa (sin descontar las barras) y el panel se salía por arriba; `dvh`
+       (viewport dinámico) descuenta las barras del navegador. vh = fallback. */
+    height: 100vh !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+  }
+  /* El contenedor de Magnific ocupa toda la ventana (dentro del wrap fijo) y
+     empuja el contenido al BORDE INFERIOR con flexbox — método más fiable que
+     el posicionamiento absoluto y sin desfases ni dependencia de ancestros. */
+  .mfp-wrap:has(#lbp-booking-modal) .mfp-container {
+    position: absolute !important;
+    inset: 0 !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  .mfp-wrap:has(#lbp-booking-modal) .mfp-container::before { display: none !important; }
+
+  /* Bloquear el scroll del fondo mientras el panel de reserva está abierto, para
+     que el gesto de scroll mueva el CONTENIDO del panel y no la página detrás.
+     Se cubren html y body (según dónde scrollee el tema). */
+  html:has(.mfp-content > #lbp-booking-modal),
+  body:has(.mfp-content > #lbp-booking-modal) { overflow: hidden !important; }
+
+  .mfp-wrap:has(#lbp-booking-modal) .mfp-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    /* Animación de entrada: desliza desde abajo hacia arriba */
+    transform: translateY(100%);
+    transition: transform 0.34s cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
+  }
+  /* Magnific añade .mfp-ready al wrap cuando el popup ya está montado → desliza */
+  .mfp-wrap.mfp-ready:has(#lbp-booking-modal) .mfp-content {
+    transform: translateY(0);
+  }
+
+  /* El modal en sí: hoja con esquinas superiores redondeadas, sombra y scroll
+     interno. max-height 92vh deja ver el fondo oscurecido arriba (look panel). */
+  #lbp-booking-modal.lbp-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 18px 18px 0 0 !important;
+    /* 88dvh deja ~12% de fondo oscurecido arriba (esquinas redondeadas visibles)
+       y garantiza que la parte superior del panel NUNCA se corte en iOS. */
+    max-height: 88vh !important;
+    max-height: 88dvh !important;
+    overflow: hidden !important;
+    box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.18) !important;
+  }
+  /* El scroll lo lleva el inner; así el redondeo del panel no se recorta */
+  #lbp-booking-modal .lbp-modal-inner {
+    max-height: 88vh !important;
+    max-height: 88dvh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* ============================================================================
+   Login (#sign-in-dialog) como PANEL DESLIZANTE desde abajo en móvil — mismo
+   patrón que el modal de reserva, para mantener la coherencia. El tema abre este
+   popup con la animación de ZOOM (mainClass "my-mfp-zoom-in", scale sobre
+   .zoom-anim-dialog); la neutralizamos en móvil y deslizamos el .mfp-content.
+
+   Scoping: `:has(#sign-in-dialog)` afecta ÚNICAMENTE el popup de login.
+   ============================================================================ */
+@media (max-width: 768px) {
+  /* Wrap fijado al viewport VISIBLE (dvh) para que el panel no se desplace con
+     el scroll ni se corte arriba en iOS. */
+  .mfp-wrap:has(#sign-in-dialog) {
+    position: fixed !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+  }
+  /* Contenedor: empuja el contenido al borde inferior con flexbox */
+  .mfp-wrap:has(#sign-in-dialog) .mfp-container {
+    position: absolute !important;
+    inset: 0 !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  .mfp-wrap:has(#sign-in-dialog) .mfp-container::before { display: none !important; }
+
+  /* Bloquear scroll del fondo mientras el panel de login está abierto */
+  html:has(.mfp-content #sign-in-dialog),
+  body:has(.mfp-content #sign-in-dialog) { overflow: hidden !important; }
+
+  .mfp-wrap:has(#sign-in-dialog) .mfp-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Neutralizar la animación de ZOOM (scale) del tema sobre el diálogo, para que
+     aparezca limpio como hoja inferior. El panel se ancla abajo por flexbox
+     (estático, fiable). SIN transform propio → el layout interno del formulario
+     (campos, botón, mensaje de respuesta) queda intacto y el mensaje se ve. */
+  #sign-in-dialog.zoom-anim-dialog {
+    -webkit-transform: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 18px 18px 0 0 !important;
+    max-height: 88vh !important;
+    max-height: 88dvh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.18) !important;
+  }
+}
+
+/* ============================================================================
+   FIX CRÍTICO — El widget de chat flotante (#listeo-floating-chat-widget) es una
+   franja FIJA de ancho completo pegada abajo, con z-index 999999 (muy por encima
+   de los popups, que están en z-index ~2001). En móvil quedaba ENCIMA de los
+   botones de los paneles inferiores de login ("Iniciar sesión") y de reserva
+   ("Book Now"/"Continuar"): el tap lo interceptaba el chat y los botones "no
+   hacían nada". Mientras uno de esos paneles está abierto, ocultamos el chat.
+   (Fuera de la media query: el solape puede darse también en otros anchos.)
+   ============================================================================ */
+body:has(.mfp-content #sign-in-dialog) #listeo-floating-chat-widget,
+body:has(.mfp-content #lbp-booking-modal) #listeo-floating-chat-widget {
+  display: none !important;
+}
+
+/* Animación de entrada del drawer lateral (escritorio): desliza desde la derecha.
+   Sin fill-mode → si por lo que sea no corre, el contenido queda en su posición
+   natural (visible), nunca oculto. */
+@keyframes ppv2-drawer-in-right {
+  from { -webkit-transform: translateX(100%); transform: translateX(100%); }
+  to   { -webkit-transform: translateX(0); transform: translateX(0); }
+}
+
+/* ============================================================================
+   Login (#sign-in-dialog) en ESCRITORIO como PANEL DESLIZANTE DESDE LA DERECHA
+   (drawer a alto completo), en lugar del pop-up centrado. Mismo scoping
+   `:has(#sign-in-dialog)`; la versión móvil (hoja inferior) vive en su propio
+   bloque @media (max-width:768px) y no se ve afectada.
+   ============================================================================ */
+@media (min-width: 769px) {
+  /* Evita el parpadeo de barra horizontal mientras el panel entra desde la derecha. */
+  body:has(.mfp-content #sign-in-dialog) { overflow-x: hidden !important; }
+
+  /* Overlay cubriendo todo el viewport */
+  .mfp-wrap:has(#sign-in-dialog) {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    overflow: hidden !important;
+  }
+  /* Contenedor: empuja el panel a la DERECHA, a alto completo */
+  .mfp-wrap:has(#sign-in-dialog) .mfp-container {
+    position: absolute !important;
+    inset: 0 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: stretch !important;
+    padding: 0 !important;
+  }
+  .mfp-wrap:has(#sign-in-dialog) .mfp-container::before { display: none !important; }
+  /* El panel: ancho fijo, alto completo, desliza desde la derecha */
+  .mfp-wrap:has(#sign-in-dialog) .mfp-content {
+    width: 420px !important;
+    max-width: 92vw !important;
+    height: 100% !important;
+    margin: 0 !important;
+    -webkit-animation: ppv2-drawer-in-right 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+    animation: ppv2-drawer-in-right 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
+  }
+  /* El diálogo: drawer alto completo, esquinas IZQUIERDAS redondeadas, scroll
+     interno. Neutraliza el zoom del tema; SIN transform propio (desliza
+     .mfp-content) → el layout interno del formulario queda intacto. */
+  #sign-in-dialog.zoom-anim-dialog {
+    -webkit-transform: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    border-radius: 16px 0 0 16px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    box-shadow: -10px 0 34px rgba(0, 0, 0, 0.18) !important;
+  }
+}
+
+/* ============================================================================
+   PÁGINA DE LISTAS (/listings/) — Botón "Mostrar Filtros"
+   El tema lo pinta de verde (#28b661) en el icono y el texto. Lo ajustamos al
+   color principal de marca Parche Peludo (teal #79c8d0). El texto/icono blancos
+   se conservan. En hover/activo usamos un teal más oscuro (en vez del gris #333
+   por defecto del tema) para que no se vea fuera de marca.
+   ============================================================================ */
+.enable-filters-button i,
+.enable-filters-button span {
+  background-color: #79c8d0 !important;
+}
+.enable-filters-button:hover i,
+.enable-filters-button.active i,
+.enable-filters-button:hover span,
+.enable-filters-button.active span {
+  background-color: #5fb3bc !important;
+}
+

@@ -117,32 +117,14 @@ function ppv2_listing_header_reorder() {
 		
 		// En móvil: colocar la galería de primero en la página (antes del #titlebar)
 		// para lograr una vista full-bleed y orden idéntico al prototipo.
-		if (window.innerWidth < 768) {
-			var titlebar = document.getElementById('titlebar');
-			var gallery = bento || cover;
-			
-			if (bento) {
-				// Caso de múltiples imágenes (bento grid)
-				if (cover) {
-					cover.style.setProperty('display', 'none', 'important');
-				}
-				if (titlebar && bento && titlebar.parentNode) {
-					// Nos aseguramos de sacar titlebar si estuviera dentro de cover originally
-					if (cover && cover.contains(titlebar)) {
-						cover.parentNode.insertBefore(titlebar, cover.nextSibling);
-					}
-					// Colocamos el slider bento antes del titlebar (lo primero en verse)
-					titlebar.parentNode.insertBefore(bento, titlebar);
-				}
-			} else {
-				// Caso de cover único
-				if (cover && titlebar && cover.contains(titlebar)) {
-					cover.parentNode.insertBefore(titlebar, cover.nextSibling);
-				}
-			}
-
-			// === Inicializar Slider Móvil de la Galería si tiene múltiples imágenes ===
-			if (gallery) {
+		// === Galería móvil ===
+		// Construye el slider móvil reemplazando el contenido del grid bento.
+		// Idempotente: si ya existe no hace nada. Se define a nivel del callback (NO
+		// dentro del if de ancho) para que el manejador de 'resize' de más abajo
+		// también pueda invocarla cuando el viewport pasa a móvil tras la carga.
+		function ppv2BuildMobileGallerySlider(gallery) {
+			if (!gallery) return;
+			if (gallery.classList.contains('ppv2-mobile-slider-container')) return;
 				// Buscar TODOS los anchors con la URL de la foto (la fuente más confiable
 				// porque siempre apunta a la imagen full-res), y como fallback los <img>.
 				// Incluye soporte para lazy-load (data-src, data-original, data-lazy-src).
@@ -291,6 +273,32 @@ function ppv2_listing_header_reorder() {
 					}
 				}
 			}
+		// Coloca la galería arriba (full-bleed, antes del #titlebar) y construye el
+		// slider. Idempotente: seguro de re-ejecutar en 'resize'.
+		function ppv2SetupMobileGallery() {
+			var cover = document.getElementById('listing-gallery');
+			var bento = document.querySelector('.listeo-single-listing-gallery-grid');
+			var titlebar = document.getElementById('titlebar');
+			var gallery = bento || cover;
+			if (bento) {
+				if (cover) {
+					cover.style.setProperty('display', 'none', 'important');
+				}
+				if (titlebar && titlebar.parentNode) {
+					if (cover && cover.contains(titlebar)) {
+						cover.parentNode.insertBefore(titlebar, cover.nextSibling);
+					}
+					// Colocamos el grid bento antes del titlebar (lo primero en verse)
+					titlebar.parentNode.insertBefore(bento, titlebar);
+				}
+			} else if (cover && titlebar && cover.contains(titlebar)) {
+				cover.parentNode.insertBefore(titlebar, cover.nextSibling);
+			}
+			if (gallery) { ppv2BuildMobileGallerySlider(gallery); }
+		}
+
+		if (window.innerWidth < 768) {
+			ppv2SetupMobileGallery();
 		} else {
 			// En desktop: mantener la galería dentro de la columna de contenido
 			if (cover && content && !content.contains(cover)) {
@@ -303,6 +311,23 @@ function ppv2_listing_header_reorder() {
 		}
 		// Disparar resize para que cualquier slider/grid responsivo recalcule
 		try { window.dispatchEvent(new Event('resize')); } catch(e) {}
+
+		// Reconstruir la galería móvil si el viewport pasa a < 768px DESPUÉS de la
+		// carga (preview que carga en escritorio y muestra en móvil, redimensionar la
+		// ventana, rotar el dispositivo). El bloque de arriba sólo corre una vez en la
+		// carga; sin esto, en móvil se ve el grid crudo con el botón "Mostrar todas
+		// las fotos" en lugar del slider.
+		var ppv2GalleryResizeTimer;
+		function ppv2MaybeBuildMobileGallery() {
+			if (window.innerWidth < 768 && !document.querySelector('.ppv2-mobile-slider-container')) {
+				ppv2SetupMobileGallery();
+			}
+		}
+		window.addEventListener('resize', function () {
+			clearTimeout(ppv2GalleryResizeTimer);
+			ppv2GalleryResizeTimer = setTimeout(ppv2MaybeBuildMobileGallery, 200);
+		});
+		window.addEventListener('orientationchange', ppv2MaybeBuildMobileGallery);
 
 		// Traer de vuelta la pill de ciudad (.listing-tag última) y ponerla en
 		// la misma fila que la dirección (a la izquierda).
@@ -1012,6 +1037,22 @@ function ppv2_listing_mobile_bottom_bar() {
 		// Delegación en FASE DE CAPTURA para correr ANTES del handler de scroll
 		// de Listeo y poder cancelarlo (stopImmediatePropagation). Funciona aunque
 		// la barra se pinte/recargue después del DOMContentLoaded.
+		// Booking Plus: la reserva ya NO es el viejo widget inline de Listeo Core
+		// (que se movía a un bottom-sheet). Ahora es un botón que abre el modal
+		// propio de Booking Plus (#lbp-booking-modal) o, si el usuario NO está
+		// logueado, el diálogo de acceso (#sign-in-dialog) / login. El botón
+		// "Reservar" de la barra inferior debe reproducir EXACTAMENTE esa acción,
+		// así que disparamos por código el botón REAL de Booking Plus de la barra
+		// lateral. Así heredamos sin duplicar nada el comportamiento correcto en
+		// ambos estados (logueado abre el modal de reserva; no logueado pide login).
+		// El binding de Booking Plus es delegado en document, así que un .click()
+		// programático lo activa igual que un clic real del usuario.
+		function triggerNativeBooking() {
+			var realBtn = document.querySelector('.lbp-book-now-btn, .book-now-notloggedin');
+			if (realBtn) { realBtn.click(); return true; }
+			return false;
+		}
+
 		var NATIVE_BAR_SEL = '.booking-sticky-footer a, .booking-sticky-footer .button, [data-ppv2-open-reservar]';
 		document.addEventListener('click', function (e) {
 			var trigger = e.target.closest(NATIVE_BAR_SEL);
@@ -1021,7 +1062,12 @@ function ppv2_listing_mobile_bottom_bar() {
 			if (!window.matchMedia('(max-width: 767px)').matches) return;
 			e.preventDefault();
 			e.stopImmediatePropagation();
-			openSheet('booking');
+			// Disparar el botón real de Booking Plus (modal o login según sesión).
+			// Fallback al sheet antiguo solo si no existe el botón (listados sin
+			// Booking Plus), para no dejar el botón "Reservar" sin acción.
+			if (!triggerNativeBooking()) {
+				openSheet('booking');
+			}
 		}, true); // true = captura
 
 		// Click en backdrop, handle o botón × cierran el sheet
@@ -1044,4 +1090,60 @@ function ppv2_listing_mobile_bottom_bar() {
 	<?php
 }
 add_action( 'wp_footer', 'ppv2_listing_mobile_bottom_bar', 110 );
+
+/**
+ * Panel de login (#sign-in-dialog) en móvil: cuando se muestra como hoja inferior
+ * con scroll interno, el mensaje de respuesta (.notification) del formulario de
+ * login/registro vive AL FINAL del formulario, por debajo del borde visible del
+ * panel. Al enviar, el usuario no veía el "Enviando…/error/éxito" y parecía que el
+ * botón no hacía nada. Este script desplaza ese mensaje a la vista en cuanto
+ * aparece (se vuelve visible o cambia su texto). Solo móvil; no toca la lógica.
+ */
+function ppv2_signin_feedback_into_view() {
+	?>
+	<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		if (!window.matchMedia || !window.matchMedia('(max-width: 768px)').matches) return;
+
+		function isShown(el) {
+			return el && el.offsetParent !== null &&
+				(el.textContent || '').trim().length > 0;
+		}
+		function bringIntoView(el) {
+			if (!isShown(el)) return;
+			try {
+				el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+			} catch (e) {
+				el.scrollIntoView();
+			}
+		}
+
+		// Observa el diálogo de acceso; cuando aparece una .notification dentro de
+		// los formularios de login/registro (o cambia), la lleva a la vista.
+		function watchDialog(dialog) {
+			if (!dialog || dialog.__ppv2FeedbackWatched) return;
+			dialog.__ppv2FeedbackWatched = true;
+			var obs = new MutationObserver(function () {
+				var notes = dialog.querySelectorAll('form#login .notification, form#register .notification');
+				for (var i = 0; i < notes.length; i++) {
+					if (isShown(notes[i])) { bringIntoView(notes[i]); break; }
+				}
+			});
+			obs.observe(dialog, { attributes: true, childList: true, subtree: true, characterData: true });
+		}
+
+		// El diálogo se mueve dentro de .mfp-content al abrirse (Magnific inline).
+		// Observamos el body para engancharlo cuando aparezca.
+		var existing = document.getElementById('sign-in-dialog');
+		if (existing) watchDialog(existing);
+		var bodyObs = new MutationObserver(function () {
+			var d = document.querySelector('.mfp-content #sign-in-dialog') || document.getElementById('sign-in-dialog');
+			if (d) watchDialog(d);
+		});
+		bodyObs.observe(document.body, { childList: true, subtree: true });
+	});
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_signin_feedback_into_view', 111 );
 
