@@ -5018,6 +5018,13 @@ body.single-listing #listing-nav {
   #pps-services > .elementor-container > .elementor-column {
     width: calc(50% - 12px);
   }
+  /* Respiración lateral: que las tarjetas NO toquen los bordes de la pantalla
+     (antes la sección tenía padding 0 y la primera columna empezaba en el borde). */
+  #pps-services.elementor-section {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    box-sizing: border-box !important;
+  }
   .pps-card-title { font-size: 17px; }
   .pps-card-title,
   .pps-card-desc,
@@ -5311,5 +5318,27 @@ body:has(.mfp-content #lbp-booking-modal) #listeo-floating-chat-widget {
 .enable-filters-button:hover span,
 .enable-filters-button.active span {
   background-color: #5fb3bc !important;
+}
+
+/* ============================================================================
+   Pestañas del diálogo de acceso (Iniciar sesión / Registrar): marcar con
+   claridad la opción ACTIVA. El tema solo la diferencia con un subrayado de
+   ~0,67px (casi invisible). La reforzamos: pestaña activa = texto oscuro en
+   negrita + subrayado teal de marca (#79c8d0) de 3px; inactiva = gris apagado.
+   ============================================================================ */
+#sign-in-dialog .tabs-nav li a {
+  color: #8a8a8a !important;
+  font-weight: 500 !important;
+  border-bottom: 3px solid transparent !important; /* reserva espacio: sin salto al cambiar */
+  padding-bottom: 8px !important;
+  transition: color 0.2s ease, border-color 0.2s ease !important;
+}
+#sign-in-dialog .tabs-nav li a:hover {
+  color: #444 !important;
+}
+#sign-in-dialog .tabs-nav li.active a {
+  color: #2b2b2b !important;
+  font-weight: 700 !important;
+  border-bottom-color: #79c8d0 !important;
 }
 

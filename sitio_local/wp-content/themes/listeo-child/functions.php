@@ -739,16 +739,27 @@ function ppv2_listing_header_reorder() {
 					textSpan.textContent = nowCollapsed ? labels.collapsed : labels.expanded;
 				}
 			}
-			title.addEventListener('click', toggle);
+			// Homologación: si el widget está marcado con `mobileSheet`, en MÓVIL su
+			// clic abre el PANEL DESLIZANTE (el mismo bottom-sheet que el botón de la
+			// barra inferior) en vez de expandir el formulario inline. En escritorio
+			// mantiene el toggle inline normal.
+			function onTitleActivate(e) {
+				if (labels && labels.mobileSheet && window.matchMedia('(max-width: 767px)').matches) {
+					var bsfBtn = document.querySelector('.ppv2-bsf-message-btn');
+					if (bsfBtn) { if (e) { e.preventDefault(); e.stopPropagation(); } bsfBtn.click(); return; }
+				}
+				toggle();
+			}
+			title.addEventListener('click', onTitleActivate);
 			title.addEventListener('keydown', function(e){
-				if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+				if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onTitleActivate(e); }
 			});
 		}
 		var msgWidget = document.querySelector('.listeo-single-listing-sidebar .listing-widget.message-vendor');
 		var hoursWidget = document.querySelector('.listeo-single-listing-sidebar .listing-widget.opening-hours');
 		// Enviar Mensaje: boton outline teal-parche con chevron para indicar
 		// claramente la affordance de toggle (abrir/cerrar el componente).
-		ppv2MakeWidgetCollapsible(msgWidget, { collapsed: 'Enviar Mensaje', expanded: 'Enviar mensaje' });
+		ppv2MakeWidgetCollapsible(msgWidget, { collapsed: 'Enviar Mensaje', expanded: 'Enviar mensaje', mobileSheet: true });
 		// Ver horarios: pill outline gris, CON chevron a la derecha.
 		ppv2MakeWidgetCollapsible(hoursWidget, { collapsed: 'Ver horarios', expanded: 'Horarios' });
 
