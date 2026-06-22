@@ -29,6 +29,111 @@ add_action( 'wp_enqueue_scripts', 'listeo_child_enqueue_styles', 99 );
  */
 
 /**
+ * Página de LISTADOS (directorio) — Renombrar el TÍTULO del panel de filtros.
+ *
+ * Dentro del panel desplegado, el encabezado "Filtros" es el TÍTULO de un
+ * widget (id_base 'widget_search_form_listings', exclusivo de la barra
+ * 'sidebar-listings'). Su valor "Filtros" está guardado en la base de datos.
+ * En vez de editar el widget en la BD (que habría que repetir en producción),
+ * lo renombramos por código a "Filtrar en Directorio": se propaga al subir
+ * este functions.php, mantiene local y producción sincronizados y es a prueba
+ * de actualizaciones. Scopeado SOLO a ese widget para no afectar otros títulos.
+ */
+function ppv2_rename_titulo_panel_filtros( $title, $instance = array(), $id_base = '' ) {
+	if ( 'widget_search_form_listings' === $id_base && 'Filtros' === trim( $title ) ) {
+		return 'Filtrar en Directorio';
+	}
+	return $title;
+}
+add_filter( 'widget_title', 'ppv2_rename_titulo_panel_filtros', 20, 3 );
+
+/**
+ * Página de LISTADOS (directorio) — Ícono de búsqueda del header → abre el panel
+ * de filtros izquierdo (solo móvil).
+ *
+ * El tema oculta la lupa del header (.mobile-search-trigger) en esta página
+ * (no hay buscador en el header). El CSS del tema hijo la vuelve a mostrar
+ * <992px. Aquí enganchamos su clic para que dispare el botón nativo
+ * .enable-filters-button, que abre/cierra el panel .full-page-sidebar — el
+ * MISMO comportamiento que el botón "Filtrar en Directorio".
+ *
+ * Scopeado a la página de listados (is_post_type_archive('listing')) → NO toca
+ * el buscador ni la lupa de las demás secciones. Usamos delegación en document
+ * para cubrir también el header "sticky" (clon que el tema crea al hacer scroll).
+ * El handler nativo del tema sobre .mobile-search-trigger sigue corriendo (solo
+ * togglea un contenedor de búsqueda vacío → inofensivo, y el CSS mantiene la lupa).
+ */
+function ppv2_listings_header_search_opens_filters() {
+	if ( ! is_post_type_archive( 'listing' ) ) {
+		return;
+	}
+	?>
+	<script>
+	(function () {
+		document.addEventListener('click', function (e) {
+			var trigger = e.target.closest('.mobile-search-trigger');
+			if (!trigger) return;
+			var btn = document.querySelector('.enable-filters-button');
+			if (!btn) return;
+			e.preventDefault();
+			btn.click(); // togglea .full-page-sidebar.enabled-sidebar (abre/cierra el panel)
+		});
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_listings_header_search_opens_filters', 120 );
+
+/**
+ * Página de LISTADOS (directorio) — Botón "Buscar en Directorio" en el header
+ * (escritorio).
+ *
+ * Inyecta un botón en .header-widget (junto a "Iniciar Sesión" y el carrito) con
+ * el ícono de lupa (gg-search) y el texto "Buscar en Directorio". Al hacer clic
+ * dispara el botón nativo .enable-filters-button → abre/cierra el panel
+ * "Mostrar Filtros". El estilo (outline pill, fondo transparente, texto negro)
+ * y la visibilidad (solo escritorio; en móvil ya está la lupa-ícono) viven en
+ * style.css (.ppv2-buscar-directorio).
+ *
+ * Inyectado por JS para no tocar el plugin ni el tema padre (a prueba de
+ * actualizaciones). Scopeado a la página de listados. El clic se maneja por
+ * delegación en document para cubrir cualquier botón (incl. header sticky).
+ */
+function ppv2_listings_header_buscar_button() {
+	if ( ! is_post_type_archive( 'listing' ) ) {
+		return;
+	}
+	?>
+	<script>
+	(function () {
+		function inject() {
+			var widgets = document.querySelectorAll('#header .header-widget');
+			widgets.forEach(function (hw) {
+				if (hw.querySelector('.ppv2-buscar-directorio')) return; // ya inyectado
+				var b = document.createElement('a');
+				b.href = '#';
+				b.className = 'ppv2-buscar-directorio';
+				b.setAttribute('role', 'button');
+				b.innerHTML = '<i class="gg-search"></i><span>Buscar en Directorio</span>';
+				hw.insertBefore(b, hw.firstChild); // a la izquierda del grupo (orden via CSS)
+			});
+		}
+		document.addEventListener('DOMContentLoaded', inject);
+		// Clic (delegado): abre/cierra el panel disparando el botón nativo.
+		document.addEventListener('click', function (e) {
+			var b = e.target.closest('.ppv2-buscar-directorio');
+			if (!b) return;
+			e.preventDefault();
+			var t = document.querySelector('.enable-filters-button');
+			if (t) t.click();
+		});
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_listings_header_buscar_button', 121 );
+
+/**
  * Tienda V2 (Home): añade la etiqueta de categoría a cada producto y habilita
  * el filtrado por categoría en vivo (pills .ppv2-shop-filter) sobre el shortcode
  * nativo [products] dentro de .ppv2-shop-products. Scoped: solo actúa si existe

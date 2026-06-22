@@ -5024,9 +5024,13 @@ body.single-listing #listing-nav {
   .pps-prop-text,
   .pps-prop-text * { overflow-wrap: anywhere; }
 
-  /* Servicios: 2 por fila */
+  /* Servicios: 2 por fila, con el gap CENTRAL reducido a 8px.
+     El ancho de columna se ajusta a calc(50% - 4px) para que sigan cuadrando. */
+  #pps-services > .elementor-container {
+    gap: 8px !important;
+  }
   #pps-services > .elementor-container > .elementor-column {
-    width: calc(50% - 12px);
+    width: calc(50% - 4px);
   }
   /* Respiración lateral: que las tarjetas NO toquen los bordes de la pantalla
      (antes la sección tenía padding 0 y la primera columna empezaba en el borde). */
@@ -5350,5 +5354,97 @@ body:has(.mfp-content #lbp-booking-modal) #listeo-floating-chat-widget {
   color: #2b2b2b !important;
   font-weight: 700 !important;
   border-bottom-color: #79c8d0 !important;
+}
+
+/* ============================================================================
+   Página de LISTADOS — Header: alinear el grupo "mi cuenta + carrito" a la
+   DERECHA. En el header de listados, ese grupo (dentro de .header-widget, que
+   es display:contents) queda sin pegarse al borde derecho. Damos margin-left:
+   auto al PRIMER ítem del grupo (la cuenta) para empujar la cuenta + el carrito
+   hacia la derecha. Cubre logueado (.user-menu) y no logueado (.sign-in).
+   ============================================================================ */
+body.post-type-archive-listing #header .header-widget .sign-in,
+body.post-type-archive-listing #header .header-widget .user-menu {
+  margin-left: auto !important;
+}
+
+/* ============================================================================
+   Página de LISTADOS — Header móvil: mostrar el ícono de búsqueda (la lupa
+   nativa del header, .mobile-search-trigger) que el tema OCULTA aquí
+   (.post-type-archive-listing .mobile-search-trigger { display:none }).
+   En el resto del sitio ese ícono abre el buscador del header; en listados no
+   hay buscador en el header, así que lo reutilizamos para ABRIR EL PANEL DE
+   FILTROS izquierdo (ver el JS en functions.php: ppv2_listings_header_*).
+
+   Solo <992px: a ese ancho el panel .full-page-sidebar es un drawer togglable
+   (a ≥992px ya se muestra fijo, no haría falta el ícono). Scopeado a la página
+   de listados; NO afecta el buscador/lupa de las demás secciones.
+   ============================================================================ */
+@media (max-width: 991px) {
+  body.post-type-archive-listing .mobile-search-trigger {
+    display: flex !important;
+    /* Agrupar la lupa a la DERECHA, pegada a la cuenta + carrito (antes quedaba
+       "flotando" en el centro). margin-left:auto en la lupa (primer ítem del
+       grupo derecho) absorbe el espacio libre y empuja lupa+cuenta+carrito al
+       borde derecho como un bloque. */
+    margin-left: auto !important;
+  }
+  /* En móvil el empuje lo hace ahora la lupa; quitamos el margen de la cuenta
+     para que NO se separe de la lupa (si no, el espacio se repartiría y la lupa
+     volvería a quedar separada de la cuenta). */
+  body.post-type-archive-listing #header .header-widget .sign-in,
+  body.post-type-archive-listing #header .header-widget .user-menu {
+    margin-left: 0 !important;
+  }
+  /* Mantener SIEMPRE la lupa (no intercambiar a la "X" del buscador del tema):
+     en listados este ícono solo abre/cierra el panel de filtros. */
+  body.post-type-archive-listing .mobile-search-trigger .gg-search { display: block !important; }
+  body.post-type-archive-listing .mobile-search-trigger .gg-close { display: none !important; }
+}
+
+/* ============================================================================
+   Página de LISTADOS — Botón "Buscar en Directorio" en el header (DESKTOP).
+   Botón inyectado por JS (functions.php: ppv2_listings_header_buscar_button)
+   dentro de .header-widget, alineado horizontalmente con "Iniciar Sesión" y el
+   carrito. Estilo "outline": fondo transparente, texto negro, borde fino y
+   esquinas redondeadas (pill). Al hacer clic dispara .enable-filters-button
+   (abre/cierra el panel "Mostrar Filtros"). Reutiliza el ícono de lupa gg-search.
+
+   Solo en escritorio: en móvil ya existe la lupa-ícono del header, así que este
+   botón de texto se oculta <992px.
+   ============================================================================ */
+body.post-type-archive-listing .ppv2-buscar-directorio {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  color: #1a1a1a;                 /* texto en negro */
+  border: 1px solid #cfcfcf;      /* contenedor lineal */
+  border-radius: 30px;            /* bordes circulares (pill) */
+  padding: 10px 20px;
+  margin-right: 16px;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+  order: -1;                      /* a la izquierda de "Iniciar Sesión" en el grupo */
+}
+body.post-type-archive-listing .ppv2-buscar-directorio:hover,
+body.post-type-archive-listing .ppv2-buscar-directorio:focus {
+  color: #1a1a1a;
+  border-color: #79c8d0;          /* teal de marca al pasar el mouse */
+}
+/* El ícono de lupa (css.gg) dentro del botón: en negro y sin los márgenes
+   negativos que trae por defecto, para que quede centrado junto al texto. */
+body.post-type-archive-listing .ppv2-buscar-directorio .gg-search {
+  color: #1a1a1a;
+  margin: 0;
+  flex: 0 0 auto;
+}
+/* En móvil ya existe la lupa-ícono del header → ocultar este botón de texto. */
+@media (max-width: 991px) {
+  body.post-type-archive-listing .ppv2-buscar-directorio { display: none !important; }
 }
 
