@@ -5466,3 +5466,14 @@ body.post-type-archive-listing .ppv2-buscar-directorio .gg-search {
   body.post-type-archive-listing .ppv2-buscar-directorio { display: none !important; }
 }
 
+/* ============================================================================
+   Botón "Iniciar Sesión" del header — hover al color principal de marca
+   (#79c8d0) en vez del gris del tema (#66676b). Aplica al botón (.sign-in)
+   en todo el sitio, incluido el header normal y el "sticky" (cloned).
+   ============================================================================ */
+.user_not_logged_in .header-widget .sign-in:hover,
+#header.cloned .header-widget .sign-in:hover {
+  background: #79c8d0 !important;
+  color: #ffffff !important;
+}
+
