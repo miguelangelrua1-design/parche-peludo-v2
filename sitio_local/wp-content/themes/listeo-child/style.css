@@ -5443,6 +5443,10 @@ body.post-type-archive-listing .ppv2-buscar-directorio {
   body.post-type-archive-listing #header .header-widget .sign-in,
   body.post-type-archive-listing #header .header-widget .user-menu {
     margin-left: 0 !important;
+    /* Alinear verticalmente con el botón y el carrito: el tema baja la cuenta
+       con position:relative + top (6px en .sign-in / 9px en .user-menu); lo
+       anulamos para que el flex (align-items:center) la centre con los demás. */
+    top: 0 !important;
   }
 }
 body.post-type-archive-listing .ppv2-buscar-directorio:hover,
