@@ -4462,7 +4462,7 @@ body.single-listing #listing-nav {
   }
   #header-container.hws-wrapper .header-widget .listeo-cart-container {
     order: 99;            /* el carrito siempre de último → a la derecha */
-    margin: 0 0 0 23px;   /* la separación pasa al lado izquierdo, sin desfase arriba */
+    margin: 0 0 0 12px;   /* la separación pasa al lado izquierdo (mitad de 23px), sin desfase arriba */
   }
 }
 
@@ -4607,6 +4607,147 @@ body.single-listing #listing-nav {
   border: 1px solid #000;
   color: #000;
   box-sizing: border-box;
+}
+
+/* ============================================================
+   HEADER DEL PANEL DE CONTROL (Dashboard) — Solo ESCRITORIO
+   El dashboard usa la plantilla header-dashboard.php, cuyo
+   #header-container lleva la clase ".dashboard" (no ".hws-wrapper"),
+   por eso se ve distinto al resto del sitio. Aquí lo homologamos:
+     1) Ocultamos el botón "Agregar listado".
+     2) Llevamos el carrito al extremo derecho (último elemento).
+     3) Dejamos "Mi Cuenta" solo con el ícono del avatar (sin el texto
+        ni la flecha), igual que en las demás secciones.
+   (Por ahora solo escritorio: ≥1024px.)
+   ============================================================ */
+@media (min-width: 1024px) {
+  /* 1) Ocultar el botón "Agregar listado" */
+  #header-container.dashboard .header-widget .button.border {
+    display: none !important;
+  }
+
+  /* 2) Carrito al extremo derecho (primer elemento de derecha a izquierda) */
+  #header-container.dashboard .header-widget {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    top: 0;
+  }
+  #header-container.dashboard .header-widget .listeo-cart-container {
+    order: 99;            /* el carrito siempre de último → a la derecha */
+    margin: 0 0 0 12px;   /* separación hacia la izquierda (mitad de 23px), sin desfase arriba */
+  }
+
+  /* 3) "Mi Cuenta" solo con el ícono: ocultar el texto y la flecha,
+        y centrar el avatar verticalmente (igual que en .hws-wrapper). */
+  #header-container.dashboard .usrname,
+  #header-container.dashboard .user-menu .user-name:after {
+    display: none !important;
+  }
+  #header-container.dashboard .header-widget .user-menu {
+    top: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    height: 35px;
+  }
+  #header-container.dashboard .header-widget .user-name span {
+    top: -3px;
+  }
+}
+
+/* ------------------------------------------------------------
+   FIX franja 1025–1239px del header del Panel de Control.
+   El tema padre (listeo/style.css, ~L303) aplica en esa franja:
+     .right-side { margin-top: -122px; }
+   Ese "-122px" sube el bloque derecho DE MÁS en este header
+   (lo deja en top:-72px, recortado encima del header), por eso
+   "desaparecen" el avatar de Mi Cuenta y el carrito a anchos de
+   ventana medianos. Anulamos ese desplazamiento solo para el
+   dashboard, dejando el bloque en su fila normal del header.
+   ------------------------------------------------------------ */
+@media (min-width: 1025px) and (max-width: 1239px) {
+  #header-container.dashboard .right-side {
+    margin-top: 0;
+  }
+}
+
+/* ------------------------------------------------------------
+   HEADER DEL PANEL DE CONTROL — MÓVIL (≤768px)
+   Reordenamos la barra superior para dejarla igual de limpia que
+   en el resto del sitio. Orden izquierda→derecha buscado:
+       [hamburguesa] [logo] .......... [avatar] [carrito]
+   En el tema padre, en este header (clase dashboard + slim-mobile-menu):
+     - la hamburguesa (.mmenu-trigger) va FLOTADA A LA DERECHA dentro
+       de .left-side (que ocupa el 100%),
+     - el logo del dashboard mide 50px de alto (en el Home mide 40px),
+     - el grupo derecho (.right-side) va en position:absolute a right:70px,
+       con el carrito de primero (a la izquierda del avatar).
+   ------------------------------------------------------------ */
+@media (max-width: 768px) {
+  /* Toda la barra superior en UNA sola fila flex con TODO centrado
+     verticalmente. Así la hamburguesa y el logo quedan a la misma altura
+     que el avatar y el carrito (antes el grupo derecho iba centrado con
+     position:absolute mientras la izquierda iba en flujo normal → desnivel).
+     Sacamos el grupo derecho del absolute y lo empujamos con margin-left:auto. */
+  #header-container.dashboard #header .container {
+    display: flex;
+    align-items: center;
+  }
+  /* En móvil el tema deja el header con padding 18px arriba / 0 abajo
+     (asimétrico) → la fila de íconos queda pegada ABAJO. Lo hacemos
+     simétrico (9/9) conservando la MISMA altura total de la barra, para
+     que toda la fila quede centrada verticalmente. */
+  #header-container.dashboard #header {
+    padding-top: 9px !important;
+    padding-bottom: 9px !important;
+  }
+  #header-container.dashboard .left-side {
+    display: flex;
+    align-items: center;
+    width: auto;
+    flex: 0 0 auto;
+  }
+  #header-container.dashboard .right-side {
+    position: static;
+    top: auto;
+    right: auto;
+    transform: none;
+    width: auto;
+    margin-left: auto;   /* empuja el grupo (avatar + carrito) a la derecha */
+  }
+
+  /* (1) Hamburguesa a la IZQUIERDA, antes del logo (anulando su float:right). */
+  #header-container.dashboard .mmenu-trigger {
+    float: none !important;
+    order: -1;
+    margin: 0 8px 0 0 !important;
+  }
+  /* El menú inline (oculto en móvil) no debe ocupar espacio en el flex. */
+  #header-container.dashboard #navigation {
+    display: none;
+  }
+
+  /* (2) Logo del MISMO tamaño que en el Home (máx 40px alto / 150px ancho).
+     Quitamos el margin-top:5px del tema que lo bajaba respecto a los demás. */
+  #header-container.dashboard #logo {
+    order: 0;
+    height: auto !important;
+    max-height: 40px !important;
+    max-width: 150px !important;
+    margin-top: 0 !important;
+  }
+
+  /* (3) Grupo derecho: avatar y LUEGO carrito al extremo derecho
+     (carrito de último → queda [avatar][carrito]). */
+  #header-container.dashboard .header-widget .listeo-cart-container {
+    order: 99 !important;
+  }
+}
+/* En pantallas pequeñas el Home reduce el logo a 100px de ancho: igualamos. */
+@media (max-width: 480px) {
+  #header-container.dashboard #logo {
+    max-width: 100px !important;
+  }
 }
 
 /* ============================================================
