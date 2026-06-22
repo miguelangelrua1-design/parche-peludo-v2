@@ -5477,3 +5477,36 @@ body.post-type-archive-listing .ppv2-buscar-directorio .gg-search {
   color: #ffffff !important;
 }
 
+/* ============================================================================
+   Header MÓVIL — logo un poco más grande y separación con la hamburguesa.
+   (Escritorio NO se toca: todo va dentro de media queries de móvil.)
+
+   1) El tema, en ≤420px, fuerza el logo a width:100% de su contenedor (~100px),
+      dejándolo pequeño (~14px de alto). Lo fijamos a una altura algo mayor con
+      width:auto → logo más grande SIN aumentar la altura de la barra superior.
+   2) ~5px de separación entre el logo y el menú hamburguesa (antes quedaban
+      pegados, a 0px).
+   ============================================================================ */
+@media (max-width: 480px) {
+  /* Escalamos el logo proporcionalmente (sin distorsión) un ~20%. Usamos
+     transform para NO alterar el layout ni la altura de la barra superior;
+     origen a la izquierda para que crezca hacia la derecha desde la
+     hamburguesa, y centrado en vertical. */
+  #header #logo img {
+    transform: scale(1.2) !important;
+    transform-origin: left center !important;
+  }
+}
+/* En teléfonos muy angostos (≤374px) el header ya va lleno: agrandar el logo lo
+   haría chocar con los íconos de la derecha. Ahí lo dejamos a tamaño original. */
+@media (max-width: 374px) {
+  #header #logo img {
+    transform: none !important;
+  }
+}
+@media (max-width: 767px) {
+  #header #logo {
+    margin-left: 5px !important;
+  }
+}
+
