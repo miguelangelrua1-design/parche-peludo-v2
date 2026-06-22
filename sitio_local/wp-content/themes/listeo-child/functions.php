@@ -112,17 +112,24 @@ function ppv2_account_drawer() {
 			um.classList.toggle('ppv2-acct-open', open);
 			document.documentElement.classList.toggle('ppv2-acct-lock', open);
 		}
-		// Inyecta el botón de cerrar (✕) dentro del drawer la primera vez.
-		function ensureClose(um) {
+		// Inyecta la cabecera del drawer (título "Mi Cuenta" + botón ✕) la 1ª vez.
+		function ensureHeader(um) {
 			var ul = um.querySelector('ul');
-			if (!ul || ul.querySelector('.ppv2-acct-close')) return;
+			if (!ul || ul.querySelector('.ppv2-acct-header')) return;
+			var header = document.createElement('li');
+			header.className = 'ppv2-acct-header';
+			var title = document.createElement('span');
+			title.className = 'ppv2-acct-title';
+			title.textContent = 'Mi Cuenta';
 			var btn = document.createElement('button');
 			btn.type = 'button';
 			btn.className = 'ppv2-acct-close';
 			btn.setAttribute('aria-label', 'Cerrar');
 			btn.innerHTML = '&times;';
 			btn.addEventListener('click', function (e) { e.stopPropagation(); setOpen(um, false); });
-			ul.insertBefore(btn, ul.firstChild);
+			header.appendChild(title);
+			header.appendChild(btn);
+			ul.insertBefore(header, ul.firstChild);
 		}
 		document.addEventListener('click', function (e) {
 			var um = document.querySelector('#header .user-menu');
@@ -130,7 +137,7 @@ function ppv2_account_drawer() {
 			// Clic en el avatar → abrir/cerrar el drawer.
 			if (e.target.closest('.user-menu .user-name')) {
 				e.preventDefault();
-				ensureClose(um);
+				ensureHeader(um);
 				setOpen(um, !um.classList.contains('ppv2-acct-open'));
 				return;
 			}
@@ -150,6 +157,28 @@ function ppv2_account_drawer() {
 	<?php
 }
 add_action( 'wp_footer', 'ppv2_account_drawer', 120 );
+
+/**
+ * Menú hamburguesa: cerrarlo al tocar el VELO (el 15% libre a la derecha cuando
+ * el panel está al 85% en móvil). El tema abre/cierra alternando la clase
+ * `mobile-nav-open` en <body>; aquí la quitamos si se toca fuera del panel y
+ * fuera de los disparadores del menú. Global.
+ */
+function ppv2_mobile_menu_close_outside() {
+	?>
+	<script>
+	(function () {
+		document.addEventListener('click', function (e) {
+			if (!document.body.classList.contains('mobile-nav-open')) return;
+			if (e.target.closest('.mobile-navigation-wrapper')) return; // dentro del panel
+			if (e.target.closest('.mmenu-trigger, .menu-icon-toggle, .desktop-mmenu-trigger')) return; // el toggle ya lo maneja el tema
+			document.body.classList.remove('mobile-nav-open');
+		});
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_mobile_menu_close_outside', 121 );
 
 /**
  * Página de LISTADOS (directorio) — Ícono de búsqueda del header → abre el panel

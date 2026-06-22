@@ -5963,7 +5963,7 @@ body.ppv2-listings .ppv2-buscar-directorio .gg-search {
     pointer-events: none !important;
     overflow-y: auto !important;
     z-index: 100060 !important;
-    padding: 58px 0 24px !important;
+    padding: 0 0 16px !important;
   }
   /* El hover ya NO abre el menú. */
   #header .user-menu:hover ul {
@@ -5995,11 +5995,30 @@ body.ppv2-listings .ppv2-buscar-directorio .gg-search {
   #header .user-menu ul li a:hover { background: #F3F4F6 !important; color: #1F2937 !important; }
   #header .user-menu ul li a i { font-size: 17px !important; width: 20px !important; text-align: center !important; }
 
-  /* Botón cerrar (X) inyectado por el JS. */
+  /* Cabecera del drawer: título "Mi Cuenta" (izq.) + ✕ (der.), con fondo gris
+     claro de la paleta del sitio. Sticky para mantenerse arriba al hacer scroll. */
+  #header .user-menu ul .ppv2-acct-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    position: sticky !important;
+    top: 0 !important;
+    margin: 0 0 8px !important;
+    padding: 12px 14px 12px 24px !important;
+    background: #F3F4F6 !important;
+    border-bottom: 1px solid #E5E7EB !important;
+    z-index: 2 !important;
+  }
+  #header .user-menu ul .ppv2-acct-title {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #1F2937 !important;
+  }
+  /* Botón cerrar (✕): va dentro de la fila de cabecera, a la derecha. */
   #header .user-menu ul .ppv2-acct-close {
-    position: absolute !important;
-    top: 12px !important;
-    right: 14px !important;
+    position: static !important;
+    flex: 0 0 auto !important;
     width: 34px !important;
     height: 34px !important;
     padding: 0 !important;
@@ -6007,16 +6026,35 @@ body.ppv2-listings .ppv2-buscar-directorio .gg-search {
     background: transparent !important;
     font-size: 26px !important;
     line-height: 1 !important;
-    color: #9CA3AF !important;
+    color: #6B7280 !important;
     cursor: pointer !important;
     border-radius: 8px !important;
   }
-  #header .user-menu ul .ppv2-acct-close:hover { background: #F3F4F6 !important; color: #1F2937 !important; }
+  #header .user-menu ul .ppv2-acct-close:hover { background: #E5E7EB !important; color: #1F2937 !important; }
 
 /* En MÓVIL el panel mide 80% del ancho (en desktop son 320px). */
 @media (max-width: 991px) {
   #header .user-menu ul { width: 80% !important; max-width: 80% !important; }
 }
+/* Si hay barra de administración de WP, bajar el drawer para que la cabecera
+   ("Mi Cuenta" + ✕) no quede tapada por ella. */
+body.admin-bar #header .user-menu ul { top: 32px !important; height: calc(100vh - 32px) !important; }
+@media (max-width: 782px) {
+  body.admin-bar #header .user-menu ul { top: 46px !important; height: calc(100vh - 46px) !important; }
+}
 /* Bloquear el scroll del fondo mientras el drawer está abierto. */
 html.ppv2-acct-lock, html.ppv2-acct-lock body { overflow: hidden !important; }
+
+/* ============================================================================
+   Menú hamburguesa (MÓVIL): el panel ocupa el 85% del ancho (no el 100%),
+   dejando un 15% libre a la derecha con un velo oscuro. Solo <1024px (en
+   ≥1024px es un drawer de 420px a la derecha, que no se toca). El cierre al
+   tocar el velo lo maneja el JS de functions.php (ppv2_mobile_menu_close_outside).
+   ============================================================================ */
+@media (max-width: 1023px) {
+  .mobile-navigation-wrapper { width: 85% !important; }
+  body.mobile-nav-open .mobile-navigation-wrapper {
+    box-shadow: 0 0 0 100vw rgba(0, 0, 0, .5) !important;   /* velo del 15% */
+  }
+}
 
