@@ -95,6 +95,63 @@ function ppv2_rename_no_results( $translation, $text, $domain ) {
 add_filter( 'gettext_listeo_core', 'ppv2_rename_no_results', 20, 3 );
 
 /**
+ * "Mi Cuenta" (.user-menu) — DESKTOP: en vez del desplegable por hover, abrir
+ * un PANEL DESLIZANTE desde la izquierda al hacer CLIC en el avatar. El estilo
+ * (drawer) vive en style.css; aquí solo el comportamiento: toggle de la clase
+ * .ppv2-acct-open, cierre por clic-fuera / Escape / botón ✕, y bloqueo de
+ * scroll del fondo. Global (Mi Cuenta está en todo el sitio); solo si hay sesión.
+ */
+function ppv2_account_drawer() {
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
+	?>
+	<script>
+	(function () {
+		function setOpen(um, open) {
+			um.classList.toggle('ppv2-acct-open', open);
+			document.documentElement.classList.toggle('ppv2-acct-lock', open);
+		}
+		// Inyecta el botón de cerrar (✕) dentro del drawer la primera vez.
+		function ensureClose(um) {
+			var ul = um.querySelector('ul');
+			if (!ul || ul.querySelector('.ppv2-acct-close')) return;
+			var btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'ppv2-acct-close';
+			btn.setAttribute('aria-label', 'Cerrar');
+			btn.innerHTML = '&times;';
+			btn.addEventListener('click', function (e) { e.stopPropagation(); setOpen(um, false); });
+			ul.insertBefore(btn, ul.firstChild);
+		}
+		document.addEventListener('click', function (e) {
+			var um = document.querySelector('#header .user-menu');
+			if (!um) return;
+			// Clic en el avatar → abrir/cerrar el drawer.
+			if (e.target.closest('.user-menu .user-name')) {
+				e.preventDefault();
+				ensureClose(um);
+				setOpen(um, !um.classList.contains('ppv2-acct-open'));
+				return;
+			}
+			// Clic FUERA del drawer (en el velo o la página) → cerrar.
+			if (um.classList.contains('ppv2-acct-open') && !e.target.closest('.user-menu ul')) {
+				setOpen(um, false);
+			}
+		});
+		document.addEventListener('keydown', function (e) {
+			if (e.key === 'Escape') {
+				var um = document.querySelector('.user-menu.ppv2-acct-open');
+				if (um) setOpen(um, false);
+			}
+		});
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_account_drawer', 120 );
+
+/**
  * Página de LISTADOS (directorio) — Ícono de búsqueda del header → abre el panel
  * de filtros izquierdo (solo móvil).
  *

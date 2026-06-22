@@ -5936,3 +5936,87 @@ body.ppv2-listings .ppv2-buscar-directorio .gg-search {
 }
 .full-page-sidebar #listeo_core-search-form .more-search-options-trigger:hover { color: #79C8D0 !important; }
 
+/* ============================================================================
+   "Mi Cuenta" (.user-menu): en vez del desplegable por HOVER, un PANEL
+   DESLIZANTE desde la DERECHA, abierto por CLIC (el JS añade .ppv2-acct-open).
+   Aplica en DESKTOP y MÓVIL (en móvil mide 80% del ancho — ver media query más
+   abajo). Global (Mi Cuenta está en todo el sitio). Cierra con la ✕, con clic
+   fuera del panel, o pulsando de nuevo el avatar.
+   ============================================================================ */
+  #header .user-menu ul {
+    position: fixed !important;
+    top: 0 !important;
+    left: auto !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    width: 320px !important;
+    max-width: 88vw !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    box-shadow: -8px 0 30px rgba(0, 0, 0, .16) !important;
+    transform: translateX(100%) !important;              /* oculto a la derecha */
+    transition: transform .34s cubic-bezier(.22, .61, .36, 1), visibility .34s !important;
+    opacity: 1 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    overflow-y: auto !important;
+    z-index: 100060 !important;
+    padding: 58px 0 24px !important;
+  }
+  /* El hover ya NO abre el menú. */
+  #header .user-menu:hover ul {
+    transform: translateX(100%) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  /* Abierto (clic): entra desde la izquierda + velo oscuro del resto. */
+  #header .user-menu.ppv2-acct-open ul {
+    transform: translateX(0) !important;
+    visibility: visible !important;
+    pointer-events: all !important;
+    box-shadow: -8px 0 30px rgba(0, 0, 0, .16), 0 0 0 100vw rgba(0, 0, 0, .45) !important;
+  }
+  #header .user-menu.ppv2-acct-open .user-name:after { transform: rotate(180deg) !important; }
+
+  /* Ítems del drawer: filas a todo el ancho. */
+  #header .user-menu ul li { display: block !important; float: none !important; margin: 0 !important; width: 100% !important; }
+  #header .user-menu ul li a {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 13px 24px !important;
+    font-size: 15px !important;
+    color: #4B5563 !important;
+    border-radius: 0 !important;
+    white-space: nowrap !important;
+  }
+  #header .user-menu ul li a:hover { background: #F3F4F6 !important; color: #1F2937 !important; }
+  #header .user-menu ul li a i { font-size: 17px !important; width: 20px !important; text-align: center !important; }
+
+  /* Botón cerrar (X) inyectado por el JS. */
+  #header .user-menu ul .ppv2-acct-close {
+    position: absolute !important;
+    top: 12px !important;
+    right: 14px !important;
+    width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    font-size: 26px !important;
+    line-height: 1 !important;
+    color: #9CA3AF !important;
+    cursor: pointer !important;
+    border-radius: 8px !important;
+  }
+  #header .user-menu ul .ppv2-acct-close:hover { background: #F3F4F6 !important; color: #1F2937 !important; }
+
+/* En MÓVIL el panel mide 80% del ancho (en desktop son 320px). */
+@media (max-width: 991px) {
+  #header .user-menu ul { width: 80% !important; max-width: 80% !important; }
+}
+/* Bloquear el scroll del fondo mientras el drawer está abierto. */
+html.ppv2-acct-lock, html.ppv2-acct-lock body { overflow: hidden !important; }
+
