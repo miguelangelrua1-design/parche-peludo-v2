@@ -110,12 +110,22 @@ function ppv2_listings_header_buscar_button() {
 			var widgets = document.querySelectorAll('#header .header-widget');
 			widgets.forEach(function (hw) {
 				if (hw.querySelector('.ppv2-buscar-directorio')) return; // ya inyectado
+				// Insertar el botón JUSTO ANTES del elemento de cuenta (logueado:
+				// .user-menu / sin sesión: .sign-in). El header alterna
+				// display:flex/contents según estado y ancho, lo que cambia cómo se
+				// resuelve "order"; por eso copiamos el "order" flex de la cuenta para
+				// que el botón quede en SU mismo grupo (si no, se descoloca / se monta
+				// sobre "Mi Cuenta").
+				var acc = hw.querySelector('.user-menu, .sign-in');
+				if (!acc) return;
 				var b = document.createElement('a');
 				b.href = '#';
 				b.className = 'ppv2-buscar-directorio';
 				b.setAttribute('role', 'button');
 				b.innerHTML = '<i class="gg-search"></i><span>Buscar en Directorio</span>';
-				hw.insertBefore(b, hw.firstChild); // a la izquierda del grupo (orden via CSS)
+				var ord = getComputedStyle(acc).order;
+				b.style.order = (ord && ord !== 'normal') ? ord : '4';
+				hw.insertBefore(b, acc); // justo a la izquierda de la cuenta
 			});
 		}
 		document.addEventListener('DOMContentLoaded', inject);

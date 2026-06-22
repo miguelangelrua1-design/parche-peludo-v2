@@ -5429,7 +5429,21 @@ body.post-type-archive-listing .ppv2-buscar-directorio {
   white-space: nowrap;
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease;
-  order: -1;                      /* a la izquierda de "Iniciar Sesión" en el grupo */
+}
+/* El botón inicia el grupo derecho del header: margin-left:auto absorbe el
+   espacio libre y empuja botón + cuenta + carrito al borde derecho, pegados
+   entre sí. La cuenta (.sign-in / .user-menu) deja su margen a 0 para no
+   separarse del botón (antes el margin-left:auto en la cuenta hacía que el
+   botón se montara sobre "Mi Cuenta"). El order del botón lo iguala el JS al
+   de la cuenta, así queda en su mismo grupo aunque el header use flex/contents. */
+@media (min-width: 992px) {
+  body.post-type-archive-listing .ppv2-buscar-directorio {
+    margin-left: auto;
+  }
+  body.post-type-archive-listing #header .header-widget .sign-in,
+  body.post-type-archive-listing #header .header-widget .user-menu {
+    margin-left: 0 !important;
+  }
 }
 body.post-type-archive-listing .ppv2-buscar-directorio:hover,
 body.post-type-archive-listing .ppv2-buscar-directorio:focus {
