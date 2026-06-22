@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Parche Peludo - Filtros de Directorio</title>
+<!-- Load Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Montserrat for a friendly, professional look -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              teal: '#79C8D0',
+              tealDark: '#5EB2BB',
+              greyLight: '#F3F4F6',
+              greyBorder: '#E5E7EB',
+              text: '#4B5563',
+              heading: '#1F2937'
+            }
+          },
+          fontFamily: {
+            sans: ['Montserrat', 'sans-serif'],
+          },
+          borderRadius: {
+            'xl': '12px',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-sliders">
+    /* Custom styles for Range Sliders to match the Teal brand color */
+    input[type='range'] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    input[type='range']::-webkit-slider-runnable-track {
+      background: #79C8D0;
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: -6px; /* Centers thumb on the track */
+      background-color: #FFFFFF;
+      border: 2px solid #79C8D0;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Price Range Dual Slider Mockup Logic */
+    .range-track-container {
+      position: relative;
+      height: 4px;
+      background: #E5E7EB;
+      border-radius: 2px;
+    }
+    .range-track-filled {
+      position: absolute;
+      height: 100%;
+      background: #79C8D0;
+      left: 10%;
+      right: 10%;
+    }
+    .range-thumb {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      background: white;
+      border: 2px solid #79C8D0;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 p-8 flex justify-center">
+<!-- BEGIN: FilterSidebarContainer -->
+<aside class="w-80 bg-white rounded-xl shadow-sm border border-brand-greyBorder flex flex-col p-6 space-y-6 text-brand-text font-sans" data-purpose="filter-sidebar">
+<h2 class="text-xl font-bold text-brand-heading">Filtrar en Directorio</h2>
+<!-- BEGIN: SearchInputSection -->
+<div class="space-y-1" data-purpose="search-field">
+<input class="w-full border-brand-greyBorder rounded-lg focus:ring-brand-teal focus:border-brand-teal text-sm py-2.5" placeholder="naturalia" type="text"/>
+</div>
+<!-- END: SearchInputSection -->
+<!-- BEGIN: CategoryDropdownSection -->
+<div data-purpose="category-field">
+<select class="w-full border-brand-greyBorder rounded-lg focus:ring-brand-teal focus:border-brand-teal text-sm py-2.5 bg-white">
+<option>Categorías: todas</option>
+<option>Veterinarias</option>
+<option>Pet Shops</option>
+<option>Entrenadores</option>
+</select>
+</div>
+<!-- END: CategoryDropdownSection -->
+<!-- BEGIN: LocationInputSection -->
+<div class="relative" data-purpose="location-field">
+<input class="w-full border-brand-greyBorder rounded-lg focus:ring-brand-teal focus:border-brand-teal text-sm py-2.5 pl-3 pr-10" placeholder="Ubicación" type="text"/>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+<svg class="h-5 w-5" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- END: LocationInputSection -->
+<!-- BEGIN: DistanceSliderSection -->
+<div class="bg-gray-50 rounded-xl p-4 border border-brand-greyBorder/50 space-y-3" data-purpose="distance-range">
+<div>
+<p class="text-sm font-bold text-brand-heading">10km</p>
+<p class="text-xs text-gray-500">Amplitud radio búsqueda</p>
+</div>
+<input class="my-2" max="50" min="0" type="range" value="10"/>
+<button class="w-full py-2 px-4 text-xs font-semibold text-brand-teal border border-brand-teal rounded-lg hover:bg-brand-teal hover:text-white transition-colors duration-200">
+        Desactivar Radio
+      </button>
+</div>
+<!-- END: DistanceSliderSection -->
+<!-- BEGIN: RatingSelectorSection -->
+<div class="flex border border-brand-greyBorder rounded-lg overflow-hidden divide-x divide-brand-greyBorder" data-purpose="rating-selector">
+<button class="flex-1 py-2 text-xs font-semibold bg-brand-teal/10 text-brand-teal border-b-2 border-brand-teal">Cualquiera</button>
+<button class="flex-1 py-2 text-xs font-medium hover:bg-gray-50 flex items-center justify-center gap-0.5">
+<span class="text-yellow-400">★</span> 3.0+
+      </button>
+<button class="flex-1 py-2 text-xs font-medium hover:bg-gray-50 flex items-center justify-center gap-0.5">
+<span class="text-yellow-400">★</span> 4.0+
+      </button>
+<button class="flex-1 py-2 text-xs font-medium hover:bg-gray-50 flex items-center justify-center gap-0.5">
+<span class="text-yellow-400">★</span> 4.5+
+      </button>
+</div>
+<!-- END: RatingSelectorSection -->
+<!-- BEGIN: PriceRangeSection -->
+<div class="bg-gray-50 rounded-xl p-4 border border-brand-greyBorder/50 space-y-4" data-purpose="price-range">
+<div>
+<p class="text-sm font-bold text-brand-heading">Precio</p>
+<p class="text-xs text-gray-500 leading-tight">Selecciona el rango de precio mínimo y máximo</p>
+</div>
+<!-- Mock Dual Slider UI -->
+<div class="relative h-6 flex items-center">
+<div class="range-track-container w-full">
+<div class="range-track-filled"></div>
+<div class="range-thumb" style="left: 10%;"></div>
+<div class="range-thumb" style="right: 10%;"></div>
+</div>
+</div>
+<button class="w-full py-2 px-4 text-xs font-semibold text-white bg-brand-teal rounded-lg hover:bg-brand-tealDark transition-colors duration-200 shadow-sm shadow-brand-teal/20">
+        Activar Precio
+      </button>
+</div>
+<!-- END: PriceRangeSection -->
+<!-- BEGIN: MoreFiltersSection -->
+<div class="pt-2 border-t border-brand-greyBorder" data-purpose="more-filters-collapse">
+<button class="flex items-center justify-between w-full text-sm font-semibold text-brand-heading hover:text-brand-teal transition-colors group">
+<span>Más Filtros</span>
+<svg class="h-4 w-4 transform group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<!-- END: MoreFiltersSection -->
+</aside>
+<!-- END: FilterSidebarContainer -->
+</body></html>

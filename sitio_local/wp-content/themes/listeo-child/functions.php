@@ -29,6 +29,34 @@ add_action( 'wp_enqueue_scripts', 'listeo_child_enqueue_styles', 99 );
  */
 
 /**
+ * ¿Estamos en una página de LISTADOS del directorio? Cubre el archivo principal
+ * (/listings/) Y las páginas de taxonomía del CPT "listing" (categorías como
+ * /categoria-listado/.../, regiones, características…), que usan el mismo layout
+ * con panel de filtros. Se usa para que el botón "Buscar en Directorio", la lupa
+ * móvil y el feedback de carga aparezcan en TODAS esas páginas, no solo en /listings/.
+ */
+function ppv2_is_listings_archive() {
+	if ( is_post_type_archive( 'listing' ) ) {
+		return true;
+	}
+	$listing_taxonomies = get_object_taxonomies( 'listing' );
+	return ! empty( $listing_taxonomies ) && is_tax( $listing_taxonomies );
+}
+
+/**
+ * Marca el <body> de todas las páginas de listados con la clase `ppv2-listings`,
+ * para poder estilarlas de forma consistente (el archivo principal trae
+ * `post-type-archive-listing` pero las taxonomías no → esta clase unifica).
+ */
+function ppv2_listings_body_class( $classes ) {
+	if ( ppv2_is_listings_archive() ) {
+		$classes[] = 'ppv2-listings';
+	}
+	return $classes;
+}
+add_filter( 'body_class', 'ppv2_listings_body_class' );
+
+/**
  * Página de LISTADOS (directorio) — Renombrar el TÍTULO del panel de filtros.
  *
  * Dentro del panel desplegado, el encabezado "Filtros" es el TÍTULO de un
@@ -48,6 +76,25 @@ function ppv2_rename_titulo_panel_filtros( $title, $instance = array(), $id_base
 add_filter( 'widget_title', 'ppv2_rename_titulo_panel_filtros', 20, 3 );
 
 /**
+ * Texto "sin resultados" del archivo de listados (plantilla no-found del plugin
+ * Listeo Core): ajusta el TÍTULO y el MENSAJE vía filtro gettext (a prueba de
+ * actualizaciones, sin tocar el plugin). Solo afecta el front-end.
+ */
+function ppv2_rename_no_results( $translation, $text, $domain ) {
+	if ( is_admin() ) {
+		return $translation;
+	}
+	if ( 'Nothing found' === $text ) {
+		return 'Sin resultados';
+	}
+	if ( 'We&rsquo;re sorry but we do not have any listings matching your search, try to change you search settings' === $text ) {
+		return 'Lo sentimos, no encontramos resultados que coincidan con tu búsqueda. Te invitamos a modificar los términos o filtros de búsqueda.';
+	}
+	return $translation;
+}
+add_filter( 'gettext_listeo_core', 'ppv2_rename_no_results', 20, 3 );
+
+/**
  * Página de LISTADOS (directorio) — Ícono de búsqueda del header → abre el panel
  * de filtros izquierdo (solo móvil).
  *
@@ -64,7 +111,7 @@ add_filter( 'widget_title', 'ppv2_rename_titulo_panel_filtros', 20, 3 );
  * togglea un contenedor de búsqueda vacío → inofensivo, y el CSS mantiene la lupa).
  */
 function ppv2_listings_header_search_opens_filters() {
-	if ( ! is_post_type_archive( 'listing' ) ) {
+	if ( ! ppv2_is_listings_archive() ) {
 		return;
 	}
 	?>
@@ -100,35 +147,47 @@ add_action( 'wp_footer', 'ppv2_listings_header_search_opens_filters', 120 );
  * delegación en document para cubrir cualquier botón (incl. header sticky).
  */
 function ppv2_listings_header_buscar_button() {
-	if ( ! is_post_type_archive( 'listing' ) ) {
+	if ( ! ppv2_is_listings_archive() ) {
 		return;
 	}
 	?>
 	<script>
 	(function () {
+		// Mantiene el botón JUSTO ANTES de la cuenta (logueado: .user-menu /
+		// sin sesión: .sign-in) y con SU MISMO flex-order, para que queden
+		// adyacentes en cualquier modo. El header conmuta display:flex/contents
+		// según estado (logueado/no) y ancho, lo que cambia el "order" de la
+		// cuenta; si el botón no se re-sincroniza, se descoloca / se monta sobre
+		// "Mi Cuenta". Por eso re-sincronizamos en DOMContentLoaded, load y resize.
+		function syncOne(hw) {
+			var b = hw.querySelector('.ppv2-buscar-directorio');
+			var acc = hw.querySelector('.user-menu, .sign-in');
+			if (!b || !acc) return;
+			if (b.nextElementSibling !== acc) hw.insertBefore(b, acc);
+			var ord = getComputedStyle(acc).order;
+			b.style.order = (ord && ord !== 'normal') ? ord : '4';
+		}
 		function inject() {
-			var widgets = document.querySelectorAll('#header .header-widget');
-			widgets.forEach(function (hw) {
-				if (hw.querySelector('.ppv2-buscar-directorio')) return; // ya inyectado
-				// Insertar el botón JUSTO ANTES del elemento de cuenta (logueado:
-				// .user-menu / sin sesión: .sign-in). El header alterna
-				// display:flex/contents según estado y ancho, lo que cambia cómo se
-				// resuelve "order"; por eso copiamos el "order" flex de la cuenta para
-				// que el botón quede en SU mismo grupo (si no, se descoloca / se monta
-				// sobre "Mi Cuenta").
+			document.querySelectorAll('#header .header-widget').forEach(function (hw) {
 				var acc = hw.querySelector('.user-menu, .sign-in');
 				if (!acc) return;
-				var b = document.createElement('a');
-				b.href = '#';
-				b.className = 'ppv2-buscar-directorio';
-				b.setAttribute('role', 'button');
-				b.innerHTML = '<i class="gg-search"></i><span>Buscar en Directorio</span>';
-				var ord = getComputedStyle(acc).order;
-				b.style.order = (ord && ord !== 'normal') ? ord : '4';
-				hw.insertBefore(b, acc); // justo a la izquierda de la cuenta
+				if (!hw.querySelector('.ppv2-buscar-directorio')) {
+					var b = document.createElement('a');
+					b.href = '#';
+					b.className = 'ppv2-buscar-directorio';
+					b.setAttribute('role', 'button');
+					b.innerHTML = '<i class="gg-search"></i><span>Buscar en Directorio</span>';
+					hw.insertBefore(b, acc);
+				}
+				syncOne(hw);
 			});
 		}
+		function syncAll() {
+			document.querySelectorAll('#header .header-widget').forEach(syncOne);
+		}
 		document.addEventListener('DOMContentLoaded', inject);
+		window.addEventListener('load', function () { inject(); syncAll(); });
+		window.addEventListener('resize', syncAll);
 		// Clic (delegado): abre/cierra el panel disparando el botón nativo.
 		document.addEventListener('click', function (e) {
 			var b = e.target.closest('.ppv2-buscar-directorio');
@@ -142,6 +201,81 @@ function ppv2_listings_header_buscar_button() {
 	<?php
 }
 add_action( 'wp_footer', 'ppv2_listings_header_buscar_button', 121 );
+
+/**
+ * Página de LISTADOS — Feedback de carga en el panel de filtros (móvil).
+ *
+ * En móvil el panel de filtros cubre la pantalla, así que el loader central
+ * queda detrás y el usuario no ve que el sistema está cargando al cambiar un
+ * filtro. Inyectamos una barra de progreso fina al TOPE del panel
+ * (.full-page-sidebar-inner) y la activamos mientras Listeo recarga los
+ * resultados (clase .loading en #listeo-listings-container, detectada con un
+ * MutationObserver — fiable ante cambios dinámicos de clase). El estilo y la
+ * visibilidad (solo móvil) viven en style.css (.ppv2-filter-loadingbar).
+ */
+function ppv2_listings_filter_loading_feedback() {
+	if ( ! ppv2_is_listings_archive() ) {
+		return;
+	}
+	?>
+	<script>
+	(function () {
+		document.addEventListener('DOMContentLoaded', function () {
+			var container = document.getElementById('listeo-listings-container');
+			if (!container) return;
+
+			// Crea (una vez) la barra de progreso + el texto de estado al tope del panel.
+			function ensureEls() {
+				var inner = document.querySelector('.full-page-sidebar .full-page-sidebar-inner')
+					|| document.querySelector('.full-page-sidebar-inner');
+				if (!inner) return null;
+				var bar = inner.querySelector('.ppv2-filter-loadingbar');
+				if (!bar) {
+					bar = document.createElement('div');
+					bar.className = 'ppv2-filter-loadingbar';
+					bar.setAttribute('role', 'progressbar');
+					bar.setAttribute('aria-label', 'Cargando resultados');
+					inner.insertBefore(bar, inner.firstChild);
+				}
+				var status = inner.querySelector('.ppv2-filter-status');
+				if (!status) {
+					status = document.createElement('div');
+					status.className = 'ppv2-filter-status';
+					status.setAttribute('aria-live', 'polite'); // lectores de pantalla anuncian el conteo
+					inner.insertBefore(status, bar.nextSibling);
+				}
+				return { bar: bar, status: status };
+			}
+
+			function update() {
+				var els = ensureEls();
+				if (!els) return;
+				var loading = container.classList.contains('loading');
+				els.bar.classList.toggle('is-active', loading);
+				if (loading) {
+					els.status.textContent = 'Buscando…';      // "Buscando…"
+					els.status.classList.add('is-loading');
+				} else {
+					// Conteo de resultados (tarjetas renderizadas en el contenedor).
+					var n = container.querySelectorAll('.listing-card-container-nl').length;
+					els.status.classList.remove('is-loading');
+					els.status.textContent = n === 0 ? 'Sin resultados'
+						: (n === 1 ? '1 resultado' : n + ' resultados');
+				}
+			}
+
+			// Observa la clase .loading (estado de carga) y los cambios de tarjetas
+			// (cuando el AJAX reemplaza los resultados) para recalcular el conteo.
+			new MutationObserver(update).observe(container, {
+				attributes: true, attributeFilter: ['class'], childList: true
+			});
+			update();
+		});
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_listings_filter_loading_feedback', 122 );
 
 /**
  * Tienda V2 (Home): añade la etiqueta de categoría a cada producto y habilita
