@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Servicios - Parche Peludo</title>
+<!-- Tailwind CSS v3 CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter as a high-quality replacement for modern UI -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#79C8D0', // Teal
+            dark: '#1E2E33',    // Ink
+            'soft-gray': '#F9FAFB',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          borderRadius: {
+            'twelve': '12px',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styling">
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #1E2E33;
+      background-color: #FFFFFF;
+    }
+    .btn-primary {
+      background-color: #79C8D0;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      background-color: #64b1b8;
+    }
+    .chat-bubble-shadow {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<!-- BEGIN: MainHeader -->
+<header class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm" data-purpose="navigation-header">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="flex-grow">
+<!-- Provider Info Section -->
+<section class="max-w-4xl mx-auto px-4 py-12" data-purpose="provider-description">
+<div class="space-y-6">
+
+
+<!-- Login CTA Card -->
+<div class="relative overflow-hidden bg-dark rounded-xl p-8 mt-12 shadow-lg" data-purpose="login-call-to-action">
+<!-- Decorative background element -->
+<div class="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
+<div class="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 bg-primary/10 rounded-full blur-2xl"></div>
+<div class="relative flex flex-col md:flex-row items-center justify-between gap-8">
+<div class="flex flex-col md:flex-row items-center gap-6 text-center md:text-left justify-center">
+<div class="bg-primary p-4 rounded-full shadow-md flex-shrink-0">
+<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="space-y-2">
+<h3 class="text-2xl font-bold text-white">¿Quieres ver más detalles?</h3>
+<p class="text-gray-300 text-lg">
+          Por favor <a class="text-primary hover:underline font-bold" href="#">inicia sesión</a> para acceder a la información de contacto y agendar una cita.
+        </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: MainFooter -->
+
+<!-- END: MainFooter -->
+<!-- BEGIN: ChatFloatingAction -->
+<div class="fixed bottom-8 right-8 z-[100]" data-purpose="floating-chat-bubble">
+<div class="flex flex-col items-end">
+<!-- Tooltip Message -->
+
+<!-- Chat Button -->
+<button class="bg-primary p-4 rounded-full chat-bubble-shadow hover:scale-110 transition-transform duration-200">
+
+</button>
+</div>
+</div>
+<!-- END: ChatFloatingAction -->
+
+
+</body></html>

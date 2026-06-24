@@ -4464,6 +4464,13 @@ body.single-listing #listing-nav {
     order: 99;            /* el carrito siempre de último → a la derecha */
     margin: 0 0 0 12px;   /* la separación pasa al lado izquierdo (mitad de 23px), sin desfase arriba */
   }
+
+  /* "Iniciar Sesión" (estado SIN sesión): el tema padre lo baja con top:10px,
+     dejándolo ~10px más abajo que el buscador y el carrito. Lo subimos a su
+     centro (top:0) para que quede a la misma altura vertical. */
+  #header-container.hws-wrapper .header-widget .sign-in {
+    top: 0;
+  }
 }
 
 /* ============================================================
@@ -4653,6 +4660,56 @@ body.single-listing #listing-nav {
   #header-container.dashboard .header-widget .user-name span {
     top: -3px;
   }
+
+  /* 4) Menú principal como HAMBURGUESA (igual que el Home) también en
+        escritorio: ocultamos el menú horizontal y mostramos la hamburguesa
+        a la IZQUIERDA, antes del logo. El botón .mmenu-trigger ya abre el
+        menú lateral (off-canvas) en cualquier ancho (JS del tema sin límite). */
+  #header-container.dashboard #navigation {
+    display: none;
+  }
+  #header-container.dashboard .mmenu-trigger {
+    display: inline-flex !important;
+    float: none !important;
+    order: -1;
+    margin: 0 16px 0 0 !important;
+  }
+  #header-container.dashboard .left-side {
+    display: flex;
+    align-items: center;
+  }
+  /* El logo solo necesita ir DESPUÉS de la hamburguesa en el orden flex.
+     (El centrado vertical del logo va aparte, acotado a ≤1365px, porque a
+     ≥1366px el logo se mueve a la barra lateral del dashboard y NO debe
+     centrarse contra la hamburguesa.) */
+  #header-container.dashboard #logo {
+    order: 0;
+  }
+}
+
+/* ------------------------------------------------------------
+   Centrado vertical del logo CONTRA la hamburguesa — SOLO cuando van
+   juntos en la barra (escritorio 1024–1365px). A ≥1366px el tema mueve el
+   logo a la barra lateral (280px, fondo gris) con su propia posición, así
+   que aquí NO lo tocamos para no dejarlo descuadrado/alto.
+   ------------------------------------------------------------ */
+@media (min-width: 1024px) and (max-width: 1365px) {
+  /* La caja #logo es más alta que la imagen y la deja pegada arriba; la
+     centramos y le damos la misma altura de referencia (44px) que la
+     hamburguesa para que sus centros coincidan. */
+  #header-container.dashboard #logo {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    margin: 0;
+  }
+  /* El <a> visible también como flex, para centrar la imagen dentro de él
+     (sin destapar el segundo logo .dashboard-logo, que está oculto). */
+  #header-container.dashboard #logo a:not(.dashboard-logo) {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
 }
 
 /* ------------------------------------------------------------
@@ -4669,6 +4726,29 @@ body.single-listing #listing-nav {
   #header-container.dashboard .right-side {
     margin-top: 0;
   }
+}
+
+/* ------------------------------------------------------------
+   HAMBURGUESA DEL PANEL DE CONTROL — look IGUAL al del Home (todos los
+   anchos: escritorio + móvil).
+   El botón del dashboard (.mmenu-trigger) usa otra librería de ícono
+   (.hamburger-inner) y una caja gris #eee. Para que quede idéntico al
+   Home reutilizamos su ícono: un JS (functions.php) inyecta el markup
+   .hmb-ico-wrap > .hmb-ico dentro del botón, y aquí solo replicamos la
+   CAJA del Home (.desktop-mmenu-trigger). Las rayitas (.hmb-ico) ya las
+   estiliza el tema padre globalmente; añadimos el mismo hover.
+   ------------------------------------------------------------ */
+#header-container.dashboard .mmenu-trigger {
+  width: 50px;
+  height: 44px;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.06);
+  padding: 0;
+}
+/* Hover como en el Home: las rayitas se extienden al pasar el mouse. */
+#header-container.dashboard .mmenu-trigger:hover .hmb-ico:before,
+#header-container.dashboard .mmenu-trigger:hover .hmb-ico:after {
+  width: 100%;
 }
 
 /* ------------------------------------------------------------
@@ -6197,5 +6277,256 @@ html.ppv2-acct-lock, html.ppv2-acct-lock body { overflow: hidden !important; }
   body.mobile-nav-open .mobile-navigation-wrapper {
     box-shadow: 0 0 0 100vw rgba(0, 0, 0, .5) !important;   /* velo del 15% */
   }
+}
+
+/* ============================================================================
+   ANTI SCROLL HORIZONTAL "FANTASMA" (móvil/tablet ≤1024px).
+   En iOS, cualquier elemento que sobresalga unos píxeles (drawers que entran
+   desde fuera, paneles al 100%, un 100vw, etc.) permite arrastrar la página
+   en horizontal aunque no haya barra de scroll visible. Recortamos ese
+   desbordamiento a nivel de documento.
+   Usamos "overflow-x: clip" (no "hidden") a propósito: clip NO crea un
+   contenedor de scroll, así que NO rompe los elementos position:sticky ni
+   afecta a los drawers que entran con transform (siguen funcionando).
+   ============================================================================ */
+@media (max-width: 1024px) {
+  html,
+  body {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+}
+
+/* ============================================================================
+   POPUP DE RESERVA (Listeo Booking Plus, .lbp-modal) — que SIEMPRE quepa en
+   pantalla en móvil. En local ya cabe (modal 386px, campos 346px), pero
+   dejamos esta garantía por si en producción algún campo no tiene el
+   box-sizing correcto y se sale por la derecha (Date / Start Time / End Time).
+   - box-sizing:border-box → el padding no suma ancho.
+   - max-width:100% en campos/controles → nunca exceden el ancho del popup.
+   - overflow-x:clip en el cuerpo del modal → recorte de seguridad sin romper
+     el scroll vertical del popup.
+   ============================================================================ */
+@media (max-width: 1024px) {
+  .lbp-modal,
+  .lbp-modal *,
+  .lbp-modal *::before,
+  .lbp-modal *::after {
+    box-sizing: border-box;
+  }
+  .lbp-modal .lbp-step,
+  .lbp-modal .lbp-field,
+  .lbp-modal input,
+  .lbp-modal select,
+  .lbp-modal textarea {
+    max-width: 100%;
+  }
+  .lbp-modal,
+  .lbp-modal .lbp-step {
+    overflow-x: clip;
+  }
+}
+
+/* ==========================================================================
+   LISTADO INDIVIDUAL — Bloque de CONTACTO + REDES + CTA sin sesión.
+   Rediseño según detalle_contacto.html / detalle_quiere_ver_mas_detalles.html.
+   El JS ppv2_listing_contact_redesign() (functions.php) inyecta los elementos
+   que Listeo no trae (círculos de ícono, etiquetas, chevrons, encabezados,
+   tarjeta CTA, ícono "abrir") en TODOS los anchos.
+     · ASPECTO VISUAL → común (primer bloque, sin media query).
+     · DISTRIBUCIÓN:
+         - MÓVIL ≤1024px   → apilado vertical, con encabezados de sección.
+         - ESCRITORIO ≥1025px → en fila: Celular+Correo en una fila y las redes
+           en una sola fila; compacto y sin encabezados (como la vista actual).
+   No se sobrescribe plantilla ni se toca el plugin.
+   ========================================================================== */
+
+/* ---- ASPECTO VISUAL (todos los anchos) ---- */
+.single-listing .listing-links-container .ppv2-ct-h {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #5EB2BB;
+  margin: 0 0 14px;
+}
+.single-listing .listing-links-container .ppv2-ct-h-social { color: #6B7280; }
+
+/* Tarjetas de contacto (Celular / Correo / Sitio web) */
+.single-listing .listing-links.contact-links { list-style: none; }
+.single-listing .listing-links.contact-links li { list-style: none; float: none; }
+.single-listing .listing-links.contact-links li a.listing-links {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #F3F4F6 !important;
+  border: 0 !important;
+  border-radius: 12px;
+  padding: 13px 16px;
+  color: #1F2937 !important;
+  box-shadow: none;
+}
+.single-listing .listing-links.contact-links .ppv2-ct-ico {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(121, 200, 208, .18);
+  color: #5EB2BB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+.single-listing .listing-links.contact-links .ppv2-ct-ico i { margin: 0; }
+.single-listing .listing-links-container .ppv2-ct-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.single-listing .listing-links-container .ppv2-ct-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #9CA3AF;
+  line-height: 1.3;
+}
+.single-listing .listing-links-container .ppv2-ct-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1F2937;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.single-listing .listing-links-container .ppv2-ct-chev {
+  flex: 0 0 auto;
+  color: #CBD5E1;
+  font-size: 18px;
+  margin-left: 6px;
+}
+
+/* Botones de redes (color de marca + ícono "abrir") */
+.single-listing ul.listing-links:not(.contact-links) { list-style: none; }
+.single-listing ul.listing-links:not(.contact-links) li { list-style: none; float: none; }
+.single-listing ul.listing-links:not(.contact-links) li a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+}
+.single-listing ul.listing-links:not(.contact-links) li a i { color: #fff; }
+.single-listing ul.listing-links:not(.contact-links) li a .ppv2-soc-launch { font-size: 14px; opacity: .9; }
+.single-listing a.listing-links-whatsapp { background: #25D366 !important; }
+.single-listing a.listing-links-ig {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%) !important;
+}
+.single-listing a.listing-links-fb { background: #1877F2 !important; }
+.single-listing a.listing-links-tiktok { background: #000 !important; }
+
+/* Orden del diseño (WhatsApp, Instagram, Facebook, TikTok) — el item flex es el <li> */
+.single-listing ul.listing-links:not(.contact-links) li:has(a.listing-links-whatsapp) { order: 1; }
+.single-listing ul.listing-links:not(.contact-links) li:has(a.listing-links-ig)       { order: 2; }
+.single-listing ul.listing-links:not(.contact-links) li:has(a.listing-links-fb)       { order: 3; }
+.single-listing ul.listing-links:not(.contact-links) li:has(a.listing-links-tiktok)   { order: 4; }
+
+/* Tarjeta CTA "¿Quieres ver más detalles?" (estado SIN sesión) */
+.single-listing .listing-links-container p.ppv2-ct-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #1E2E33;
+  border-radius: 14px;
+  padding: 20px;
+  margin: 0;
+  color: #fff;
+}
+.single-listing .ppv2-cta-ico {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #79C8D0;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.single-listing .ppv2-cta-body { display: flex; flex-direction: column; gap: 4px; }
+.single-listing .ppv2-cta-title { font-size: 18px; font-weight: 700; color: #fff; }
+.single-listing .ppv2-cta-text { font-size: 14px; color: #D1D5DB; line-height: 1.5; }
+.single-listing .ppv2-cta-text a.sign-in { color: #79C8D0 !important; font-weight: 700; text-decoration: none; }
+.single-listing .ppv2-cta-text a.sign-in:hover { text-decoration: underline; }
+
+/* ---- DISTRIBUCIÓN MÓVIL (≤1024px): apilado vertical, con encabezados ---- */
+@media (max-width: 1024px) {
+  .single-listing .listing-links-container .ppv2-ct-h-social {
+    margin-top: 8px;   /* hueco con el bloque de contacto reducido a la mitad (40px → 20px) */
+  }
+  .single-listing .listing-links.contact-links { margin: 0; padding: 0; }
+  .single-listing .listing-links.contact-links li { margin: 0 0 12px; padding: 0; width: 100%; }
+  .single-listing ul.listing-links:not(.contact-links) {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .single-listing ul.listing-links:not(.contact-links) li { margin: 0; padding: 0; width: 100%; }
+}
+
+/* ---- DISTRIBUCIÓN ESCRITORIO (≥1025px): en fila, compacto (sin encabezados) ---- */
+@media (min-width: 1025px) {
+  /* En escritorio ocultamos los encabezados para conservar la vista compacta. */
+  .single-listing .listing-links-container .ppv2-ct-h { display: none; }
+
+  /* Celular + Correo en la MISMA fila (sin envolver; reparten el ancho a partes
+     iguales y truncan con "…" si el dato es muy largo). */
+  .single-listing .listing-links.contact-links {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+  .single-listing .listing-links.contact-links li {
+    margin: 0;
+    padding: 0;
+    flex: 0 1 auto;   /* ancho por contenido (muestra el dato completo si cabe) */
+    min-width: 0;     /* y si la columna es estrecha, recorta con "…" en vez de desbordar */
+  }
+
+  /* Redes: TODAS en una sola fila, compactas y equitativas (icono + nombre
+     centrados; sin el ícono "abrir" para ahorrar ancho). */
+  .single-listing ul.listing-links:not(.contact-links) {
+    margin: 16px 0 0;
+    padding: 0;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 8px;
+  }
+  .single-listing ul.listing-links:not(.contact-links) li {
+    margin: 0;
+    padding: 0;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .single-listing ul.listing-links:not(.contact-links) li a {
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 10px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .single-listing ul.listing-links:not(.contact-links) .ppv2-soc-launch { display: none; }
 }
 

@@ -1493,3 +1493,136 @@ function ppv2_signin_feedback_into_view() {
 }
 add_action( 'wp_footer', 'ppv2_signin_feedback_into_view', 111 );
 
+/**
+ * Header del Panel de Control: ícono de hamburguesa IGUAL al del Home.
+ *
+ * El botón del dashboard (.mmenu-trigger) ya existe y ya abre el menú
+ * lateral (off-canvas) en cualquier ancho, pero dibuja su ícono con otra
+ * librería (.hamburger-inner). Para que se vea idéntico al Home, le
+ * cambiamos el contenido por el MISMO markup del Home (.hmb-ico-wrap >
+ * .hmb-ico), cuyo estilo ya provee el tema padre globalmente.
+ * La caja del botón la replicamos por CSS en style.css.
+ * A prueba de actualizaciones (no tocamos plugin ni tema padre).
+ */
+function ppv2_dashboard_hamburger_icon() {
+	?>
+	<script>
+	(function () {
+		function run() {
+			var t = document.querySelector('#header-container.dashboard .mmenu-trigger');
+			if (!t || t.querySelector('.hmb-ico')) return;
+			t.innerHTML = '<div class="hmb-ico-wrap"><span class="hmb-ico"></span></div>';
+		}
+		if (document.readyState !== 'loading') { run(); }
+		else { document.addEventListener('DOMContentLoaded', run); }
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_dashboard_hamburger_icon', 123 );
+
+/**
+ * Listado individual (MÓVIL): rediseño del bloque de Contacto + Redes + CTA.
+ *
+ * Listeo genera .listing-links-container con:
+ *   - ul.contact-links  → Celular / Correo / Sitio web
+ *   - <p> con a.sign-in → mensaje cuando NO hay sesión
+ *   - ul.listing-links  → redes (a.listing-links-fb / -ig / -whatsapp / -tiktok…)
+ *
+ * Aquí reestructuramos ese marcado (en todos los anchos) para que coincida con
+ * los diseños (detalle_contacto.html / detalle_quiere_ver_mas_detalles.html):
+ * círculo de ícono + etiqueta + valor + chevron en cada contacto, encabezados,
+ * ícono "abrir" en cada red, y la tarjeta oscura "¿Quieres ver más detalles?".
+ * La DISTRIBUCIÓN la decide style.css: móvil = apilado; escritorio = en fila.
+ * El estilo lo pone style.css. NO se sobrescribe plantilla ni se toca el plugin.
+ */
+function ppv2_listing_contact_redesign() {
+	if ( ! is_singular( 'listing' ) ) {
+		return;
+	}
+	?>
+	<script>
+	(function () {
+		function run() {
+			var box = document.querySelector('.single-listing .listing-links-container');
+			if (!box || box.dataset.ppv2Ct) return;
+
+			/* 1) Filas de CONTACTO (Celular / Correo / Sitio web) */
+			var cu = box.querySelector('ul.contact-links');
+			if (cu) {
+				var h = document.createElement('h3');
+				h.className = 'ppv2-ct-h';
+				h.textContent = 'Información de Contacto';
+				cu.parentNode.insertBefore(h, cu);
+				cu.querySelectorAll('li > a').forEach(function (a) {
+					var ic = a.querySelector('i');
+					var icCls = ic ? ic.className : '';
+					var label = /fa-phone/.test(icCls) ? 'Celular'
+						: (/envelope/.test(icCls) ? 'Correo' : 'Sitio web');
+					var val = a.textContent.trim();
+					a.innerHTML =
+						'<span class="ppv2-ct-ico">' + (ic ? ic.outerHTML : '') + '</span>' +
+						'<span class="ppv2-ct-body">' +
+							'<span class="ppv2-ct-label">' + label + '</span>' +
+							'<span class="ppv2-ct-value"></span>' +
+						'</span>' +
+						'<i class="ppv2-ct-chev fa fa-angle-right" aria-hidden="true"></i>';
+					a.querySelector('.ppv2-ct-value').textContent = val; // texto seguro
+				});
+			}
+
+			/* 2) Botones de REDES */
+			var su = null;
+			box.querySelectorAll('ul.listing-links').forEach(function (u) {
+				if (!u.classList.contains('contact-links')) su = u;
+			});
+			if (su) {
+				var hs = document.createElement('h3');
+				hs.className = 'ppv2-ct-h ppv2-ct-h-social';
+				hs.textContent = 'Encuéntranos en redes';
+				su.parentNode.insertBefore(hs, su);
+				su.querySelectorAll('li > a').forEach(function (a) {
+					if (a.querySelector('.ppv2-soc-launch')) return;
+					var l = document.createElement('i');
+					l.className = 'ppv2-soc-launch fa fa-external-link';
+					l.setAttribute('aria-hidden', 'true');
+					a.appendChild(l);
+				});
+			}
+
+			/* 3) Tarjeta CTA "¿Quieres ver más detalles?" (estado SIN sesión) */
+			var p = box.querySelector('p');
+			var sign = p && p.querySelector('a.sign-in');
+			if (sign) {
+				p.classList.add('ppv2-ct-cta');
+				var ico = document.createElement('span');
+				ico.className = 'ppv2-cta-ico';
+				ico.innerHTML = '<i class="fa fa-lock" aria-hidden="true"></i>';
+				var body = document.createElement('span');
+				body.className = 'ppv2-cta-body';
+				var title = document.createElement('strong');
+				title.className = 'ppv2-cta-title';
+				title.textContent = '¿Quieres ver más detalles?';
+				var txt = document.createElement('span');
+				txt.className = 'ppv2-cta-text';
+				sign.textContent = 'inicia sesión';
+				txt.appendChild(document.createTextNode('Por favor '));
+				txt.appendChild(sign); // mueve el enlace original → conserva su funcionalidad (popup)
+				txt.appendChild(document.createTextNode(' para acceder a la información de contacto y agendar una cita.'));
+				body.appendChild(title);
+				body.appendChild(txt);
+				p.innerHTML = '';
+				p.appendChild(ico);
+				p.appendChild(body);
+			}
+
+			box.dataset.ppv2Ct = '1';
+		}
+		if (document.readyState !== 'loading') { run(); }
+		else { document.addEventListener('DOMContentLoaded', run); }
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_listing_contact_redesign', 124 );
+
