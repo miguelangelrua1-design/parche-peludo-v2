@@ -240,6 +240,13 @@ Text Domain:  listeo-child
   color: var(--coral) !important;
 }
 
+/* Favorito GUARDADO (corazón relleno): rojo en vez del teal que heredaba del
+   tema padre (.favorite-icon-nl → var(--listeo-primary-color)). Así queda
+   rojo igual que el corazón de contorno. Aplica a tarjetas en desktop y móvil. */
+.favorite-icon-nl .listeo_core-unbookmark-it {
+  color: var(--coral) !important;
+}
+
 /* Badge "Destacados" */
 .badge-nl.featured-nl {
   background: var(--marigold) !important;
@@ -5041,6 +5048,16 @@ body.single-listing #listing-nav {
   box-shadow: 0 14px 30px rgba(30, 46, 51, 0.12);
   transform: translateY(-3px);
 }
+/* El contenido de la tarjeta se apila en COLUMNA y ocupa toda la altura, así la
+   barra "Ver más" del pie queda pegada al fondo aunque unas tarjetas sean más
+   altas que otras (margin-top:auto en .pps-card-more empuja la barra abajo).
+   OJO: en este Elementor `.elementor-element-populated` ES el `.elementor-widget-wrap`
+   (el mismo div) y viene por defecto en flex-direction:row → hay que forzar columna. */
+#pps-services .elementor-column > .elementor-element-populated {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
 /* imagen full-bleed */
 .pps-card-img { margin: 0; }
 .pps-card-img img {
@@ -5106,7 +5123,7 @@ body.single-listing #listing-nav {
   margin: 0;
 }
 /* el margin va en el widget; el reset margin:0 solo en los HIJOS para no pisarlo */
-.pps-card-title { margin: 19px 0 0; }
+.pps-card-title { margin: 12px 0 0; }
 .pps-card-title * {
   font-size: 20px;
   font-weight: 900;
@@ -5114,12 +5131,21 @@ body.single-listing #listing-nav {
   line-height: 1.2;
   margin: 0;
 }
-.pps-card-desc { margin: 8px 0 0; }
+.pps-card-desc { margin: 3px 0 0; }
 .pps-card-desc * {
   font-size: 14px;
   color: #5A6B70;
   line-height: 1.5;
   margin: 0;
+}
+/* Descripción: máximo 4 líneas; si el texto es más largo se corta con "…".
+   Mantiene todas las tarjetas a una altura más pareja. */
+.pps-card-desc .elementor-heading-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
 }
 /* Enlaces clicables de la tarjeta (imagen, título, descripción): forzamos el
    color correcto con !important para ganarle al color de enlace del tema
@@ -5135,7 +5161,7 @@ body.single-listing #listing-nav {
 .pps-card-title a:hover { color: #4AA5AD !important; }
 .pps-card-img a { display: block; }
 /* chips (envueltos en .pps-tags-row → flex fiable) */
-.pps-card-tags { margin-top: 10px; }
+.pps-card-tags { margin-top: 3px; }
 .pps-tags-row {
   display: flex;
   flex-wrap: wrap;
@@ -5151,8 +5177,11 @@ body.single-listing #listing-nav {
   padding: 3px 10px;
   border-radius: 999px;
 }
-/* pie: precio + rating (envuelto en .pps-foot-row) */
-.pps-card-foot { margin-top: 10px; }
+/* pie: precio + rating (envuelto en .pps-foot-row).
+   margin-top:auto empuja ESTE bloque (precio + calificación) al fondo de la
+   tarjeta; como el botón "Ver más" va justo después, ambos quedan SIEMPRE abajo
+   en la misma posición, sin importar cuántas etiquetas tenga la tarjeta. */
+.pps-card-foot { margin-top: auto; }
 .pps-foot-row {
   display: flex;
   align-items: center;
@@ -5180,30 +5209,34 @@ body.single-listing #listing-nav {
   color: #FFD166;
   font-variation-settings: 'FILL' 1;
 }
-/* "Ver más" como enlace a la derecha, en una sola línea */
+/* "Ver más" → barra gris a TODO el ancho de la tarjeta, pegada al fondo,
+   con el botón centrado y el texto más grande (mayor relevancia del CTA). */
 .pps-card-more {
-  margin-top: 8px;
-  margin-bottom: 14px;
-  text-align: right;
+  margin-top: 0;               /* el empuje al fondo lo hace .pps-card-foot; la barra va justo debajo */
+  margin-bottom: 0;
+  padding: 10px 24px;          /* anula el padding lateral compartido → barra full-width */
+  text-align: center;
+  background: #EEF2F3;         /* barra gris */
+  border-top: 1px solid #E1E7E9;
 }
 .pps-card-more .elementor-button {
   background: transparent;
-  color: #4AA5AD;
+  color: #1E5D64;
   padding: 0;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 15px;            /* antes 12px: texto más grande */
+  font-weight: 800;
   box-shadow: none;
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
 }
-.pps-card-more .elementor-button:hover { color: #1E5D64; }
+.pps-card-more .elementor-button:hover { color: #4AA5AD; }
 .pps-card-more .elementor-button .elementor-button-text { white-space: nowrap; }
 .pps-card-more .elementor-button::after {
   font-family: 'Material Symbols Outlined';
   content: "arrow_forward";
-  margin-left: 5px;
-  font-size: 15px;
+  margin-left: 6px;
+  font-size: 18px;
   -webkit-font-feature-settings: 'liga';
   font-feature-settings: 'liga';
 }
