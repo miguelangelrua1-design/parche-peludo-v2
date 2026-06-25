@@ -6530,3 +6530,180 @@ html.ppv2-acct-lock, html.ppv2-acct-lock body { overflow: hidden !important; }
   .single-listing ul.listing-links:not(.contact-links) .ppv2-soc-launch { display: none; }
 }
 
+/* ==========================================================================
+   BOTÓN "BUSCAR" del buscador del header — color PRINCIPAL de marca (teal).
+   El tema lo trae en gris (#66676B, clase "gray-style"). Lo igualamos al teal
+   de marca (#79C8D0, el mismo del botón principal "Book Now"), texto blanco.
+   Aplica en escritorio y móvil (es el mismo botón .main-search-form .button).
+   ========================================================================== */
+.main-search-form button.button {
+  background: var(--teal-parche) !important;
+  color: #fff !important;
+}
+.main-search-form button.button:hover,
+.main-search-form button.button:focus {
+  background: var(--teal-deep) !important;
+  color: #fff !important;
+}
+
+/* ==========================================================================
+   LISTADO INDIVIDUAL (MÓVIL): espaciado de la sección "Planes y Precios".
+   - Más aire ENCIMA del título (separarlo del bloque de redes, que quedaba
+     pegado porque .listing-links-container tiene margin-bottom:0).
+   - Subir el bloque de precios (menos hueco entre el título y la caja
+     "Peluquería"). Scopeado a la sección que contiene los precios con :has().
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .single-listing .listing-section:has(.pricing-list-container) {
+    margin-top: 28px;
+  }
+  /* El título usa una clase utilitaria .margin-bottom-XX con !important,
+     por eso hay que forzarlo aquí también. */
+  .single-listing .listing-section:has(.pricing-list-container) .listing-desc-headline {
+    margin-bottom: 8px !important;
+  }
+}
+
+/* ==========================================================================
+   TARJETAS DE RESULTADOS — Badge "Verificado" (escritorio + móvil).
+   El tema muestra solo un "chulo" (check) verde junto al nombre
+   (.verified-icon-nl). Lo convertimos en una ETIQUETA verde con el texto
+   "Verificado" (check + texto), usando el mismo verde del sitio (#19B453).
+   El texto se añade con ::after; el tooltip original se oculta.
+   ========================================================================== */
+/* Píldora verde */
+.verified-icon-nl.title-badge-nl {
+  display: inline-flex !important;
+  align-items: center !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 3px 12px 3px 5px !important;
+  border-radius: 999px !important;
+  background: #3DBE6A !important;        /* verde de la marca de "Verificado" (según diseño) */
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  text-transform: none !important;       /* "Verificado", no "VERIFICADO" */
+  vertical-align: middle !important;
+}
+/* Quitar el "chulo" que dibuja el tema (glifo verde \f058 + círculo blanco). */
+.verified-icon-nl.title-badge-nl::before,
+.verified-icon-nl.title-badge-nl::after {
+  content: none !important;
+  display: none !important;
+}
+/* El <i.fa-check> es el contenedor del contenido: lo convertimos en un
+   CÍRCULO BLANCO con check (glifo check-circle \f058 en blanco; el "hueco" del
+   check deja ver el verde de la píldora) y le añadimos el texto "Verificado". */
+.verified-icon-nl.title-badge-nl .fa-check {
+  display: inline-flex !important;
+  align-items: center !important;
+  color: #fff !important;
+  width: auto !important;
+  height: auto !important;
+}
+.verified-icon-nl.title-badge-nl .fa-check::before {
+  content: "\f058" !important;           /* check-circle (relleno) */
+  font-family: "Font Awesome 6 Free", "Font Awesome 5 Free" !important;
+  font-weight: 900 !important;
+  font-size: 17px !important;
+  line-height: 1 !important;
+  color: #fff !important;
+  display: inline-block !important;
+}
+/* IMPORTANTE: el texto está en ::after de un <i> de FontAwesome, así que hereda
+   la fuente de íconos. Le forzamos una fuente normal del sitio y minúsculas. */
+.verified-icon-nl.title-badge-nl .fa-check::after {
+  content: "Verificado";
+  margin-left: 6px;
+  font-family: Ubuntu, "Helvetica Neue", Arial, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  white-space: nowrap;
+}
+.verified-icon-nl.title-badge-nl .tooltip-nl {
+  display: none !important;
+}
+
+/* ==========================================================================
+   FAQ (Preguntas frecuentes) — SOLO en la página interna del listado.
+   Las preguntas del acordeón salen en negrilla. Un plugin las fuerza con
+   ".single-listing #listing-faq .fp-accordion .ui-accordion-header { 700 }"
+   (lleva ID #listing-faq), así que igualamos esa especificidad y la subimos
+   con el tag h3 para ganar y dejarlas en peso normal.
+   ========================================================================== */
+.single-listing #listing-faq .fp-accordion h3.ui-accordion-header {
+  font-weight: 400 !important;
+}
+
+/* ==========================================================================
+   RESULTADOS — Tarjeta: sin descripción corta + íconos de servicios como
+   ETIQUETAS con el nombre del servicio (MÓVIL y ESCRITORIO).
+   Cada ícono (.amenity-icon-nl) trae el nombre en su tooltip (.tooltip-nl):
+   ocultamos el SVG y mostramos el texto dentro de una pill.
+   El recorte a 2 líneas con "…" lo hace el JS ppv2_card_amenities_clamp()
+   (functions.php), que añade una pill .ppv2-amen-more cuando sobran etiquetas.
+   ========================================================================== */
+.listing-card-nl .listing-excerpt-nl {
+  display: none !important;
+}
+.listing-card-nl .listing-amenities-nl {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  overflow: visible !important;
+}
+.listing-card-nl .amenity-icon-nl,
+.listing-card-nl .ppv2-amen-more {
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 4px 11px !important;
+  border-radius: 999px !important;
+  background: #F3F4F6 !important;
+  border: 1px solid #E5E7EB !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  overflow: visible !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #4B5563 !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+}
+/* La pill "…" (hay más etiquetas de las que caben en 2 líneas). */
+.listing-card-nl .ppv2-amen-more {
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+}
+/* Ocultamos el ícono SVG: la etiqueta es solo texto. */
+.listing-card-nl .amenity-icon-nl .feature-svg-icon {
+  display: none !important;
+}
+/* El tooltip pasa a ser el TEXTO visible de la etiqueta. */
+.listing-card-nl .amenity-icon-nl .tooltip-nl {
+  display: inline !important;
+  position: static !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  font: inherit !important;
+  letter-spacing: normal !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+}
+.listing-card-nl .amenity-icon-nl .tooltip-nl::before,
+.listing-card-nl .amenity-icon-nl .tooltip-nl::after {
+  display: none !important;
+}
+

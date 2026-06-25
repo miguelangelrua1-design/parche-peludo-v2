@@ -1626,3 +1626,128 @@ function ppv2_listing_contact_redesign() {
 }
 add_action( 'wp_footer', 'ppv2_listing_contact_redesign', 124 );
 
+/**
+ * Tarjetas de resultados (.listing-card-nl): habilitar SWIPE táctil en el
+ * carrusel de imágenes.
+ *
+ * El slider de la tarjeta es propio del tema (js/custom.js) y SOLO escucha
+ * clics en las flechas #nextBtn / #prevBtn; no tiene gestos táctiles, por eso
+ * en móvil se puede pasar con las flechas pero no con el dedo.
+ * Aquí detectamos el swipe horizontal y disparamos esas mismas flechas, así
+ * reutilizamos su lógica sin tocar el tema. Se re-aplica tras cargas AJAX
+ * (filtros/paginación) usando el evento "ajaxContentLoaded" del propio tema.
+ */
+function ppv2_listing_card_swipe() {
+	?>
+	<script>
+	(function () {
+		function bind() {
+			var cards = document.querySelectorAll('.listing-card-nl');
+			for (var i = 0; i < cards.length; i++) {
+				(function (card) {
+					if (card.dataset.ppv2Swipe) return;
+					card.dataset.ppv2Swipe = '1';
+					var slides = card.querySelectorAll('.slider-image-nl');
+					if (slides.length <= 1) return;
+					var area = card.querySelector('.slider-wrapper-nl');
+					if (!area) return;
+					var x0 = 0, y0 = 0, on = false;
+					area.addEventListener('touchstart', function (e) {
+						if (e.touches.length !== 1) { on = false; return; }
+						x0 = e.touches[0].clientX;
+						y0 = e.touches[0].clientY;
+						on = true;
+					}, { passive: true });
+					area.addEventListener('touchend', function (e) {
+						if (!on) return;
+						on = false;
+						var t = e.changedTouches[0];
+						var dx = t.clientX - x0, dy = t.clientY - y0;
+						// swipe horizontal claro (umbral 40px y más horizontal que vertical)
+						if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+							var sel = dx < 0 ? '#nextBtn' : '#prevBtn';
+							var btn = card.querySelector(sel);
+							if (btn) btn.click();
+						}
+					}, { passive: true });
+				})(cards[i]);
+			}
+		}
+		if (document.readyState !== 'loading') { bind(); }
+		else { document.addEventListener('DOMContentLoaded', bind); }
+		if (window.jQuery) { jQuery(document).on('ajaxContentLoaded', bind); }
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_listing_card_swipe', 125 );
+
+/**
+ * Tarjetas de resultados: limitar las ETIQUETAS de servicios a 2 líneas.
+ *
+ * El CSS convierte los íconos (.amenity-icon-nl) en etiquetas. Para que la
+ * tarjeta no crezca de alto, aquí mostramos solo las etiquetas que caben en
+ * 2 líneas y, si sobran, añadimos una pill "…" al final (.ppv2-amen-more),
+ * ocultando el resto. Se recalcula al cambiar el ancho (resize) y tras cargas
+ * AJAX (filtros/paginación).
+ */
+function ppv2_card_amenities_clamp() {
+	?>
+	<script>
+	(function () {
+		function clamp(container) {
+			var labels = [].slice.call(container.querySelectorAll('.amenity-icon-nl'));
+			if (!labels.length) return;
+			// reset
+			labels.forEach(function (l) { l.style.removeProperty('display'); });
+				void container.offsetHeight; // reflow para medir bien
+			var old = container.querySelector('.ppv2-amen-more');
+			if (old) old.parentNode.removeChild(old);
+
+			// Altura objetivo: 2 filas. La medimos con la altura de una etiqueta + gap.
+			var cs = getComputedStyle(container);
+			var padV = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+			var gap = parseFloat(cs.rowGap || cs.gap) || 6;
+			var labelH = labels[0].offsetHeight || 25;
+			var rows = window.matchMedia('(min-width: 1025px)').matches ? 3 : 2; // escritorio 3, móvil 2
+			var maxH = padV + labelH * rows + gap * (rows - 1) + 4; // N filas + tolerancia
+
+			if (container.offsetHeight <= maxH) return; // ya cabe en N filas
+
+			// Hay más etiquetas de las que caben: añadimos "…" y ocultamos desde el
+			// final (con prioridad important, porque el CSS las pone display:inline-flex)
+			// hasta que el contenedor quepa en 2 filas.
+			var more = document.createElement('span');
+			more.className = 'ppv2-amen-more';
+			more.textContent = '…';
+			container.appendChild(more);
+
+			var vis = labels.slice();
+			var guard = 0;
+			while (container.offsetHeight > maxH && vis.length > 1 && guard < labels.length) {
+				vis.pop().style.setProperty('display', 'none', 'important');
+				guard++;
+			}
+		}
+		function run() {
+			var conts = document.querySelectorAll('.listing-card-nl .listing-amenities-nl');
+			for (var i = 0; i < conts.length; i++) { clamp(conts[i]); }
+		}
+		var t;
+		function runStable() { requestAnimationFrame(function () { requestAnimationFrame(run); }); }
+			function debounced() { clearTimeout(t); t = setTimeout(runStable, 150); }
+		if (document.readyState !== 'loading') { run(); }
+		else { document.addEventListener('DOMContentLoaded', run); }
+		window.addEventListener('load', runStable);           // tras fuentes/imágenes
+		window.addEventListener('resize', debounced);
+		if (window.jQuery) {
+				jQuery(document).on('ajaxContentLoaded', function () {
+					[120, 450, 1000].forEach(function (ms) { setTimeout(runStable, ms); });
+				});
+			}
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_card_amenities_clamp', 126 );
+
