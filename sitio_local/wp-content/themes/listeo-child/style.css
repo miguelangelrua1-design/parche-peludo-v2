@@ -236,7 +236,12 @@ Text Domain:  listeo-child
   box-shadow: var(--shadow-sm) !important;
 }
 
-.favorite-icon-nl .save {
+/* Corazón NO guardado (contorno): rojo coral. Cubrimos tanto `.save` (marcado
+   nativo de Listeo) como `.listeo_core-bookmark-it` (el estado real "marcable")
+   para que, al quitar un favorito por JS, el corazón siga rojo aunque haya
+   perdido la clase `.save`; si no, heredaría el teal de `.favorite-icon-nl`. */
+.favorite-icon-nl .save,
+.favorite-icon-nl .listeo_core-bookmark-it {
   color: var(--coral) !important;
 }
 
@@ -2702,8 +2707,9 @@ Text Domain:  listeo-child
   background: var(--paper) !important;
   border: 2px solid var(--teal-parche) !important;
   border-radius: 14px !important;
-  /* Padding vertical 16px = py-4 del prototipo. Altura total = 16+24+16+4(border)=60px */
-  padding: 16px 22px !important;
+  /* Relleno homologado con el botón "Horarios" (mismo tamaño). La altura final se
+     iguala además por align-items:stretch de .ppv2-sidebar-actions. */
+  padding: 7px 20px !important;   /* altura reducida ~33% */
   box-shadow: 0 1px 2px rgba(30, 46, 51, 0.04) !important;
 }
 .single-listing .listeo-single-listing-sidebar .listing-widget.message-vendor.ppv2-collapsible.is-collapsed:hover {
@@ -2715,6 +2721,7 @@ Text Domain:  listeo-child
   font-family: var(--font-sans) !important;
   font-size: 16px !important;
   font-weight: 800 !important;
+  line-height: 1.1 !important;     /* 2 líneas más juntas → menos altura */
   color: var(--teal-ink) !important;
   position: relative !important; /* contexto para el chevron absoluto */
 }
@@ -2749,9 +2756,9 @@ Text Domain:  listeo-child
   background: var(--paper) !important;
   border: 1px solid rgba(30, 46, 51, 0.12) !important;
   border-radius: 14px !important;
-  /* Padding 16.5px vertical para igualar la altura visible al boton MSG.
-     MSG = 16+24+16+4(border 2*2) = 60. HRS necesita 16.5+24+16.5+2(border 1*2) = 59 -> ~60 */
-  padding: 16.5px 20px !important;
+  /* Relleno homologado con el botón "Enviar Mensaje" (mismo tamaño). La diferencia
+     de borde (1px vs 2px) la absorbe align-items:stretch de .ppv2-sidebar-actions. */
+  padding: 7px 20px !important;   /* altura reducida ~33% */
   box-shadow: 0 1px 2px rgba(30, 46, 51, 0.04) !important;
   overflow: hidden !important; /* recortar ribbon si llegara a desbordar */
 }
@@ -2767,7 +2774,7 @@ Text Domain:  listeo-child
   color: var(--ink) !important;
 }
 .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours.ppv2-collapsible.is-collapsed .widget-title i {
-  color: var(--teal-parche) !important;
+  color: var(--ink) !important;   /* mismo color que el texto "Horarios" */
 }
 /* === Badge "Ahora Abierto / Ahora Cerrado" como mini-pill inline =========
    Por defecto Listeo lo renderiza como un ribbon diagonal en la esquina; aqui
@@ -2812,6 +2819,68 @@ Text Domain:  listeo-child
   margin-left: 10px !important;
 }
 
+/* Botón "Horarios": icono a la izquierda (ocupa las dos filas), el texto arriba y
+   la etiqueta "Ahora Abierto/Cerrado" DEBAJO del texto (no al lado), completa.
+   Se logra con grid de 2 filas y áreas nombradas. */
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title {
+  display: grid !important;
+  grid-template-columns: auto 1fr !important;
+  grid-template-areas: "ico txt" "badge badge" !important;  /* etiqueta a TODO el ancho, fila 2 */
+  align-items: center !important;
+  column-gap: 10px !important;
+  row-gap: 3px !important;          /* ~3px entre "Horarios" y "AHORA ABIERTO" */
+  min-width: 0 !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title > i {
+  grid-area: ico !important;
+  align-self: center !important;
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title .ppv2-widget-title-text {
+  grid-area: txt !important;
+  align-self: center !important;
+  line-height: 1 !important;        /* sin espacio extra bajo el texto → gap controlado */
+}
+.single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title .listing-badge {
+  grid-area: badge !important;
+  justify-self: start !important;
+  align-self: center !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  margin: 0 !important;            /* anular el margin-left:auto que lo empujaba a la derecha */
+  font-size: 8px !important;        /* más pequeña, acomodada al botón */
+  letter-spacing: 0.2px !important;
+  padding: 2px 7px !important;
+}
+
+/* Botón "Horarios" en MÓVIL: icono + "Horarios" + etiqueta en UNA fila, todo
+   CENTRADO y SIN flecha (ahora abre un panel inferior, ya no colapsa). En desktop
+   se mantiene el grid de 2 filas de arriba. */
+@media (max-width: 767px) {
+  .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    column-gap: 9px !important;
+    row-gap: 3px !important;
+  }
+  .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title > i,
+  .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title .ppv2-widget-title-text,
+  .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title .listing-badge {
+    grid-area: auto !important;       /* anular las áreas del grid de desktop */
+    align-self: auto !important;
+    justify-self: auto !important;
+    margin: 0 !important;
+  }
+  .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title .listing-badge {
+    font-size: 10px !important;       /* legible en la fila */
+    padding: 3px 9px !important;
+  }
+  .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .ppv2-widget-chevron {
+    display: none !important;         /* sin flecha en móvil */
+  }
+}
+
 /* ============================================================================
    Sidebar sticky: offset bajo el header fijo + compensacion del padding interno
    ----------------------------------------------------------------------------
@@ -2837,6 +2906,48 @@ body.single-listing .listeo-single-listing-sidebar {
 body.single-listing.admin-bar .listeo-single-listing-sidebar {
   top: 128px !important;         /* logged-in: 32 admin + 80 header + 16 gap */
   padding-top: 17px !important;  /* 128 + 17 = 145 (alineado con el bloque del titulo) */
+}
+
+/* El componente de reserva (sidebar sticky) puede ser MÁS ALTO que la pantalla
+   (calendario + Reservar + los dos botones) y cortaba los de abajo (Enviar Mensaje
+   y Horarios). Lo limitamos al alto visible y, si su contenido excede, scrollea
+   internamente → todo queda accesible. El overflow del propio sidebar NO rompe su
+   position:sticky (solo lo rompería en un ANCESTRO). Solo en desktop (≥992px). */
+@media (min-width: 992px) {
+  body.single-listing .listeo-single-listing-sidebar {
+    max-height: calc(100vh - 112px) !important;   /* 96 top + 16 respiro (visitante) */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+  }
+  body.single-listing.admin-bar .listeo-single-listing-sidebar {
+    max-height: calc(100vh - 144px) !important;   /* 128 top + 16 respiro (con admin bar) */
+  }
+  /* Barra de scroll fina y discreta. */
+  body.single-listing .listeo-single-listing-sidebar::-webkit-scrollbar { width: 6px; }
+  body.single-listing .listeo-single-listing-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(30, 46, 51, 0.18) !important;
+    border-radius: 3px !important;
+  }
+
+  /* Compactar el widget de reserva (Booking Plus) para que el componente quepa en
+     pantallas más pequeñas. Reduce los espacios marcados: padding arriba/abajo,
+     separación bajo el header (Naturalia/calificación) y el margen hacia los botones. */
+  .single-listing .listeo-single-listing-sidebar .lbp-bpw {
+    padding-top: 14px !important;      /* marca 1: arriba */
+    padding-bottom: 14px !important;   /* marca 3: abajo de "Aún no se te cobrará" */
+    margin-bottom: 10px !important;    /* marca 4: gap hacia Enviar Mensaje / Horarios */
+  }
+  .single-listing .listeo-single-listing-sidebar .lbp-bpw .lbp-bpw__host {
+    padding-bottom: 8px !important;    /* marca 2: bajo el header */
+    margin-bottom: 8px !important;
+  }
+  .single-listing .listeo-single-listing-sidebar .lbp-bpw .lbp-bpw-tag {
+    margin-bottom: 10px !important;
+  }
+  .single-listing .listeo-single-listing-sidebar .lbp-bpw .lbp-bpw__note {
+    margin-top: 8px !important;
+  }
 }
 
 /* ============================================================================
@@ -6298,6 +6409,192 @@ body.admin-bar #header .user-menu ul { top: 32px !important; height: calc(100vh 
 }
 /* Bloquear el scroll del fondo mientras el drawer está abierto. */
 html.ppv2-acct-lock, html.ppv2-acct-lock body { overflow: hidden !important; }
+
+/* ============================================================================
+   PANEL DESLIZANTE GENÉRICO desde la DERECHA (Enviar Mensaje, Ver horarios y, a
+   futuro, Mi Carrito). Mismo lenguaje visual que el drawer de "Mi Cuenta".
+   El JS (window.ppRDrawer) mueve aquí el cuerpo del widget y garantiza que solo
+   UN panel esté abierto a la vez (coordinado con Mi Cuenta).
+   ============================================================================ */
+.ppv2-rdrawer-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, .45) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: opacity .3s, visibility .3s !important;
+  z-index: 100055 !important;
+}
+.ppv2-rdrawer-overlay.is-open { opacity: 1 !important; visibility: visible !important; }
+.ppv2-rdrawer {
+  position: fixed !important;
+  top: 0 !important; right: 0 !important; bottom: 0 !important;
+  height: 100vh !important;
+  width: 380px !important;
+  max-width: 92vw !important;
+  background: #fff !important;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, .16) !important;
+  transform: translateX(100%) !important;
+  transition: transform .34s cubic-bezier(.22, .61, .36, 1), visibility .34s !important;
+  visibility: hidden !important;
+  z-index: 100060 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.ppv2-rdrawer.is-open { transform: translateX(0) !important; visibility: visible !important; }
+.ppv2-rdrawer-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  flex: 0 0 auto !important;
+  padding: 12px 14px 12px 24px !important;
+  background: #F3F4F6 !important;
+  border-bottom: 1px solid #E5E7EB !important;
+}
+.ppv2-rdrawer-title { font-size: 16px !important; font-weight: 700 !important; color: #1F2937 !important; }
+.ppv2-rdrawer-close {
+  flex: 0 0 auto !important;
+  width: 34px !important; height: 34px !important;
+  padding: 0 !important; border: 0 !important; background: transparent !important;
+  font-size: 26px !important; line-height: 1 !important; color: #6B7280 !important;
+  cursor: pointer !important; border-radius: 8px !important;
+}
+.ppv2-rdrawer-close:hover { background: #E5E7EB !important; color: #1F2937 !important; }
+.ppv2-rdrawer-body { flex: 1 1 auto !important; overflow-y: auto !important; padding: 20px 24px 28px !important; }
+/* El cuerpo movido se muestra dentro del drawer aunque su widget de origen siga
+   colapsado en el sidebar. */
+.ppv2-rdrawer-body .ppv2-rdrawer-source { display: block !important; }
+
+/* Compactar el formulario de "Enviar Mensaje" (Contact Form 7) DENTRO del panel
+   para que NO genere scroll vertical: separación uniforme y pequeña entre campos,
+   textarea más bajo y radios del "Método de contacto" en línea. Scopeado al panel
+   → no afecta otros formularios del sitio. */
+.ppv2-rdrawer-body { padding-top: 10px !important; padding-bottom: 12px !important; }
+.ppv2-rdrawer-body .wpcf7-form p { margin: 0 !important; }            /* CF7 envuelve cada campo en <p> */
+.ppv2-rdrawer-body .row.with-forms { margin-bottom: 0 !important; }
+.ppv2-rdrawer-body .with-forms input.input-text,
+.ppv2-rdrawer-body .with-forms input[type="text"],
+.ppv2-rdrawer-body .with-forms input[type="email"],
+.ppv2-rdrawer-body .with-forms input[type="tel"],
+.ppv2-rdrawer-body .with-forms select,
+.ppv2-rdrawer-body textarea { margin-bottom: 4px !important; }        /* el espacio entre campos lo da esto */
+
+/* Tamaño homologado/reducido de los campos (texto 14px, menos alto) y el textarea
+   de "Mensaje" más alto de nuevo. */
+.ppv2-rdrawer-body .with-forms input.input-text,
+.ppv2-rdrawer-body .with-forms input[type="text"],
+.ppv2-rdrawer-body .with-forms input[type="email"],
+.ppv2-rdrawer-body .with-forms input[type="tel"],
+.ppv2-rdrawer-body .with-forms select {
+  font-size: 14px !important;
+  padding: 8px 13px !important;          /* menos alto que antes (13px → 8px) */
+}
+.ppv2-rdrawer-body textarea {
+  font-size: 14px !important;
+  padding: 8px 13px !important;
+  min-height: 92px !important;           /* mensaje más alto, pero sin pasarse */
+  height: 92px !important;
+}
+/* Sin scroll horizontal: campos a todo el ancho con border-box (no radios). */
+.ppv2-rdrawer-body .with-forms input.input-text,
+.ppv2-rdrawer-body .with-forms input[type="text"],
+.ppv2-rdrawer-body .with-forms input[type="email"],
+.ppv2-rdrawer-body .with-forms input[type="tel"],
+.ppv2-rdrawer-body .with-forms select,
+.ppv2-rdrawer-body textarea {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+/* Label sobre cada campo (texto guía). El placeholder se mantiene dentro. */
+.ppv2-field-label {
+  display: block !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #1F2937 !important;
+  margin: 0 0 2px !important;
+  line-height: 1.2 !important;
+}
+
+/* Lista de HORARIOS en el panel: el nombre del día en NEGRITA, terminado en ":" y
+   con un espacio antes de la hora. El día es un nodo de texto suelto dentro del <li>
+   y la hora va en un <span>; insertamos ": " antes del <span> con ::before → además
+   despega "DomingoCerrado". OJO: los días laborables traen clase
+   `listeo-opening-day-*` pero el día CERRADO (Domingo) viene SIN clase, así que
+   apuntamos a cualquier <li> que tenga un <span> directo (estructura común a todos). */
+.ppv2-rdrawer-body li:has(> span) {
+  font-weight: 700 !important;
+}
+.ppv2-rdrawer-body li:has(> span) > span {
+  font-weight: 400 !important;     /* la hora en peso normal */
+}
+.ppv2-rdrawer-body li:has(> span) > span::before {
+  content: ": " !important;        /* dos puntos + espacio, pegado al día */
+  font-weight: 700 !important;
+}
+.ppv2-rdrawer-body .wpcf7-form .wpcf7-submit,
+.ppv2-rdrawer-body .with-forms .button {
+  margin-top: 6px !important;
+  margin-bottom: 0 !important;
+  background: var(--teal-parche) !important;   /* color principal de la marca */
+  border-color: var(--teal-parche) !important;
+  color: #fff !important;
+}
+.ppv2-rdrawer-body .wpcf7-form .wpcf7-submit:hover,
+.ppv2-rdrawer-body .with-forms .button:hover {
+  background: var(--teal-deep) !important;      /* teal más oscuro al pasar el cursor */
+  border-color: var(--teal-deep) !important;
+}
+/* Aviso de validación (tip rojo): compacto, que no infle el alto del formulario. */
+.ppv2-rdrawer-body .wpcf7-not-valid-tip { margin: 2px 0 0 !important; font-size: 12px !important; line-height: 1.3 !important; }
+
+/* "Método de contacto" (radios Correo/Celular con use_label_element): juntar el
+   encabezado con los radios, y cada opción con su PUNTO y su TEXTO en línea. */
+.ppv2-rdrawer-body .preferred-contact-method { margin: 2px 0 0 !important; text-align: left !important; }
+.ppv2-rdrawer-body .preferred-contact-method h5 { margin: 0 0 4px !important; line-height: 1.2 !important; text-align: left !important; }
+.ppv2-rdrawer-body .preferred-contact-radios { margin: 0 !important; text-align: left !important; }
+.ppv2-rdrawer-body .preferred-contact-radios .wpcf7-radio { display: inline-flex !important; flex-wrap: wrap !important; justify-content: flex-start !important; gap: 4px 22px !important; }
+.ppv2-rdrawer-body .preferred-contact-radios .wpcf7-list-item { margin: 0 !important; }
+.ppv2-rdrawer-body .preferred-contact-radios .wpcf7-list-item label {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  margin: 0 !important;
+}
+.ppv2-rdrawer-body .preferred-contact-radios .wpcf7-list-item input[type="radio"] { margin: 0 !important; }
+/* Si hay barra de WP-admin, bajar el panel para no taparlo con su cabecera. */
+body.admin-bar .ppv2-rdrawer { top: 32px !important; height: calc(100vh - 32px) !important; }
+html.ppv2-rdrawer-lock, html.ppv2-rdrawer-lock body { overflow: hidden !important; }
+
+/* Botones "Enviar Mensaje" + "Ver horarios" en la MISMA fila (solo desktop). */
+@media (min-width: 768px) {
+  /* GRID de 2 columnas con filas de IGUAL ALTO (más fiable que flex-stretch para
+     que ambos botones queden EXACTAMENTE del mismo tamaño). El margen inferior va
+     en la fila, no en cada widget (el margin propio descuadraba la altura). */
+  .single-listing .listeo-single-listing-sidebar .ppv2-sidebar-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-auto-rows: 1fr !important;
+    gap: 14px !important;
+    align-items: stretch !important;
+    margin-bottom: 26px !important;
+  }
+  .single-listing .listeo-single-listing-sidebar .ppv2-sidebar-actions > .listing-widget {
+    min-width: 0 !important;
+    margin: 0 !important;            /* sin margen propio → no descuadra la altura */
+    height: 100% !important;         /* llena la celda → misma altura exacta */
+    align-self: stretch !important;
+    box-sizing: border-box !important;
+    display: flex !important;         /* centra el contenido verticalmente */
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+  /* Estos botones abren un PANEL (no colapsan) → quitar la flecha ▾ en desktop. */
+  .single-listing .listeo-single-listing-sidebar .ppv2-sidebar-actions .ppv2-widget-chevron {
+    display: none !important;
+  }
+}
 
 /* ============================================================================
    Menú hamburguesa (MÓVIL): el panel ocupa el 85% del ancho (no el 100%),

@@ -109,9 +109,17 @@ function ppv2_account_drawer() {
 	<script>
 	(function () {
 		function setOpen(um, open) {
+			// Un solo panel a la vez: al abrir Mi Cuenta, cerrar el panel derecho
+			// (Enviar Mensaje / Ver horarios / Carrito) si estuviera abierto.
+			if (open && window.ppRDrawer) { window.ppRDrawer.close(); }
 			um.classList.toggle('ppv2-acct-open', open);
 			document.documentElement.classList.toggle('ppv2-acct-lock', open);
 		}
+		// Cierre global para que otros paneles puedan cerrar Mi Cuenta al abrirse.
+		window.ppCloseAccountDrawer = function () {
+			var opened = document.querySelector('#header .user-menu.ppv2-acct-open');
+			if (opened) { setOpen(opened, false); }
+		};
 		// Inyecta la cabecera del drawer (título "Mi Cuenta" + botón ✕) la 1ª vez.
 		function ensureHeader(um) {
 			var ul = um.querySelector('ul');
@@ -362,6 +370,255 @@ function ppv2_listings_filter_loading_feedback() {
 	<?php
 }
 add_action( 'wp_footer', 'ppv2_listings_filter_loading_feedback', 122 );
+
+/**
+ * FIX — Quitar de Favoritos no funciona sin recargar.
+ *
+ * Bug en Listeo Core (`assets/js/frontend.js`): el clic para AÑADIR favorito está
+ * enganchado de forma DELEGADA — `$("body").on("click", ".listeo_core-bookmark-it", …)`
+ * (línea ~24) — y funciona siempre; pero el clic para QUITAR está enganchado de forma
+ * DIRECTA — `$(".listeo_core-unbookmark-it").on("click", …)` (línea ~72) — solo a los
+ * corazones que YA estaban marcados al cargar la página. Cuando marcas un favorito, el
+ * corazón cambia su clase a `unbookmark-it` pero NO recibe el manejador de quitar → al
+ * volver a hacer clic no pasa nada hasta recargar.
+ *
+ * Solución (sin tocar el plugin → a prueba de actualizaciones): reemplazamos ese
+ * manejador directo por uno DELEGADO en `document` (replica el AJAX nativo
+ * `listeo_core_unbookmark_this`) y, además, devolvemos la clase a `bookmark-it` para que
+ * el corazón quede listo para volver a marcarse sin recargar. Se desengancha el manejador
+ * directo roto para evitar doble disparo en los corazones ya marcados al cargar.
+ * `closest("li").fadeOut()` se conserva igual que Listeo: solo aplica donde la tarjeta va
+ * en <li> (panel "Mis Favoritos"); en el directorio (tarjetas en <div>) no hace nada.
+ */
+function ppv2_fix_unbookmark_delegation() {
+	?>
+	<script>
+	jQuery(function ($) {
+		if ( typeof listeo === 'undefined' || ! listeo.ajaxurl ) { return; }
+
+		// Manejador DELEGADO de "quitar favorito" (funciona en corazones recién marcados).
+		$( document ).off( 'click.ppFav' ).on( 'click.ppFav', '.listeo_core-unbookmark-it', function ( e ) {
+			e.preventDefault();
+			var handler = $( this );
+			if ( handler.data( 'ppBusy' ) ) { return; }
+			handler.data( 'ppBusy', true );
+			handler.closest( 'li' ).addClass( 'opacity-05' );
+
+			$.ajax({
+				type: 'POST',
+				dataType: 'json',
+				url: listeo.ajaxurl,
+				data: {
+					action: 'listeo_core_unbookmark_this',
+					post_id: handler.data( 'post_id' ),
+					nonce: handler.data( 'nonce' )
+				},
+				success: function ( response ) {
+					if ( response && response.type === 'success' ) {
+						handler.closest( 'li' ).fadeOut(); // solo afecta al panel "Mis Favoritos"
+						if ( handler.hasClass( 'fa-solid' ) ) {
+							handler.removeClass( 'fa-solid' ).addClass( 'fa-regular' );
+						}
+						// Devolver a estado "marcable" para permitir re-marcar sin recargar.
+						handler.removeClass( 'clicked liked listeo_core-unbookmark-it' )
+						       .addClass( 'save listeo_core-bookmark-it' );
+						handler.children( '.like-icon' ).removeClass( 'liked' );
+					} else {
+						handler.closest( 'li' ).removeClass( 'opacity-05' );
+					}
+					handler.data( 'ppBusy', false );
+				},
+				error: function () {
+					handler.closest( 'li' ).removeClass( 'opacity-05' );
+					handler.data( 'ppBusy', false );
+				}
+			});
+		});
+
+		// Desenganchar el manejador DIRECTO roto de Listeo (evita doble disparo en los
+		// corazones que ya estaban marcados al cargar). Solo afecta a estos elementos.
+		$( '.listeo_core-unbookmark-it' ).off( 'click' );
+	});
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_fix_unbookmark_delegation', 130 );
+
+/**
+ * Sistema de PANEL DESLIZANTE genérico desde la derecha (window.ppRDrawer).
+ *
+ * Reutilizable por "Enviar Mensaje", "Ver horarios" y, a futuro, "Mi Carrito".
+ * Toma el cuerpo de un widget, lo MUEVE a un panel fijo a la derecha (con título
+ * + ✕) y lo devuelve a su sitio al cerrar. Garantiza que solo UN panel esté
+ * abierto a la vez: al abrirse cierra el drawer de "Mi Cuenta" (y viceversa, ver
+ * ppv2_account_drawer). Cierra con ✕, clic en el velo o tecla Escape. Mismo
+ * lenguaje visual que Mi Cuenta (CSS .ppv2-rdrawer en style.css).
+ */
+function ppv2_right_drawer_system() {
+	?>
+	<script>
+	(function () {
+		var drawer, overlay, titleEl, bodyEl, source, placeholder;
+
+		function build() {
+			if ( drawer ) { return; }
+			overlay = document.createElement( 'div' );
+			overlay.className = 'ppv2-rdrawer-overlay';
+
+			drawer = document.createElement( 'aside' );
+			drawer.className = 'ppv2-rdrawer';
+			drawer.setAttribute( 'role', 'dialog' );
+			drawer.setAttribute( 'aria-modal', 'true' );
+			drawer.setAttribute( 'aria-hidden', 'true' );
+
+			var head = document.createElement( 'div' );
+			head.className = 'ppv2-rdrawer-head';
+			titleEl = document.createElement( 'span' );
+			titleEl.className = 'ppv2-rdrawer-title';
+			var closeBtn = document.createElement( 'button' );
+			closeBtn.type = 'button';
+			closeBtn.className = 'ppv2-rdrawer-close';
+			closeBtn.setAttribute( 'aria-label', 'Cerrar' );
+			closeBtn.innerHTML = '&times;';
+			closeBtn.addEventListener( 'click', api.close );
+			head.appendChild( titleEl );
+			head.appendChild( closeBtn );
+
+			bodyEl = document.createElement( 'div' );
+			bodyEl.className = 'ppv2-rdrawer-body';
+
+			drawer.appendChild( head );
+			drawer.appendChild( bodyEl );
+			document.body.appendChild( overlay );
+			document.body.appendChild( drawer );
+
+			overlay.addEventListener( 'click', api.close );
+			document.addEventListener( 'keydown', function ( e ) {
+				if ( e.key === 'Escape' ) { api.close(); }
+			} );
+		}
+
+		// Devuelve el contenido a su lugar original (placeholder).
+		function restore() {
+			if ( source && placeholder && placeholder.parentNode ) {
+				placeholder.parentNode.insertBefore( source, placeholder );
+				placeholder.parentNode.removeChild( placeholder );
+			}
+			source = null;
+			placeholder = null;
+		}
+
+		var api = {
+			open: function ( sourceEl, title ) {
+				build();
+				if ( ! sourceEl ) { return; }
+				// Un solo panel a la vez: cerrar Mi Cuenta si está abierto.
+				if ( window.ppCloseAccountDrawer ) { window.ppCloseAccountDrawer(); }
+				restore(); // por si quedaba contenido de una apertura anterior
+				source = sourceEl;
+				placeholder = document.createComment( 'ppv2-rdrawer' );
+				sourceEl.parentNode.insertBefore( placeholder, sourceEl );
+				bodyEl.appendChild( sourceEl );
+				titleEl.textContent = title || '';
+				overlay.classList.add( 'is-open' );
+				drawer.classList.add( 'is-open' );
+				drawer.setAttribute( 'aria-hidden', 'false' );
+				document.documentElement.classList.add( 'ppv2-rdrawer-lock' );
+			},
+			close: function () {
+				if ( ! drawer || ! drawer.classList.contains( 'is-open' ) ) { return; }
+				overlay.classList.remove( 'is-open' );
+				drawer.classList.remove( 'is-open' );
+				drawer.setAttribute( 'aria-hidden', 'true' );
+				document.documentElement.classList.remove( 'ppv2-rdrawer-lock' );
+				restore();
+			},
+			isOpen: function () { return !! ( drawer && drawer.classList.contains( 'is-open' ) ); }
+		};
+
+		window.ppRDrawer = api;
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_right_drawer_system', 118 );
+
+/**
+ * Traduce al español los mensajes por DEFECTO (en inglés) de Contact Form 7.
+ *
+ * El formulario "Contacto personalizado" (id 676, el de "Enviar Mensaje") tiene
+ * sus mensajes de validación guardados en INGLÉS en la base de datos (p. ej.
+ * "Please fill out this field."). En vez de editarlos formulario por formulario en
+ * el admin (y repetirlo en producción), los interceptamos en tiempo de ejecución
+ * con el filtro `wpcf7_display_message`: si el texto coincide con un mensaje por
+ * defecto conocido en inglés, lo devolvemos en español. Solo toca los ingleses
+ * conocidos → NO pisa mensajes ya personalizados en español de otros formularios.
+ * Portable (viaja con functions.php) y a prueba de actualizaciones.
+ */
+function ppv2_cf7_messages_es( $message, $status = '' ) {
+	$map = array(
+		'Please fill out this field.' => 'Por favor, completa este campo.',
+		'The field is required.' => 'Este campo es obligatorio.',
+		'One or more fields have an error. Please check and try again.' => 'Uno o más campos tienen un error. Por favor revísalo e inténtalo de nuevo.',
+		'Thank you for your message. It has been sent.' => 'Gracias por tu mensaje. Ha sido enviado.',
+		'There was an error trying to send your message. Please try again later.' => 'Hubo un error al intentar enviar tu mensaje. Por favor, inténtalo de nuevo más tarde.',
+		'You must accept the terms and conditions before sending your message.' => 'Debes aceptar los términos y condiciones antes de enviar tu mensaje.',
+		'This field has a too long input.' => 'El texto introducido es demasiado largo.',
+		'This field has a too short input.' => 'El texto introducido es demasiado corto.',
+		'The date format is incorrect.' => 'El formato de fecha es incorrecto.',
+		'The number format is invalid.' => 'El formato numérico no es válido.',
+		'The e-mail address entered is invalid.' => 'La dirección de correo introducida no es válida.',
+		'The URL is invalid.' => 'La URL no es válida.',
+		'The telephone number is invalid.' => 'El número de teléfono no es válido.',
+		'The code you entered is incorrect.' => 'El código que introdujiste es incorrecto.',
+		'There was an unknown error uploading the file.' => 'Se ha producido un error desconocido al subir el archivo.',
+		'You are not allowed to upload files of this type.' => 'No tienes permiso para subir archivos de este tipo.',
+		'The file is too big.' => 'El archivo es demasiado grande.',
+		'There was an error uploading the file.' => 'Se ha producido un error al subir el archivo.',
+	);
+	$key = trim( (string) $message );
+	return isset( $map[ $key ] ) ? $map[ $key ] : $message;
+}
+add_filter( 'wpcf7_display_message', 'ppv2_cf7_messages_es', 20, 2 );
+
+/**
+ * Añade un LABEL guía sobre cada campo del formulario "Enviar Mensaje" (CF7 id 676),
+ * manteniendo los placeholders. Se inyecta por JS (en el tema hijo → portable y a
+ * prueba de actualizaciones; no hay que editar el formulario en la BD ni repetirlo en
+ * producción). Idempotente. Solo en la página individual de listado.
+ */
+function ppv2_message_form_labels() {
+	if ( ! is_singular( 'listing' ) ) {
+		return;
+	}
+	?>
+	<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		var form = document.querySelector('.message-vendor .wpcf7-form');
+		if (!form) { return; }
+		var fields = [
+			{ sel: 'input[type="text"]',  text: 'Nombre completo' },
+			{ sel: 'input[type="email"]', text: 'Correo electrónico' },
+			{ sel: 'input[type="tel"]',   text: 'Celular' },
+			{ sel: 'textarea',            text: 'Mensaje' }
+		];
+		fields.forEach(function (f) {
+			var el = form.querySelector(f.sel);
+			if (!el) { return; }
+			var wrap = el.closest('.wpcf7-form-control-wrap') || el;
+			var container = wrap.parentNode || wrap;
+			if (container.querySelector('.ppv2-field-label')) { return; } // ya tiene label
+			var lab = document.createElement('label');
+			lab.className = 'ppv2-field-label';
+			lab.textContent = f.text;
+			if (el.id) { lab.setAttribute('for', el.id); }
+			container.insertBefore(lab, wrap);
+		});
+	});
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_message_form_labels', 101 );
 
 /**
  * Tienda V2 (Home): añade la etiqueta de categoría a cada producto y habilita
@@ -1080,8 +1337,27 @@ function ppv2_listing_header_reorder() {
 			// mantiene el toggle inline normal.
 			function onTitleActivate(e) {
 				if (labels && labels.mobileSheet && window.matchMedia('(max-width: 767px)').matches) {
+					if (e) { e.preventDefault(); e.stopPropagation(); }
+					// Panel deslizante INFERIOR (mismo sistema que Reservar / Enviar Mensaje).
+					if (window.ppv2OpenSheet) { window.ppv2OpenSheet(labels.sheetType || 'message'); return; }
 					var bsfBtn = document.querySelector('.ppv2-bsf-message-btn');
-					if (bsfBtn) { if (e) { e.preventDefault(); e.stopPropagation(); } bsfBtn.click(); return; }
+					if (bsfBtn) { bsfBtn.click(); return; }
+				}
+				// DESKTOP: abrir el cuerpo del widget en el panel deslizante de la derecha
+				// (en vez del acordeón en línea). El cuerpo = todo menos el título.
+				if (labels && labels.desktopDrawer && window.ppRDrawer && window.matchMedia('(min-width: 768px)').matches) {
+					if (e) { e.preventDefault(); e.stopPropagation(); }
+					if (!widget._ppDrawerBody) {
+						var body = document.createElement('div');
+						body.className = 'ppv2-rdrawer-source';
+						Array.prototype.slice.call(widget.children).forEach(function (ch) {
+							if (ch !== title) { body.appendChild(ch); }
+						});
+						widget.appendChild(body);
+						widget._ppDrawerBody = body;
+					}
+					window.ppRDrawer.open(widget._ppDrawerBody, (labels && labels.drawerTitle) || textSpan.textContent);
+					return;
 				}
 				toggle();
 			}
@@ -1094,9 +1370,20 @@ function ppv2_listing_header_reorder() {
 		var hoursWidget = document.querySelector('.listeo-single-listing-sidebar .listing-widget.opening-hours');
 		// Enviar Mensaje: boton outline teal-parche con chevron para indicar
 		// claramente la affordance de toggle (abrir/cerrar el componente).
-		ppv2MakeWidgetCollapsible(msgWidget, { collapsed: 'Enviar Mensaje', expanded: 'Enviar mensaje', mobileSheet: true });
+		ppv2MakeWidgetCollapsible(msgWidget, { collapsed: 'Enviar Mensaje', expanded: 'Enviar mensaje', mobileSheet: true, sheetType: 'message', desktopDrawer: true, drawerTitle: 'Enviar Mensaje' });
 		// Ver horarios: pill outline gris, CON chevron a la derecha.
-		ppv2MakeWidgetCollapsible(hoursWidget, { collapsed: 'Ver horarios', expanded: 'Horarios' });
+		ppv2MakeWidgetCollapsible(hoursWidget, { collapsed: 'Horarios', expanded: 'Horarios', mobileSheet: true, sheetType: 'hours', desktopDrawer: true, drawerTitle: 'Horarios' });
+
+		// Poner "Enviar Mensaje" y "Ver horarios" en la MISMA fila (lado a lado en
+		// desktop; el CSS .ppv2-sidebar-actions los hace flex 50/50). En móvil el
+		// contenedor es un bloque normal → siguen apilados. Se envuelven ambos widgets.
+		if ( msgWidget && hoursWidget && msgWidget.parentNode && ! document.querySelector( '.ppv2-sidebar-actions' ) ) {
+			var actionsRow = document.createElement( 'div' );
+			actionsRow.className = 'ppv2-sidebar-actions';
+			msgWidget.parentNode.insertBefore( actionsRow, msgWidget );
+			actionsRow.appendChild( msgWidget );
+			actionsRow.appendChild( hoursWidget );
+		}
 
 		// === Etiqueta de estado "Ahora Abierto / Ahora Cerrado" siempre visible ===
 		// Mover el badge nativo de Listeo dentro del header del widget Horarios.
@@ -1308,6 +1595,9 @@ function ppv2_listing_mobile_bottom_bar() {
 				return document.querySelector('.listeo-single-listing-sidebar .listing-widget.message-vendor')
 					|| document.querySelector('.listeo-single-listing-sidebar #widget_contact_widget_listeo-3');
 			}
+			if (type === 'hours') {
+				return document.querySelector('.listeo-single-listing-sidebar .listing-widget.opening-hours');
+			}
 			return document.querySelector('.listeo-single-listing-sidebar .listing-widget.booking-widget')
 				|| document.querySelector('.listeo-single-listing-sidebar #widget_booking_listings-3')
 				|| document.querySelector('.listeo-single-listing-sidebar .listing-widget.boxed-widget.booking-widget');
@@ -1322,7 +1612,7 @@ function ppv2_listing_mobile_bottom_bar() {
 			}
 			// Título del panel según el tipo
 			var titleEl = document.getElementById('ppv2-reservar-sheet-title');
-			if (titleEl) titleEl.textContent = (type === 'message') ? 'Enviar Mensaje' : 'Reservar';
+			if (titleEl) titleEl.textContent = (type === 'message') ? 'Enviar Mensaje' : (type === 'hours') ? 'Horarios' : 'Reservar';
 			// Recordar si el widget estaba colapsado (el de mensaje es colapsable);
 			// dentro del sheet lo queremos expandido para ver el formulario.
 			widgetWasCollapsed = widget.classList.contains('is-collapsed');
@@ -1344,6 +1634,9 @@ function ppv2_listing_mobile_bottom_bar() {
 			var closeBtn = sheet.querySelector('.ppv2-bottom-sheet__close');
 			if (closeBtn) setTimeout(function(){ closeBtn.focus(); }, 320);
 		}
+
+		// Exponer la apertura del panel inferior para otros módulos (botón "Horarios").
+		window.ppv2OpenSheet = openSheet;
 
 		function closeSheet() {
 			sheet.classList.remove('is-open');
