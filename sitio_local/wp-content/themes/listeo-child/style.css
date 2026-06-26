@@ -2767,7 +2767,7 @@ Text Domain:  listeo-child
   border-color: var(--teal-soft) !important;
 }
 .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours.ppv2-collapsible.is-collapsed .widget-title {
-  gap: 12px !important;
+  /* (sin `gap` unificado: el espaciado lo controlan el grid desktop y el flex móvil) */
   font-family: var(--font-sans) !important;
   font-size: 15px !important;
   font-weight: 700 !important;
@@ -2824,11 +2824,12 @@ Text Domain:  listeo-child
    Se logra con grid de 2 filas y áreas nombradas. */
 .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title {
   display: grid !important;
-  grid-template-columns: auto 1fr !important;
-  grid-template-areas: "ico txt" "badge badge" !important;  /* etiqueta a TODO el ancho, fila 2 */
+  grid-template-columns: auto auto !important;  /* columnas al contenido (no 1fr) */
+  grid-template-areas: "ico txt" "badge badge" !important;
   align-items: center !important;
+  justify-content: center !important;           /* centra el grupo horizontalmente */
   column-gap: 10px !important;
-  row-gap: 3px !important;          /* ~3px entre "Horarios" y "AHORA ABIERTO" */
+  row-gap: 5px !important;          /* ~mitad del gap anterior (~14px visual → ~7px) */
   min-width: 0 !important;
 }
 .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title > i {
@@ -2842,7 +2843,7 @@ Text Domain:  listeo-child
 }
 .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .widget-title .listing-badge {
   grid-area: badge !important;
-  justify-self: start !important;
+  justify-self: center !important;   /* etiqueta centrada bajo el texto */
   align-self: center !important;
   min-width: 0 !important;
   max-width: 100% !important;
@@ -2878,6 +2879,11 @@ Text Domain:  listeo-child
   }
   .single-listing .listeo-single-listing-sidebar .listing-widget.opening-hours .ppv2-widget-chevron {
     display: none !important;         /* sin flecha en móvil */
+  }
+  /* "Enviar Mensaje" en móvil tampoco colapsa (abre el panel inferior) → sin flecha.
+     Igualamos la especificidad de la regla que posiciona el chevron del mensaje. */
+  .single-listing .listeo-single-listing-sidebar .listing-widget.message-vendor.ppv2-collapsible.is-collapsed .ppv2-widget-chevron {
+    display: none !important;
   }
 }
 
@@ -3992,8 +3998,9 @@ body.single-listing #listing-nav {
   body.single-listing .ppv2-bottom-sheet__panel {
     position: relative !important;
     width: 100% !important;
-    height: 80vh !important;
-    max-height: 80vh !important;
+    height: auto !important;          /* el panel se ajusta al contenido… */
+    max-height: 95vh !important;      /* …hasta 95vh (antes fijo en 80vh) */
+    min-height: 30vh !important;
     background: var(--paper) !important;
     border-radius: 24px 24px 0 0 !important;
     box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.18) !important;
@@ -4017,6 +4024,31 @@ body.single-listing #listing-nav {
     flex-shrink: 0 !important;
     cursor: pointer !important;
   }
+
+  /* Compactar el formulario "Enviar Mensaje" (CF7) DENTRO del panel inferior para que
+     entre SIN scroll vertical en móvil (misma compactación que el drawer de desktop). */
+  body.single-listing .ppv2-bottom-sheet__content .wpcf7-form p { margin: 0 !important; }
+  body.single-listing .ppv2-bottom-sheet__content .row.with-forms { margin-bottom: 0 !important; }
+  body.single-listing .ppv2-bottom-sheet__content .with-forms input.input-text,
+  body.single-listing .ppv2-bottom-sheet__content .with-forms input[type="text"],
+  body.single-listing .ppv2-bottom-sheet__content .with-forms input[type="email"],
+  body.single-listing .ppv2-bottom-sheet__content .with-forms input[type="tel"],
+  body.single-listing .ppv2-bottom-sheet__content .with-forms select,
+  body.single-listing .ppv2-bottom-sheet__content textarea {
+    margin-bottom: 3px !important;
+    font-size: 14px !important;
+    padding: 7px 13px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  body.single-listing .ppv2-bottom-sheet__content textarea { min-height: 56px !important; height: 56px !important; }
+  body.single-listing .ppv2-bottom-sheet__content .preferred-contact-method { margin: 2px 0 0 !important; text-align: left !important; }
+  body.single-listing .ppv2-bottom-sheet__content .preferred-contact-method h5 { margin: 0 0 4px !important; }
+  body.single-listing .ppv2-bottom-sheet__content .preferred-contact-radios .wpcf7-radio { display: inline-flex !important; flex-wrap: wrap !important; gap: 4px 22px !important; }
+  body.single-listing .ppv2-bottom-sheet__content .preferred-contact-radios .wpcf7-list-item { margin: 0 !important; }
+  body.single-listing .ppv2-bottom-sheet__content .wpcf7-form .wpcf7-submit { margin-top: 8px !important; }
+
   /* Header del sheet: título + botón × */
   body.single-listing .ppv2-bottom-sheet__header {
     display: flex !important;

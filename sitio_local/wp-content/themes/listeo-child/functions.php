@@ -1589,6 +1589,7 @@ function ppv2_listing_mobile_bottom_bar() {
 		var widgetWasCollapsed = false;
 		var originalParent = null;
 		var originalNextSibling = null;
+		var currentPlaceholder = null;
 
 		function getWidget(type) {
 			if (type === 'message') {
@@ -1622,6 +1623,12 @@ function ppv2_listing_mobile_bottom_bar() {
 			currentType = type;
 			originalParent = widget.parentNode;
 			originalNextSibling = widget.nextSibling;
+			// Placeholder del MISMO alto en el hueco del widget → la fila de botones no
+			// se reacomoda al sacarlo (evita el "salto" del otro botón al abrir/cerrar).
+			currentPlaceholder = document.createElement('div');
+			currentPlaceholder.className = 'ppv2-sheet-placeholder';
+			currentPlaceholder.style.height = widget.getBoundingClientRect().height + 'px';
+			originalParent.insertBefore(currentPlaceholder, widget);
 			// Mover el widget dentro del sheet content
 			sheetContent.appendChild(widget);
 			// Mostrar el sheet (display:flex) y, en el siguiente frame, añadir
@@ -1644,17 +1651,22 @@ function ppv2_listing_mobile_bottom_bar() {
 			// Capturar las referencias LOCALMENTE y limpiar el estado global ya,
 			// para evitar una carrera si se abre otro sheet antes de que termine
 			// la animación de salida (las variables compartidas no se corromperían).
-			var w = currentWidget, op = originalParent, ons = originalNextSibling, wasColl = widgetWasCollapsed;
+			var w = currentWidget, op = originalParent, ons = originalNextSibling, wasColl = widgetWasCollapsed, ph = currentPlaceholder;
 			currentWidget = null;
 			currentType = null;
 			originalParent = null;
 			originalNextSibling = null;
 			widgetWasCollapsed = false;
+			currentPlaceholder = null;
 			// Esperar a que termine la animación de salida antes de devolver el
 			// widget a la sidebar y ocultar el sheet.
 			setTimeout(function () {
 				if (w && op) {
-					if (ons && ons.parentNode === op) {
+					// Devolver el widget al hueco exacto del placeholder (sin reflujo).
+					if (ph && ph.parentNode) {
+						ph.parentNode.insertBefore(w, ph);
+						ph.parentNode.removeChild(ph);
+					} else if (ons && ons.parentNode === op) {
 						op.insertBefore(w, ons);
 					} else {
 						op.appendChild(w);
@@ -1662,6 +1674,8 @@ function ppv2_listing_mobile_bottom_bar() {
 					// Restaurar su estado colapsado original (p.ej. el de mensaje
 					// vuelve a su pill colapsada en la sidebar).
 					if (wasColl) w.classList.add('is-collapsed');
+				} else if (ph && ph.parentNode) {
+					ph.parentNode.removeChild(ph);
 				}
 				// Solo ocultar el sheet si no se reabrió mientras tanto.
 				if (!sheet.classList.contains('is-open')) {
