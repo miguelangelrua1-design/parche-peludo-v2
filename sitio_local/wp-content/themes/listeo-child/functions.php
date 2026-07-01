@@ -90,6 +90,11 @@ function ppv2_rename_no_results( $translation, $text, $domain ) {
 	if ( 'We&rsquo;re sorry but we do not have any listings matching your search, try to change you search settings' === $text ) {
 		return 'Lo sentimos, no encontramos resultados que coincidan con tu búsqueda. Te invitamos a modificar los términos o filtros de búsqueda.';
 	}
+	// Botón del widget de reservas cuando el usuario no ha iniciado sesión.
+	// El plugin usa dos variantes de mayúsculas ("Login to Book" / "Login To Book").
+	if ( 'Login to Book' === $text || 'Login To Book' === $text ) {
+		return 'Inicia sesión para reservar';
+	}
 	return $translation;
 }
 add_filter( 'gettext_listeo_core', 'ppv2_rename_no_results', 20, 3 );
