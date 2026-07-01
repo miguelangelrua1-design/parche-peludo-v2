@@ -20,8 +20,52 @@ function listeo_child_enqueue_styles() {
         array( 'listeo-parent-style' ),
         $child_css_ver
     );
+
+    // Minicart como panel deslizante (estilo Éxito). Depende de jQuery porque
+    // escucha el evento 'added_to_cart' de WooCommerce. Cache-bust con filemtime.
+    $mc_js_path = get_stylesheet_directory() . '/js/pp-minicart.js';
+    if ( file_exists( $mc_js_path ) ) {
+        wp_enqueue_script(
+            'pp-minicart',
+            get_stylesheet_directory_uri() . '/js/pp-minicart.js',
+            array( 'jquery' ),
+            filemtime( $mc_js_path ),
+            true
+        );
+        // URL de AJAX + nonce para los controles de cantidad/eliminar del minicart.
+        // Usamos el endpoint de WooCommerce (?wc-ajax=) cuando está disponible: es
+        // mucho más liviano y rápido que admin-ajax.php (no carga todo el admin).
+        $pp_ajax_url = admin_url( 'admin-ajax.php' );
+        if ( class_exists( 'WC_AJAX' ) ) {
+            $pp_ajax_url = WC_AJAX::get_endpoint( 'pp_update_cart_qty' );
+        }
+        wp_localize_script( 'pp-minicart', 'PP_MINICART', array(
+            'ajax_url' => $pp_ajax_url,
+            'nonce'    => wp_create_nonce( 'pp_minicart' ),
+        ) );
+    }
 }
 add_action( 'wp_enqueue_scripts', 'listeo_child_enqueue_styles', 99 );
+
+/**
+ * Cache-busting robusto del style.css del tema hijo.
+ *
+ * El sitio carga ese mismo archivo por dos vías; una llega con una versión
+ * estática (p. ej. ?ver=1.9.54) que los navegadores cachean con fuerza, por lo
+ * que los cambios de CSS no siempre llegan (sobre todo en móvil). Aquí forzamos
+ * que CUALQUIER URL de listeo-child/style.css lleve la fecha de modificación del
+ * archivo como versión → al editar el CSS, el navegador siempre toma la copia nueva.
+ */
+add_filter( 'style_loader_src', 'pp_childcss_cache_bust', 10, 2 );
+function pp_childcss_cache_bust( $src, $handle ) {
+	if ( false !== strpos( $src, 'listeo-child/style.css' ) ) {
+		$path = get_stylesheet_directory() . '/style.css';
+		if ( file_exists( $path ) ) {
+			$src = add_query_arg( 'ver', filemtime( $path ), remove_query_arg( 'ver', $src ) );
+		}
+	}
+	return $src;
+}
 
 /**
  * Personalizaciones y ganchos adicionales de Parche Peludo V2
@@ -2062,4 +2106,177 @@ function ppv2_card_amenities_clamp() {
 	<?php
 }
 add_action( 'wp_footer', 'ppv2_card_amenities_clamp', 126 );
+
+/* ==========================================================================
+ * MINICART V2 — Controles por producto (cantidad y eliminar), estilo Éxito
+ * --------------------------------------------------------------------------
+ * Todo vive en el tema hijo. Reutiliza las clases y hooks de WooCommerce/Listeo,
+ * así que una actualización del tema padre no lo borra. Se compone de:
+ *   1) pp_minicart_render_inner()  -> dibuja el interior del minicart con los
+ *      controles (–, input, +, papelera) y el `data-cart_item_key` por producto.
+ *   2) Reemplazo del fragmento AJAX del tema padre para que, al actualizar el
+ *      carrito, WooCommerce vuelva a dibujar el minicart CON los controles.
+ *   3) Manejador AJAX que cambia la cantidad o elimina la línea del carrito.
+ * La plantilla de carga inicial se sobreescribe en inc/mini-cart.php (tema hijo).
+ * ========================================================================== */
+
+/**
+ * Icono SVG de papelera (sin depender de fuentes de iconos del tema).
+ */
+if ( ! function_exists( 'pp_minicart_trash_svg' ) ) {
+	function pp_minicart_trash_svg() {
+		return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+	}
+}
+
+/**
+ * Dibuja el INTERIOR del minicart (lo que va dentro de div.listeo-mini-cart).
+ * Se usa tanto en la carga inicial (plantilla) como en el refresco AJAX (fragmento),
+ * garantizando que los controles aparezcan siempre.
+ */
+if ( ! function_exists( 'pp_minicart_render_inner' ) ) {
+	function pp_minicart_render_inner() {
+		if ( ! function_exists( 'WC' ) || ! WC() || ! property_exists( WC(), 'cart' ) || is_null( WC()->cart ) ) {
+			return;
+		}
+
+		do_action( 'woocommerce_before_mini_cart' );
+
+		if ( ! WC()->cart->is_empty() ) : ?>
+			<ul class="woocommerce-mini-cart cart_list cart-list product_list_widget">
+				<?php
+				do_action( 'woocommerce_before_mini_cart_contents' );
+
+				foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+					$_product   = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
+					$product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
+
+					if ( ! ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_widget_cart_item_visible', true, $cart_item, $cart_item_key ) ) ) {
+						continue;
+					}
+
+					$product_name      = apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key );
+					$thumbnail         = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
+					$product_price     = apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key );
+					$product_permalink = apply_filters( 'woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink( $cart_item ) : '', $cart_item, $cart_item_key );
+					$qty               = (int) $cart_item['quantity'];
+					$li_class          = esc_attr( apply_filters( 'woocommerce_mini_cart_item_class', 'mini_cart_item', $cart_item, $cart_item_key ) );
+					?>
+					<li class="woocommerce-mini-cart-item pp-mini-cart-item <?php echo $li_class; ?>" data-cart_item_key="<?php echo esc_attr( $cart_item_key ); ?>">
+
+						<?php if ( empty( $product_permalink ) ) : ?>
+							<span class="pp-item-thumb"><?php echo $thumbnail; // phpcs:ignore ?></span>
+						<?php else : ?>
+							<a class="pp-item-thumb" href="<?php echo esc_url( $product_permalink ); ?>"><?php echo $thumbnail; // phpcs:ignore ?></a>
+						<?php endif; ?>
+
+						<div class="pp-item-body">
+							<?php if ( empty( $product_permalink ) ) : ?>
+								<span class="mini-cart-product-name"><span class="mini-cart-product-price"><?php echo wp_kses_post( $product_name ); ?></span></span>
+							<?php else : ?>
+								<a class="mini-cart-product-name" href="<?php echo esc_url( $product_permalink ); ?>"><span class="mini-cart-product-price"><?php echo wp_kses_post( $product_name ); ?></span></a>
+							<?php endif; ?>
+
+							<span class="mini-cart-quantity"><?php echo $product_price; // phpcs:ignore ?></span>
+
+							<div class="pp-item-controls">
+								<div class="pp-qty" data-cart_item_key="<?php echo esc_attr( $cart_item_key ); ?>">
+									<?php if ( $qty <= 1 ) : // Con 1 unidad: el botón izquierdo es la papelera (eliminar). ?>
+										<button type="button" class="pp-qty-btn pp-remove" data-cart_item_key="<?php echo esc_attr( $cart_item_key ); ?>" aria-label="Eliminar producto"><?php echo pp_minicart_trash_svg(); // phpcs:ignore ?></button>
+									<?php else : // Con 2 o más: el botón izquierdo es el menos (disminuir). ?>
+										<button type="button" class="pp-qty-btn pp-qty-minus" aria-label="Disminuir cantidad">&minus;</button>
+									<?php endif; ?>
+									<input type="number" class="pp-qty-input" value="<?php echo esc_attr( $qty ); ?>" min="0" step="1" inputmode="numeric" aria-label="Cantidad">
+									<button type="button" class="pp-qty-btn pp-qty-plus" aria-label="Aumentar cantidad">&plus;</button>
+								</div>
+							</div>
+						</div>
+
+					</li>
+					<?php
+				}
+
+				do_action( 'woocommerce_mini_cart_contents' );
+				?>
+			</ul>
+
+			<p class="woocommerce-mini-cart__total total">
+				<?php do_action( 'woocommerce_widget_shopping_cart_total' ); ?>
+			</p>
+
+			<?php do_action( 'woocommerce_widget_shopping_cart_before_buttons' ); ?>
+
+			<p class="woocommerce-mini-cart__buttons buttons"><?php do_action( 'woocommerce_widget_shopping_cart_buttons' ); ?></p>
+
+			<?php do_action( 'woocommerce_widget_shopping_cart_after_buttons' ); ?>
+
+		<?php else : ?>
+
+			<p class="woocommerce-mini-cart__empty-message"><?php esc_html_e( 'No hay productos en el carrito.', 'listeo-child' ); ?></p>
+
+		<?php endif;
+
+		do_action( 'woocommerce_after_mini_cart' );
+	}
+}
+
+/**
+ * Sustituye el fragmento AJAX del contenido del minicart (definido en el tema
+ * padre) por el nuestro, para que el refresco por AJAX incluya los controles.
+ * Se hace en 'init' porque el padre registra su filtro al cargar el tema.
+ */
+add_action( 'init', 'pp_minicart_swap_content_fragment', 20 );
+function pp_minicart_swap_content_fragment() {
+	remove_filter( 'woocommerce_add_to_cart_fragments', 'woocommerce_header_add_to_cart_content_fragment' );
+	add_filter( 'woocommerce_add_to_cart_fragments', 'pp_minicart_content_fragment' );
+}
+function pp_minicart_content_fragment( $fragments ) {
+	ob_start();
+	echo '<div class="listeo-mini-cart">';
+	pp_minicart_render_inner();
+	echo '</div>';
+	$fragments['div.listeo-mini-cart'] = ob_get_clean();
+	return $fragments;
+}
+
+/**
+ * AJAX: cambia la cantidad de una línea del carrito (o la elimina si qty <= 0).
+ * El cliente, tras esto, dispara 'wc_fragment_refresh' para redibujar el minicart.
+ */
+add_action( 'wp_ajax_pp_update_cart_qty', 'pp_update_cart_qty' );
+add_action( 'wp_ajax_nopriv_pp_update_cart_qty', 'pp_update_cart_qty' );
+add_action( 'wc_ajax_pp_update_cart_qty', 'pp_update_cart_qty' ); // ruta rápida (?wc-ajax=)
+function pp_update_cart_qty() {
+	check_ajax_referer( 'pp_minicart', 'nonce' );
+
+	if ( ! function_exists( 'WC' ) || ! WC() || is_null( WC()->cart ) ) {
+		wp_send_json_error( array( 'msg' => 'no-cart' ) );
+	}
+
+	$key = isset( $_POST['cart_item_key'] ) ? sanitize_text_field( wp_unslash( $_POST['cart_item_key'] ) ) : '';
+	$qty = isset( $_POST['quantity'] ) ? (int) $_POST['quantity'] : 0;
+
+	if ( '' === $key || ! WC()->cart->get_cart_item( $key ) ) {
+		wp_send_json_error( array( 'msg' => 'bad-key' ) );
+	}
+
+	// Cambiamos la cantidad sin recalcular dentro de set_quantity (refresh=false)
+	// y recalculamos UNA sola vez al final, para no duplicar el cálculo del carrito.
+	if ( $qty <= 0 ) {
+		WC()->cart->remove_cart_item( $key );
+	} else {
+		WC()->cart->set_quantity( $key, $qty, false );
+	}
+
+	WC()->cart->calculate_totals();
+
+	// Devolvemos los fragmentos de WooCommerce (lista, subtotal, badge) para que el
+	// JS actualice el minicart al instante. No dependemos de wc-cart-fragments.js,
+	// que este sitio no carga (el "añadir al carrito" no es por AJAX).
+	wp_send_json_success( array(
+		'fragments' => apply_filters( 'woocommerce_add_to_cart_fragments', array() ),
+		'cart_hash' => WC()->cart->get_cart_hash(),
+		'count'     => WC()->cart->get_cart_contents_count(),
+	) );
+}
 

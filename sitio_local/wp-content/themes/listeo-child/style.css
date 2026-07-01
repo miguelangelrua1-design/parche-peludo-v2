@@ -7069,3 +7069,437 @@ html.ppv2-rdrawer-lock, html.ppv2-rdrawer-lock body { overflow: hidden !importan
   display: none !important;
 }
 
+/* ============================================================================
+   MINICART V2 — Panel deslizante desde la derecha (estilo Éxito)
+   ----------------------------------------------------------------------------
+   Convierte el dropdown por hover del tema padre (Listeo) en un panel lateral
+   fijo que entra desde la derecha al hacer clic en el ícono del carrito.
+   El estado abierto vive en `body.pp-cart-open` (lo controla js/pp-minicart.js).
+   El JS mueve `.listeo-mini-cart` a un contenedor propio colgado del <body>
+   (`.pp-cart-host`, que conserva la clase `listeo-cart-container` para heredar
+   los estilos de los ítems del tema padre). Así el panel queda por encima del
+   fondo oscuro y no lo tapa el z-index del header.
+   ============================================================================ */
+
+:root {
+  --pp-cart-w: 400px;     /* ancho del panel en escritorio */
+  --pp-cart-head-h: 56px; /* alto de la barra de título */
+}
+
+/* Anular la flechita/triángulo del dropdown original */
+.listeo-cart-container .listeo-mini-cart:before {
+  display: none !important;
+}
+
+/* El minicart del header ORIGINAL pasa a ser el panel deslizante */
+.pp-cart-host .listeo-mini-cart {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  height: 100vh;
+  height: 100dvh;
+  width: var(--pp-cart-w);
+  max-width: 92vw;
+  margin: 0;
+  padding: calc(var(--pp-cart-head-h) + 16px) 20px 20px;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: -10px 0 34px rgba(30, 46, 51, .18);
+  transform: translateX(110%);
+  transition: transform .32s cubic-bezier(.22, .61, .36, 1);
+  visibility: hidden;
+  opacity: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch; /* scroll con inercia fluido en iOS */
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  max-height: none;
+}
+
+/* Neutralizar el comportamiento por hover del tema padre */
+.listeo-cart-container:hover .listeo-mini-cart {
+  transform: translateX(110%);
+  visibility: hidden;
+  opacity: 1;
+}
+
+/* Estado ABIERTO: el panel entra.
+   Usamos !important porque el tema padre carga una 2ª copia (cacheada) de este
+   mismo style.css con versión estática, y sin esto la cascada es impredecible. */
+.pp-cart-open .pp-cart-host .listeo-mini-cart {
+  transform: translateX(0) !important;
+  visibility: visible !important;
+}
+
+/* El minicart del header clonado NO se usa como panel */
+#header.cloned .listeo-cart-container .listeo-mini-cart {
+  display: none !important;
+}
+
+/* Lista de productos: ocupa el espacio disponible y hace scroll */
+.pp-cart-host .listeo-mini-cart ul.cart_list {
+  flex: 1 1 auto;
+  max-height: none;
+  margin: 4px 0 0;
+  padding-right: 2px;
+}
+
+.pp-cart-host .listeo-mini-cart ul.cart_list li {
+  align-items: flex-start;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--ink-line-2, rgba(30, 46, 51, .06));
+}
+
+/* --- Producto del minicart con controles (cantidad + eliminar) --- */
+.pp-cart-host .listeo-mini-cart ul.cart_list li.pp-mini-cart-item {
+  display: flex;
+  gap: 12px;
+}
+
+.pp-cart-host .pp-item-thumb {
+  flex: 0 0 56px;
+  display: block;
+}
+
+.pp-cart-host .pp-item-thumb img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.pp-cart-host .pp-item-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+}
+
+.pp-cart-host .pp-item-body .mini-cart-product-name {
+  display: block;
+  margin: 0;
+}
+
+/* Nombre del producto: texto secundario (más suave) */
+.pp-cart-host .pp-item-body .mini-cart-product-price {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ink-muted, #5A6B70);
+}
+
+/* Precio: texto principal, oscuro y en negrilla */
+.pp-cart-host .pp-item-body .mini-cart-quantity {
+  display: block;
+  margin: 3px 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink, #1E2E33);
+}
+
+/* Fila de controles: contador único alineado a la derecha.
+   El botón izquierdo del contador es la papelera (1 unidad) o el menos (2+). */
+.pp-cart-host .pp-item-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Contador – [input] +  (píldora amplia estilo referencia) */
+.pp-cart-host .pp-qty {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--ink-line, rgba(30, 46, 51, .18));
+  border-radius: var(--r-pill, 999px);
+  overflow: hidden;
+  height: 44px;
+  background: #fff;
+}
+
+.pp-cart-host .pp-qty-btn {
+  border: 0;
+  background: transparent;
+  width: 46px;
+  height: 100%;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--teal-deep, #4AA5AD);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, color .15s;
+}
+
+.pp-cart-host .pp-qty-btn:hover {
+  background: var(--teal-mist, #E8F4F6);
+}
+
+.pp-cart-host .pp-qty-input {
+  width: 48px;
+  height: 100%;
+  border: 0;
+  border-left: 1px solid var(--ink-line, rgba(30, 46, 51, .12));
+  border-right: 1px solid var(--ink-line, rgba(30, 46, 51, .12));
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink, #1E2E33);
+  background: #fff;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  padding: 0;
+}
+
+.pp-cart-host .pp-qty-input::-webkit-outer-spin-button,
+.pp-cart-host .pp-qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Botón eliminar (papelera): vive dentro del contador, en la posición del menos.
+   Hereda el tamaño de .pp-qty-btn; solo ajustamos color y el hover en rojo. */
+.pp-cart-host .pp-qty .pp-remove {
+  color: var(--ink-faint, #8E9A9E);
+}
+
+.pp-cart-host .pp-qty .pp-remove:hover {
+  background: rgba(232, 93, 117, .12);
+  color: var(--danger, #E85D75);
+}
+
+.pp-cart-host .pp-qty .pp-remove svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Estado "cargando": panel deshabilitado + contenido atenuado + spinner central,
+   para informar al cliente que el carrito se está actualizando. */
+.pp-cart-host .listeo-mini-cart.pp-cart-loading {
+  pointer-events: none;
+}
+
+.pp-cart-host .listeo-mini-cart.pp-cart-loading > * {
+  opacity: .4;
+  transition: opacity .15s ease;
+}
+
+/* Loader de marca: el isotipo de Parche Peludo LATIENDO con resplandor teal,
+   el mismo que usa el sitio al cargar (reutiliza la imagen y los keyframes
+   globales pp-beat / pp-glow). Centrado sobre el panel. */
+.pp-cart-host .listeo-mini-cart.pp-cart-loading::after {
+  content: "";
+  position: fixed;
+  top: 50%;
+  right: calc(var(--pp-cart-w) / 2 - 60px);
+  width: 120px;
+  height: 78px;
+  margin-top: -39px;
+  background: url(/wp-content/themes/listeo-child/images/parche-loader-isotipo.png) center / contain no-repeat;
+  transform-origin: center 58%;
+  will-change: transform, filter;
+  animation:
+    pp-beat 1.5s cubic-bezier(.34, 0, .22, 1) infinite both,
+    pp-glow 1.5s ease-in-out infinite both;
+  z-index: 4;
+}
+
+/* Rendimiento en móvil: mantenemos SOLO el latido (transform: scale, acelerado
+   por GPU) y reemplazamos el resplandor animado (filter: drop-shadow, costoso por
+   frame en celulares) por un resplandor ESTÁTICO. Se ve casi igual, sin jank. */
+@media (max-width: 782px) {
+  .pp-cart-host .listeo-mini-cart.pp-cart-loading::after {
+    animation: pp-beat 1.5s cubic-bezier(.34, 0, .22, 1) infinite both;
+    will-change: transform;
+    filter: drop-shadow(0 6px 14px rgba(126, 199, 206, .30));
+  }
+}
+
+/* Respeta a quien prefiere menos movimiento: sin latido brusco. */
+@media (prefers-reduced-motion: reduce) {
+  .pp-cart-host .listeo-mini-cart.pp-cart-loading::after {
+    animation: pp-glow 1.5s ease-in-out infinite both;
+  }
+}
+
+/* Subtotal y botones anclados abajo.
+   Etiqueta a la izquierda y valor a la derecha, en negrilla. */
+.pp-cart-host .woocommerce-mini-cart__total {
+  margin: auto 0 12px;
+  padding-top: 16px;
+  font-size: 16px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.pp-cart-host .woocommerce-mini-cart__total .woocommerce-Price-amount {
+  margin-left: auto;
+  text-align: right;
+  font-weight: 700;
+  color: var(--ink, #1E2E33);
+}
+
+.pp-cart-host p.woocommerce-mini-cart__buttons.buttons {
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+}
+
+.pp-cart-host .woocommerce-mini-cart__buttons a.button {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  padding: 13px 16px;
+  border-radius: var(--r-pill, 999px);
+  font-weight: 600;
+}
+
+/* "Finalizar compra / Pagar" = CTA primaria de marca */
+.pp-cart-host .woocommerce-mini-cart__buttons a.button.checkout {
+  background: var(--teal-deep, #4AA5AD);
+  color: #fff;
+  order: -1; /* la acción principal va arriba, como en Éxito */
+}
+
+.pp-cart-host .woocommerce-mini-cart__buttons a.button.checkout:hover {
+  background: var(--teal-ink, #1E5D64);
+  color: #fff;
+}
+
+/* Estado vacío centrado */
+.pp-cart-host .woocommerce-mini-cart__empty-message {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--ink-faint, #8E9A9E);
+  font-size: 15px;
+}
+
+/* --- Chrome creado por JS: overlay + barra de título --- */
+.pp-cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 46, 51, .45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s ease;
+  z-index: 99990;
+}
+
+.pp-cart-open .pp-cart-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+.pp-cart-headbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--pp-cart-w);
+  max-width: 92vw;
+  height: var(--pp-cart-head-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 20px;
+  background: #fff;
+  border-bottom: 1px solid var(--ink-line, rgba(30, 46, 51, .10));
+  transform: translateX(110%);
+  transition: transform .32s cubic-bezier(.22, .61, .36, 1);
+  z-index: 100001;
+}
+
+.pp-cart-open .pp-cart-headbar {
+  transform: translateX(0);
+}
+
+.pp-cart-headbar .pp-cart-title {
+  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink, #1E2E33);
+}
+
+.pp-cart-close {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  line-height: 1;
+  font-size: 28px;
+  color: var(--ink-muted, #5A6B70);
+  border-radius: 50%;
+  transition: background .2s, color .2s;
+}
+
+.pp-cart-close:hover {
+  background: var(--teal-mist, #E8F4F6);
+  color: var(--ink, #1E2E33);
+}
+
+/* Respetar la barra de administración de WordPress.
+   Solo la ven los usuarios logueados (tú, editando); los visitantes no la tienen,
+   así que para ellos el panel sigue a pantalla completa. WordPress marca el <body>
+   con la clase `admin-bar` cuando la barra está presente. Igual que "Mi Cuenta". */
+.pp-adminbar .pp-cart-host .listeo-mini-cart,
+.pp-adminbar .pp-cart-headbar {
+  top: 32px;
+}
+.pp-adminbar .pp-cart-host .listeo-mini-cart {
+  height: calc(100vh - 32px);
+  height: calc(100dvh - 32px);
+}
+@media screen and (max-width: 782px) {
+  .pp-adminbar .pp-cart-host .listeo-mini-cart,
+  .pp-adminbar .pp-cart-headbar {
+    top: 46px; /* en móvil la barra de admin mide 46px */
+  }
+  .pp-adminbar .pp-cart-host .listeo-mini-cart {
+    height: calc(100vh - 46px);
+    height: calc(100dvh - 46px);
+  }
+}
+
+/* Bloquear el scroll del fondo cuando el panel está abierto */
+body.pp-cart-open {
+  overflow: hidden;
+}
+
+/* Móvil / tablet: el panel deslizante ocupa el 85% del ancho, anclado a la
+   derecha (deja un 15% del fondo visible a la izquierda). Rango hasta 782px
+   para cubrir teléfonos grandes y tablets. */
+@media (max-width: 782px) {
+  :root { --pp-cart-w: 85vw; }
+
+  .pp-cart-host .listeo-mini-cart {
+    left: auto !important;
+    right: 0 !important;
+    width: 85vw !important;
+    max-width: 85vw !important;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .pp-cart-headbar {
+    left: auto !important;
+    right: 0 !important;
+    width: 85vw !important;
+    max-width: 85vw !important;
+    padding-left: 16px;
+  }
+}
+
