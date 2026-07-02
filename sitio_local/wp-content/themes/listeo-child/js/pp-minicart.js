@@ -147,8 +147,11 @@
 	}
 
 	// Clics en –, + y papelera (delegado, sobrevive a los refrescos AJAX).
+	// Solo controlamos los controles DENTRO del panel del minicart (.pp-cart-host);
+	// la página del carrito (/cart/) tiene su propio manejador (pp-cart.js).
 	document.addEventListener('click', function (e) {
 		if (!e.target.closest) { return; }
+		if (!e.target.closest('.pp-cart-host')) { return; }
 
 		// Papelera: eliminar de inmediato (sin debounce).
 		var remove = e.target.closest('.pp-remove');
@@ -176,10 +179,10 @@
 		}
 	});
 
-	// Edición manual del input de cantidad.
+	// Edición manual del input de cantidad (solo dentro del panel del minicart).
 	document.addEventListener('change', function (e) {
 		var input = e.target.closest ? e.target.closest('.pp-qty-input') : null;
-		if (!input) { return; }
+		if (!input || !input.closest('.pp-cart-host')) { return; }
 		var box = input.closest('.pp-qty');
 		var val = parseInt(input.value, 10);
 		if (isNaN(val) || val < 0) { val = 0; }

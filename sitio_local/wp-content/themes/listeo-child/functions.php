@@ -44,8 +44,38 @@ function listeo_child_enqueue_styles() {
             'nonce'    => wp_create_nonce( 'pp_minicart' ),
         ) );
     }
+
+    // Solo en la página del Carrito: JS de controles en vivo (+/−/papelera).
+    if ( function_exists( 'is_cart' ) && is_cart() ) {
+        $cart_js_path = get_stylesheet_directory() . '/js/pp-cart.js';
+        if ( file_exists( $cart_js_path ) ) {
+            wp_enqueue_script(
+                'pp-cart',
+                get_stylesheet_directory_uri() . '/js/pp-cart.js',
+                array( 'jquery' ),
+                filemtime( $cart_js_path ),
+                true
+            );
+        }
+    }
 }
 add_action( 'wp_enqueue_scripts', 'listeo_child_enqueue_styles', 99 );
+
+/**
+ * Título de la página del Carrito → "Carrito de compras" (para igualar el diseño).
+ * Acotado: solo en la página del carrito y solo para el título de ESA página
+ * (no afecta menús ni otros contenidos).
+ */
+add_filter( 'the_title', 'pp_cart_page_title', 10, 2 );
+function pp_cart_page_title( $title, $post_id = 0 ) {
+	if ( is_admin() || ! function_exists( 'is_cart' ) || ! function_exists( 'wc_get_page_id' ) ) {
+		return $title;
+	}
+	if ( is_cart() && $post_id && (int) $post_id === (int) wc_get_page_id( 'cart' ) ) {
+		return __( 'Carrito de compras', 'listeo-child' );
+	}
+	return $title;
+}
 
 /**
  * Cache-busting robusto del style.css del tema hijo.
@@ -65,6 +95,27 @@ function pp_childcss_cache_bust( $src, $handle ) {
 		}
 	}
 	return $src;
+}
+
+/**
+ * Fallback de imagen de producto: si un producto NO tiene imagen destacada
+ * (featured image) pero SÍ tiene imágenes en la galería, usa la primera de la
+ * galería como imagen del producto. Así get_image() muestra la imagen en el
+ * carrito, el minicart, la tienda y la ficha — igual que ya lo hace el checkout
+ * por bloques (Store API), que usa la galería cuando falta la destacada.
+ * Esto es útil sobre todo para productos importados por dropshipping que llegan
+ * con imágenes en galería pero sin imagen destacada asignada.
+ */
+add_filter( 'woocommerce_product_get_image_id', 'pp_fallback_gallery_image_id', 10, 2 );
+add_filter( 'woocommerce_product_variation_get_image_id', 'pp_fallback_gallery_image_id', 10, 2 );
+function pp_fallback_gallery_image_id( $image_id, $product ) {
+	if ( empty( $image_id ) && is_a( $product, 'WC_Product' ) ) {
+		$gallery = $product->get_gallery_image_ids();
+		if ( ! empty( $gallery ) ) {
+			return $gallery[0];
+		}
+	}
+	return $image_id;
 }
 
 /**
