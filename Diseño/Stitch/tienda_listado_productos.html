@@ -1,0 +1,190 @@
+<!DOCTYPE html><html lang="es" style="width: 1280px; height: 1443px; overflow: hidden; position: relative;"><head><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" class="">
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Tienda - Parche Peludo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#79C8D0',
+            secondary: '#4A4A4A',
+            accent: '#F3F4F6',
+          },
+          borderRadius: {
+            'twelve': '12px',
+          },
+          fontFamily: {
+            sans: ['Ubuntu', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-ui-elements">
+    /* Custom style for range slider track */
+    input[type='range']::-webkit-slider-runnable-track {
+      background: #79C8D0;
+      height: 4px;
+    }
+    input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 16px;
+      width: 16px;
+      background: #79C8D0;
+      border: 2px solid white;
+      border-radius: 50%;
+      margin-top: -6px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .category-list li {
+      @apply py-1 text-sm text-gray-600 hover:text-primary cursor-pointer transition-colors;
+    }
+    .sidebar-title {
+      @apply font-bold text-gray-800 mb-4 mt-8 border-b pb-2 text-lg;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900">
+<!-- BEGIN: Navigation Header -->
+<header class="bg-white border-b sticky top-0 z-50">
+
+</header>
+<!-- END: Navigation Header -->
+<!-- BEGIN: Main Content Layout -->
+<main class="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
+<!-- BEGIN: Sidebar Filters -->
+<aside class="w-full md:w-64 flex-shrink-0"><!-- Search Product (Always Visible) -->
+<div class="mb-8" data-purpose="search-box">
+  <h3 class="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider">Buscar producto</h3>
+  <div class="relative">
+    <input class="w-full border-gray-300 rounded-twelve focus:ring-primary focus:border-primary text-sm" placeholder="Buscar productos..." type="text">
+    <button class="absolute right-3 top-2.5 text-gray-400">
+      <span class="material-symbols-outlined text-xl">search</span>
+    </button>
+  </div>
+</div>
+
+<!-- Categories Collapsible -->
+<div class="border-b border-gray-100 pb-4 mb-4" data-purpose="species-filter"><div class="flex items-center justify-between cursor-pointer py-2"><h3 class="font-bold text-gray-800">Especie</h3><span class="material-symbols-outlined text-gray-500">expand_less</span></div><ul class="mt-2 space-y-2"><li class="flex items-center gap-3 text-sm text-gray-600"><input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary"><span class="">Caninos</span><span class="ml-auto text-gray-400 text-xs">(12)</span></li><li class="flex items-center gap-3 text-sm text-gray-600"><input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary"><span class="">Felinos</span><span class="ml-auto text-gray-400 text-xs">(9)</span></li></ul></div><div class="border-b border-gray-100 pb-4 mb-4" data-purpose="categories-filter">
+  <div class="flex items-center justify-between cursor-pointer py-2">
+    <h3 class="font-bold text-gray-800">Categoría</h3>
+    <span class="material-symbols-outlined text-gray-500">expand_less</span>
+  </div>
+  <ul class="mt-2 space-y-2">
+    <li class="flex items-center gap-3 text-sm text-gray-600">
+      <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+      <span class="">Accesorios</span>
+      <span class="ml-auto text-gray-400 text-xs">(2)</span>
+    </li>
+    <li class="flex items-center gap-3 text-sm text-primary font-medium">
+      <input type="checkbox" checked="" class="rounded border-gray-300 text-primary focus:ring-primary">
+      <span class="">Gato</span>
+      <span class="ml-auto text-gray-400 text-xs">(4)</span>
+    </li>
+    <li class="flex items-center gap-3 text-sm text-gray-600">
+      <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+      <span class="">Mascotas</span>
+      <span class="ml-auto text-gray-400 text-xs">(1)</span>
+    </li>
+    <li class="flex items-center gap-3 text-sm text-gray-600">
+      <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
+      <span class="">Perro</span>
+      <span class="ml-auto text-gray-400 text-xs">(3)</span>
+    </li>
+  </ul>
+</div>
+
+<!-- Price Filter Collapsible -->
+<div class="border-b border-gray-100 pb-4 mb-4" data-purpose="price-filter">
+  <div class="flex items-center justify-between cursor-pointer py-2">
+    <h3 class="font-bold text-gray-800">Precio</h3>
+    <span class="material-symbols-outlined text-gray-500">expand_less</span>
+  </div>
+  <div class="mt-4"><div class="relative h-1 bg-gray-200 rounded-lg mt-6 mb-8">
+  <div class="absolute h-full bg-primary rounded-lg" style="left: 0%; right: 0%;"></div>
+  <input type="range" min="0" max="120000" value="0" class="absolute w-full -top-1.5 h-4 appearance-none bg-transparent pointer-events-none [&amp;::-webkit-slider-thumb]:pointer-events-auto [&amp;::-webkit-slider-thumb]:appearance-none [&amp;::-webkit-slider-thumb]:h-4 [&amp;::-webkit-slider-thumb]:w-4 [&amp;::-webkit-slider-thumb]:rounded-full [&amp;::-webkit-slider-thumb]:bg-white [&amp;::-webkit-slider-thumb]:border-2 [&amp;::-webkit-slider-thumb]:border-primary [&amp;::-webkit-slider-thumb]:cursor-pointer">
+  <input type="range" min="0" max="120000" value="120000" class="absolute w-full -top-1.5 h-4 appearance-none bg-transparent pointer-events-none [&amp;::-webkit-slider-thumb]:pointer-events-auto [&amp;::-webkit-slider-thumb]:appearance-none [&amp;::-webkit-slider-thumb]:h-4 [&amp;::-webkit-slider-thumb]:w-4 [&amp;::-webkit-slider-thumb]:rounded-full [&amp;::-webkit-slider-thumb]:bg-white [&amp;::-webkit-slider-thumb]:border-2 [&amp;::-webkit-slider-thumb]:border-primary [&amp;::-webkit-slider-thumb]:cursor-pointer">
+</div>
+<div class="flex justify-between items-center mt-4">
+  <button class="bg-primary text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">Filtrar</button>
+  <span class="text-xs text-gray-500">$0 — $120k</span>
+</div></div>
+</div>
+
+<!-- Species Filter Collapsible -->
+
+
+<!-- Brand Filter Collapsible -->
+<div class="border-b border-gray-100 pb-4 mb-4">
+  <div class="flex items-center justify-between cursor-pointer py-2">
+    <h3 class="font-bold text-gray-800">Marca</h3>
+    <span class="material-symbols-outlined text-gray-500">expand_more</span>
+  </div>
+</div>
+
+<!-- Rating Filter Collapsible -->
+<div class="pb-4 mb-4">
+  <div class="flex items-center justify-between cursor-pointer py-2">
+    <h3 class="font-bold text-gray-800">Valoración</h3>
+    <span class="material-symbols-outlined text-gray-500">expand_more</span>
+  </div>
+</div></aside>
+<!-- END: Sidebar Filters -->
+<!-- BEGIN: Product Grid Area -->
+<div class="flex-1">
+<!-- Top Bar Tools -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+<p class="text-gray-500 text-sm">Mostrando 1–8 de 21 resultados</p>
+<div class="flex items-center gap-2">
+<select class="border-gray-300 rounded-twelve text-sm focus:ring-primary focus:border-primary w-auto">
+<option>Orden predeterminado</option>
+<option>Ordenar por popularidad</option>
+<option>Ordenar por precio: bajo a alto</option>
+<option>Ordenar por precio: alto a bajo</option>
+</select>
+</div>
+</div>
+<!-- Products Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<!-- Product 1 -->
+<article class="bg-white rounded-twelve overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow group"><div class="relative aspect-square bg-gray-100"><img alt="Arnés Ajustable" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLscnbFhah-Q-2WR9BJqJuIGkhAmooS1Wp3akco8OsizpsHsjWWzR9NpaoqbdtMo_JgpTmw6_YJLD2ULqU3jE8o0aNIRdsbsNgf3LkukQBJiO3IeTUkb8NwEkVi6MaHMzAUxwwVekju7t1UDt4CRI7nFjT9y15FUVFq1kkXnld16VMSkvld3I7ZolDdlR3qMq_Q3ITMqmknPtNhZxBTHnQ1IsGHnakcOWsBVlpOWeR1zU1lCPCnAoRDBLQQ"><button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow group/fav z-10"><span class="material-symbols-outlined text-lg group-hover/fav:font-fill text-red-500">favorite</span></button></div><div class="flex justify-center gap-1 mt-2 mb-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div><div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div></div><div class="p-4 text-center"><h3 class="text-sm font-medium text-gray-800 mb-1 line-clamp-2">Arnés Ajustable Acolchado (Demo)</h3><p class="text-primary font-bold">$ 55.000</p><button class="mt-4 w-full bg-primary text-white py-2 rounded-twelve font-bold text-sm flex items-center justify-center gap-2 hover:bg-opacity-90 transition"><span class="material-symbols-outlined text-lg">shopping_cart</span>Agregar</button></div></article>
+<!-- Product 2 -->
+<article class="bg-white rounded-twelve overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow group"><div class="relative aspect-square bg-gray-100"><img alt="Kong Classic" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLsrP_iXaMjdpqL7O4wlHTUq8g6xorV4qmNRSsnKT06BjoF8fTaEW27ncFUckk-Ag96Tpb6ZIzoXxEEyi3bQyfY30dftDEJnsxMKB1TZuqeTKKJ2HRHrKJsROjSaGIJRw8aFxrfP6w8G1OvZYp3CgnOGQx0orw2dK-zKt_fPH00BzreUUl2qHl83cTDKLmFsfGMk93eu30mrtYlggHgPLICeE0R_MSrQZLm3XR0kbj3ELhbcWokcoXziTwQ"><button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow group/fav z-10"><span class="material-symbols-outlined text-lg group-hover/fav:font-fill text-red-500">favorite</span></button></div><div class="flex justify-center gap-1 mt-2 mb-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div><div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div></div><div class="p-4 text-center"><h3 class="text-sm font-medium text-gray-800 mb-1 line-clamp-2">Juguete Kong Classic Resistente</h3><p class="text-primary font-bold"><span class="text-gray-400 line-through text-xs mr-1">$ 55.000</span> $ 45.000</p><button class="mt-4 w-full bg-primary text-white py-2 rounded-twelve font-bold text-sm flex items-center justify-center gap-2 hover:bg-opacity-90 transition"><span class="material-symbols-outlined text-lg">shopping_cart</span>Agregar</button></div></article>
+<!-- Product 3 -->
+<article class="bg-white rounded-twelve overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow group"><div class="relative aspect-square bg-gray-100"><img alt="Collar Relajante" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD56CPC51_STh3NuClzZXg79KALmcsdH-kitQMEeSMdgjJQSoR6v0UHQdGhKWsRVhwXvP7VNXakRh3Jahrx67FSB7SNd8jn7K9vRJBrFmxfOqL3k1WC5hu8IqXxr_xL_-JbcbK1tE-M-z6UfnwgYAbc0oNf1ygoY-1sNnPKxcy__qJg_4HybY5UgU0hsMKxkBJlHzBsQfLMa7IAOVKxjVpE0DlkLBGENzqFwj1rcaGNQZpiCllJaGV-Pjfb4X0VTaKRfQ"><button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow group/fav z-10"><span class="material-symbols-outlined text-lg group-hover/fav:font-fill text-red-500">favorite</span></button></div><div class="flex justify-center gap-1 mt-2 mb-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div></div><div class="p-4 text-center"><h3 class="text-sm font-medium text-gray-800 mb-1 line-clamp-2">Collar Relajante Para Gatos Y Perros</h3><p class="text-primary font-bold">$ 20.000</p><button class="mt-4 w-full bg-primary text-white py-2 rounded-twelve font-bold text-sm flex items-center justify-center gap-2 hover:bg-opacity-90 transition"><span class="material-symbols-outlined text-lg">shopping_cart</span>Agregar</button></div></article>
+<!-- Product 4 -->
+<article class="bg-white rounded-twelve overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow group"><div class="relative aspect-square bg-gray-100"><img alt="Correa Reflectiva" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx0vdGayz3GErj1iIWA9QGh0f_mScWKKPseiY7HK4chrZ-q07wFv4VS61ntfkvzhGUdWWgfVetPk0FZH71DY3BA9-hwx0pW4KawQiDp5rSdLPt6ikKdza7NAGDVDvCA6iQso7sM9KbFsCE8h9UAXj_b4LrQTt7UIlnwmBYcCXAmMF85xTomJP0mXAYMWo8B3_NUNs3nuCt4QLphPl3eh8DWNF0Ip1P5uzrxlGAGXz11XSdHF4SI51V"><button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow group/fav z-10"><span class="material-symbols-outlined text-lg group-hover/fav:font-fill text-red-500">favorite</span></button></div><div class="flex justify-center gap-1 mt-2 mb-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div></div><div class="p-4 text-center"><h3 class="text-sm font-medium text-gray-800 mb-1 line-clamp-2">Correa Reflectiva Nocturna (Demo)</h3><p class="text-primary font-bold">$ 32.000</p><button class="mt-4 w-full bg-primary text-white py-2 rounded-twelve font-bold text-sm flex items-center justify-center gap-2 hover:bg-opacity-90 transition"><span class="material-symbols-outlined text-lg">shopping_cart</span>Agregar</button></div></article>
+<!-- Product 5 -->
+<article class="bg-white rounded-twelve overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow group"><div class="relative aspect-square bg-gray-100"><img alt="Art Print" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9Yty_xVQkIr-qMYSzQzcDxIdjNGav7WhMc3begOi9QhUqyIy4_Q0rWZKkp23az0MzXpHw-u5yL319Y-1lvmQJhbYVJ3CBPHNfckPVrN531QNORkZmO4V0Vpy-PGQIHvV6vXhKCfaKoFLRR8aMobugh996N939hQcB3_gAdShmrATKx9gPYoo7r43998fYBhSG7gvHQvDSRdaDLVBrCQ6mT8UiRy6lIw3KQMBvtqYfS8JgiaLZFKz0"><button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow group/fav z-10"><span class="material-symbols-outlined text-lg group-hover/fav:font-fill text-red-500">favorite</span></button></div><div class="flex justify-center gap-1 mt-2 mb-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div></div><div class="p-4 text-center"><h3 class="text-sm font-medium text-gray-800 mb-1 line-clamp-2">Flamingo Art Print</h3><p class="text-primary font-bold">$ 9</p><button class="mt-4 w-full bg-primary text-white py-2 rounded-twelve font-bold text-sm flex items-center justify-center gap-2 hover:bg-opacity-90 transition"><span class="material-symbols-outlined text-lg">shopping_cart</span>Agregar</button></div></article>
+<!-- Product 6 -->
+<article class="bg-white rounded-twelve overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow group"><div class="relative aspect-square bg-gray-100"><img alt="Ceramic Mug" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIvvilndSS8X5krA-_7fJ602OGNojPJh_p2aafVjV8KVBd0PT-T1Z0Fj1iAMpujM_rIPB2yBcw2ZK7h_ZP5zTz2KTTBFcQ3fI9mt_5PtvBPvsIGrDRSUJLZdTOvGnaxLENTtpGFMWrESQ_fRtdS-V-l-ZwoJI6mcqjEKMTB2RaIlSEM2j5pnIaB_VWwDoXUtmRpq-09LN0dx7JHipC2IGWDxlHDVpntQk-rGcQvSsTExCmGtW-7RoJ"><button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow group/fav z-10"><span class="material-symbols-outlined text-lg group-hover/fav:font-fill text-red-500">favorite</span></button></div><div class="flex justify-center gap-1 mt-2 mb-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div></div><div class="p-4 text-center"><h3 class="text-sm font-medium text-gray-800 mb-1 line-clamp-2">Handmade Ceramic Mug</h3><p class="text-primary font-bold">$ 9</p><button class="mt-4 w-full bg-primary text-white py-2 rounded-twelve font-bold text-sm flex items-center justify-center gap-2 hover:bg-opacity-90 transition"><span class="material-symbols-outlined text-lg">shopping_cart</span>Agregar</button></div></article>
+<!-- Product 7 -->
+<article class="bg-white rounded-twelve overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow group"><div class="relative aspect-square bg-gray-100"><img alt="Juguete Mordedor" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRvOPR-_zMX_-X1V8Xv2tPb-Hi5iHcR-JEZEVUpsABw2-sJouJ8wCGrCTYglCiloeR8v9hRQK9IKgGw_9NwVQ4QdjBvvyAES_xFuXYQk9-bkMaeqKTsljvCfgr0tjMcOWhqG4Jv3JmkBYigAHUqs-tORBOMeAN7_62QXgPhgWN4NCqQ5oOwNbtQJPMzYzDQDAjcIfxovd3FXEf28hhy1jY0QuI_meNw_Bi28G8uQsFsm6eq5p-o5s5"><button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow group/fav z-10"><span class="material-symbols-outlined text-lg group-hover/fav:font-fill text-red-500">favorite</span></button></div><div class="flex justify-center gap-1 mt-2 mb-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div></div><div class="p-4 text-center"><h3 class="text-sm font-medium text-gray-800 mb-1 line-clamp-2">Juguete Mordedor Resistente (Demo)</h3><p class="text-primary font-bold">$ 18.000</p><button class="mt-4 w-full bg-primary text-white py-2 rounded-twelve font-bold text-sm flex items-center justify-center gap-2 hover:bg-opacity-90 transition"><span class="material-symbols-outlined text-lg">shopping_cart</span>Agregar</button></div></article>
+<!-- Product 8 -->
+<article class="bg-white rounded-twelve overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow group"><div class="relative aspect-square bg-gray-100"><img alt="Towels" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsF950_XNgf9-n5v17UjqJf45q1TMqXBdfvnT_NazrxXJNjIv82frobw9hFxdfpEUd4rvUzqbrV4r1wNRrw-20o97k2tl4kPOwoJj6DO-GVD2hT8xdcpNV4Y0Vr-K7EYBrjvT3ZiIYAyTSTxL7s5Vt-aoy5NyG8MZrDM2YRMhPICd1fYF1oxC4Z9-oI9TNxQLzJvRV7xxPuNWDDalIDmfpKVj6O8BTcRSSOi2oRyaU-cwVK6iVIG9D"><button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow group/fav z-10"><span class="material-symbols-outlined text-red-500 text-lg group-hover/fav:font-fill">favorite</span></button></div><div class="flex justify-center gap-1 mt-2 mb-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div></div><div class="p-4 text-center"><h3 class="text-sm font-medium text-gray-800 mb-1 line-clamp-2">Organic Bath Towels</h3><p class="text-primary font-bold"><span class="text-gray-400 line-through text-xs mr-1">$ 49</span> $ 39</p><button class="mt-4 w-full bg-primary text-white py-2 rounded-twelve font-bold text-sm flex items-center justify-center gap-2 hover:bg-opacity-90 transition"><span class="material-symbols-outlined text-lg">shopping_cart</span>Agregar</button></div></article>
+</div>
+<!-- BEGIN: Pagination -->
+<nav class="mt-12 flex justify-center gap-2">
+<a class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white font-bold shadow-sm" href="#">1</a>
+<a class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-600 hover:bg-primary hover:text-white transition shadow-sm border border-gray-100 font-medium" href="#">2</a>
+<a class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-600 hover:bg-primary hover:text-white transition shadow-sm border border-gray-100 font-medium" href="#">3</a>
+<span class="flex items-center justify-center px-2 text-gray-400">...</span>
+<a class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-600 hover:bg-primary hover:text-white transition shadow-sm border border-gray-100 font-medium" href="#">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</a>
+</nav>
+<!-- END: Pagination -->
+</div>
+<!-- END: Product Grid Area -->
+</main>
+<!-- END: Main Content Layout -->
+<!-- BEGIN: Footer -->
+
+<!-- END: Footer -->
+
+
+</body></html>

@@ -91,6 +91,18 @@
 	document.addEventListener('click', function (e) {
 		if (!e.target.closest || !e.target.closest('.woocommerce-cart-form')) { return; }
 
+		// "×" de la esquina: quita el producto COMPLETO (cualquier cantidad). Inmediato.
+		var removeX = e.target.closest('.pp-item-remove');
+		if (removeX) {
+			e.preventDefault();
+			var row = removeX.closest('.pp-cart-row');
+			var xinput = row ? row.querySelector('input[name^="cart"]') : null; // .pp-qty-input o el hidden de "vender individualmente"
+			if (xinput) { xinput.value = 0; }
+			if (refreshTimer) { clearTimeout(refreshTimer); refreshTimer = null; }
+			refreshCart();
+			return;
+		}
+
 		// Papelera: cantidad 0 → WooCommerce elimina la línea. Inmediato.
 		var remove = e.target.closest('.pp-remove');
 		if (remove) {

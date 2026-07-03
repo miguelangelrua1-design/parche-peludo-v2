@@ -119,6 +119,134 @@ function pp_fallback_gallery_image_id( $image_id, $product ) {
 }
 
 /**
+ * PLP móvil: encapsula los filtros de la tienda en un panel deslizante desde la
+ * izquierda, abierto con un botón "Filtros".
+ *
+ * PERFORMANCE: el botón, la cabecera del panel y el overlay se renderizan en el
+ * HTML por PHP (server-side) para que el botón aparezca DE INMEDIATO, sin esperar
+ * a que corra JavaScript al final de la página. El JS queda mínimo (solo abrir/
+ * cerrar por delegación). Solo se inyecta en la tienda y en los archivos de
+ * categoría/etiqueta de producto. El diseño vive en style.css bajo @media (max-width:767px).
+ */
+function ppv2_is_shop_context() {
+	return function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() );
+}
+
+/**
+ * Corrige un WARNING del tema PADRE (listeo/functions.php:776).
+ * Su filtro `ts_get_subcategory_terms` recorre los términos y lee `$term->slug`,
+ * pero cuando get_terms() se llama con fields=ids/slugs (p. ej. el widget de
+ * Categorías de la tienda) recibe strings/ints → "Attempt to read property slug
+ * on string". Quitamos su filtro y ponemos una versión que valida el tipo.
+ */
+add_action( 'after_setup_theme', 'ppv2_fix_listeo_subcategory_terms', 20 );
+function ppv2_fix_listeo_subcategory_terms() {
+	// Listeo tiene DOS filtros idénticos con el mismo bug (functions.php y inc/woocommerce.php).
+	remove_filter( 'get_terms', 'ts_get_subcategory_terms', 10 );
+	remove_filter( 'get_terms', 'exclude_listeo_booking_from_shop_page', 10 );
+	add_filter( 'get_terms', 'ppv2_get_subcategory_terms', 10, 3 );
+}
+function ppv2_get_subcategory_terms( $terms, $taxonomies, $args ) {
+	if ( ! is_array( $taxonomies ) ) { return $terms; }
+	if ( in_array( 'product_cat', $taxonomies, true ) && ! is_admin() && function_exists( 'is_shop' ) && is_shop() ) {
+		$new = array();
+		foreach ( $terms as $term ) {
+			// Si es objeto término, aplicamos la exclusión original de "listeo-booking".
+			if ( is_object( $term ) && isset( $term->slug ) ) {
+				if ( 'listeo-booking' !== $term->slug ) { $new[] = $term; }
+			} else {
+				$new[] = $term; // ids/slugs/strings: pasan tal cual (evita el warning)
+			}
+		}
+		$terms = $new;
+	}
+	return $terms;
+}
+
+// 1) Barra de herramientas: envuelve botón "Filtros" + conteo + "Ordenar por" en
+//    un contenedor para poder alinearlos (en móvil, Filtros y Ordenar en una línea).
+add_action( 'woocommerce_before_shop_loop', 'ppv2_shop_toolbar_open', 4 );
+function ppv2_shop_toolbar_open() {
+	if ( ppv2_is_shop_context() ) { echo '<div class="pp-shop-toolbar">'; }
+}
+add_action( 'woocommerce_before_shop_loop', 'ppv2_shop_toolbar_close', 40 );
+function ppv2_shop_toolbar_close() {
+	if ( ppv2_is_shop_context() ) { echo '</div>'; }
+}
+
+// Botón "Filtros" al principio del listado (server-side → aparece al instante).
+add_action( 'woocommerce_before_shop_loop', 'ppv2_shop_filters_button', 5 );
+function ppv2_shop_filters_button() {
+	if ( ! ppv2_is_shop_context() ) { return; }
+	echo '<button type="button" class="pp-filters-toggle">'
+		. '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>'
+		. '<span>Filtros</span></button>';
+}
+
+// Botón "Agregar" en las tarjetas de la TIENDA: texto corto (solo en tienda/categoría).
+add_filter( 'woocommerce_product_add_to_cart_text', 'ppv2_loop_add_to_cart_text', 10, 2 );
+function ppv2_loop_add_to_cart_text( $text, $product ) {
+	if ( is_admin() || ! ppv2_is_shop_context() ) { return $text; }
+	if ( $product && $product->is_purchasable() && $product->is_in_stock() && ! $product->is_type( 'variable' ) ) {
+		return esc_html__( 'Agregar', 'listeo-child' );
+	}
+	return $text;
+}
+
+// Ícono de carrito dentro del botón "Agregar" (solo en tienda/categoría).
+add_filter( 'woocommerce_loop_add_to_cart_link', 'ppv2_loop_add_to_cart_icon', 10, 3 );
+function ppv2_loop_add_to_cart_icon( $html, $product, $args = array() ) {
+	if ( ! ppv2_is_shop_context() ) { return $html; }
+	$icon = '<svg class="pp-cart-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.2 11a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.2L21.5 7H6"/></svg>';
+	return preg_replace( '/(<a\b[^>]*>)/', '$1' . $icon, $html, 1 );
+}
+
+// 2) Cabecera del panel (título + cerrar) dentro de la barra lateral de la tienda.
+add_action( 'dynamic_sidebar_before', 'ppv2_shop_filters_head', 10, 2 );
+function ppv2_shop_filters_head( $index, $has_widgets ) {
+	if ( 'sidebar-shop' !== $index || ! ppv2_is_shop_context() ) { return; }
+	echo '<div class="pp-filters-head"><span>Filtros</span>'
+		. '<button type="button" class="pp-filters-close" aria-label="Cerrar filtros">&times;</button></div>';
+}
+
+// 3) Overlay + JS mínimo (delegado) para abrir/cerrar el panel.
+add_action( 'wp_footer', 'ppv2_shop_filters_overlay', 120 );
+function ppv2_shop_filters_overlay() {
+	if ( ! ppv2_is_shop_context() ) { return; }
+	echo '<div class="pp-filters-overlay"></div>';
+	?>
+	<script>
+	(function () {
+		var html = document.documentElement;
+		document.addEventListener('click', function (e) {
+			var t = e.target;
+			if ( t.closest && t.closest('.pp-filters-toggle') ) { html.classList.add('pp-filters-open'); return; }
+			if ( ( t.closest && t.closest('.pp-filters-close') ) || ( t.classList && t.classList.contains('pp-filters-overlay') ) ) { html.classList.remove('pp-filters-open'); }
+		});
+		document.addEventListener('keydown', function (e) { if ( e.key === 'Escape' || e.keyCode === 27 ) { html.classList.remove('pp-filters-open'); } });
+
+		// Acordeón de filtros: cada widget (menos "Buscar producto") se pliega al tocar su título.
+		var sidebar = document.querySelector('.listeo-shop-grid .col-sidebar');
+		if ( sidebar ) {
+			Array.prototype.forEach.call( sidebar.querySelectorAll('section.widget'), function ( w ) {
+				if ( w.classList.contains('widget_product_search') || w.classList.contains('widget_layered_nav_filters') ) { return; }
+				var title = w.querySelector('.widget-title');
+				if ( ! title ) { return; }
+				w.classList.add('pp-accordion');
+				title.setAttribute('role', 'button');
+				title.setAttribute('tabindex', '0');
+				title.addEventListener('click', function () { w.classList.toggle('pp-collapsed'); });
+				title.addEventListener('keydown', function ( e ) {
+					if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); w.classList.toggle('pp-collapsed'); }
+				});
+			} );
+		}
+	})();
+	</script>
+	<?php
+}
+
+/**
  * Personalizaciones y ganchos adicionales de Parche Peludo V2
  * Agrega aqui funciones personalizadas para integraciones seguras.
  */
@@ -2215,6 +2343,10 @@ if ( ! function_exists( 'pp_minicart_render_inner' ) ) {
 					?>
 					<li class="woocommerce-mini-cart-item pp-mini-cart-item <?php echo $li_class; ?>" data-cart_item_key="<?php echo esc_attr( $cart_item_key ); ?>">
 
+						<button type="button" class="pp-item-remove" data-cart_item_key="<?php echo esc_attr( $cart_item_key ); ?>" aria-label="Quitar producto del carrito" title="Quitar producto">
+							<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+						</button>
+
 						<?php if ( empty( $product_permalink ) ) : ?>
 							<span class="pp-item-thumb"><?php echo $thumbnail; // phpcs:ignore ?></span>
 						<?php else : ?>
@@ -2331,3 +2463,255 @@ function pp_update_cart_qty() {
 	) );
 }
 
+
+/* =========================================================================
+   PPV2 — BUSCADOR DEL HEADER UNIFICADO (Directorio + Tienda)
+   El buscador de Listeo solo sugiere listados (post_type "listing").
+   Este bloque lo reemplaza por un autocompletado propio que sugiere
+   Listados Y Productos WooCommerce, agrupados, con foto y precio.
+   Estilos: bloque "PPV2 BUSCADOR UNIFICADO" al final de style.css.
+   ========================================================================= */
+
+// Endpoint AJAX: devuelve sugerencias de listados y productos para un término.
+add_action( 'wp_ajax_ppv2_header_suggest', 'ppv2_header_suggest' );
+add_action( 'wp_ajax_nopriv_ppv2_header_suggest', 'ppv2_header_suggest' );
+function ppv2_header_suggest() {
+	$term = isset( $_GET['term'] ) ? sanitize_text_field( wp_unslash( $_GET['term'] ) ) : '';
+	$len  = function_exists( 'mb_strlen' ) ? mb_strlen( $term, 'UTF-8' ) : strlen( $term );
+	if ( $len < 2 ) {
+		wp_send_json( array() );
+	}
+
+	// El orden según el tab activo lo aplica el navegador (sin re-consultar al servidor).
+	$listing_items = array();
+	$product_items = array();
+
+	// --- Listados (directorio de servicios) ---
+	$listings = get_posts( array(
+		's'              => $term,
+		'post_type'      => 'listing',
+		'post_status'    => 'publish',
+		'posts_per_page' => 5,
+	) );
+	foreach ( $listings as $p ) {
+		$listing_items[] = array(
+			'label' => html_entity_decode( get_the_title( $p ), ENT_QUOTES, 'UTF-8' ),
+			'value' => html_entity_decode( get_the_title( $p ), ENT_QUOTES, 'UTF-8' ),
+			'link'  => get_permalink( $p ),
+			'group' => 'Directorio',
+			'img'   => get_the_post_thumbnail_url( $p, 'thumbnail' ),
+			'meta'  => '',
+		);
+	}
+
+	// --- Productos (tienda WooCommerce) ---
+	$products = get_posts( array(
+		's'              => $term,
+		'post_type'      => 'product',
+		'post_status'    => 'publish',
+		'posts_per_page' => 5,
+		// Respeta la visibilidad de catálogo: no sugerir productos ocultos de la búsqueda.
+		'tax_query'      => array(
+			array(
+				'taxonomy' => 'product_visibility',
+				'field'    => 'name',
+				'terms'    => array( 'exclude-from-search' ),
+				'operator' => 'NOT IN',
+			),
+		),
+	) );
+	foreach ( $products as $p ) {
+		$price = '';
+		if ( function_exists( 'wc_get_product' ) ) {
+			$product = wc_get_product( $p->ID );
+			if ( $product && '' !== $product->get_price() ) {
+				$price = html_entity_decode( wp_strip_all_tags( wc_price( $product->get_price() ) ), ENT_QUOTES, 'UTF-8' );
+			}
+		}
+		$product_items[] = array(
+			'label' => html_entity_decode( get_the_title( $p ), ENT_QUOTES, 'UTF-8' ),
+			'value' => html_entity_decode( get_the_title( $p ), ENT_QUOTES, 'UTF-8' ),
+			'link'  => get_permalink( $p ),
+			'group' => 'Tienda',
+			'img'   => get_the_post_thumbnail_url( $p, 'thumbnail' ),
+			'meta'  => $price,
+		);
+	}
+
+	wp_send_json( array_merge( $listing_items, $product_items ) );
+}
+
+// Garantiza que la librería de autocompletado esté cargada aunque Listeo
+// tenga desactivada su opción de autocompletado.
+add_action( 'wp_enqueue_scripts', 'ppv2_header_suggest_assets' );
+function ppv2_header_suggest_assets() {
+	if ( is_admin() ) {
+		return;
+	}
+	wp_enqueue_script( 'jquery-ui-autocomplete' );
+}
+
+// JS del buscador. Se imprime en prioridad 50 para ejecutarse DESPUÉS del
+// script de Listeo (prioridad 11) y así reemplazar su autocompletado.
+add_action( 'wp_print_footer_scripts', 'ppv2_header_suggest_js', 50 );
+function ppv2_header_suggest_js() {
+	?>
+	<script type="text/javascript">
+	(function($) {
+		if (!$ || !$.fn || typeof $.fn.autocomplete === 'undefined') { return; }
+		$(function() {
+			var ajaxUrl = <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>;
+			var homeUrl = <?php echo wp_json_encode( home_url( '/' ) ); ?>;
+			var SCOPE_KEY = 'ppv2SearchScope';
+			var cache = {}; // resultados por término: el cambio de tab no vuelve a consultar al servidor
+
+			// Tab activo ("directorio" | "tienda"). Se recuerda solo durante la sesión.
+			function getScope() {
+				try {
+					return window.sessionStorage.getItem(SCOPE_KEY) === 'tienda' ? 'tienda' : 'directorio';
+				} catch (e) { return 'directorio'; }
+			}
+			function setScope(scope) {
+				try { window.sessionStorage.setItem(SCOPE_KEY, scope); } catch (e) {}
+			}
+
+			// Reordena en el navegador: el grupo del tab activo va primero.
+			function orderByScope(items) {
+				var listings = [], products = [];
+				$.each(items || [], function(index, item) {
+					(item.group === 'Tienda' ? products : listings).push(item);
+				});
+				return getScope() === 'tienda' ? products.concat(listings) : listings.concat(products);
+			}
+
+			// --- Tabs Directorio | Tienda siempre visibles en el buscador del header ---
+			function updateTabsUI() {
+				var scope = getScope();
+				$('.ppv2-scope-tab').each(function() {
+					$(this).toggleClass('ppv2-scope-tab-active', $(this).attr('data-scope') === scope);
+				});
+			}
+
+			$('.header-search-container .main-search-input-item.text').each(function() {
+				var $item = $(this);
+				if (!$item.find('input[name="keyword_search"]').length || $item.find('.ppv2-scope-tabs').length) {
+					return;
+				}
+				$item.addClass('ppv2-has-scope-tabs');
+				var $tabs = $('<div class="ppv2-scope-tabs" role="tablist"></div>');
+				$.each([
+					{ id: 'directorio', label: 'Directorio' },
+					{ id: 'tienda', label: 'Tienda' }
+				], function(index, tab) {
+					$('<button type="button"></button>')
+						.addClass('ppv2-scope-tab')
+						.attr('data-scope', tab.id)
+						.text(tab.label)
+						.appendTo($tabs);
+				});
+				$item.append($tabs);
+			});
+			updateTabsUI();
+
+			$(document).on('click', '.ppv2-scope-tab', function(event) {
+				event.preventDefault();
+				setScope($(this).attr('data-scope') === 'tienda' ? 'tienda' : 'directorio');
+				updateTabsUI();
+				// Reordena las sugerencias abiertas al instante (desde caché, sin servidor).
+				var $field = $(this).closest('.main-search-input-item').find('input[name="keyword_search"]');
+				if ($field.length) {
+					$field.trigger('focus');
+					if ($field.val().trim().length >= 2 && $field.data('ui-autocomplete')) {
+						$field.autocomplete('search', $field.val());
+					}
+				}
+			});
+
+			// Enter o botón "Buscar" del header con el tab Tienda: ir a los resultados
+			// de la tienda (búsqueda nativa de WooCommerce, solo productos). Con
+			// Directorio no intervenimos: el formulario sigue yendo a listados.
+			// Captura (true) para adelantarnos a los handlers de Listeo (AJAX browsing).
+			// Solo aplica al buscador del header (donde están los tabs visibles).
+			document.addEventListener('submit', function(event) {
+				var form = event.target;
+				if (!form || !form.closest || !form.closest('.header-search-container')) { return; }
+				var field = form.querySelector('input[name="keyword_search"]');
+				if (!field || getScope() !== 'tienda') { return; }
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				var term = (field.value || '').trim();
+				window.location.href = term
+					? homeUrl + '?s=' + encodeURIComponent(term) + '&post_type=product'
+					: homeUrl + '?post_type=product';
+			}, true);
+
+			$('input[name="keyword_search"]').each(function() {
+				var $input = $(this);
+
+				// Si Listeo ya montó su autocompletado (solo listados), lo quitamos.
+				if ($input.data('ui-autocomplete')) {
+					try { $input.autocomplete('destroy'); } catch (e) {}
+				}
+
+				$input.autocomplete({
+					minLength: 2,
+					delay: 350,
+					source: function(req, response) {
+						var term = req.term;
+						if (cache[term]) {
+							response(orderByScope(cache[term]));
+							return;
+						}
+						$.getJSON(ajaxUrl, { action: 'ppv2_header_suggest', term: term })
+							.done(function(data) {
+								cache[term] = data || [];
+								response(orderByScope(cache[term]));
+							})
+							.fail(function() { response([]); });
+					},
+					select: function(event, ui) {
+						if (ui.item && ui.item.link) { window.location.href = ui.item.link; }
+						return false;
+					},
+					focus: function() { return false; }
+				});
+
+				var inst = $input.autocomplete('instance');
+				if (!inst) { return; }
+
+				// Los encabezados de grupo no son opciones seleccionables.
+				inst.menu.option('items', '> :not(.ppv2-suggest-group)');
+
+				// Menú con encabezados "Directorio" / "Tienda".
+				inst._renderMenu = function(ul, items) {
+					var that = this, currentGroup = '';
+					ul.addClass('ppv2-suggest-menu');
+					$.each(items, function(index, item) {
+						if (item.group && item.group !== currentGroup) {
+							currentGroup = item.group;
+							$('<li>').addClass('ppv2-suggest-group').text(item.group).appendTo(ul);
+						}
+						that._renderItemData(ul, item);
+					});
+				};
+
+				// Fila de sugerencia: foto + nombre + precio (si es producto).
+				inst._renderItem = function(ul, item) {
+					var $row = $('<div>').addClass('ppv2-suggest-row');
+					if (item.img) {
+						$row.append($('<img>').attr({ src: item.img, alt: '' }).addClass('ppv2-suggest-img'));
+					} else {
+						$row.append($('<span>').addClass('ppv2-suggest-img ppv2-suggest-img-empty').text('🐾'));
+					}
+					$row.append($('<span>').addClass('ppv2-suggest-label').text(item.label));
+					if (item.meta) {
+						$row.append($('<span>').addClass('ppv2-suggest-price').text(item.meta));
+					}
+					return $('<li>').addClass('ppv2-suggest-item').append($row).appendTo(ul);
+				};
+			});
+		});
+	})(window.jQuery);
+	</script>
+	<?php
+}

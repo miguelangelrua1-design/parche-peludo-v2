@@ -1,0 +1,291 @@
+<!DOCTYPE html><html class="light" lang="es" style="width: 390px; height: 1221px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Tienda Peluda | Parche Peludo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400;1,700&amp;family=Caveat:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        'teal-parche': '#79C8D0',
+                        'teal-deep': '#4AA5AD',
+                        'teal-soft': '#BEE3E7',
+                        'teal-mist': '#E8F4F6',
+                        'teal-ink': '#1E5D64',
+                        'paper': '#FFFFFF',
+                        'bone': '#F7F3EC',
+                        'ink': '#1E2E33',
+                        'ink-muted': '#5A6B70',
+                        'ink-faint': '#8E9A9E',
+                        'ink-line': 'rgba(30,46,51,.10)',
+                        'ink-line-2': 'rgba(30,46,51,.06)',
+                        'marigold': '#FFD166',
+                        'coral': '#E85D75',
+                    },
+                    borderRadius: {
+                        'sm': '6px',
+                        'md': '12px',
+                        'lg': '20px',
+                        'xl': '28px',
+                        '2xl': '40px',
+                        'pill': '999px',
+                    },
+                    fontFamily: {
+                        'display': ['Ubuntu', 'sans-serif'],
+                        'body': ['Ubuntu', 'sans-serif'],
+                        'hand': ['Caveat', 'cursive'],
+                    },
+                    transitionTimingFunction: {
+                        'soft': 'cubic-bezier(.2,.8,.2,1)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Ubuntu', sans-serif; background-color: #FFFFFF; color: #1E2E33; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .active-filter-drawer { transform: translateX(0); }
+        .inactive-filter-drawer { transform: translateX(100%); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .price-slider-range {
+            accent-color: #79C8D0;
+        }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+<!-- TopNavBar (Shared Component Identity) -->
+
+<main class="pt-[72px] pb-24">
+<!-- Hero/Header Section for Mobile -->
+
+<!-- Sticky Filter Bar -->
+<div class="sticky top-[72px] z-40 bg-white border-b border-ink-line-2 px-6 py-4 flex justify-between items-center shadow-sm">
+<p class="text-xs font-bold text-ink">21 Resultados</p>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-4 py-2 bg-teal-mist text-teal-ink rounded-pill text-xs font-bold transition-all active:scale-95" onclick="toggleFilters(true)">
+<span class="material-symbols-outlined text-sm">tune</span>
+                    Filtrar
+                </button>
+<div class="relative">
+<select class="appearance-none bg-bone border-none rounded-pill px-4 pr-8 py-2 text-xs font-bold text-ink focus:ring-2 focus:ring-teal-parche">
+<option>Ordenar por</option>
+<option>Más recientes</option>
+<option>Precio bajo</option>
+<option>Precio alto</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[14px] pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Product Grid (2 Columns for Mobile) -->
+<section class="px-4 py-6 grid grid-cols-2 gap-x-3 gap-y-6">
+<!-- Product Card 1 -->
+<div class="group flex flex-col bg-paper rounded-lg border border-ink-line-2 shadow-md overflow-hidden transition-all duration-220 hover:-translate-y-1 hover:shadow-lg">
+<div class="relative aspect-square overflow-hidden bg-teal-mist">
+<img alt="Ergonomic Dog Harness" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLscnbFhah-Q-2WR9BJqJuIGkhAmooS1Wp3akco8OsizpsHsjWWzR9NpaoqbdtMo_JgpTmw6_YJLD2ULqU3jE8o0aNIRdsbsNgf3LkukQBJiO3IeTUkb8NwEkVi6MaHMzAUxwwVekju7t1UDt4CRI7nFjT9y15FUVFq1kkXnld16VMSkvld3I7ZolDdlR3qMq_Q3ITMqmknPtNhZxBTHnQ1IsGHnakcOWsBVlpOWeR1zU1lCPCnAoRDBLQQ">
+<span class="absolute top-2 left-2 bg-teal-parche text-paper text-[10px] font-black px-2 py-1 rounded-pill uppercase tracking-widest shadow-sm">Nuevo</span>
+<button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-coral flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="p-3 flex flex-col flex-grow"><h3 class="text-sm font-black text-ink leading-snug line-clamp-2 h-10 mb-3">Arnés Ajustable Acolchado</h3><div class="mt-auto"><div class="mb-2"><span class="text-sm font-black text-ink">$55.000</span></div><button class="w-full py-2 rounded-md bg-teal-parche text-paper text-xs font-black shadow-sm active:scale-95 transition-transform">Agregar</button></div></div>
+</div>
+<!-- Product Card 2 -->
+<div class="group flex flex-col bg-paper rounded-lg border border-ink-line-2 shadow-md overflow-hidden transition-all duration-220 hover:-translate-y-1 hover:shadow-lg">
+<div class="relative aspect-square overflow-hidden bg-teal-mist">
+<img alt="Kong Classic Toy" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLsrP_iXaMjdpqL7O4wlHTUq8g6xorV4qmNRSsnKT06BjoF8fTaEW27ncFUckk-Ag96Tpb6ZIzoXxEEyi3bQyfY30dftDEJnsxMKB1TZuqeTKKJ2HRHrKJsROjSaGIJRw8aFxrfP6w8G1OvZYp3CgnOGQx0orw2dK-zKt_fPH00BzreUUl2qHl83cTDKLmFsfGMk93eu30mrtYlggHgPLICeE0R_MSrQZLm3XR0kbj3ELhbcWokcoXziTwQ">
+<span class="absolute top-2 left-2 bg-marigold text-ink text-[10px] font-black px-2 py-1 rounded-pill uppercase tracking-widest shadow-sm">Oferta</span>
+<button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-coral flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="p-3 flex flex-col flex-grow"><h3 class="text-sm font-black text-ink leading-snug line-clamp-2 h-10 mb-3">Kong Classic Resistente</h3><div class="mt-auto"><div class="flex items-center gap-2 mb-2"><span class="text-[10px] text-ink-faint line-through">$45.000</span><span class="text-sm font-black text-ink">$38.000</span></div><button class="w-full py-2 rounded-md bg-teal-parche text-paper text-xs font-black shadow-sm active:scale-95 transition-transform">Agregar</button></div></div>
+</div>
+<!-- Product Card 3 -->
+<div class="group flex flex-col bg-paper rounded-lg border border-ink-line-2 shadow-md overflow-hidden transition-all duration-220 hover:-translate-y-1 hover:shadow-lg">
+<div class="relative aspect-square overflow-hidden bg-teal-mist">
+<img alt="Durable Rubber Ball" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLvtmxk1cwWv0ZqVL0KPzF22ry-2IhhC8xMZV43k14biVdWOArP7hgiKhTjPeHBAl8TWnUe9fYp_Bj5l9SsXlcqJwjppObX0JJwqtffxGOZYU-lF19YAJ-Ey8Oo0FwqpmhxnkaA_P0ckENUba129C0TUaML8PayxbS3Dl_gzujkHesAMA_ILoGFs50TiKwgDoprAMxpucsmTO_jv54Ve-8ip5RkIFKRFDMqEDvg0O0dnSbYzMVIE6D7H3Y0">
+<button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-coral flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="p-3 flex flex-col flex-grow"><h3 class="text-sm font-black text-ink leading-snug line-clamp-2 h-10 mb-3">Pelota de Caucho Flotante</h3><div class="mt-auto"><div class="mb-2"><span class="text-sm font-black text-ink">$15.000</span></div><button class="w-full py-2 rounded-md bg-teal-parche text-paper text-xs font-black shadow-sm active:scale-95 transition-transform">Agregar</button></div></div>
+</div>
+<!-- Product Card 4 -->
+<div class="group flex flex-col bg-paper rounded-lg border border-ink-line-2 shadow-md overflow-hidden transition-all duration-220 hover:-translate-y-1 hover:shadow-lg">
+<div class="relative aspect-square overflow-hidden bg-teal-mist">
+<img alt="Grooming Kit" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLuKWDJBJqHrVqHcxJRMsP-zf2-x9A_tx38URM9U7uttbNiHrYXtiQj7mQ_gYVsCL9tMtjUbDkq5s5owtkOg7aYKt3dgzDBp_IVW2eggxxHm2gAQAk2rG4Re0gmKXmWwYxShl1c48KCDGiCZnLMHOfuc9hrkITy7oGb6qkhm5VW-5uOzJp40wuEC-Qr71F02iF8NAPjDQcE-wMxUuWqPjdGIrZSwMuaw34oEnlxl29zHZiGPLEZTrxOEorI">
+<button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-coral flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="p-3 flex flex-col flex-grow"><h3 class="text-sm font-black text-ink leading-snug line-clamp-2 h-10 mb-3">Kit de Aseo Premium V2</h3><div class="mt-auto"><div class="mb-2"><span class="text-sm font-black text-ink">$42.000</span></div><button class="w-full py-2 rounded-md bg-teal-parche text-paper text-xs font-black shadow-sm active:scale-95 transition-transform">Agregar</button></div></div>
+</div>
+</section>
+<!-- Pagination -->
+<nav class="flex justify-center items-center gap-2 py-8 px-6">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-bone text-ink-muted disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-teal-parche text-paper font-black">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-bone text-ink font-bold hover:bg-teal-mist transition-colors">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-bone text-ink font-bold hover:bg-teal-mist transition-colors">3</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-bone text-ink font-bold hover:bg-teal-mist transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</nav>
+</main>
+<!-- Footer Mobile -->
+
+<!-- Filter Drawer (Modal-like) -->
+<div class="fixed inset-0 z-[60] invisible overflow-hidden pointer-events-none" id="filterDrawer">
+<div class="absolute inset-0 bg-ink/60 opacity-0 transition-opacity duration-300" id="filterOverlay" onclick="toggleFilters(false)"></div>
+<div class="absolute right-0 top-0 bottom-0 w-[85%] bg-white shadow-2xl inactive-filter-drawer transition-transform duration-300 ease-out flex flex-col pointer-events-auto" id="filterContent">
+<div class="flex items-center justify-between p-6 border-b border-ink-line-2">
+<h2 class="text-xl font-black text-ink">Filtros</h2>
+<button class="w-10 h-10 flex items-center justify-center text-ink" onclick="toggleFilters(false)">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6 scrollbar-hide">
+<!-- Search Input in Filter -->
+<div class="bg-teal-mist rounded-pill flex items-center px-4 py-2 border border-ink-line">
+<span class="material-symbols-outlined text-teal-ink text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-ink-faint" placeholder="Buscar producto..." type="text">
+</div>
+<!-- Collapsible Sections -->
+<div class="flex flex-col divide-y divide-ink-line-2">
+<!-- Categoría -->
+<details class="py-4 group" open="">
+<summary class="flex justify-between items-center cursor-pointer list-none">
+<span class="font-black text-ink">Categoría</span>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="pt-4 flex flex-col gap-3">
+<label class="flex items-center gap-3 text-sm text-ink-muted">
+<input class="rounded text-teal-parche focus:ring-teal-parche border-ink-line" type="checkbox">
+                                Accesorios <span class="ml-auto text-xs opacity-50">(12)</span>
+</label>
+<label class="flex items-center gap-3 text-sm text-ink-muted">
+<input class="rounded text-teal-parche focus:ring-teal-parche border-ink-line" type="checkbox">
+                                Alimentación <span class="ml-auto text-xs opacity-50">(8)</span>
+</label>
+<label class="flex items-center gap-3 text-sm text-ink-muted">
+<input class="rounded text-teal-parche focus:ring-teal-parche border-ink-line" type="checkbox">
+                                Higiene <span class="ml-auto text-xs opacity-50">(15)</span>
+</label>
+<label class="flex items-center gap-3 text-sm text-ink-muted">
+<input class="rounded text-teal-parche focus:ring-teal-parche border-ink-line" type="checkbox">
+                                Juguetes <span class="ml-auto text-xs opacity-50">(21)</span>
+</label>
+</div>
+</details>
+<!-- Precio Slider -->
+<details class="py-4 group" open="">
+<summary class="flex justify-between items-center cursor-pointer list-none">
+<span class="font-black text-ink">Rango de Precio</span>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="pt-6 px-2">
+<input class="w-full price-slider-range" max="200000" min="0" step="5000" type="range">
+<div class="flex justify-between mt-3">
+<span class="text-xs font-bold text-teal-ink bg-teal-mist px-3 py-1 rounded-pill">$0</span>
+<span class="text-xs font-bold text-teal-ink bg-teal-mist px-3 py-1 rounded-pill">$200.000</span>
+</div>
+</div>
+</details>
+<!-- Especie -->
+<details class="py-4 group">
+<summary class="flex justify-between items-center cursor-pointer list-none">
+<span class="font-black text-ink">Especie</span>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="pt-4 flex flex-wrap gap-2">
+<button class="px-4 py-2 rounded-pill bg-teal-mist text-teal-ink text-xs font-bold border border-teal-soft">Perros</button>
+<button class="px-4 py-2 rounded-pill bg-bone text-ink-muted text-xs font-bold border border-ink-line">Gatos</button>
+<button class="px-4 py-2 rounded-pill bg-bone text-ink-muted text-xs font-bold border border-ink-line">Aves</button>
+</div>
+</details>
+<!-- Valoración -->
+<details class="py-4 group">
+<summary class="flex justify-between items-center cursor-pointer list-none">
+<span class="font-black text-ink">Valoración</span>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="pt-4 flex flex-col gap-3">
+<div class="flex items-center gap-2">
+<div class="flex">
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-marigold text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+</div>
+<span class="text-xs text-ink-muted">5 de 5</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex text-marigold">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+<span class="material-symbols-outlined text-ink-faint text-sm">star</span>
+</div>
+<span class="text-xs text-ink-muted">4 o más</span>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="p-6 border-t border-ink-line-2 grid grid-cols-2 gap-4">
+<button class="py-3 px-4 rounded-pill border-2 border-teal-parche text-ink font-bold text-sm active:scale-95 transition-all" onclick="toggleFilters(false)">Limpiar</button>
+<button class="py-3 px-4 rounded-pill bg-teal-parche text-paper font-black text-sm shadow-teal-parche shadow-lg active:scale-95 transition-all" onclick="toggleFilters(false)">Aplicar</button>
+</div>
+</div>
+</div>
+<!-- BottomNavBar (Mobile FAB Launcher - Shared Component Logic) -->
+<div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+<!-- Floating Chat Support -->
+<button class="bg-teal-parche text-paper rounded-full w-14 h-14 flex items-center justify-center shadow-xl hover:scale-110 hover:bg-teal-deep transition-all duration-320 ease-out active:scale-95 group relative">
+
+<span class="absolute -top-1 -right-1 w-4 h-4 bg-coral rounded-full border-2 border-white"></span>
+<div class="absolute right-16 top-1/2 -translate-y-1/2 bg-ink text-white text-[10px] py-1 px-3 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                ¿Te ayudo, peludo?
+            </div>
+</button>
+</div>
+<!-- Interaction Script -->
+<script>
+        function toggleFilters(show) {
+            const drawer = document.getElementById('filterDrawer');
+            const overlay = document.getElementById('filterOverlay');
+            const content = document.getElementById('filterContent');
+            
+            if (show) {
+                drawer.classList.remove('invisible');
+                drawer.classList.add('visible');
+                overlay.classList.add('opacity-100');
+                content.classList.remove('inactive-filter-drawer');
+                content.classList.add('active-filter-drawer');
+                document.body.style.overflow = 'hidden';
+            } else {
+                overlay.classList.remove('opacity-100');
+                content.classList.add('inactive-filter-drawer');
+                content.classList.remove('active-filter-drawer');
+                setTimeout(() => {
+                    drawer.classList.add('invisible');
+                    drawer.classList.remove('visible');
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+        }
+    </script>
+
+
+</body></html>

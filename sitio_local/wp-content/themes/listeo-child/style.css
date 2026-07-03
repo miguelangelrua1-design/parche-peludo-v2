@@ -4773,6 +4773,48 @@ body.single-listing #listing-nav {
   cursor: pointer;
 }
 
+/* Ícono del carrito del header: Listeo usa la sintaxis antigua de Font Awesome
+   (fa fa-shopping-cart), que con Font Awesome 6 puede renderizar mal. Lo
+   reemplazamos por un SVG confiable (misma forma), conservando color y badge. */
+.listeo-cart-container .mini-cart-button i.fa-shopping-cart {
+  display: inline-block;
+  width: 21px;
+  height: 21px;
+  font-size: 0;
+  line-height: 0;
+  vertical-align: middle;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231E2E33' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='21' r='1'/%3E%3Ccircle cx='20' cy='21' r='1'/%3E%3Cpath d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+/* Centrar el ícono dentro del círculo del botón del carrito (el badge es absoluto, no se afecta). */
+.listeo-cart-container .mini-cart-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative;
+  overflow: visible;
+}
+/* Badge (contador): pequeño, en la esquina superior derecha, SIN tapar el carrito.
+   Listeo le ponía left+right a la vez, lo que lo centraba sobre el ícono. */
+.listeo-cart-container .mini-cart-button .badge {
+  position: absolute;
+  top: -6px !important;
+  right: -6px !important;
+  left: auto !important;
+  bottom: auto !important;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 22px;
+  text-align: center;
+  border-radius: 999px !important;
+  box-sizing: border-box;
+  border: 2px solid #fff;
+}
+
 /* ============================================================
    HEADER DEL PANEL DE CONTROL (Dashboard) — Solo ESCRITORIO
    El dashboard usa la plantilla header-dashboard.php, cuyo
@@ -7709,6 +7751,11 @@ body.woocommerce-cart .pp-cart-actions .button.pp-btn-coupon:hover { background:
 body.woocommerce-cart .pp-cart-actions .button.pp-btn-update { background: transparent !important; color: var(--ink, #1E2E33) !important; border: 2px solid var(--teal-parche, #79C8D0) !important; }
 body.woocommerce-cart .pp-cart-actions .button.pp-btn-update:hover { background: var(--teal-mist, #E8F4F6) !important; }
 
+/* Ocultar el botón "Actualizar carrito": el carrito se actualiza solo (en vivo)
+   con los controles +/−, la papelera y la "×", así que el botón es redundante.
+   Se mantiene en el formulario (no se elimina) como respaldo técnico sin JS. */
+body.woocommerce-cart .pp-cart-actions .button.pp-btn-update { display: none !important; }
+
 /* ---- Tarjeta de Totales ---- */
 body.woocommerce-cart .pp-cart-totals {
   background: var(--bone, #F7F3EC);
@@ -7799,6 +7846,42 @@ body.woocommerce-cart .pp-cart-busy::after {
   z-index: 50;
 }
 
+/* ---- Botón "×" para quitar el producto completo (carrito + minicart) ----
+   Va en la esquina superior derecha, flotando (posición absoluta) para NO alterar
+   el grid ni el encabezado. Sutil en reposo, rojo (danger) al pasar el cursor. */
+.pp-item-remove {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-faint, #8E9A9E);
+  cursor: pointer;
+  line-height: 0;
+  transition: background .15s ease, color .15s ease;
+  z-index: 10;
+}
+.pp-item-remove:hover,
+.pp-item-remove:focus-visible {
+  background: rgba(232, 93, 117, .12);
+  color: var(--danger, #E85D75);
+  outline: none;
+}
+/* Carrito (desktop): la fila es el contexto de posición; la × va sobre la esquina. */
+body.woocommerce-cart .pp-cart-row { position: relative; }
+/* Minicart: el ítem es el contexto; deja aire a la derecha del nombre/precio. */
+.pp-cart-host .listeo-mini-cart ul.cart_list li.pp-mini-cart-item { position: relative; }
+.pp-cart-host .pp-item-body .mini-cart-product-name,
+.pp-cart-host .pp-item-body .mini-cart-quantity { padding-right: 40px; }
+
 /* ---- Móvil / tablet: producto como tarjeta ---- */
 @media (max-width: 992px) {
   body.woocommerce-cart .pp-cart-head { display: none; }
@@ -7852,6 +7935,29 @@ body.woocommerce-cart .pp-cart-busy::after {
     padding: 28px 0 0 !important;
   }
   body.woocommerce-cart .pp-cart-totals h2 { font-size: 20px !important; font-weight: 800 !important; }
+
+  /* "×" como BADGE montado sobre la mismísima esquina superior derecha de la
+     tarjeta: una parte queda por fuera del contenedor y otra por dentro
+     (centrado sobre la esquina). Círculo blanco con borde/sombra para que se
+     lea como botón de cerrar; se vuelve rojo (danger) al tocarlo. */
+  body.woocommerce-cart .pp-cart-row { overflow: visible; }
+  body.woocommerce-cart .pp-item-remove {
+    top: -12px;
+    right: -12px;
+    width: 32px;
+    height: 32px;
+    background: #fff;
+    border: 1px solid var(--ink-line, rgba(30, 46, 51, .14));
+    box-shadow: 0 2px 8px rgba(30, 46, 51, .14);
+    color: var(--ink-muted, #5A6B70);
+  }
+  body.woocommerce-cart .pp-item-remove:hover,
+  body.woocommerce-cart .pp-item-remove:focus-visible {
+    background: var(--danger, #E85D75);
+    border-color: var(--danger, #E85D75);
+    color: #fff;
+  }
+  body.woocommerce-cart .pp-col-name { padding-right: 40px; }
 }
 
 /* Ocultar la seccion de columnas del footer SOLO en Carrito y Checkout (todos los tamanos) */
@@ -7861,6 +7967,50 @@ body.woocommerce-checkout #footer { display: none !important; }
 /* Reducir a la mitad la altura del titlebar en Carrito y Checkout (184px -> ~92px) */
 body.woocommerce-cart #titlebar,
 body.woocommerce-checkout #titlebar { padding-top: 24px !important; padding-bottom: 24px !important; }
+
+/* Reducir a la mitad la altura del titlebar en la TIENDA y archivos de producto */
+body.woocommerce-shop #titlebar,
+body.post-type-archive-product #titlebar,
+body.tax-product_cat #titlebar,
+body.tax-product_tag #titlebar { padding-top: 24px !important; padding-bottom: 24px !important; }
+
+/* Título del titlebar ("Shop"/categoría) en negrilla */
+body.woocommerce-shop #titlebar h1,
+body.post-type-archive-product #titlebar h1,
+body.tax-product_cat #titlebar h1,
+body.tax-product_tag #titlebar h1 { font-weight: 700 !important; }
+
+/* Móvil: título y miga de pan en la MISMA fila (no apilados) — tienda/categorías */
+@media (max-width: 767px) {
+  body.woocommerce-shop #titlebar .col-md-12,
+  body.post-type-archive-product #titlebar .col-md-12,
+  body.tax-product_cat #titlebar .col-md-12,
+  body.tax-product_tag #titlebar .col-md-12,
+  body.search.woocommerce #titlebar .col-md-12 {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    gap: 12px;
+  }
+  body.woocommerce-shop #titlebar h1,
+  body.post-type-archive-product #titlebar h1,
+  body.tax-product_cat #titlebar h1,
+  body.tax-product_tag #titlebar h1,
+  body.search.woocommerce #titlebar h1 { margin: 0; flex: 0 0 auto; }
+  body.woocommerce-shop #titlebar #breadcrumbs,
+  body.post-type-archive-product #titlebar #breadcrumbs,
+  body.tax-product_cat #titlebar #breadcrumbs,
+  body.tax-product_tag #titlebar #breadcrumbs,
+  body.search.woocommerce #titlebar #breadcrumbs { margin: 0; flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+/* Eliminar el espacio vacío entre el titlebar y el listado de productos (~55px). */
+body.woocommerce-shop .listeo-shop-grid,
+body.post-type-archive-product .listeo-shop-grid,
+body.tax-product_cat .listeo-shop-grid,
+body.tax-product_tag .listeo-shop-grid,
+body.search.woocommerce .listeo-shop-grid { margin-top: -30px; }
 
 /* Titulo del titlebar en negrilla (Carrito / Checkout) */
 body.woocommerce-cart #titlebar h1,
@@ -7909,4 +8059,807 @@ body.woocommerce-checkout .wc-block-components-address-form__country {
    así que puede quedar vacío sin afectar la validación del pedido. */
 body.woocommerce-checkout .wc-block-components-address-form__postcode {
   display: none !important;
+}
+
+/* ============================================================
+   TIENDA (PLP) — Barra lateral de filtros a la IZQUIERDA en escritorio
+   y ARRIBA en móvil.
+   La plantilla del tema padre coloca la barra a la DERECHA (después de los
+   productos en el HTML). Con flex + order la reubicamos sin tocar el padre:
+   los productos pasan a order:2 (derecha) y los filtros a order:1 (izquierda).
+   En móvil, al apilarse en una sola columna, order:1 deja los filtros ARRIBA.
+   ============================================================ */
+.listeo-shop-grid > .row {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.listeo-shop-grid > .row > article { order: 2; }        /* productos → derecha */
+.listeo-shop-grid > .row > .col-sidebar { order: 1; }    /* filtros → izquierda */
+
+/* ------------------------------------------------------------
+   PLP MÓVIL: 2 productos por fila + filtros en panel deslizante
+   (off-canvas) desde la izquierda, abierto con un botón "Filtros".
+   ------------------------------------------------------------ */
+/* Elementos ocultos en escritorio (solo se usan en móvil) */
+.pp-filters-toggle,
+.pp-filters-head,
+.pp-filters-overlay { display: none; }
+
+/* Barra de herramientas de la tienda: en escritorio contiene los floats del
+   conteo y el "Ordenar por" (sin cambiar su aspecto actual). */
+.pp-shop-toolbar { display: flow-root; }
+/* Conteo: en escritorio se muestra el texto largo; el corto es solo para móvil. */
+.pp-count-short { display: none; }
+
+/* El wrapper de avisos de WooCommerce va vacío en la tienda: ocultarlo siempre. */
+.pp-shop-toolbar .woocommerce-notices-wrapper:empty { display: none; }
+
+/* Barra + barra lateral en ESCRITORIO con valores exactos del diseño (aside 256px). */
+@media (min-width: 768px) {
+  /* Barra como flex: conteo y "Ordenar por" alineados por su parte de ABAJO,
+     con espacio antes de los productos (no pegado). */
+  .pp-shop-toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
+  .pp-shop-toolbar .woocommerce-result-count { font-size: 14px; color: #6B7280; margin: 0; }
+  .pp-shop-toolbar .woocommerce-ordering { margin: 0; }   /* quita el margen inferior por defecto que desalineaba */
+  .pp-shop-toolbar .woocommerce-ordering select {
+    border: 1px solid #D1D5DB;
+    border-radius: 12px;
+    padding: 8px 40px 8px 12px;
+    font-family: var(--font-sans, 'Ubuntu', sans-serif);
+    font-size: 14px;
+    color: #1F2937;
+    background: #fff;
+  }
+  .listeo-shop-grid > .row { gap: 32px; margin-left: 0; margin-right: 0; }
+  .listeo-shop-grid > .row > .col-sidebar { flex: 0 0 256px; max-width: 256px; width: 256px; padding-left: 0; padding-right: 0; }
+  .listeo-shop-grid > .row > article { flex: 1 1 0%; max-width: none; width: auto; padding-left: 0; padding-right: 0; }
+}
+
+/* ============================================================
+   TIENDA (PLP) — Grilla de productos y TARJETA (alta fidelidad al diseño
+   Diseño/Stitch/tienda_plp*.html). Mobile-first: 2 columnas; ≥768px 3; ≥1280px 4.
+   Solo afecta al listado de la tienda (.listeo-shop-grid); Home Tienda/V2 y los
+   relacionados conservan su tarjeta original (markup distinto en content-product.php).
+   ============================================================ */
+.listeo-shop-grid ul.products {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px 16px;
+  margin: 0 !important;
+  padding: 0;
+  list-style: none;
+}
+.listeo-shop-grid ul.products::before,
+.listeo-shop-grid ul.products::after { content: none !important; display: none !important; }
+@media (min-width: 768px)  { .listeo-shop-grid ul.products { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1280px) { .listeo-shop-grid ul.products { grid-template-columns: repeat(4, 1fr); } }
+
+/* Tarjeta — VALORES EXACTOS del diseño (tienda_plp.html) */
+.listeo-shop-grid ul.products li.product.pp-product-card {
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  float: none !important;
+  background: #fff;
+  border: 1px solid #F3F4F6;                    /* gray-100 */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .05);   /* shadow-sm */
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .2s ease;
+}
+.listeo-shop-grid ul.products li.product.pp-product-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1), 0 2px 4px -2px rgba(0, 0, 0, .1); /* shadow-md */
+}
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: #F3F4F6;                           /* gray-100 */
+  overflow: hidden;
+}
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  margin: 0;
+}
+/* Puntos de galería */
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-dots {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 8px 0;
+}
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-dot { width: 6px; height: 6px; border-radius: 9999px; background: #D1D5DB; }
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-dot.is-active { background: #79C8D0; }
+/* Contenido */
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-body {
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-title {
+  margin: 0 0 4px;
+  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #1F2937;                                /* gray-800 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 40px;                              /* reserva 2 líneas → precio y botón alineados en todas las tarjetas */
+}
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-title a { color: inherit; text-decoration: none; }
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-title a:hover { color: #4AA5AD; }
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-price {
+  margin: 0 0 16px;                              /* espacio mínimo garantizado antes del botón */
+  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: #79C8D0;                                /* primary */
+}
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-price del { color: #9CA3AF; font-weight: 400; font-size: 12px; margin-right: 4px; text-decoration: line-through; }
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-price ins { text-decoration: none; }
+
+/* Botón "Agregar" (ancho completo, teal, ícono de carrito) — exacto.
+   Listeo oculta el botón (opacity:0, absolute, translateY) para revelarlo en
+   hover; aquí lo forzamos SIEMPRE visible y en flujo normal. */
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-body .button {
+  position: static !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  margin: auto 0 0;                              /* pegado al fondo → botones alineados aunque el contenido varíe */
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;                             /* py-2 */
+  background: #79C8D0 !important;
+  background-color: #79C8D0 !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: opacity .2s ease;
+}
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-body .button:hover { opacity: .9; }
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-body .button.added { background: #4AA5AD !important; }
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-cart-ico { width: 18px; height: 18px; flex: 0 0 auto; }
+/* Listeo añade un ícono de carrito extra con ::after (simple-line-icons) al botón;
+   lo ocultamos porque ya ponemos el nuestro (SVG) a la izquierda. */
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-body .button::after,
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-body .button::before {
+  content: none !important;
+  display: none !important;
+}
+/* Enlace "Ver carrito" que WooCommerce añade tras agregar por AJAX */
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-body .added_to_cart {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #4AA5AD;
+  text-decoration: underline;
+}
+
+/* Paginación de la tienda: pastillas redondas, activa/hover en teal (diseño) */
+.listeo-shop-grid .woocommerce-pagination { margin-top: 40px; text-align: center; }
+.listeo-shop-grid .woocommerce-pagination ul.page-numbers {
+  display: inline-flex;
+  justify-content: center;
+  gap: 8px;
+  border: 0 !important;
+  margin: 0;
+  padding: 0;
+}
+.listeo-shop-grid .woocommerce-pagination ul.page-numbers li {
+  border: 0 !important;
+  margin: 0;
+  overflow: visible;
+}
+.listeo-shop-grid .woocommerce-pagination ul.page-numbers li .page-numbers {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink-muted, #5A6B70);
+  border: 1px solid var(--ink-line-2, rgba(30, 46, 51, .06)) !important;
+  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .2s ease, color .2s ease;
+}
+.listeo-shop-grid .woocommerce-pagination ul.page-numbers li .page-numbers:hover,
+.listeo-shop-grid .woocommerce-pagination ul.page-numbers li .page-numbers.current {
+  background: var(--teal-parche, #79C8D0) !important;
+  color: #fff !important;
+  border-color: var(--teal-parche, #79C8D0) !important;
+}
+.listeo-shop-grid .woocommerce-pagination ul.page-numbers li .page-numbers.dots {
+  background: transparent;
+  border-color: transparent !important;
+}
+
+/* ============================================================
+   TIENDA (PLP) — Barra lateral de FILTROS: acordeón + look de checkbox
+   con contador (alta fidelidad al diseño). El filtrado sigue siendo el nativo
+   de WooCommerce (navegación por capas); esto es solo presentación.
+   ============================================================ */
+.listeo-shop-grid .col-sidebar .sidebar.right { padding: 0; }
+.listeo-shop-grid .col-sidebar section.widget {
+  margin: 0 0 6px !important;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--ink-line-2, rgba(30, 46, 51, .08));
+}
+.listeo-shop-grid .col-sidebar section.widget_product_search { border-bottom: 0; padding-bottom: 18px; }
+.listeo-shop-grid .col-sidebar .widget-title {
+  margin: 0;
+  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: #1F2937;
+}
+/* Acordeón: título con chevron; contenido plegable */
+.listeo-shop-grid .col-sidebar section.pp-accordion .widget-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 8px 0;
+  user-select: none;
+}
+.listeo-shop-grid .col-sidebar section.pp-accordion .widget-title::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235A6B70' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat;
+  transform: rotate(180deg);
+  transition: transform .25s ease;
+}
+.listeo-shop-grid .col-sidebar section.pp-accordion.pp-collapsed .widget-title::after { transform: rotate(0deg); }
+.listeo-shop-grid .col-sidebar section.pp-accordion.pp-collapsed > *:not(.widget-title) { display: none !important; }
+
+/* Items de navegación por capas / categorías: look de CHECKBOX + contador */
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list,
+.listeo-shop-grid .col-sidebar ul.product-categories {
+  list-style: none !important;
+  margin: 6px 0 4px;
+  padding: 0;
+}
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item,
+.listeo-shop-grid .col-sidebar ul.product-categories li.cat-item {
+  display: flex !important;
+  align-items: center;
+  padding: 4px 0;
+  margin: 0;
+  font-size: 14px;
+  color: #4B5563;
+  flex-wrap: wrap;
+  list-style: none !important;
+}
+/* El enlace envuelve la CASILLA + el TEXTO → clic en la casilla O en el texto filtra. */
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item > a,
+.listeo-shop-grid .col-sidebar ul.product-categories li.cat-item > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item > a::before,
+.listeo-shop-grid .col-sidebar ul.product-categories li.cat-item > a::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #D1D5DB;
+  border-radius: 4px;
+  background: #fff;
+  transition: background .15s ease, border-color .15s ease;
+}
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item:hover > a,
+.listeo-shop-grid .col-sidebar ul.product-categories li.cat-item:hover > a { color: var(--teal-deep, #4AA5AD); }
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item .count,
+.listeo-shop-grid .col-sidebar ul.product-categories li.cat-item .count {
+  margin-left: auto;
+  font-size: 12px;
+  color: #9CA3AF;
+}
+/* Activo (chosen / categoría actual) → checkbox teal con check */
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item.chosen > a::before,
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item.woocommerce-widget-layered-nav-list__item--chosen > a::before,
+.listeo-shop-grid .col-sidebar ul.product-categories li.current-cat > a::before {
+  background: var(--teal-parche, #79C8D0) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;
+  border-color: var(--teal-parche, #79C8D0);
+}
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item.chosen > a,
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item.woocommerce-widget-layered-nav-list__item--chosen > a,
+.listeo-shop-grid .col-sidebar ul.product-categories li.current-cat > a { color: var(--teal-deep, #4AA5AD); font-weight: 600; }
+/* Subcategorías (árbol): indentación en una fila propia */
+.listeo-shop-grid .col-sidebar ul.product-categories ul.children {
+  flex: 1 0 100%;
+  list-style: none !important;
+  margin: 4px 0 0;
+  padding-left: 28px;
+}
+
+/* Filtro de precio: botón y slider en teal */
+.listeo-shop-grid .col-sidebar .price_slider_amount .button {
+  background: var(--teal-parche, #79C8D0) !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  padding: 6px 18px !important;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  float: left;
+}
+.listeo-shop-grid .col-sidebar .price_slider_amount .price_label { float: right; font-size: 12px; color: var(--ink-muted, #5A6B70); padding-top: 6px; }
+.listeo-shop-grid .col-sidebar .price_slider_wrapper .ui-slider { background: var(--ink-line-2, rgba(30, 46, 51, .12)); }
+.listeo-shop-grid .col-sidebar .price_slider_wrapper .ui-slider .ui-slider-range { background: var(--teal-parche, #79C8D0) !important; }
+.listeo-shop-grid .col-sidebar .price_slider_wrapper .ui-slider .ui-slider-handle { background: var(--teal-parche, #79C8D0) !important; border: 2px solid #fff !important; }
+
+/* Buscar producto: input redondeado */
+.listeo-shop-grid .col-sidebar .widget_product_search input[type="search"],
+.listeo-shop-grid .col-sidebar .widget_product_search input.search-field {
+  border: 1px solid #D1D5DB;
+  border-radius: 12px;
+  padding: 8px 12px;
+  width: 100%;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Filtros con MUCHAS opciones (p. ej. Categorías): altura máxima + scroll vertical.
+   Las listas cortas (Especie, Tamaño…) no alcanzan la altura, así que no scrollean. */
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list,
+.listeo-shop-grid .col-sidebar ul.product-categories {
+  max-height: 260px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;                 /* aire para el scrollbar (no tapa el contador) */
+  scrollbar-width: thin;
+  scrollbar-color: var(--teal-soft, #BEE3E7) transparent;
+}
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list::-webkit-scrollbar,
+.listeo-shop-grid .col-sidebar ul.product-categories::-webkit-scrollbar { width: 6px; }
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list::-webkit-scrollbar-track,
+.listeo-shop-grid .col-sidebar ul.product-categories::-webkit-scrollbar-track { background: transparent; }
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list::-webkit-scrollbar-thumb,
+.listeo-shop-grid .col-sidebar ul.product-categories::-webkit-scrollbar-thumb { background: var(--teal-soft, #BEE3E7); border-radius: 999px; }
+
+/* Espacio entre el título "Buscar producto" y su input */
+.listeo-shop-grid .col-sidebar .widget_product_search .widget-title { margin-bottom: 12px; }
+
+/* Filtro de VALORACIÓN: el font de estrellas de WooCommerce no está cargado
+   (se veía "5 de 5" como texto). Reproducimos las estrellas con CSS (★). */
+.listeo-shop-grid .col-sidebar .wc-layered-nav-rating {
+  list-style: none !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  margin: 0;
+}
+.listeo-shop-grid .col-sidebar .wc-layered-nav-rating > a { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; }
+/* Casilla también en Valoración (antes de las estrellas), como los demás filtros */
+.listeo-shop-grid .col-sidebar .wc-layered-nav-rating > a::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #D1D5DB;
+  border-radius: 4px;
+  background: #fff;
+  transition: background .15s ease, border-color .15s ease;
+}
+.listeo-shop-grid .col-sidebar .wc-layered-nav-rating.chosen > a::before,
+.listeo-shop-grid .col-sidebar .wc-layered-nav-rating.wc-layered-nav-rating-chosen > a::before {
+  background: var(--teal-parche, #79C8D0) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;
+  border-color: var(--teal-parche, #79C8D0);
+}
+.listeo-shop-grid .col-sidebar .wc-layered-nav-rating .star-rating {
+  position: relative;
+  display: inline-block;
+  font-size: 16px;
+  line-height: 1;
+  white-space: nowrap;
+  font-family: Arial, "Segoe UI Symbol", "Apple Color Emoji", sans-serif;
+  vertical-align: middle;
+  letter-spacing: 1px;
+}
+.listeo-shop-grid .col-sidebar .wc-layered-nav-rating .star-rating::before {
+  content: "\2605\2605\2605\2605\2605";   /* ★★★★★ vacías */
+  color: #E5E7EB;
+  display: block;
+}
+.listeo-shop-grid .col-sidebar .wc-layered-nav-rating .star-rating > span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  font-size: 0;                            /* oculta el texto "5 de 5" */
+}
+.listeo-shop-grid .col-sidebar .wc-layered-nav-rating .star-rating > span::before {
+  content: "\2605\2605\2605\2605\2605";   /* ★★★★★ llenas */
+  color: #FFB800;
+  font-size: 16px;
+  letter-spacing: 1px;
+  display: block;
+  white-space: nowrap;
+}
+.listeo-shop-grid .col-sidebar .wc-layered-nav-rating .count { margin-left: auto; font-size: 12px; color: #9CA3AF; }
+
+/* "Filtrado por": los filtros ACTIVOS se muestran como chips con "×" para quitarlos
+   (clic en el chip = quitar ese filtro). La lista es un <ul> sin clase con <li.chosen>. */
+.listeo-shop-grid .col-sidebar .widget_layered_nav_filters ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  max-height: none;
+  overflow: visible;
+}
+.listeo-shop-grid .col-sidebar .widget_layered_nav_filters li {
+  display: inline-flex;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.listeo-shop-grid .col-sidebar .widget_layered_nav_filters li a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 12px;
+  background: var(--teal-mist, #E8F4F6);
+  color: var(--teal-ink, #1E5D64);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s ease;
+}
+.listeo-shop-grid .col-sidebar .widget_layered_nav_filters li a:hover { background: var(--teal-soft, #BEE3E7); }
+.listeo-shop-grid .col-sidebar .widget_layered_nav_filters li a::after {
+  content: "\00d7";
+  font-size: 15px;
+  line-height: 1;
+  color: var(--teal-deep, #4AA5AD);
+  margin-left: 2px;
+}
+
+@media (max-width: 767px) {
+  /* (La grilla de 2 columnas se define mobile-first en el bloque
+     "TIENDA (PLP) — Grilla de productos y TARJETA" más abajo.) */
+
+  /* --- Botón "Filtros" (arriba de los productos) --- */
+  .pp-filters-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--teal-mist, #E8F4F6);
+    color: var(--teal-ink, #1E5D64);
+    font-family: var(--font-sans, 'Ubuntu', sans-serif);
+    font-weight: 700;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .pp-filters-toggle svg { width: 16px; height: 16px; }
+
+  /* Select "Ordenar" como pastilla (fondo bone), estilo del diseño */
+  .pp-shop-toolbar .woocommerce-ordering select {
+    background: var(--bone, #F7F3EC);
+    border: 0;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-family: var(--font-sans, 'Ubuntu', sans-serif);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink, #1E2E33);
+    max-width: 44vw;
+  }
+
+  /* --- Resultados + Filtros + Ordenar en UNA sola fila (como el diseño) --- */
+  .pp-count-long { display: none; }
+  .pp-count-short { display: inline; }
+  .pp-shop-toolbar {
+    display: flex;
+    flex-wrap: nowrap;   /* los 3 en una sola fila (el aviso vacío está oculto) */
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .pp-shop-toolbar .woocommerce-notices-wrapper:empty { display: none; }
+  .pp-shop-toolbar .woocommerce-result-count {      /* Resultados (corto) → izquierda */
+    order: 1;
+    margin: 0;
+    flex: 0 1 auto;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink, #1E2E33);
+    white-space: nowrap;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pp-shop-toolbar .pp-filters-toggle { order: 2; margin: 0 0 0 auto; flex: 0 0 auto; }  /* auto-left empuja Filtros+Ordenar a la derecha */
+  .pp-shop-toolbar .woocommerce-ordering { order: 3; margin: 0; flex: 0 0 auto; } /* Ordenar (ancho fijo por su select) */
+  .pp-shop-toolbar .woocommerce-ordering select { min-width: 128px; max-width: 55vw; }
+
+  /* --- Panel deslizante desde la IZQUIERDA con los filtros --- */
+  .listeo-shop-grid .col-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 86%;
+    max-width: 360px;
+    margin: 0;
+    padding: 0 20px 28px;
+    background: #fff;
+    z-index: 10000;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform .3s ease;
+    box-shadow: 0 0 40px rgba(30, 46, 51, .25);
+    -webkit-overflow-scrolling: touch;
+  }
+  html.pp-filters-open .listeo-shop-grid .col-sidebar { transform: translateX(0); }
+  .listeo-shop-grid .col-sidebar .sidebar.right { width: 100%; float: none; }
+  body.admin-bar .listeo-shop-grid .col-sidebar { top: 46px; } /* respeta la barra de admin en pruebas */
+
+  /* --- Cabecera del panel (título + cerrar) --- */
+  .pp-filters-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    padding: 18px 0 14px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--ink-line-2, rgba(30, 46, 51, .08));
+    z-index: 2;
+  }
+  .pp-filters-head span {
+    font-family: var(--font-sans, 'Ubuntu', sans-serif);
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--ink, #1E2E33);
+  }
+  .pp-filters-close {
+    border: 0;
+    background: transparent;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--ink-muted, #5A6B70);
+    cursor: pointer;
+    padding: 0 4px;
+  }
+
+  /* --- Overlay oscuro --- */
+  .pp-filters-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 46, 51, .45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .3s ease;
+    z-index: 9999;
+  }
+  html.pp-filters-open .pp-filters-overlay { opacity: 1; visibility: visible; }
+  html.pp-filters-open, html.pp-filters-open body { overflow: hidden; }
+
+  /* --- Tarjeta y barra con los valores del DISEÑO MÓVIL (difieren del desktop) --- */
+  .listeo-shop-grid ul.products { gap: 24px 12px; }                       /* col-gap 12 en móvil */
+  .listeo-shop-grid ul.products li.product.pp-product-card {
+    border-radius: 20px;                                                  /* rounded-lg (móvil) */
+    border-color: rgba(30, 46, 51, .06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1), 0 2px 4px -2px rgba(0, 0, 0, .1); /* shadow-md */
+    transition: transform .22s cubic-bezier(.2, .8, .2, 1), box-shadow .22s ease;
+  }
+  .listeo-shop-grid ul.products li.product.pp-product-card .pp-card-media { background: #E8F4F6; } /* teal-mist (móvil) */
+  .listeo-shop-grid ul.products li.product.pp-product-card:hover { transform: translateY(-4px); }  /* hover:-translate-y-1 */
+  /* Barra móvil: fondo blanco con separación inferior (como el diseño) */
+  .pp-shop-toolbar { background: #fff; padding: 12px 0; border-bottom: 1px solid rgba(30, 46, 51, .06); }
+
+  /* Refuerzo: garantizar que la fila (Resultados + Filtros + Ordenar) SIEMPRE
+     se muestre en móvil y que el select no desborde (se puede recortar). */
+  .listeo-shop-grid .pp-shop-toolbar { display: flex !important; }
+  .listeo-shop-grid .pp-shop-toolbar > .woocommerce-result-count,
+  .listeo-shop-grid .pp-shop-toolbar > .pp-filters-toggle,
+  .listeo-shop-grid .pp-shop-toolbar > .woocommerce-ordering { display: inline-flex !important; visibility: visible !important; opacity: 1 !important; }
+  .listeo-shop-grid .pp-shop-toolbar > .woocommerce-ordering { max-width: 46%; }
+  .listeo-shop-grid .pp-shop-toolbar > .woocommerce-ordering select { max-width: 100%; }
+}
+
+/* =========================================================================
+   PPV2 BUSCADOR UNIFICADO — sugerencias del buscador (Directorio + Tienda)
+   Lógica en functions.php (bloque "PPV2 — BUSCADOR DEL HEADER UNIFICADO").
+   ========================================================================= */
+
+ul.ppv2-suggest-menu.ui-autocomplete {
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 0 !important;
+  border: 1px solid var(--teal-mist) !important;
+  border-radius: var(--r-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+  background: #fff !important;
+  z-index: 9999 !important;
+}
+
+/* Encabezados de grupo: "Directorio" / "Tienda" */
+ul.ppv2-suggest-menu .ppv2-suggest-group {
+  padding: 8px 14px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--teal-ink);
+  background: var(--teal-mist);
+  cursor: default;
+  list-style: none;
+}
+ul.ppv2-suggest-menu .ppv2-suggest-group:not(:first-child) {
+  margin-top: 6px;
+}
+
+/* Fila de sugerencia */
+ul.ppv2-suggest-menu .ppv2-suggest-item {
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none;
+}
+ul.ppv2-suggest-menu .ppv2-suggest-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  cursor: pointer;
+}
+ul.ppv2-suggest-menu .ui-state-active .ppv2-suggest-row,
+ul.ppv2-suggest-menu .ppv2-suggest-row.ui-state-active {
+  background: var(--teal-mist) !important;
+  color: inherit !important;
+}
+
+/* Miniatura */
+ul.ppv2-suggest-menu .ppv2-suggest-img {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border-radius: var(--r-sm);
+  object-fit: cover;
+  background: var(--teal-mist);
+}
+ul.ppv2-suggest-menu .ppv2-suggest-img-empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+
+/* Nombre y precio */
+ul.ppv2-suggest-menu .ppv2-suggest-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: var(--teal-ink);
+}
+ul.ppv2-suggest-menu .ppv2-suggest-price {
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--teal-deep);
+}
+
+/* --- Tabs Directorio | Tienda siempre visibles en el buscador del header --- */
+.ppv2-scope-tabs {
+  display: inline-flex;
+  gap: 6px;
+}
+.ppv2-scope-tab {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 8px 16px;
+  border: 1px solid var(--teal-mist);
+  border-radius: var(--r-pill);
+  background: #fff;
+  color: var(--teal-ink);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.ppv2-scope-tab:hover {
+  background: #F1F3F4;
+}
+/* Seleccionado en gris claro: no compite con el botón Buscar (teal) */
+.ppv2-scope-tab.ppv2-scope-tab-active,
+.ppv2-scope-tab.ppv2-scope-tab-active:hover {
+  background: #E3E7E9;
+  border-color: #D6DBDE;
+  color: var(--teal-ink);
+}
+
+/* Escritorio: pills dentro del campo, a la izquierda (estilo Behance) */
+@media (min-width: 768px) {
+  .header-search-container .main-search-input-item.text.ppv2-has-scope-tabs {
+    position: relative;
+  }
+  .header-search-container .ppv2-scope-tabs {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+  }
+  /* El texto escrito arranca después de las pills, nunca debajo de ellas */
+  .header-search-container .ppv2-has-scope-tabs input[name="keyword_search"] {
+    padding-left: 220px !important;
+    padding-right: 15px !important;
+  }
+}
+
+/* Móvil: tabs arriba del campo, por fuera, a lo ancho */
+@media (max-width: 767px) {
+  .header-search-container .main-search-input-item.text.ppv2-has-scope-tabs {
+    display: flex;
+    flex-direction: column;
+  }
+  .header-search-container .ppv2-scope-tabs {
+    display: flex;
+    order: -1;
+    margin: 0 0 10px;
+  }
+  .header-search-container .ppv2-scope-tabs .ppv2-scope-tab {
+    flex: 1 1 50%;
+    text-align: center;
+    padding: 10px 16px;
+  }
 }

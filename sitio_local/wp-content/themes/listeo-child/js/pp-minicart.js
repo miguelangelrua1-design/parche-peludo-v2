@@ -153,6 +153,14 @@
 		if (!e.target.closest) { return; }
 		if (!e.target.closest('.pp-cart-host')) { return; }
 
+		// "×" de la esquina: quita el producto COMPLETO (cualquier cantidad). Inmediato.
+		var removeX = e.target.closest('.pp-item-remove');
+		if (removeX) {
+			e.preventDefault();
+			sendQty(removeX.getAttribute('data-cart_item_key'), 0);
+			return;
+		}
+
 		// Papelera: eliminar de inmediato (sin debounce).
 		var remove = e.target.closest('.pp-remove');
 		if (remove) {

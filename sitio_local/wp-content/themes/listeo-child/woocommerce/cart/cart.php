@@ -42,6 +42,10 @@ do_action( 'woocommerce_before_cart' ); ?>
 				?>
 				<div class="pp-cart-row pp-cart-item" data-cart_item_key="<?php echo esc_attr( $cart_item_key ); ?>">
 
+					<button type="button" class="pp-item-remove" data-cart_item_key="<?php echo esc_attr( $cart_item_key ); ?>" aria-label="<?php esc_attr_e( 'Quitar producto del carrito', 'listeo-child' ); ?>" title="<?php esc_attr_e( 'Quitar producto', 'listeo-child' ); ?>">
+						<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+					</button>
+
 					<div class="pp-col-thumb">
 					<?php
 					if ( ! $product_permalink ) {
