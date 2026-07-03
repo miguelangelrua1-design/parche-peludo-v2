@@ -84,10 +84,15 @@
 		}
 	}
 
-	// Clic en el ícono del carrito (funciona con header original y clonado).
+	// Clic en el carrito del header: TODA el área del contenedor abre el panel
+	// (ícono, badge o cualquier borde), no solo el ícono de 21px — así es fácil de
+	// tocar en escritorio y móvil. Excluimos el propio panel deslizante
+	// (.pp-cart-host también lleva la clase .listeo-cart-container) para no
+	// abrir/cerrar al interactuar dentro de él.
 	document.addEventListener('click', function (e) {
-		var btn = e.target.closest ? e.target.closest('.mini-cart-button') : null;
-		if (btn) { toggleCart(e); }
+		if (!e.target.closest) { return; }
+		if (e.target.closest('.pp-cart-host')) { return; }
+		if (e.target.closest('.listeo-cart-container')) { toggleCart(e); }
 	});
 
 	// Tecla ESC cierra el panel.

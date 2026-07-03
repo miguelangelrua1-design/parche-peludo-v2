@@ -8935,3 +8935,26 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
     padding: 10px 16px;
   }
 }
+
+/* ============================================================
+   CARRITO DEL HEADER: cliqueable en TODA su área (desktop y móvil).
+   El desplegable (.listeo-cart-wrapper, 60x27) se posiciona encima de la
+   mitad inferior del botón y con pointer-events:auto robaba esos clics.
+   - En reposo lo hacemos transparente a eventos → los clics pasan al botón.
+   - En hover vuelve a capturar, para poder usar sus enlaces (ver carrito /
+     finalizar compra) en escritorio.
+   El clic sobre el botón navega al carrito vía JS (ppv2_cart_button_link),
+   necesario sobre todo en móvil, donde NO hay hover.
+   ============================================================ */
+.listeo-cart-container .mini-cart-button { cursor: pointer !important; }
+/* Subir el botón del carrito 5px para centrarlo verticalmente con el avatar de
+   cuenta: el contenedor (49px) centra bien, pero el botón (40px) quedaba pegado
+   abajo → su centro caía 5px por debajo del avatar. (.mini-cart-button ya es
+   position:relative por el centrado del ícono.) */
+.header-widget .listeo-cart-container .mini-cart-button { top: -5px; }
+/* El wrapper heredado de Listeo (.listeo-cart-wrapper) es una caja vacía que se
+   posiciona sobre la mitad inferior del botón y robaba los clics. Como el carrito
+   real abre un PANEL DESLIZANTE propio (pp-minicart.js), el wrapper ya no se usa:
+   lo dejamos SIEMPRE sin capturar eventos para que TODA el área del botón reciba
+   el clic y dispare la apertura del panel (en escritorio y en móvil). */
+.listeo-cart-container .listeo-cart-wrapper { pointer-events: none !important; }
