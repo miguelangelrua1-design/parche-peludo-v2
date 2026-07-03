@@ -8819,12 +8819,14 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
 .ppv2-scope-tab:hover {
   background: #F1F3F4;
 }
-/* Seleccionado en gris claro: no compite con el botón Buscar (teal) */
+/* Seleccionado: gris oscuro con texto blanco — inconfundible, y no compite
+   con el teal claro del botón Buscar */
 .ppv2-scope-tab.ppv2-scope-tab-active,
 .ppv2-scope-tab.ppv2-scope-tab-active:hover {
-  background: #E3E7E9;
-  border-color: #D6DBDE;
-  color: var(--teal-ink);
+  background: #6C757D;
+  border-color: #6C757D;
+  color: #fff;
+  font-weight: 700;
 }
 
 /* Escritorio: pills dentro del campo, a la izquierda (estilo Behance) */
