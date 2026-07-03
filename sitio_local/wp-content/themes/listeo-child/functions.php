@@ -416,42 +416,15 @@ function ppv2_mobile_menu_close_outside() {
 }
 add_action( 'wp_footer', 'ppv2_mobile_menu_close_outside', 121 );
 
-/**
- * Página de LISTADOS (directorio) — Ícono de búsqueda del header → abre el panel
- * de filtros izquierdo (solo móvil).
- *
- * El tema oculta la lupa del header (.mobile-search-trigger) en esta página
- * (no hay buscador en el header). El CSS del tema hijo la vuelve a mostrar
- * <992px. Aquí enganchamos su clic para que dispare el botón nativo
- * .enable-filters-button, que abre/cierra el panel .full-page-sidebar — el
- * MISMO comportamiento que el botón "Filtrar en Directorio".
- *
- * Scopeado a la página de listados (is_post_type_archive('listing')) → NO toca
- * el buscador ni la lupa de las demás secciones. Usamos delegación en document
- * para cubrir también el header "sticky" (clon que el tema crea al hacer scroll).
- * El handler nativo del tema sobre .mobile-search-trigger sigue corriendo (solo
- * togglea un contenedor de búsqueda vacío → inofensivo, y el CSS mantiene la lupa).
+/*
+ * NOTA (2026-07-02): aquí existía ppv2_listings_header_search_opens_filters(),
+ * que desviaba la lupa móvil del header para abrir el panel de filtros, porque
+ * en listados el header no tenía buscador. Desde que el buscador del header se
+ * inyecta también en listados (ppv2_listings_inject_header_search), la lupa
+ * recuperó su comportamiento NATIVO (mostrar/ocultar el buscador, igual que en
+ * el resto del sitio) y los filtros se abren con su botón propio de la página
+ * ("Mostrar Filtros") o con "Buscar en Directorio" en escritorio.
  */
-function ppv2_listings_header_search_opens_filters() {
-	if ( ! ppv2_is_listings_archive() ) {
-		return;
-	}
-	?>
-	<script>
-	(function () {
-		document.addEventListener('click', function (e) {
-			var trigger = e.target.closest('.mobile-search-trigger');
-			if (!trigger) return;
-			var btn = document.querySelector('.enable-filters-button');
-			if (!btn) return;
-			e.preventDefault();
-			btn.click(); // togglea .full-page-sidebar.enabled-sidebar (abre/cierra el panel)
-		});
-	})();
-	</script>
-	<?php
-}
-add_action( 'wp_footer', 'ppv2_listings_header_search_opens_filters', 120 );
 
 /**
  * Página de LISTADOS (directorio) — Botón "Buscar en Directorio" en el header

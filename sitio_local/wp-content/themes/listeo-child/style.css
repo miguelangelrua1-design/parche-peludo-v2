@@ -5818,9 +5818,10 @@ body.ppv2-listings #header .header-widget .user-menu {
    Página de LISTADOS — Header móvil: mostrar el ícono de búsqueda (la lupa
    nativa del header, .mobile-search-trigger) que el tema OCULTA aquí
    (.ppv2-listings .mobile-search-trigger { display:none }).
-   En el resto del sitio ese ícono abre el buscador del header; en listados no
-   hay buscador en el header, así que lo reutilizamos para ABRIR EL PANEL DE
-   FILTROS izquierdo (ver el JS en functions.php: ppv2_listings_header_*).
+   (2026-07-02) El buscador del header ahora TAMBIÉN existe en listados
+   (functions.php: ppv2_listings_inject_header_search) y la lupa cumple su rol
+   nativo: mostrar/ocultar esa barra, igual que en el resto del sitio. Los
+   filtros se abren con el botón "Mostrar Filtros" de la página.
 
    Solo <992px: a ese ancho el panel .full-page-sidebar es un drawer togglable
    (a ≥992px ya se muestra fijo, no haría falta el ícono). Scopeado a la página
@@ -5842,37 +5843,15 @@ body.ppv2-listings #header .header-widget .user-menu {
   body.ppv2-listings #header .header-widget .user-menu {
     margin-left: 0 !important;
   }
-  /* Mantener SIEMPRE la lupa (no intercambiar a la "X" del buscador del tema):
-     en listados este ícono solo abre/cierra el panel de filtros. */
-  body.ppv2-listings .mobile-search-trigger .gg-search { display: block !important; }
-  body.ppv2-listings .mobile-search-trigger .gg-close { display: none !important; }
+  /* (2026-07-02) La lupa volvió a su comportamiento NATIVO — muestra/oculta el
+     buscador del header (ahora inyectado también aquí) e intercambia lupa/X
+     como en el resto del sitio. Ya no se fija el ícono. */
 }
 
 /* En listados el header ahora SÍ contiene el buscador (inyectado por
-   functions.php: ppv2_listings_inject_header_search). En ≤1200px el tema trata
-   .header-search-container como barra overlay (absolute, 100vw) oculta hasta
-   que la lupa le añada .visible — pero aquí la lupa abre los FILTROS (flujo
-   propio de listados), así que mostramos la barra SIEMPRE, estática dentro del
-   header: el header crece y empuja el contenido, sin tapar nada. El toggle
-   nativo de la lupa (.visible) queda inofensivo porque la barra ya es visible. */
-@media (max-width: 1200px) {
-  body.ppv2-listings .hws-container {
-    flex-wrap: wrap;
-  }
-  body.ppv2-listings .header-search-container {
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: all !important;
-    position: static !important;
-    width: 100% !important;
-    flex: 1 1 100%;
-    order: 99;
-    margin: 0 !important;
-    padding: 0 0 14px !important;
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-}
+   functions.php: ppv2_listings_inject_header_search) y en móvil se comporta
+   NATIVO, igual que en el resto del sitio: barra oculta que la lupa
+   muestra/oculta (.visible). No se necesitan reglas extra aquí. */
 
 /* ============================================================================
    Página de LISTADOS — Botón "Buscar en Directorio" en el header (DESKTOP).
