@@ -423,79 +423,13 @@ add_action( 'wp_footer', 'ppv2_mobile_menu_close_outside', 121 );
  * inyecta también en listados (ppv2_listings_inject_header_search), la lupa
  * recuperó su comportamiento NATIVO (mostrar/ocultar el buscador, igual que en
  * el resto del sitio) y los filtros se abren con su botón propio de la página
- * ("Mostrar Filtros") o con "Buscar en Directorio" en escritorio.
- */
-
-/**
- * Página de LISTADOS (directorio) — Botón "Buscar en Directorio" en el header
- * (escritorio).
+ * ("Mostrar Filtros").
  *
- * Inyecta un botón en .header-widget (junto a "Iniciar Sesión" y el carrito) con
- * el ícono de lupa (gg-search) y el texto "Buscar en Directorio". Al hacer clic
- * dispara el botón nativo .enable-filters-button → abre/cierra el panel
- * "Mostrar Filtros". El estilo (outline pill, fondo transparente, texto negro)
- * y la visibilidad (solo escritorio; en móvil ya está la lupa-ícono) viven en
- * style.css (.ppv2-buscar-directorio).
- *
- * Inyectado por JS para no tocar el plugin ni el tema padre (a prueba de
- * actualizaciones). Scopeado a la página de listados. El clic se maneja por
- * delegación en document para cubrir cualquier botón (incl. header sticky).
+ * También existía ppv2_listings_header_buscar_button() (botón "Buscar en
+ * Directorio" en el header de escritorio, que abría el panel de filtros):
+ * retirado el 2026-07-02 por la misma razón — era el sustituto del buscador
+ * cuando el header de listados no lo tenía.
  */
-function ppv2_listings_header_buscar_button() {
-	if ( ! ppv2_is_listings_archive() ) {
-		return;
-	}
-	?>
-	<script>
-	(function () {
-		// Mantiene el botón JUSTO ANTES de la cuenta (logueado: .user-menu /
-		// sin sesión: .sign-in) y con SU MISMO flex-order, para que queden
-		// adyacentes en cualquier modo. El header conmuta display:flex/contents
-		// según estado (logueado/no) y ancho, lo que cambia el "order" de la
-		// cuenta; si el botón no se re-sincroniza, se descoloca / se monta sobre
-		// "Mi Cuenta". Por eso re-sincronizamos en DOMContentLoaded, load y resize.
-		function syncOne(hw) {
-			var b = hw.querySelector('.ppv2-buscar-directorio');
-			var acc = hw.querySelector('.user-menu, .sign-in');
-			if (!b || !acc) return;
-			if (b.nextElementSibling !== acc) hw.insertBefore(b, acc);
-			var ord = getComputedStyle(acc).order;
-			b.style.order = (ord && ord !== 'normal') ? ord : '4';
-		}
-		function inject() {
-			document.querySelectorAll('#header .header-widget').forEach(function (hw) {
-				var acc = hw.querySelector('.user-menu, .sign-in');
-				if (!acc) return;
-				if (!hw.querySelector('.ppv2-buscar-directorio')) {
-					var b = document.createElement('a');
-					b.href = '#';
-					b.className = 'ppv2-buscar-directorio';
-					b.setAttribute('role', 'button');
-					b.innerHTML = '<i class="gg-search"></i><span>Buscar en Directorio</span>';
-					hw.insertBefore(b, acc);
-				}
-				syncOne(hw);
-			});
-		}
-		function syncAll() {
-			document.querySelectorAll('#header .header-widget').forEach(syncOne);
-		}
-		document.addEventListener('DOMContentLoaded', inject);
-		window.addEventListener('load', function () { inject(); syncAll(); });
-		window.addEventListener('resize', syncAll);
-		// Clic (delegado): abre/cierra el panel disparando el botón nativo.
-		document.addEventListener('click', function (e) {
-			var b = e.target.closest('.ppv2-buscar-directorio');
-			if (!b) return;
-			e.preventDefault();
-			var t = document.querySelector('.enable-filters-button');
-			if (t) t.click();
-		});
-	})();
-	</script>
-	<?php
-}
-add_action( 'wp_footer', 'ppv2_listings_header_buscar_button', 121 );
 
 /**
  * Página de LISTADOS — Feedback de carga en el panel de filtros (móvil).

@@ -5853,78 +5853,12 @@ body.ppv2-listings #header .header-widget .user-menu {
    NATIVO, igual que en el resto del sitio: barra oculta que la lupa
    muestra/oculta (.visible). No se necesitan reglas extra aquí. */
 
-/* ============================================================================
-   Página de LISTADOS — Botón "Buscar en Directorio" en el header (DESKTOP).
-   Botón inyectado por JS (functions.php: ppv2_listings_header_buscar_button)
-   dentro de .header-widget, alineado horizontalmente con "Iniciar Sesión" y el
-   carrito. Estilo "outline": fondo transparente, texto negro, borde fino y
-   esquinas redondeadas (pill). Al hacer clic dispara .enable-filters-button
-   (abre/cierra el panel "Mostrar Filtros"). Reutiliza el ícono de lupa gg-search.
-
-   Solo en escritorio: en móvil ya existe la lupa-ícono del header, así que este
-   botón de texto se oculta <992px.
-   ============================================================================ */
-body.ppv2-listings .ppv2-buscar-directorio {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: transparent;
-  color: #1a1a1a;                 /* texto en negro */
-  border: 1px solid #cfcfcf;      /* contenedor lineal */
-  border-radius: 30px;            /* bordes circulares (pill) */
-  padding: 10px 20px;
-  margin-right: 16px;
-  font-weight: 600;
-  font-size: 15px;
-  line-height: 1;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease;
-}
-/* El botón inicia el grupo derecho del header: margin-left:auto absorbe el
-   espacio libre y empuja botón + cuenta + carrito al borde derecho, pegados
-   entre sí. La cuenta (.sign-in / .user-menu) deja su margen a 0 para no
-   separarse del botón (antes el margin-left:auto en la cuenta hacía que el
-   botón se montara sobre "Mi Cuenta"). El order del botón lo iguala el JS al
-   de la cuenta, así queda en su mismo grupo aunque el header use flex/contents. */
-@media (min-width: 992px) {
-  body.ppv2-listings .ppv2-buscar-directorio {
-    margin-left: auto;
-  }
-  body.ppv2-listings #header .header-widget .sign-in,
-  body.ppv2-listings #header .header-widget .user-menu {
-    margin-left: 0 !important;
-    /* Alinear verticalmente con el botón y el carrito: el tema baja la cuenta
-       con position:relative + top (6px en .sign-in / 9px en .user-menu); lo
-       anulamos para que el flex (align-items:center) la centre con los demás. */
-    top: 0 !important;
-  }
-}
-/* Logueado: el avatar de "Mi Cuenta" (.user-menu) va position:absolute con
-   left:-28px → se sale ~28px a la IZQUIERDA de su caja y se monta sobre el
-   botón. Le damos margen izquierdo al .user-menu para que el avatar despeje el
-   botón (queda una separación similar a la del estado deslogueado). */
-@media (min-width: 992px) {
-  body.ppv2-listings #header .header-widget .user-menu {
-    margin-left: 30px !important;
-  }
-}
-body.ppv2-listings .ppv2-buscar-directorio:hover,
-body.ppv2-listings .ppv2-buscar-directorio:focus {
-  color: #1a1a1a;
-  border-color: #79c8d0;          /* teal de marca al pasar el mouse */
-}
-/* El ícono de lupa (css.gg) dentro del botón: en negro y sin los márgenes
-   negativos que trae por defecto, para que quede centrado junto al texto. */
-body.ppv2-listings .ppv2-buscar-directorio .gg-search {
-  color: #1a1a1a;
-  margin: 0;
-  flex: 0 0 auto;
-}
-/* En móvil ya existe la lupa-ícono del header → ocultar este botón de texto. */
-@media (max-width: 991px) {
-  body.ppv2-listings .ppv2-buscar-directorio { display: none !important; }
-}
+/* (2026-07-02) Aquí vivían los estilos del botón "Buscar en Directorio"
+   (.ppv2-buscar-directorio) del header de listados en escritorio: RETIRADO.
+   Era el sustituto del buscador cuando el header de listados no lo tenía; con
+   el buscador inyectado (ppv2_listings_inject_header_search) quedó redundante.
+   La cuenta + carrito vuelven a alinearse con la regla base de esta sección
+   (margin-left:auto en .sign-in/.user-menu, más arriba). */
 
 /* ============================================================================
    Botón "Iniciar Sesión" del header — hover al color principal de marca
