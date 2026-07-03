@@ -91,9 +91,16 @@
 	// abrir/cerrar al interactuar dentro de él.
 	document.addEventListener('click', function (e) {
 		if (!e.target.closest) { return; }
-		if (e.target.closest('.pp-cart-host')) { return; }
-		if (e.target.closest('.listeo-cart-container')) { toggleCart(e); }
-	});
+		if (e.target.closest('.pp-cart-host')) { return; } // clics DENTRO del panel: no tocar
+		if (e.target.closest('.listeo-cart-container')) {
+			// Interceptamos en fase de CAPTURA y detenemos el evento por completo:
+			// así NINGÚN otro manejador (una navegación heredada/cacheada al carrito,
+			// un enlace, etc.) llega a ejecutarse. El carrito SOLO abre el panel.
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			toggleCart();
+		}
+	}, true);
 
 	// Tecla ESC cierra el panel.
 	document.addEventListener('keydown', function (e) {

@@ -341,6 +341,33 @@ function ppv2_shop_category_tree() {
  * activo). Se hace por código —no en la base de datos— para que el orden viaje
  * con el tema al desplegar a producción. Solo afecta el frontend.
  */
+/**
+ * Muestra "Directorio" como nombre del archivo de listados (antes "Listados"),
+ * tanto en el título de la página (H1) como en el <title> del navegador. Solo
+ * afecta el frontend; NO cambia las etiquetas del panel de administración.
+ */
+// H1 del archivo de listados: el template usa la opción listeo_listings_archive_title.
+// La forzamos a "Directorio" en el FRONTEND por código (así viaja con el tema al
+// desplegar y no depende de configurar la opción en la BD de producción).
+add_filter( 'pre_option_listeo_listings_archive_title', 'ppv2_listings_archive_name' );
+function ppv2_listings_archive_name( $value ) {
+	if ( is_admin() ) { return $value; } // en el panel, respetar el valor real
+	return 'Directorio';
+}
+// Respaldo si el template usara the_archive_title() en vez de la opción.
+add_filter( 'get_the_archive_title', 'ppv2_listings_get_archive_title' );
+function ppv2_listings_get_archive_title( $title ) {
+	if ( is_post_type_archive( 'listing' ) ) { return 'Directorio'; }
+	return $title;
+}
+// <title> del navegador: lo genera Rank Math (SEO) → cambiamos "Listados" por
+// "Directorio" solo en el archivo de listados.
+add_filter( 'rank_math/frontend/title', 'ppv2_listings_seo_title' );
+function ppv2_listings_seo_title( $title ) {
+	if ( is_post_type_archive( 'listing' ) ) { return str_replace( 'Listados', 'Directorio', $title ); }
+	return $title;
+}
+
 add_filter( 'sidebars_widgets', 'ppv2_shop_sidebar_order' );
 function ppv2_shop_sidebar_order( $sidebars ) {
 	if ( is_admin() || empty( $sidebars['sidebar-shop'] ) || ! is_array( $sidebars['sidebar-shop'] ) ) {
