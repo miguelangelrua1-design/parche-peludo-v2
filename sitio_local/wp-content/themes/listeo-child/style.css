@@ -8850,6 +8850,14 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
 
 /* Móvil: tabs arriba del campo, por fuera, a lo ancho */
 @media (max-width: 767px) {
+  /* Desplegable de sugerencias centrado, al ancho de la pantalla con margen
+     (jQuery UI lo posiciona inline; left/right con !important lo corrigen) */
+  ul.ppv2-suggest-menu.ui-autocomplete {
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+  }
   .header-search-container .main-search-input-item.text.ppv2-has-scope-tabs {
     display: flex;
     flex-direction: column;
