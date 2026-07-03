@@ -8958,3 +8958,15 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
    lo dejamos SIEMPRE sin capturar eventos para que TODA el área del botón reciba
    el clic y dispare la apertura del panel (en escritorio y en móvil). */
 .listeo-cart-container .listeo-cart-wrapper { pointer-events: none !important; }
+
+/* ============================================================
+   ÍCONOS DE CATEGORÍA DEL DIRECTORIO (barra superior con mapa).
+   Listeo los pinta en rojo (#F92442); los pasamos al teal de marca.
+   Son SVG inline dentro de .category-slider .icon-container.
+   ============================================================ */
+.category-slider .icon-container svg,
+.category-slider .icon-container svg path { fill: var(--teal-parche, #79C8D0) !important; }
+/* Íconos que usan trazo en vez de relleno (por si algún set los trae así) */
+.category-slider .icon-container svg [stroke]:not([stroke="none"]) { stroke: var(--teal-parche, #79C8D0) !important; }
+/* El ítem "Todos" usa un ícono de FUENTE (color, no fill) */
+.category-slider .category-item i:not(.listeo-svg-icon-box-grid) { color: var(--teal-parche, #79C8D0) !important; }
