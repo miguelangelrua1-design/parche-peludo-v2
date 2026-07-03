@@ -368,6 +368,28 @@ function ppv2_listings_seo_title( $title ) {
 	return $title;
 }
 
+/**
+ * Renombra "Marcadores/Bookmarks" → "Favoritos" en el panel Mi Cuenta:
+ *  - Etiqueta del menú lateral (dominio 'listeo', cadena "Bookmarks").
+ *  - Menú de usuario del header (dominio 'listeo_core', cadena "Bookmarks").
+ *  - Mensajes de estado vacío del listado de favoritos (dominio 'listeo_core').
+ * Se hace por traducción (gettext) para no editar el tema padre ni el plugin.
+ */
+add_filter( 'gettext', 'ppv2_rename_bookmarks_to_favoritos', 20, 3 );
+function ppv2_rename_bookmarks_to_favoritos( $translated, $text, $domain ) {
+	if ( 'listeo' === $domain && 'Bookmarks' === $text ) {
+		return 'Favoritos';
+	}
+	if ( 'listeo_core' === $domain ) {
+		switch ( $text ) {
+			case 'Bookmarks':                         return 'Favoritos'; // menú de usuario del header
+			case 'No bookmarks!':                     return '¡No hay favoritos!';
+			case 'You don\'t have any bookmarks yet.': return 'Aún no tienes ningún favorito.';
+		}
+	}
+	return $translated;
+}
+
 add_filter( 'sidebars_widgets', 'ppv2_shop_sidebar_order' );
 function ppv2_shop_sidebar_order( $sidebars ) {
 	if ( is_admin() || empty( $sidebars['sidebar-shop'] ) || ! is_array( $sidebars['sidebar-shop'] ) ) {
