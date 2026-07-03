@@ -16,15 +16,18 @@ defined( 'ABSPATH' ) || exit;
 <p class="woocommerce-result-count">
 	<span class="pp-count-long">
 	<?php
+	// Texto en español directo (no dependemos de la traducción de WooCommerce,
+	// que en esta instalación aparece en inglés).
 	if ( 1 === intval( $total ) ) {
-		esc_html_e( 'Showing the single result', 'woocommerce' );
+		esc_html_e( 'Mostrando el único resultado', 'listeo-child' );
 	} elseif ( $total <= $per_page || -1 === $per_page ) {
-		printf( esc_html( _n( 'Showing all %d result', 'Showing all %d results', $total, 'woocommerce' ) ), (int) $total );
+		/* translators: %d: total de resultados */
+		printf( esc_html( _n( 'Mostrando %d resultado', 'Mostrando los %d resultados', $total, 'listeo-child' ) ), (int) $total );
 	} else {
 		$first = ( $per_page * $current ) - $per_page + 1;
 		$last  = min( $total, $per_page * $current );
-		/* translators: 1: first result 2: last result 3: total results */
-		printf( wp_kses_post( _nx( 'Showing %1$d&ndash;%2$d of %3$d result', 'Showing %1$d&ndash;%2$d of %3$d results', $total, 'with first and last result', 'woocommerce' ) ), (int) $first, (int) $last, (int) $total );
+		/* translators: 1: primer resultado 2: último resultado 3: total de resultados */
+		printf( wp_kses_post( _nx( 'Mostrando %1$d&ndash;%2$d de %3$d resultado', 'Mostrando %1$d&ndash;%2$d de %3$d resultados', $total, 'con primer y último resultado', 'listeo-child' ) ), (int) $first, (int) $last, (int) $total );
 	}
 	?>
 	</span>

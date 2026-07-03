@@ -7928,7 +7928,7 @@ body.tax-product_tag #titlebar h1 { font-weight: 700 !important; }
   body.post-type-archive-product #titlebar #breadcrumbs,
   body.tax-product_cat #titlebar #breadcrumbs,
   body.tax-product_tag #titlebar #breadcrumbs,
-  body.search.woocommerce #titlebar #breadcrumbs { margin: 0; flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  body.search.woocommerce #titlebar #breadcrumbs { margin: 0; flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; position: static !important; transform: none !important; top: auto !important; right: auto !important; max-width: 55%; }
 }
 
 /* Eliminar el espacio vacío entre el titlebar y el listado de productos (~55px). */
@@ -8313,6 +8313,14 @@ body.woocommerce-checkout .wc-block-components-address-form__postcode {
 }
 .listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item:hover > a,
 .listeo-shop-grid .col-sidebar ul.product-categories li.cat-item:hover > a { color: var(--teal-deep, #4AA5AD); }
+/* Hover sobre la fila: el borde del checkbox se resalta en teal de marca
+   (referencia tipo Amazon). No aplica a los ya activos, que van rellenos. */
+.listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item:not(.chosen):not(.woocommerce-widget-layered-nav-list__item--chosen):hover > a::before,
+.listeo-shop-grid .col-sidebar ul.product-categories li.cat-item:not(.current-cat):hover > a::before,
+.listeo-shop-grid .col-sidebar .wc-layered-nav-rating:not(.chosen):not(.wc-layered-nav-rating-chosen):hover > a::before {
+  border-color: var(--teal-parche, #79C8D0);
+  box-shadow: 0 0 0 3px rgba(121, 200, 208, .18);
+}
 .listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item .count,
 .listeo-shop-grid .col-sidebar ul.product-categories li.cat-item .count {
   margin-left: auto;
@@ -8329,12 +8337,129 @@ body.woocommerce-checkout .wc-block-components-address-form__postcode {
 .listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item.chosen > a,
 .listeo-shop-grid .col-sidebar .woocommerce-widget-layered-nav-list__item.woocommerce-widget-layered-nav-list__item--chosen > a,
 .listeo-shop-grid .col-sidebar ul.product-categories li.current-cat > a { color: var(--teal-deep, #4AA5AD); font-weight: 600; }
-/* Subcategorías (árbol): indentación en una fila propia */
+
+/* ==================================================================
+   CATEGORÍAS = árbol de NAVEGACIÓN estilo app (base: diseño adjunto).
+   Cada nombre es un ENLACE a la página de la categoría; NO es un filtro.
+   La estructura de cada fila la arma JS (ppv2_shop_category_tree):
+     <li> → <div.pp-cat-row>[ chevron | espaciador ] <a>Nombre</a> <span.count>N</span> </div> + <ul.children>
+   El chevron pliega/despliega los hijos SIN navegar.
+   ================================================================== */
+/* El <li> deja de ser fila flex: la fila real es .pp-cat-row */
+.listeo-shop-grid .col-sidebar ul.product-categories li.cat-item {
+  display: block !important;
+  padding: 0 !important;
+  margin: 2px 0 !important;
+}
+/* Nunca mostrar casilla de checkbox en categorías (tampoco durante la carga JS) */
+.listeo-shop-grid .col-sidebar ul.product-categories li.cat-item > a::before,
+.listeo-shop-grid .col-sidebar ul.product-categories .pp-cat-row a::before {
+  content: none !important;
+  display: none !important;
+}
+/* Fila = "pill" con chevron + nombre + contador */
+.listeo-shop-grid .col-sidebar ul.product-categories .pp-cat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  transition: background .15s ease;
+}
+.listeo-shop-grid .col-sidebar ul.product-categories .pp-cat-row > a {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: inline-block;
+  color: var(--ink, #1E2E33);
+  font-size: 14px;
+  line-height: 1.3;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Chevron = control de plegado (solo en padres) */
+.listeo-shop-grid .col-sidebar ul.product-categories .pp-cat-toggle {
+  flex: 0 0 auto;
+  width: 16px; height: 16px;
+  padding: 0; margin: 0; border: 0; background: transparent;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.listeo-shop-grid .col-sidebar ul.product-categories .pp-cat-toggle::before {
+  content: "";
+  width: 16px; height: 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E") center/12px no-repeat;
+  transition: transform .18s ease;
+}
+/* Hoja (sin hijos): espaciador para alinear el nombre con el de los padres */
+.listeo-shop-grid .col-sidebar ul.product-categories .pp-cat-spacer {
+  flex: 0 0 auto; width: 16px; height: 1px;
+}
+/* Abierto → el chevron apunta hacia abajo */
+.listeo-shop-grid .col-sidebar ul.product-categories li.pp-open > .pp-cat-row .pp-cat-toggle::before {
+  transform: rotate(90deg);
+}
+/* Contador como "pill" a la derecha */
+.listeo-shop-grid .col-sidebar ul.product-categories .pp-cat-row .count {
+  flex: 0 0 auto;
+  margin-left: auto;
+  min-width: 22px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #EAECEF;
+  color: #6B7280;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+/* Hover (no seleccionado): fondo menta + texto teal */
+.listeo-shop-grid .col-sidebar ul.product-categories li.cat-item:not(.current-cat) > .pp-cat-row:hover {
+  background: var(--teal-mist, #E7F4F5);
+}
+.listeo-shop-grid .col-sidebar ul.product-categories li.cat-item:not(.current-cat) > .pp-cat-row:hover > a {
+  color: var(--teal-deep, #4AA5AD);
+}
+/* Padre EXPANDIDO (abierto), no seleccionado → fondo menta suave + texto teal */
+.listeo-shop-grid .col-sidebar ul.product-categories li.pp-open:not(.current-cat) > .pp-cat-row {
+  background: var(--teal-mist, #E7F4F5);
+}
+.listeo-shop-grid .col-sidebar ul.product-categories li.pp-open:not(.current-cat) > .pp-cat-row > a {
+  color: var(--teal-deep, #4AA5AD);
+  font-weight: 600;
+}
+.listeo-shop-grid .col-sidebar ul.product-categories li.pp-open:not(.current-cat) > .pp-cat-row .pp-cat-toggle::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234AA5AD' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+}
+/* SELECCIONADO (categoría actual) → pill teal sólido, texto e íconos blancos */
+.listeo-shop-grid .col-sidebar ul.product-categories li.current-cat > .pp-cat-row {
+  background: var(--teal-parche, #79C8D0);
+}
+.listeo-shop-grid .col-sidebar ul.product-categories li.current-cat > .pp-cat-row > a {
+  color: #fff !important;
+  font-weight: 700;
+}
+.listeo-shop-grid .col-sidebar ul.product-categories li.current-cat > .pp-cat-row .count {
+  background: rgba(255, 255, 255, .28);
+  color: #fff;
+}
+.listeo-shop-grid .col-sidebar ul.product-categories li.current-cat > .pp-cat-row .pp-cat-toggle::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+}
+/* Subárbol: indentación por nivel + oculto si el padre está plegado */
 .listeo-shop-grid .col-sidebar ul.product-categories ul.children {
-  flex: 1 0 100%;
   list-style: none !important;
-  margin: 4px 0 0;
-  padding-left: 28px;
+  margin: 2px 0 2px 14px;
+  padding: 0;
+}
+.listeo-shop-grid .col-sidebar ul.product-categories li.pp-has-children:not(.pp-open) > ul.children {
+  display: none;
+}
+/* Niveles profundos (nietos en adelante): contador plano, sin pill (como el diseño) */
+.listeo-shop-grid .col-sidebar ul.product-categories ul.children ul.children .pp-cat-row .count {
+  background: transparent;
+  padding: 0;
+  color: #9CA3AF;
+  font-weight: 400;
 }
 
 /* Filtro de precio: botón y slider en teal */
@@ -8386,6 +8511,17 @@ body.woocommerce-checkout .wc-block-components-address-form__postcode {
 
 /* Espacio entre el título "Buscar producto" y su input */
 .listeo-shop-grid .col-sidebar .widget_product_search .widget-title { margin-bottom: 12px; }
+
+/* Lupa del buscador de filtros: al pasar el mouse se tiñe del teal de marca
+   (el tema padre la ponía blanca sobre fondo oscuro). Mantenemos fondo claro
+   para que el teal se lea bien. */
+.listeo-shop-grid .col-sidebar .woocommerce-product-search button:hover {
+  background-color: #F3F4F6 !important;
+}
+.listeo-shop-grid .col-sidebar .woocommerce-product-search button:hover,
+.listeo-shop-grid .col-sidebar .woocommerce-product-search button:hover i {
+  color: var(--teal-parche, #79C8D0) !important;
+}
 
 /* Filtro de VALORACIÓN: el font de estrellas de WooCommerce no está cargado
    (se veía "5 de 5" como texto). Reproducimos las estrellas con CSS (★). */

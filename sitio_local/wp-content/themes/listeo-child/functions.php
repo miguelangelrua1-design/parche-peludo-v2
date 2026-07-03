@@ -218,9 +218,17 @@ function ppv2_shop_filters_overlay() {
 	<script>
 	(function () {
 		var html = document.documentElement;
+			// Reinicia el slider de precio de WooCommerce: oculta los inputs #min_price/#max_price,
+			// muestra el slider y lo reconstruye si falta. Necesario cuando el widget se muestra
+			// DESPUÉS de estar oculto (cajón móvil o sección plegada), donde se veían los inputs
+			// crudos. WooCommerce expone el gancho 'init_price_filter' para reinicializarlo.
+			function ppReinitPrice() {
+				if ( ! window.jQuery ) { return; }
+				setTimeout( function () { window.jQuery( document.body ).trigger( 'init_price_filter' ); }, 60 );
+			}
 		document.addEventListener('click', function (e) {
 			var t = e.target;
-			if ( t.closest && t.closest('.pp-filters-toggle') ) { html.classList.add('pp-filters-open'); return; }
+			if ( t.closest && t.closest('.pp-filters-toggle') ) { html.classList.add('pp-filters-open'); ppReinitPrice(); return; }
 			if ( ( t.closest && t.closest('.pp-filters-close') ) || ( t.classList && t.classList.contains('pp-filters-overlay') ) ) { html.classList.remove('pp-filters-open'); }
 		});
 		document.addEventListener('keydown', function (e) { if ( e.key === 'Escape' || e.keyCode === 27 ) { html.classList.remove('pp-filters-open'); } });
@@ -233,17 +241,136 @@ function ppv2_shop_filters_overlay() {
 				var title = w.querySelector('.widget-title');
 				if ( ! title ) { return; }
 				w.classList.add('pp-accordion');
+				// Por defecto TODAS las secciones de filtros arrancan plegadas (cerradas);
+				// se abren al hacer clic en su título.
+				w.classList.add('pp-collapsed');
 				title.setAttribute('role', 'button');
 				title.setAttribute('tabindex', '0');
-				title.addEventListener('click', function () { w.classList.toggle('pp-collapsed'); });
+				title.addEventListener('click', function () { w.classList.toggle('pp-collapsed'); if ( ! w.classList.contains('pp-collapsed') ) { ppReinitPrice(); } });
 				title.addEventListener('keydown', function ( e ) {
-					if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); w.classList.toggle('pp-collapsed'); }
+					if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); w.classList.toggle('pp-collapsed'); if ( ! w.classList.contains('pp-collapsed') ) { ppReinitPrice(); } }
 				});
 			} );
 		}
 	})();
 	</script>
 	<?php
+}
+
+/**
+ * Árbol de CATEGORÍAS de la tienda con estilo "app": envuelve cada fila del
+ * widget de categorías en .pp-cat-row, agrega un chevron a la izquierda (en los
+ * padres) que pliega/despliega sus hijos SIN navegar, y abre automáticamente el
+ * camino de la categoría actual. El nombre sigue siendo un enlace a la página de
+ * la categoría. El look lo pone style.css (.pp-cat-row / .pp-cat-toggle).
+ */
+add_action( 'wp_footer', 'ppv2_shop_category_tree', 122 );
+function ppv2_shop_category_tree() {
+	if ( ! ppv2_is_shop_context() ) { return; }
+	?>
+	<script>
+	(function () {
+		var root = document.querySelector('.listeo-shop-grid .col-sidebar ul.product-categories');
+		if ( ! root ) { return; }
+
+		// 1) Construir cada fila: [chevron | espaciador] + <a> + <span.count>
+		Array.prototype.forEach.call( root.querySelectorAll('li.cat-item'), function ( li ) {
+			if ( li.querySelector(':scope > .pp-cat-row') ) { return; } // ya procesado
+			var a = li.querySelector(':scope > a');
+			if ( ! a ) { return; }
+			var count   = li.querySelector(':scope > .count');
+			var childUl = li.querySelector(':scope > ul.children');
+			var isParent = li.classList.contains('cat-parent') && !! childUl;
+
+			var row = document.createElement('div');
+			row.className = 'pp-cat-row';
+
+			if ( isParent ) {
+				li.classList.add('pp-has-children');
+				var btn = document.createElement('button');
+				btn.type = 'button';
+				btn.className = 'pp-cat-toggle';
+				btn.setAttribute('aria-label', 'Mostrar u ocultar subcategorías');
+				btn.setAttribute('aria-expanded', 'false');
+				row.appendChild(btn);
+			} else {
+				var sp = document.createElement('span');
+				sp.className = 'pp-cat-spacer';
+				row.appendChild(sp);
+			}
+
+			row.appendChild(a); // mueve el enlace dentro de la fila
+			if ( count ) {
+				count.textContent = count.textContent.replace(/[()\s]/g, ''); // "(4)" -> "4"
+				row.appendChild(count);
+			}
+			li.insertBefore(row, childUl || null);
+		});
+
+		// 2) Abrir automáticamente el camino de la categoría actual (si la hay).
+		Array.prototype.forEach.call( root.querySelectorAll('li.current-cat'), function ( li ) {
+			var p = li;
+			while ( p && p !== root ) {
+				if ( p.tagName === 'LI' && p.classList.contains('pp-has-children') ) {
+					p.classList.add('pp-open');
+					var b = p.querySelector(':scope > .pp-cat-row > .pp-cat-toggle');
+					if ( b ) { b.setAttribute('aria-expanded', 'true'); }
+				}
+				p = p.parentElement;
+			}
+		});
+
+		// 3) Plegar/desplegar al pulsar el chevron (sin navegar a la categoría).
+		root.addEventListener('click', function ( e ) {
+			var btn = e.target.closest('.pp-cat-toggle');
+			if ( ! btn ) { return; }
+			e.preventDefault();
+			e.stopPropagation();
+			var li = btn.closest('li.cat-item');
+			var open = li.classList.toggle('pp-open');
+			btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+		});
+	})();
+	</script>
+	<?php
+}
+
+/**
+ * Ordena el panel de filtros de la tienda para que "Categorías" quede como el
+ * PRIMER filtro después del buscador (y del resumen "Filtrado por", si está
+ * activo). Se hace por código —no en la base de datos— para que el orden viaje
+ * con el tema al desplegar a producción. Solo afecta el frontend.
+ */
+add_filter( 'sidebars_widgets', 'ppv2_shop_sidebar_order' );
+function ppv2_shop_sidebar_order( $sidebars ) {
+	if ( is_admin() || empty( $sidebars['sidebar-shop'] ) || ! is_array( $sidebars['sidebar-shop'] ) ) {
+		return $sidebars;
+	}
+	$widgets = $sidebars['sidebar-shop'];
+
+	// Localizar el widget de Categorías (WC_Widget_Product_Categories).
+	$cat_id = '';
+	foreach ( $widgets as $wid ) {
+		if ( false !== strpos( $wid, 'product_categories' ) ) { $cat_id = $wid; break; }
+	}
+	if ( '' === $cat_id ) { return $sidebars; }
+
+	// Quitarlo de su posición actual.
+	$widgets = array_values( array_filter( $widgets, function ( $w ) use ( $cat_id ) { return $w !== $cat_id; } ) );
+
+	// Punto de inserción: justo después del buscador; si lo que sigue es el
+	// resumen "Filtrado por" (layered_nav_filters), va inmediatamente después de ese.
+	$insert = 0;
+	foreach ( $widgets as $i => $wid ) {
+		if ( false !== strpos( $wid, 'product_search' ) ) { $insert = $i + 1; break; }
+	}
+	if ( isset( $widgets[ $insert ] ) && false !== strpos( $widgets[ $insert ], 'layered_nav_filters' ) ) {
+		$insert++;
+	}
+
+	array_splice( $widgets, $insert, 0, array( $cat_id ) );
+	$sidebars['sidebar-shop'] = $widgets;
+	return $sidebars;
 }
 
 /**
