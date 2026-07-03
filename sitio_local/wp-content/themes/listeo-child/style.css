@@ -5848,16 +5848,29 @@ body.ppv2-listings #header .header-widget .user-menu {
   body.ppv2-listings .mobile-search-trigger .gg-close { display: none !important; }
 }
 
-/* En listados, el contenedor de búsqueda del header (.header-search-container)
-   está VACÍO (la búsqueda real es el panel de filtros). En móvil el tema lo
-   convierte en una barra blanca a ancho completo (position:absolute, 100vw,
-   padding 20px, borde y sombra) que se muestra al añadirle .visible — y el
-   handler nativo de la lupa se la añade al tocarla, dejando una BARRA VACÍA
-   debajo del header. Como aquí no contiene buscador, lo ocultamos por completo
-   en el header móvil de listados (es position:absolute → no afecta el layout). */
+/* En listados el header ahora SÍ contiene el buscador (inyectado por
+   functions.php: ppv2_listings_inject_header_search). En ≤1200px el tema trata
+   .header-search-container como barra overlay (absolute, 100vw) oculta hasta
+   que la lupa le añada .visible — pero aquí la lupa abre los FILTROS (flujo
+   propio de listados), así que mostramos la barra SIEMPRE, estática dentro del
+   header: el header crece y empuja el contenido, sin tapar nada. El toggle
+   nativo de la lupa (.visible) queda inofensivo porque la barra ya es visible. */
 @media (max-width: 1200px) {
+  body.ppv2-listings .hws-container {
+    flex-wrap: wrap;
+  }
   body.ppv2-listings .header-search-container {
-    display: none !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: all !important;
+    position: static !important;
+    width: 100% !important;
+    flex: 1 1 100%;
+    order: 99;
+    margin: 0 !important;
+    padding: 0 0 14px !important;
+    background: transparent !important;
+    box-shadow: none !important;
   }
 }
 

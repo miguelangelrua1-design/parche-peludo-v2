@@ -600,6 +600,58 @@ function ppv2_listings_filter_loading_feedback() {
 add_action( 'wp_footer', 'ppv2_listings_filter_loading_feedback', 122 );
 
 /**
+ * Página de LISTADOS — Buscador del header (con tabs Directorio|Tienda) también aquí.
+ *
+ * El layout "halfsidebar" carga header-fullwidthnosearch.php, cuyo contenedor
+ * .header-search-container viene VACÍO de fábrica (Listeo comenta el shortcode
+ * para no duplicar la búsqueda con el panel de filtros). Inyectamos el mismo
+ * formulario del header vía el shortcode oficial, DESARMADO para no chocar con
+ * el panel de filtros:
+ *  - id del <form> renombrado: el JS de filtros AJAX de Listeo (ajax.search.min.js)
+ *    selecciona "#listeo_core-search-form"; con IDs duplicados serializaría el
+ *    formulario equivocado y los filtros dejarían de aplicar.
+ *  - id del campo keyword renombrado (el name="keyword_search" SE CONSERVA:
+ *    es lo que usa la búsqueda del servidor y nuestro autocompletado).
+ *  - sin clase ajax-search: Listeo no vigila los campos de este formulario.
+ * Se imprime oculto al inicio del footer (prioridad 5) y un script inmediato lo
+ * mueve al contenedor ANTES de DOMContentLoaded, para que el autocompletado y
+ * los tabs (bloque PPV2 del buscador) lo encuentren como en las demás páginas.
+ * La barra visible en ≤1200px la resuelve style.css (body.ppv2-listings).
+ */
+function ppv2_listings_inject_header_search() {
+	if ( ! ppv2_is_listings_archive() ) {
+		return;
+	}
+	// El shortcode de Listeo IMPRIME el formulario (no lo devuelve): lo
+	// capturamos con un buffer para poder desarmarlo antes de mostrarlo.
+	ob_start();
+	$returned = do_shortcode( '[listeo_search_form action=' . get_post_type_archive_link( 'listing' ) . ' source="header" custom_class="main-search-form gray-style"]' );
+	$printed  = ob_get_clean();
+	$form     = $printed ? $printed : $returned;
+	if ( ! $form ) {
+		return;
+	}
+	$form = str_replace( 'id="listeo_core-search-form"', 'id="ppv2-header-search-form"', $form );
+	$form = str_replace( 'id="keyword_search"', 'id="ppv2_keyword_search"', $form );
+	$form = str_replace( 'ajax-search', '', $form );
+	echo '<div id="ppv2-header-search-src" style="display:none">' . $form . '</div>';
+	?>
+	<script>
+	(function () {
+		var src = document.getElementById('ppv2-header-search-src');
+		if (!src) { return; }
+		var dest = document.querySelector('#header .header-search-container');
+		if (dest && !dest.querySelector('form')) {
+			while (src.firstChild) { dest.appendChild(src.firstChild); }
+		}
+		src.parentNode.removeChild(src);
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'ppv2_listings_inject_header_search', 5 );
+
+/**
  * FIX — Quitar de Favoritos no funciona sin recargar.
  *
  * Bug en Listeo Core (`assets/js/frontend.js`): el clic para AÑADIR favorito está
