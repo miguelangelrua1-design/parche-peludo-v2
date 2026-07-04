@@ -1,37 +1,42 @@
 /* ==========================================================================
    PP CHAT DE LISTADOS — [ppv2_chat_listado]
    Asistente conversacional para que los negocios creen su listado.
-   Usa los tokens de marca del tema hijo listeo-child; el bloque de abajo
-   define valores de respaldo por si el tema no los provee (cada token se
-   redefine con var(<token heredado>, <respaldo>), patrón válido en CSS).
+   Tokens internos --ppc-*: toman su valor de los tokens de marca del tema
+   hijo listeo-child (--teal-parche, --ink, --s-*, --r-*…) y, si el tema no
+   los define, usan el valor de respaldo indicado. OJO: no redefinir un token
+   con su propio nombre (p. ej. --ink: var(--ink, …)) — es un ciclo inválido
+   en CSS y anula TODOS los estilos (bug corregido el 2026-07-04).
    ========================================================================== */
 
-.ppv2-chat {
-  --teal-parche: var(--teal-parche, #79C8D0);
-  --teal-deep: var(--teal-deep, #4AA5AD);
-  --teal-soft: var(--teal-soft, #BEE3E7);
-  --teal-mist: var(--teal-mist, #E8F4F6);
-  --teal-ink: var(--teal-ink, #1E5D64);
-  --paper: var(--paper, #FFFFFF);
-  --bone: var(--bone, #F7F3EC);
-  --ink: var(--ink, #1E2E33);
-  --ink-muted: var(--ink-muted, #5A6B70);
-  --ink-faint: var(--ink-faint, #8E9A9E);
-  --ink-line: var(--ink-line, rgba(30,46,51,.10));
-  --ink-line-2: var(--ink-line-2, rgba(30,46,51,.06));
-  --danger: var(--danger, #E85D75);
-  --surface: var(--surface, #FFFFFF);
-  --font-sans: var(--font-sans, 'Ubuntu', sans-serif);
-  --s-2: var(--s-2, 8px);
-  --s-3: var(--s-3, 12px);
-  --s-4: var(--s-4, 16px);
-  --s-5: var(--s-5, 20px);
-  --r-sm: var(--r-sm, 6px);
-  --r-lg: var(--r-lg, 20px);
-  --r-xl: var(--r-xl, 28px);
-  --r-pill: var(--r-pill, 999px);
-  --shadow-sm: var(--shadow-sm, 0 1px 2px rgba(30,46,51,.06), 0 1px 3px rgba(30,46,51,.04));
-  --shadow-lg: var(--shadow-lg, 0 12px 32px rgba(30,46,51,.10), 0 4px 8px rgba(30,46,51,.06));
+.ppv2-chat,
+.ppcl-type-chat {
+  --ppc-teal-parche: var(--teal-parche, #79C8D0);
+  --ppc-teal-deep: var(--teal-deep, #4AA5AD);
+  --ppc-teal-soft: var(--teal-soft, #BEE3E7);
+  --ppc-teal-mist: var(--teal-mist, #E8F4F6);
+  --ppc-teal-ink: var(--teal-ink, #1E5D64);
+  --ppc-paper: var(--paper, #FFFFFF);
+  --ppc-bone: var(--bone, #F7F3EC);
+  --ppc-ink: var(--ink, #1E2E33);
+  --ppc-ink-muted: var(--ink-muted, #5A6B70);
+  --ppc-ink-faint: var(--ink-faint, #8E9A9E);
+  --ppc-ink-line: var(--ink-line, rgba(30,46,51,.10));
+  --ppc-ink-line-2: var(--ink-line-2, rgba(30,46,51,.06));
+  --ppc-danger: var(--danger, #E85D75);
+  --ppc-surface: var(--surface, #FFFFFF);
+  --ppc-font-sans: var(--font-sans, 'Ubuntu', sans-serif);
+  --ppc-s-2: var(--s-2, 8px);
+  --ppc-s-3: var(--s-3, 12px);
+  --ppc-s-4: var(--s-4, 16px);
+  --ppc-s-5: var(--s-5, 20px);
+  --ppc-r-sm: var(--r-sm, 6px);
+  --ppc-r-lg: var(--r-lg, 20px);
+  --ppc-r-xl: var(--r-xl, 28px);
+  --ppc-r-pill: var(--r-pill, 999px);
+  --ppc-shadow-sm: var(--shadow-sm, 0 1px 2px rgba(30,46,51,.06), 0 1px 3px rgba(30,46,51,.04));
+  --ppc-shadow-lg: var(--shadow-lg, 0 12px 32px rgba(30,46,51,.10), 0 4px 8px rgba(30,46,51,.06));
+  --ppc-dur-2: var(--dur-2, .2s);
+  --ppc-ease-out: var(--ease-out, ease);
 }
 
 .ppv2-chat {
@@ -41,20 +46,20 @@
   flex-direction: column;
   height: 640px;
   max-height: 80vh;
-  background: var(--surface);
-  border: 1px solid var(--ink-line);
-  border-radius: var(--r-xl);
-  box-shadow: var(--shadow-lg);
+  background: var(--ppc-surface);
+  border: 1px solid var(--ppc-ink-line);
+  border-radius: var(--ppc-r-xl);
+  box-shadow: var(--ppc-shadow-lg);
   overflow: hidden;
-  font-family: var(--font-sans);
+  font-family: var(--ppc-font-sans);
 }
 
 .ppv2-chat-header {
   display: flex;
   align-items: center;
-  gap: var(--s-3);
-  padding: var(--s-4) var(--s-5);
-  background: var(--teal-parche);
+  gap: var(--ppc-s-3);
+  padding: var(--ppc-s-4) var(--ppc-s-5);
+  background: var(--ppc-teal-parche);
   color: #fff;
 }
 .ppv2-chat-header strong {
@@ -74,24 +79,24 @@
   width: 42px;
   height: 42px;
   background: rgba(255,255,255,.22);
-  border-radius: var(--r-pill);
+  border-radius: var(--ppc-r-pill);
   font-size: 20px;
 }
 
 .ppv2-chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: var(--s-5);
-  background: var(--teal-mist);
+  padding: var(--ppc-s-5);
+  background: var(--ppc-teal-mist);
   display: flex;
   flex-direction: column;
-  gap: var(--s-3);
+  gap: var(--ppc-s-3);
 }
 
 .ppv2-chat-msg {
   display: flex;
   align-items: flex-end;
-  gap: var(--s-2);
+  gap: var(--ppc-s-2);
   max-width: 85%;
 }
 .ppv2-chat-bot { align-self: flex-start; }
@@ -104,30 +109,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--paper);
-  border: 1px solid var(--ink-line);
-  border-radius: var(--r-pill);
+  background: var(--ppc-paper);
+  border: 1px solid var(--ppc-ink-line);
+  border-radius: var(--ppc-r-pill);
   font-size: 15px;
 }
 
 .ppv2-chat-bubble {
-  padding: var(--s-3) var(--s-4);
-  border-radius: var(--r-lg);
+  padding: var(--ppc-s-3) var(--ppc-s-4);
+  border-radius: var(--ppc-r-lg);
   font-size: 15px;
   line-height: 1.45;
   white-space: pre-wrap;
   word-break: break-word;
 }
 .ppv2-chat-bot .ppv2-chat-bubble {
-  background: var(--paper);
-  color: var(--ink);
-  border-bottom-left-radius: var(--r-sm);
-  box-shadow: var(--shadow-sm);
+  background: var(--ppc-paper);
+  color: var(--ppc-ink);
+  border-bottom-left-radius: var(--ppc-r-sm);
+  box-shadow: var(--ppc-shadow-sm);
 }
 .ppv2-chat-user .ppv2-chat-bubble {
-  background: var(--teal-deep);
+  background: var(--ppc-teal-deep);
   color: #fff;
-  border-bottom-right-radius: var(--r-sm);
+  border-bottom-right-radius: var(--ppc-r-sm);
 }
 
 /* Indicador de "escribiendo" */
@@ -139,8 +144,8 @@
 .ppv2-chat-typing i {
   width: 7px;
   height: 7px;
-  background: var(--teal-deep);
-  border-radius: var(--r-pill);
+  background: var(--ppc-teal-deep);
+  border-radius: var(--ppc-r-pill);
   animation: ppv2-chat-blink 1s infinite ease-in-out;
 }
 .ppv2-chat-typing i:nth-child(2) { animation-delay: .15s; }
@@ -154,54 +159,54 @@
 .ppv2-chat-summary {
   align-self: flex-start;
   max-width: 92%;
-  background: var(--paper);
-  border: 1px solid var(--teal-soft);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-sm);
-  padding: var(--s-4) var(--s-5);
+  background: var(--ppc-paper);
+  border: 1px solid var(--ppc-teal-soft);
+  border-radius: var(--ppc-r-lg);
+  box-shadow: var(--ppc-shadow-sm);
+  padding: var(--ppc-s-4) var(--ppc-s-5);
   display: flex;
   flex-direction: column;
-  gap: var(--s-2);
+  gap: var(--ppc-s-2);
 }
 .ppv2-chat-summary-row {
   font-size: 14px;
   line-height: 1.4;
-  color: var(--ink);
+  color: var(--ppc-ink);
 }
-.ppv2-chat-summary-row strong { color: var(--teal-ink); }
+.ppv2-chat-summary-row strong { color: var(--ppc-teal-ink); }
 
 /* Zona de entrada */
 .ppv2-chat-input {
-  padding: var(--s-4) var(--s-5);
-  background: var(--paper);
-  border-top: 1px solid var(--ink-line-2);
+  padding: var(--ppc-s-4) var(--ppc-s-5);
+  background: var(--ppc-paper);
+  border-top: 1px solid var(--ppc-ink-line-2);
 }
 .ppv2-chat-inputrow {
   display: flex;
-  gap: var(--s-2);
+  gap: var(--ppc-s-2);
   align-items: flex-end;
 }
 .ppv2-chat-field {
   flex: 1;
-  padding: 12px var(--s-4) !important;
-  border: 1px solid var(--ink-line) !important;
-  border-radius: var(--r-lg) !important;
-  font-family: var(--font-sans) !important;
+  padding: 12px var(--ppc-s-4) !important;
+  border: 1px solid var(--ppc-ink-line) !important;
+  border-radius: var(--ppc-r-lg) !important;
+  font-family: var(--ppc-font-sans) !important;
   font-size: 15px !important;
-  color: var(--ink) !important;
-  background: var(--paper) !important;
+  color: var(--ppc-ink) !important;
+  background: var(--ppc-paper) !important;
   box-shadow: none !important;
   margin: 0 !important;
   min-height: 0 !important;
   resize: none;
-  transition: border-color var(--dur-2, .2s) var(--ease-out, ease);
+  transition: border-color var(--ppc-dur-2, .2s) var(--ppc-ease-out, ease);
 }
 .ppv2-chat-field:focus {
-  border-color: var(--teal-parche) !important;
+  border-color: var(--ppc-teal-parche) !important;
   outline: none !important;
 }
 .ppv2-chat-field-error {
-  border-color: var(--danger) !important;
+  border-color: var(--ppc-danger) !important;
   animation: ppv2-chat-shake .3s;
 }
 @keyframes ppv2-chat-shake {
@@ -212,69 +217,69 @@
 .ppv2-chat-send {
   flex: 0 0 auto;
   padding: 12px 22px;
-  background: var(--teal-parche);
+  background: var(--ppc-teal-parche);
   color: #fff;
   border: 0;
-  border-radius: var(--r-pill);
-  font-family: var(--font-sans);
+  border-radius: var(--ppc-r-pill);
+  font-family: var(--ppc-font-sans);
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
-  transition: background var(--dur-2, .2s) var(--ease-out, ease);
+  transition: background var(--ppc-dur-2, .2s) var(--ppc-ease-out, ease);
 }
-.ppv2-chat-send:hover { background: var(--teal-deep); }
+.ppv2-chat-send:hover { background: var(--ppc-teal-deep); }
 
 .ppv2-chat-skip {
   display: block;
-  margin: var(--s-2) auto 0;
+  margin: var(--ppc-s-2) auto 0;
   background: none;
   border: 0;
-  color: var(--ink-faint);
-  font-family: var(--font-sans);
+  color: var(--ppc-ink-faint);
+  font-family: var(--ppc-font-sans);
   font-size: 13px;
   text-decoration: underline;
   cursor: pointer;
 }
-.ppv2-chat-skip:hover { color: var(--ink-muted); }
+.ppv2-chat-skip:hover { color: var(--ppc-ink-muted); }
 
 /* Botones de opciones (categorías, ciudades, acciones) */
 .ppv2-chat-options {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--s-2);
+  gap: var(--ppc-s-2);
   justify-content: center;
 }
 .ppv2-chat-option {
   padding: 10px 18px;
-  background: var(--paper);
-  border: 1.5px solid var(--teal-parche);
-  border-radius: var(--r-pill);
-  color: var(--teal-ink);
-  font-family: var(--font-sans);
+  background: var(--ppc-paper);
+  border: 1.5px solid var(--ppc-teal-parche);
+  border-radius: var(--ppc-r-pill);
+  color: var(--ppc-teal-ink);
+  font-family: var(--ppc-font-sans);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--dur-2, .2s) var(--ease-out, ease);
+  transition: all var(--ppc-dur-2, .2s) var(--ppc-ease-out, ease);
 }
 .ppv2-chat-option:hover {
-  background: var(--teal-parche);
+  background: var(--ppc-teal-parche);
   color: #fff;
 }
 .ppv2-chat-option-primary {
-  background: var(--teal-parche);
+  background: var(--ppc-teal-parche);
   color: #fff;
 }
 .ppv2-chat-option-primary:hover {
-  background: var(--teal-deep);
-  border-color: var(--teal-deep);
+  background: var(--ppc-teal-deep);
+  border-color: var(--ppc-teal-deep);
 }
 .ppv2-chat-option-alt {
-  border-color: var(--ink-line);
-  color: var(--ink-muted);
+  border-color: var(--ppc-ink-line);
+  color: var(--ppc-ink-muted);
 }
 .ppv2-chat-option-alt:hover {
-  background: var(--bone);
-  color: var(--ink);
+  background: var(--ppc-bone);
+  color: var(--ppc-ink);
 }
 
 /* Móvil */
@@ -282,11 +287,11 @@
   .ppv2-chat {
     height: 76vh;
     max-height: none;
-    border-radius: var(--r-lg);
+    border-radius: var(--ppc-r-lg);
   }
-  .ppv2-chat-messages { padding: var(--s-4); }
+  .ppv2-chat-messages { padding: var(--ppc-s-4); }
   .ppv2-chat-msg { max-width: 92%; }
-  .ppv2-chat-input { padding: var(--s-3) var(--s-4); }
+  .ppv2-chat-input { padding: var(--ppc-s-3) var(--ppc-s-4); }
 }
 
 /* --------------------------------------------------------------------------
@@ -295,9 +300,9 @@
 
 .ppcl-type-chat {
   position: relative;
-  border: 2px solid var(--teal-parche, #79C8D0) !important;
-  border-radius: var(--r-lg, 20px);
-  background: var(--teal-mist, #E8F4F6) !important;
+  border: 2px solid var(--ppc-teal-parche, #79C8D0) !important;
+  border-radius: var(--ppc-r-lg, 20px);
+  background: var(--ppc-teal-mist, #E8F4F6) !important;
 }
 
 .ppcl-type-badge {
@@ -305,10 +310,10 @@
   top: 12px;
   right: 12px;
   padding: 3px 12px;
-  background: var(--teal-parche, #79C8D0);
+  background: var(--ppc-teal-parche, #79C8D0);
   color: #fff;
-  border-radius: var(--r-pill, 999px);
-  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  border-radius: var(--ppc-r-pill, 999px);
+  font-family: var(--ppc-font-sans, 'Ubuntu', sans-serif);
   font-size: 12px;
   font-weight: 500;
   line-height: 1.4;
@@ -319,17 +324,17 @@
   fill: #fff;
 }
 .ppcl-type-chat-icon {
-  background: var(--teal-deep, #4AA5AD) !important;
+  background: var(--ppc-teal-deep, #4AA5AD) !important;
 }
 
 .ppcl-type-chat h3 {
-  color: var(--teal-ink, #1E5D64);
+  color: var(--ppc-teal-ink, #1E5D64);
 }
 
 .ppcl-type-sub {
   margin: 4px 0 0;
-  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  font-family: var(--ppc-font-sans, 'Ubuntu', sans-serif);
   font-size: 13px;
-  color: var(--ink-muted, #5A6B70);
+  color: var(--ppc-ink-muted, #5A6B70);
   text-align: center;
 }
