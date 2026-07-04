@@ -87,6 +87,7 @@ function ppcl_enqueue_assets() {
 		'nonce'      => wp_create_nonce( 'ppv2_chat_listado' ),
 		'loggedIn'   => is_user_logged_in(),
 		'loginUrl'   => wp_login_url( get_permalink() ),
+		'backUrl'    => ( $submit = absint( get_option( 'listeo_submit_page' ) ) ) ? get_permalink( $submit ) : home_url( '/' ),
 		'categories' => ppcl_term_tree( 'listing_category' ),
 		'regions'    => ppcl_term_tree( 'region' ),
 	) );

@@ -491,11 +491,25 @@
 		$root = $('#ppv2-chat-listado');
 		if (!$root.length) { return; }
 
+		// Botón "Volver": regresa a la página anterior (o a Agregar Listado
+		// si se llegó directo, sin historial del mismo sitio).
+		var $back = $('<a>')
+			.addClass('ppv2-chat-back')
+			.attr('href', cfg.backUrl || '#')
+			.text('← Volver')
+			.on('click', function (e) {
+				if (document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
+					e.preventDefault();
+					window.history.back();
+				}
+			});
+
 		var $header = $('<div>').addClass('ppv2-chat-header')
 			.append($('<span>').addClass('ppv2-chat-header-icon').text('🐾'))
 			.append($('<div>')
 				.append($('<strong>').text('Asistente Parche Peludo'))
-				.append($('<small>').text('Crea tu listado conversando')));
+				.append($('<small>').text('Crea tu listado conversando')))
+			.append($back);
 		$messages = $('<div>').addClass('ppv2-chat-messages');
 		$inputArea = $('<div>').addClass('ppv2-chat-input');
 		$root.append($header, $messages, $inputArea);
