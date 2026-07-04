@@ -8973,3 +8973,18 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
 
 /* El CSS del chat de creación de listados ([ppv2_chat_listado]) vive ahora
    en el plugin propio pp-chat-listados (css/pp-chat-listados.css). */
+
+/* ============================================================
+   Botón "Eliminar" de Favoritos (quitar de favoritos): al pasar el
+   mouse se vuelve ROJO (acción destructiva). Scoped al botón unbookmark.
+   ============================================================ */
+a.listeo_core-unbookmark-it:hover,
+a.listeo_core-unbookmark-it:focus {
+  background-color: #DC2626 !important;
+  border-color: #DC2626 !important;
+  color: #fff !important;
+}
+a.listeo_core-unbookmark-it:hover i,
+a.listeo_core-unbookmark-it:focus i {
+  color: #fff !important;
+}
