@@ -288,3 +288,48 @@
   .ppv2-chat-msg { max-width: 92%; }
   .ppv2-chat-input { padding: var(--s-3) var(--s-4); }
 }
+
+/* --------------------------------------------------------------------------
+   Tarjeta "Crear con el chat" en "Elige el tipo de listado" (Agregar Listado)
+   -------------------------------------------------------------------------- */
+
+.ppcl-type-chat {
+  position: relative;
+  border: 2px solid var(--teal-parche, #79C8D0) !important;
+  border-radius: var(--r-lg, 20px);
+  background: var(--teal-mist, #E8F4F6) !important;
+}
+
+.ppcl-type-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 3px 12px;
+  background: var(--teal-parche, #79C8D0);
+  color: #fff;
+  border-radius: var(--r-pill, 999px);
+  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Ícono: mismo círculo que las tarjetas nativas pero en teal */
+.ppcl-type-chat .listing-type-icon svg {
+  fill: #fff;
+}
+.ppcl-type-chat-icon {
+  background: var(--teal-deep, #4AA5AD) !important;
+}
+
+.ppcl-type-chat h3 {
+  color: var(--teal-ink, #1E5D64);
+}
+
+.ppcl-type-sub {
+  margin: 4px 0 0;
+  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  font-size: 13px;
+  color: var(--ink-muted, #5A6B70);
+  text-align: center;
+}

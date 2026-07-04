@@ -3,7 +3,7 @@
  * Plugin Name: PP Chat de Listados
  * Plugin URI:  https://parchepeludo.com
  * Description: Asistente conversacional (chat guiado, sin IA) para que los negocios creen su listado tipo "directorio". Shortcode [ppv2_chat_listado]. Crea el borrador en estado "preview" y envía al dueño al formulario nativo de Listeo prellenado para completar fotos/horarios y enviarlo a revisión.
- * Version:     1.0.0
+ * Version:     1.1.0
  * Author:      Parche Peludo
  * Text Domain: pp-chat-listados
  *
@@ -51,6 +51,31 @@ function ppcl_register_assets() {
 			ppcl_enqueue_assets();
 		}
 	}
+
+	// Tarjeta "Crear con el chat" en la pantalla "Elige el tipo de listado"
+	// (página "Agregar listado" de Listeo). Solo para roles que pueden crear
+	// listados tipo directorio, y solo si la página del chat está publicada.
+	$submit_page = absint( get_option( 'listeo_submit_page' ) );
+	if ( $submit_page && is_page( $submit_page ) && ppcl_user_can_use_chat() ) {
+		$chat_url = ppcl_chat_page_url();
+		if ( $chat_url ) {
+			$card_js = PP_CHAT_LISTADOS_DIR . 'js/pp-chat-listados-card.js';
+			wp_enqueue_style( 'pp-chat-listados' );
+			wp_enqueue_script(
+				'pp-chat-listados-card',
+				PP_CHAT_LISTADOS_URL . 'js/pp-chat-listados-card.js',
+				array(),
+				file_exists( $card_js ) ? filemtime( $card_js ) : '1.1.0',
+				true
+			);
+			wp_localize_script( 'pp-chat-listados-card', 'ppclCard', array(
+				'chatUrl' => $chat_url,
+				'title'   => __( 'Crear con el chat', 'pp-chat-listados' ),
+				'badge'   => __( 'Nuevo', 'pp-chat-listados' ),
+				'sub'     => __( 'Te guiamos paso a paso', 'pp-chat-listados' ),
+			) );
+		}
+	}
 }
 add_action( 'wp_enqueue_scripts', 'ppcl_register_assets' );
 
@@ -66,6 +91,56 @@ function ppcl_enqueue_assets() {
 		'regions'    => ppcl_term_tree( 'region' ),
 	) );
 }
+
+/**
+ * ¿Puede el usuario actual crear listados tipo "directorio" (y por tanto usar
+ * el chat)? Reutiliza el candado por rol del tema hijo si está disponible;
+ * si no, aplica el mismo criterio de Listeo (roles de dueño de negocio).
+ */
+function ppcl_user_can_use_chat() {
+	if ( ! is_user_logged_in() ) {
+		return false;
+	}
+	$user  = wp_get_current_user();
+	$roles = (array) $user->roles;
+	$role  = array_shift( $roles );
+
+	if ( function_exists( 'pp_tipo_listado_permitido_para_rol' ) ) {
+		return pp_tipo_listado_permitido_para_rol( 'directorio', $role );
+	}
+	return in_array( $role, array( 'administrator', 'admin', 'owner', 'seller' ), true );
+}
+
+/**
+ * URL de la página que contiene el shortcode del chat (cacheada 6 h).
+ */
+function ppcl_chat_page_url() {
+	$cached = get_transient( 'ppcl_chat_page_url' );
+	if ( false !== $cached ) {
+		return $cached; // puede ser '' si no se encontró
+	}
+	$url   = '';
+	$pages = get_posts( array(
+		'post_type'   => 'page',
+		'post_status' => 'publish',
+		'numberposts' => -1,
+		's'           => '[ppv2_chat_listado',
+		'fields'      => 'ids',
+	) );
+	foreach ( $pages as $page_id ) {
+		if ( has_shortcode( (string) get_post_field( 'post_content', $page_id ), 'ppv2_chat_listado' ) ) {
+			$url = get_permalink( $page_id );
+			break;
+		}
+	}
+	set_transient( 'ppcl_chat_page_url', $url, 6 * HOUR_IN_SECONDS );
+	return $url;
+}
+
+// Refrescar la caché cuando se guarde cualquier página.
+add_action( 'save_post_page', function () {
+	delete_transient( 'ppcl_chat_page_url' );
+} );
 
 /**
  * Árbol de términos (2 niveles) para los botones del chat.
@@ -120,6 +195,15 @@ function ppcl_create_listing() {
 
 	if ( ! is_user_logged_in() ) {
 		wp_send_json_error( array( 'code' => 'login' ) );
+	}
+
+	// Mismo candado por rol que el flujo nativo: los listados tipo
+	// "directorio" son solo para cuentas de prestador de servicios.
+	if ( ! ppcl_user_can_use_chat() ) {
+		wp_send_json_error( array(
+			'code'    => 'role',
+			'message' => __( 'Los listados de negocios son para cuentas de Prestador de servicios. Tu cuenta actual no puede publicar en el directorio; escríbenos si quieres convertirla.', 'pp-chat-listados' ),
+		) );
 	}
 
 	$user_id = get_current_user_id();

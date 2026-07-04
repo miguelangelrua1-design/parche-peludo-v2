@@ -450,6 +450,11 @@
 					createListing();
 					return;
 				}
+				if (code === 'role') {
+					// Cuenta sin permiso para listados de directorio: informar, sin reintentos.
+					botSay(res.data.message, true);
+					return;
+				}
 				botSay((res && res.data && res.data.message) || 'Algo no salió bien 😿. Inténtalo de nuevo en un momento.', true);
 				retryButton();
 			})
