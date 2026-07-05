@@ -1,0 +1,267 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#79C8D0",
+              "primary-dark": "#5BAFB7",
+              "background-light": "#f6f7f8",
+              "background-dark": "#141d1e",
+              "on-surface": "#1a1c1c",
+              "on-surface-variant": "#50453f",
+              "surface-container-low": "#f4f3f2",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e9e8e7",
+              "outline-variant": "#d3c3bc",
+              "outline": "#82746e",
+              "ink": "#141d1e",
+            },
+            fontFamily: {
+              "display": ["Public Sans", "sans-serif"],
+              "body": ["Work Sans", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "full": "9999px"
+            },
+            spacing: {
+              "margin-desktop": "40px",
+              "gutter": "24px",
+              "margin-mobile": "16px",
+              "unit": "8px",
+              "container-max": "1280px"
+            }
+          },
+        },
+      }
+    }catch(_e){}</script></head><body class="bg-background-light text-on-surface font-body antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-white shadow-sm sticky top-0 z-50">
+    
+</nav>
+
+<main class="flex-grow py-12 px-margin-mobile md:px-margin-desktop">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header Section -->
+        <div class="mb-10 text-center md:text-left">
+            <h1 class="font-display text-4xl md:text-5xl font-bold text-ink mb-2">Registrar nuevo integrante</h1>
+            <p class="text-on-surface-variant text-lg">Completa los datos de tu peludo para empezar su historial digital.</p>
+        </div>
+
+        <form class="space-y-8" onsubmit="event.preventDefault()">
+            <!-- Section 1: Pet Information -->
+            <div class="bg-surface-container-lowest p-8 md:p-12 rounded-xl form-card">
+                <div class="flex items-center gap-3 mb-8 border-b border-outline-variant pb-4">
+                    <span class="material-symbols-outlined text-primary" style="font-variation-settings: &quot;FILL&quot; 1;">pets</span>
+                    <h2 class="font-display text-2xl font-semibold text-ink">Información Mascota</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                    <!-- Profile Pic -->
+                    <div class="md:col-span-4 flex flex-col items-center">
+                        <label class="text-sm font-semibold text-on-surface-variant mb-4 self-start">Foto de perfil</label>
+                        <div class="group relative w-48 h-48 rounded-full bg-surface-container-high border-2 border-dashed border-outline flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-all overflow-hidden">
+                            <div class="text-center p-4">
+                                <span class="material-symbols-outlined text-outline group-hover:text-primary text-4xl mb-2 transition-colors">add_a_photo</span>
+                                <p class="text-xs font-medium text-outline group-hover:text-primary transition-colors">Subir foto</p>
+                            </div>
+                            <img class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-10 transition-opacity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5HyNRf_IIPxrpdlqn0LJBQlEOmbf-SbNN2P-lZaL2k7bZ8o_4OwLV4qhBkV2m0V3Usz1eCaJVIYaA-BG0a_G405KGI1qz02maqHBpkxA_Lkoq-3QjzV9NZYWg2mnlm03p5vVUPX4ezNV0ofUnMzWSlXS4Jv-aE7bdDfkAes_7U9NdNGJTvM0yhtub5kD_R7_TOwkF3AyS8XEnl1j9FWyv5Vi90KCciIemKJa7M_I76xjr_qME2TBE">
+                        </div>
+                    </div>
+
+                    <!-- Main Fields -->
+                    <div class="md:col-span-8 space-y-6">
+                        <!-- Nombre -->
+                        <div>
+                            <label class="block text-sm font-semibold text-on-surface-variant mb-2" for="pet-name">Nombre</label>
+                            <input class="w-full rounded-lg p-3 text-base placeholder:text-outline focus:ring-2 focus:ring-primary bg-white border border-outline-variant" id="pet-name" placeholder="Ej: Max" type="text">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Especie -->
+                            <div>
+                                <label class="block text-sm font-semibold text-on-surface-variant mb-3">Especie</label>
+                                <div class="flex gap-4">
+                                    <label class="flex-1 cursor-pointer">
+                                        <input class="sr-only peer" name="species" type="radio" value="perro">
+                                        <div class="flex items-center justify-center gap-2 p-3 rounded-lg bg-surface-container-low border border-transparent peer-checked:active-teal transition-all">
+                                            <img src="https://lh3.googleusercontent.com/aida/AP1WRLuMKk7AnsgE29Fh_11jLEswdreyyJP_T7IVPbMpZ560w69zESK-9Fvbk36TH5bK1o0yaOO0Ph-xCtuIf2xKrXNjHyjgxggVDW4AZUgNdt8PXCelVZt2uEQgM3L9Bgqwu2WuQZzcdEFG81AiK7Ow3oj9xfu73jz9DTm_xCZ2-M6dov3b5qzGPJpM6eWwbsJ9FPjqnGBZx2ukIUDVxQyU_TkoYrpaNgPULJw_XOrfE58jLxOKAUp1exR8wQ" alt="Perro" class="w-6 h-6 object-contain">
+                                            <span class="text-sm font-semibold">Perro</span>
+                                        </div>
+                                    </label>
+                                    <label class="flex-1 cursor-pointer">
+                                        <input class="sr-only peer" name="species" type="radio" value="gato">
+                                        <div class="flex items-center justify-center gap-2 p-3 rounded-lg bg-surface-container-low border border-transparent peer-checked:active-teal transition-all">
+                                            <img src="https://lh3.googleusercontent.com/aida/AP1WRLtZwBsVjAIGGMseiAoyE3nJ8t7UvkNsG0ZgBwdTgZUOxMw5L_DXZnR6lpEz30leB_q7RvcHi7FylJ5O43B2z3Cv39poE1PxAg3nKFb4tXUc6fGU55A5O7EgkTsnZJxGtSJnZMqvGVu3olRfHJFCRLQN2s2EG4UktnP04I8OKCSlKkVZHcXNjg3lNR_swAYUBzSSqJIkHjnxoutlB5RqaZv5_tdY0QH8evqHg91A3XrFg5hAhU3srsbIbAo" alt="Gato" class="w-6 h-6 object-contain">
+                                            <span class="text-sm font-semibold">Gato</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- Sexo -->
+                            <div>
+                                <label class="block text-sm font-semibold text-on-surface-variant mb-3">Sexo</label>
+                                <div class="flex gap-4">
+                                    <label class="flex-1 cursor-pointer">
+                                        <input class="sr-only peer" name="gender" type="radio" value="macho">
+                                        <div class="flex items-center justify-center gap-2 p-3 rounded-lg bg-surface-container-low border border-transparent peer-checked:active-teal transition-all">
+                                            <span class="text-sm font-semibold">Macho</span>
+                                        </div>
+                                    </label>
+                                    <label class="flex-1 cursor-pointer">
+                                        <input class="sr-only peer" name="gender" type="radio" value="hembra">
+                                        <div class="flex items-center justify-center gap-2 p-3 rounded-lg bg-surface-container-low border border-transparent peer-checked:active-teal transition-all">
+                                            <span class="text-sm font-semibold">Hembra</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Fecha de Nacimiento -->
+                            <div>
+                                <label class="block text-sm font-semibold text-on-surface-variant mb-2" for="birth-date">Fecha de Nacimiento</label>
+                                <input class="w-full rounded-lg p-3 text-base focus:ring-2 focus:ring-primary bg-white border border-outline-variant" id="birth-date" type="date">
+                            </div>
+                            <!-- Peso -->
+                            <div>
+                                <label class="block text-sm font-semibold text-on-surface-variant mb-2" for="weight">Peso (en kilos)</label>
+                                <input class="w-full rounded-lg p-3 text-base focus:ring-2 focus:ring-primary bg-white border border-outline-variant" id="weight" placeholder="0.0" step="0.1" type="number">
+                            </div>
+                        </div>
+
+                        <!-- Raza -->
+                        <div>
+                            <label class="block text-sm font-semibold text-on-surface-variant mb-2" for="breed">Raza</label>
+                            <select class="w-full rounded-lg p-3 text-base focus:ring-2 focus:ring-primary appearance-none bg-white border border-outline-variant" id="breed">
+                                <option disabled="" selected="" value="">Selecciona una raza...</option>
+                                <optgroup label="Perros">
+                                    <option>Beagle</option>
+                                    <option>Border Collie</option>
+                                    <option>Bulldog Francés</option>
+                                    <option>Golden Retriever</option>
+                                    <option>Labrador</option>
+                                    <option>Mestizo (Perro)</option>
+                                    <option>Pastor Alemán</option>
+                                    <option>Poodle</option>
+                                </optgroup>
+                                <optgroup label="Gatos">
+                                    <option>Bengala</option>
+                                    <option>Maine Coon</option>
+                                    <option>Mestizo (Gato)</option>
+                                    <option>Persa</option>
+                                    <option>Ragdoll</option>
+                                    <option>Siames</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="md:w-1/2">
+                            <label class="block text-sm font-semibold text-on-surface-variant mb-3">Tipo de pelaje</label>
+                            <div class="flex gap-4">
+                                <label class="flex-1 cursor-pointer">
+                                    <input class="sr-only peer" name="coat-type" type="radio" value="corto">
+                                    <div class="flex items-center justify-center gap-2 p-3 rounded-lg bg-surface-container-low border border-transparent peer-checked:active-teal transition-all">
+                                        <span class="text-sm font-semibold">Corto</span>
+                                    </div>
+                                </label>
+                                <label class="flex-1 cursor-pointer">
+                                    <input class="sr-only peer" name="coat-type" type="radio" value="largo">
+                                    <div class="flex items-center justify-center gap-2 p-3 rounded-lg bg-surface-container-low border border-transparent peer-checked:active-teal transition-all">
+                                        <span class="text-sm font-semibold">Largo</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Optional Info -->
+            <div class="bg-surface-container-lowest p-8 md:p-12 rounded-xl form-card">
+                <div class="flex items-center gap-3 mb-8 border-b border-outline-variant pb-4">
+                    <span class="material-symbols-outlined text-primary">add_circle</span>
+                    <h2 class="font-display text-2xl font-semibold text-ink">Detalles adicionales</h2>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Galería -->
+                    <div>
+                        <label class="block text-sm font-semibold text-on-surface-variant mb-4">Galería de fotos</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="aspect-square bg-surface-container-low rounded-xl border-2 border-dashed border-outline flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                                <span class="material-symbols-outlined text-outline">add</span>
+                            </div>
+                            <div class="aspect-square bg-surface-container-low rounded-xl overflow-hidden relative group">
+                                <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRZOepVsT_3aVDYRMdSk3SItUUd9777hTBzbwyXN-i-VhU6emEgZi5JAgfIViGjjAyGvTbTeR9cBEUa6fZxW0wSR83ZUJuEZa-CEXkogmYz6nCPB2P9Tx6GysFDw0g5AzYpI1cQQQZeGef87BcbdbhgpHUShtcQa2dhk0Hb-2WnPxISjQ00RqQ_pw5f97qqmErNDRjvyOOAUeLreJkA54yASBS1K2y5rTnp09HEY36ZyYQhH8c8w01">
+                                <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-white">delete</span>
+                                </div>
+                            </div>
+                            <div class="aspect-square bg-surface-container-low rounded-xl overflow-hidden relative group">
+                                <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDv5sFNYLCv81E1ULxbZf9h2T-Q63BCfHoVe8To_k2QxrJHO8zq0WbiKNm3u4PNFQQSzSWEXtM98gnzzT3mNgCv4CpJIkgR7V6OIn2E97ntLxgM4m6X9mU4OdKQjW3nUm8t1XE_ELBcKIP0F_S2qzzwhqmGu3sgBTkusXUqQycw6RHlvy-eJXwwzAFN8ef8d7cllY524oEW0S-LEeKIqJMKIlYaoYLrwak4-SRTI2SKwyaigmHHDwgY">
+                                <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-white">delete</span>
+                                </div>
+                            </div>
+                            <div class="aspect-square bg-surface-container-low rounded-xl overflow-hidden relative group">
+                                <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmUkbRcgwmOfyUUyJPrS-8Vn4h3VCTIIL77_Xn5NA9hZrXXL2nDyReemsxx5NIHnP_SOoX44RSNS5cjUSuUh7GlMcVrgA5aRI_XhUIyCwOCzsHlhGu6e4ihz9WCxmTYUTDZGfHiyLgomw7Acf0HhNIBhJNasvYTZ241f39Rwu27Ohm23wOHuXAUqpAwCxlCR8YkbhKyKcmTQQ8YqvEqK0lJ6X62pnBdG3d7ZYP9wU3MFKj1M3ogPH2">
+                                <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-white">delete</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bio -->
+                    <div>
+                        <label class="block text-sm font-semibold text-on-surface-variant mb-2" for="bio">Sobre tu mascota</label>
+                        <textarea class="w-full rounded-lg p-4 text-base placeholder:text-outline focus:ring-2 focus:ring-primary bg-white border border-outline-variant" id="bio" placeholder="Cuéntanos un poco sobre su personalidad, gustos o cuidados especiales..." rows="4"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col-reverse md:flex-row justify-end items-center gap-4 pt-6">
+                <button class="w-full md:w-auto px-8 py-3 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors" type="button">
+                    Cancelar
+                </button>
+                <button class="w-full md:w-auto px-10 py-4 bg-primary text-ink rounded-full text-sm font-bold shadow-lg hover:bg-primary-dark hover:-translate-y-0.5 transition-all" type="submit">
+                    Guardar Perfil
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-white border-t border-outline-variant">
+    
+</footer>
+
+<script class="">
+    // Micro-interactions for form feedback
+    document.querySelectorAll('input, select, textarea').forEach(element => {
+        element.addEventListener('focus', () => {
+            element.parentElement.querySelector('label')?.classList.add('text-primary');
+        });
+        element.addEventListener('blur', () => {
+            element.parentElement.querySelector('label')?.classList.remove('text-primary');
+        });
+    });
+
+    // Simple Breed filter logic
+    const speciesRadios = document.querySelectorAll('input[name="species"]');
+    const breedSelect = document.getElementById('breed');
+    
+    speciesRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const selectedSpecies = e.target.value;
+            const groups = breedSelect.querySelectorAll('optgroup');
+            
+            groups.forEach(group => {
+                if (group.label.toLowerCase().</script></body></html>

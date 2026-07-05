@@ -1,0 +1,298 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mis Mascotas | Parche Peludo</title>
+<!-- Google Fonts: Plus Jakarta Sans for Headlines, Work Sans for Body as per config -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2f3130",
+                    "on-secondary-fixed-variant": "#673d00",
+                    "outline-variant": "#d3c3bc",
+                    "on-error": "#ffffff",
+                    "surface": "#faf9f8",
+                    "secondary-fixed": "#ffddbb",
+                    "on-background": "#1a1c1c",
+                    "on-surface": "#1a1c1c",
+                    "surface-container": "#eeeeed",
+                    "on-primary-fixed": "#2b1609",
+                    "on-surface-variant": "#50453f",
+                    "on-secondary-fixed": "#2b1700",
+                    "tertiary-container": "#335f22",
+                    "primary-container": "#6b4e3d",
+                    "secondary-container": "#fda122",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed": "#bdf1a3",
+                    "tertiary": "#1b470c",
+                    "background": "#faf9f8",
+                    "secondary-fixed-dim": "#ffb868",
+                    "on-primary-container": "#e8c1ab",
+                    "secondary": "#885200",
+                    "primary": "#513728",
+                    "tertiary-fixed-dim": "#a1d489",
+                    "surface-tint": "#765846",
+                    "on-tertiary-container": "#a4d78c",
+                    "surface-container-low": "#f4f3f2",
+                    "on-tertiary-fixed-variant": "#255015",
+                    "surface-variant": "#e3e2e1",
+                    "outline": "#82746e",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#e9e8e7",
+                    "surface-dim": "#dadad9",
+                    "primary-fixed-dim": "#e6bea9",
+                    "primary-fixed": "#ffdbc8",
+                    "on-primary-fixed-variant": "#5c4130",
+                    "inverse-primary": "#e6bea9",
+                    "error-container": "#ffdad6",
+                    "surface-container-highest": "#e3e2e1",
+                    "on-secondary-container": "#683e00",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#faf9f8",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#052100",
+                    "inverse-on-surface": "#f1f0f0",
+                    "on-secondary": "#ffffff",
+                    "brand-teal": "#79C8D0",
+                    "brand-ink": "#1E2E33"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "margin-desktop": "40px",
+                    "margin-mobile": "16px",
+                    "container-max": "1280px",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "label-md": ["Work Sans"],
+                    "body-lg": ["Work Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Work Sans"],
+                    "label-sm": ["Work Sans"],
+                    "display-lg": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-surface shadow-sm sticky top-0 z-50">
+
+</nav>
+<!-- Main Content -->
+<main class="flex-grow max-w-container-max mx-auto w-full px-margin-desktop py-12">
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-brand-ink mb-2">Mi familia peluda</h1>
+<p class="text-on-surface-variant font-body-md max-w-xl">Comparte la información de tus peludos, de esta forma podremos brindarles el mejor servicio</p>
+</div>
+<button class="bg-brand-teal text-white flex items-center gap-2 px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1" onclick="document.getElementById('add-pet-modal').classList.remove('hidden')">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-label-md text-label-md">Añadir nueva mascota</span>
+</button>
+</header>
+<!-- Pet Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter mb-16">
+<!-- Pet Card 1 -->
+<div class="group relative bg-surface-container-lowest rounded-3xl overflow-hidden border border-outline-variant hover:border-brand-teal transition-all hover:shadow-2xl">
+<div class="aspect-[4/3] w-full relative overflow-hidden">
+<img class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="A portrait of a happy Golden Retriever with a colorful bandana, sitting in a bright sunlit living room with modern minimalist furniture. The lighting is warm and golden, highlighting the texture of its fur. Professional pet photography style with a soft bokeh background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWwslEczWnjlQ-FsVeDaU7iine0vYQFFXiH6-Vt-WD7ENt3mnuIysKW3IR67kRDU_thGwq8quBYWGTL6CBA6AZU54NewP6KeghXpDu37E82lELksrYuytom6OCUh31iDzpciGABVwUcU0HhRJCC7Q4aRJw_zAjyx1FSJNA9wRwAne1H192woQP2-xXLxe0U2DVuJdyADIygdP8UjLJm6MzMrlU1RwoKCGysByDx5sp2ukUxT5lVgPa">
+<span class="absolute top-3 left-3 bg-brand-teal text-white text-label-sm px-3 py-1 rounded-full">Perro</span>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-brand-ink">Apolo</h3>
+<p class="text-on-surface-variant font-body-md">Golden Retriever</p>
+</div>
+
+</div>
+<button class="w-full py-3 border-2 border-brand-teal text-brand-teal rounded-xl font-label-md hover:bg-brand-teal hover:text-white transition-colors">Ver perfil</button>
+</div>
+</div>
+<!-- Pet Card 2 -->
+<div class="group relative bg-surface-container-lowest rounded-3xl overflow-hidden border border-outline-variant hover:border-brand-teal transition-all hover:shadow-2xl">
+<div class="aspect-[4/3] w-full relative overflow-hidden">
+<img class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="A sleek ginger tabby cat with bright green eyes, lounging elegantly on a velvet emerald green sofa. Soft afternoon light filters through a window, creating a serene and sophisticated atmosphere. High-end lifestyle pet photography with a clean and airy aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJZGthQe34-yPpHqrj5OGBHjp7WB88d_P8BTLb-HkpUvPbsf62Xz6s6BzLChsx7iwsnVvsQ3iUaCtbyc8LJy0GeOEWssL76k8xfIuvPJEkZPkAqZ7yXQAs4tLjPt3RoexMmRq27Ryi8mQ54qpmVE36MNHNXyIiwaXexYD0nwqwSOGwx5yhm-WCuYi5cZ1578jPovg1ByYu7-wM66dsMhhR7-bSsLrHVvLxMLiPjDO6n984PAZtb8oH">
+<span class="absolute top-3 left-3 bg-brand-teal text-white text-label-sm px-3 py-1 rounded-full">Gato</span>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-brand-ink">Luna</h3>
+<p class="text-on-surface-variant font-body-md">Gato Doméstico</p>
+</div>
+
+</div>
+<button class="w-full py-3 border-2 border-brand-teal text-brand-teal rounded-xl font-label-md hover:bg-brand-teal hover:text-white transition-colors">Ver perfil</button>
+</div>
+</div>
+<!-- Empty State / Add Placeholder -->
+<div class="cursor-pointer group flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-3xl p-8 hover:border-brand-teal hover:bg-surface-container-low transition-all" onclick="document.getElementById('add-pet-modal').classList.remove('hidden')">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center mb-4 group-hover:bg-brand-teal group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-4xl">add</span>
+</div>
+<span class="font-label-md text-on-surface-variant group-hover:text-brand-teal transition-colors text-center">Añadir nueva mascota</span>
+</div>
+</div>
+<!-- Add Pet Modal (Centered Form) -->
+<div class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-brand-ink/40 backdrop-blur-sm overflow-y-auto hidden" id="add-pet-modal">
+<div class="bg-white rounded-[2rem] w-full max-w-3xl shadow-2xl overflow-hidden my-8">
+<div class="flex justify-between items-center p-8 bg-surface-container-low">
+<h2 class="font-headline-lg text-headline-lg text-brand-ink">Nueva Mascota</h2>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors" onclick="document.getElementById('add-pet-modal').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<form class="p-8 space-y-12">
+<!-- Progress Stepper (Visual Only for Demo) -->
+<div class="flex items-center gap-4">
+<div class="flex-1 h-2 bg-brand-teal rounded-full"></div>
+<div class="flex-1 h-2 bg-surface-container-highest rounded-full"></div>
+<span class="font-label-sm text-on-surface-variant">Paso 1 de 2</span>
+</div>
+<!-- Step 1: Información Básica -->
+<div class="space-y-8">
+<div class="flex flex-col items-center gap-4">
+<div class="relative w-32 h-32 group cursor-pointer">
+<div class="w-full h-full rounded-full bg-surface-container-high flex flex-col items-center justify-center border-2 border-dashed border-outline text-on-surface-variant hover:border-brand-teal hover:text-brand-teal transition-all overflow-hidden">
+<span class="material-symbols-outlined text-4xl">add_a_photo</span>
+<span class="text-[10px] font-bold mt-1">SUBIR FOTO</span>
+</div>
+<div class="absolute bottom-0 right-0 w-8 h-8 bg-brand-teal text-white rounded-full flex items-center justify-center border-2 border-white">
+<span class="material-symbols-outlined text-sm">edit</span>
+</div>
+</div>
+<p class="text-label-sm text-on-surface-variant">Sube una foto clara de tu mascota</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-brand-ink px-1">Nombre</label>
+<input class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-teal text-body-md transition-all" placeholder="Ej: Bruno" type="text">
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-brand-ink px-1">Especie</label>
+<div class="flex bg-surface-container-low p-1 rounded-xl">
+<button class="flex-1 py-2 rounded-lg bg-white shadow-sm text-brand-teal font-bold transition-all" type="button">Perro</button>
+<button class="flex-1 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container transition-all" type="button">Gato</button>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-brand-ink px-1">Sexo</label>
+<div class="flex bg-surface-container-low p-1 rounded-xl">
+<button class="flex-1 py-2 rounded-lg bg-white shadow-sm text-brand-teal font-bold transition-all" type="button">Macho</button>
+<button class="flex-1 py-2 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container transition-all" type="button">Hembra</button>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-brand-ink px-1">Fecha de Nacimiento</label>
+<input class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-teal text-body-md" type="date">
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-brand-ink px-1">Raza</label>
+<select class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-teal text-body-md">
+<option>Selecciona una raza</option>
+<option>Beagle</option>
+<option>Bulldog Francés</option>
+<option>Golden Retriever</option>
+<option>Labrador</option>
+<option>Pastor Alemán</option>
+<option>Poodle</option>
+<option>Siamés</option>
+<option>Yorkshire Terrier</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-brand-ink px-1">Peso (kg)</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-teal text-body-md" placeholder="0.0" step="0.1" type="number">
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold">kg</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 2: Opcionales -->
+<div class="space-y-8 pt-8 border-t border-outline-variant">
+<div class="space-y-4">
+<h3 class="font-headline-md text-headline-md text-brand-ink">Información Adicional</h3>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-brand-ink px-1">Galería de fotos</label>
+<div class="w-full border-2 border-dashed border-outline-variant rounded-[1.5rem] p-8 flex flex-col items-center justify-center bg-surface-container-lowest hover:border-brand-teal transition-all cursor-pointer">
+<span class="material-symbols-outlined text-brand-teal text-4xl mb-2">cloud_upload</span>
+<p class="font-body-md text-on-surface-variant text-center">Arrastra aquí tus fotos o haz clic para subir</p>
+<p class="text-label-sm text-outline mt-1">Máximo 10 archivos (PNG, JPG)</p>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-brand-ink px-1">Sobre tu mascota</label>
+<textarea class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-teal text-body-md" placeholder="Personalidad, cuidados especiales, juguetes favoritos..." rows="4"></textarea>
+</div>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 pt-4">
+<button class="flex-1 py-4 px-6 rounded-xl border border-outline-variant text-on-surface-variant font-label-md hover:bg-surface-container transition-all" onclick="document.getElementById('add-pet-modal').classList.add('hidden')" type="button">Cancelar</button>
+<button class="flex-1 py-4 px-6 rounded-xl bg-brand-teal text-white font-label-md shadow-lg shadow-brand-teal/20 hover:shadow-xl hover:bg-brand-ink transition-all" type="submit">Guardar Mascota</button>
+</div>
+</form>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container dark:bg-surface-container-highest border-t border-outline-variant mt-auto">
+
+</footer>
+<script>
+        // Simple Interaction logic
+        window.onclick = function(event) {
+            const modal = document.getElementById('add-pet-modal');
+            if (event.target == modal) {
+                modal.classList.add('hidden');
+            }
+        }
+    </script>
+
+
+</body></html>

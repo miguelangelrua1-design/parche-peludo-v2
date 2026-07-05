@@ -7,6 +7,9 @@
  * @package listeo-child
  */
 
+// La sección "Mis Mascotas" vive ahora en el plugin propio pp-mascotas
+// (wp-content/plugins/pp-mascotas/), migrada desde este tema el 2026-07-03.
+
 function listeo_child_enqueue_styles() {
     // Cargar estilo del tema padre
     wp_enqueue_style( 'listeo-parent-style', get_template_directory_uri() . '/style.css' );
@@ -258,6 +261,151 @@ function ppv2_shop_filters_overlay() {
 }
 
 /**
+ * DIRECTORIO (móvil): filtros como PANEL DESLIZANTE desde la izquierda, igual
+ * al de la Tienda. No toca el JS de Listeo: su botón "Mostrar Filtros" alterna
+ * la clase `enabled-sidebar` del sidebar y aquí solo SINCRONIZAMOS nuestro
+ * estado (clase pp-dirfilters-open en <html>) con esa clase. Agrega barra
+ * superior (título + X), overlay y botón fijo "Ver N resultados" con loader
+ * enganchado al AJAX nativo de Listeo (listeo_get_listings). El look vive en
+ * style.css y SOLO aplica en móvil (≤991px); en escritorio no cambia nada.
+ */
+add_action( 'wp_footer', 'ppv2_dirfilters_drawer', 121 );
+function ppv2_dirfilters_drawer() {
+	if ( ! ppv2_is_listings_archive() ) { return; }
+	?>
+	<script>
+	(function () {
+		var sb = document.querySelector('.full-page-sidebar');
+		if ( ! sb ) { return; }
+		var html = document.documentElement;
+		var OPEN = 'pp-dirfilters-open';
+
+		// Barra superior del panel: título + botón de cierre.
+		var head = document.createElement('div');
+		head.className = 'pp-dirfilters-head';
+		head.innerHTML = '<span>Filtros</span><button type="button" class="pp-dirfilters-close" aria-label="Cerrar filtros">&times;</button>';
+		sb.insertBefore(head, sb.firstChild);
+
+		// Barra inferior fija: línea de CONTEO (siempre visible) + botón "Ver resultados".
+		var foot = document.createElement('div');
+		foot.className = 'pp-dirfilters-foot';
+		foot.innerHTML = '<div class="pp-dirfilters-count" aria-live="polite"></div>'
+			+ '<button type="button" class="pp-dirfilters-apply">Ver resultados</button>';
+		sb.appendChild(foot);
+
+		// Overlay del cajón.
+		var overlay = document.createElement('div');
+		overlay.className = 'pp-dirfilters-overlay';
+		sb.parentNode.insertBefore(overlay, sb.nextSibling);
+
+		// En MÓVIL movemos sidebar+overlay a un host colgado de <html>: el tema
+		// envuelve la página en contenedores con transform (menú off-canvas) que
+		// ROMPEN position:fixed y dejaban el cajón desanclado — mismo truco que
+		// usa el minicarrito (pp-minicart). En escritorio vuelve a su lugar
+		// original (marcado con un placeholder invisible).
+		var mq = window.matchMedia('(max-width: 991px)');
+		var host = null, placeholder = null;
+		function placeDrawer() {
+			if ( mq.matches ) {
+				if ( ! host ) {
+					host = document.createElement('div');
+					host.className = 'pp-dirfilters-host';
+					document.documentElement.appendChild(host);
+				}
+				if ( ! placeholder ) {
+					placeholder = document.createElement('span');
+					placeholder.style.display = 'none';
+					sb.parentNode.insertBefore(placeholder, sb);
+				}
+				if ( sb.parentNode !== host ) { host.appendChild(sb); host.appendChild(overlay); }
+			} else if ( placeholder && sb.parentNode !== placeholder.parentNode ) {
+				placeholder.parentNode.insertBefore(sb, placeholder);
+				placeholder.parentNode.insertBefore(overlay, sb.nextSibling);
+				closeDrawer();
+			}
+		}
+
+		function countResults() {
+			return document.querySelectorAll('.listings-container .listing-card-container-nl').length;
+		}
+		function updateApply( loading ) {
+			var b = foot.querySelector('.pp-dirfilters-apply');
+			var c = foot.querySelector('.pp-dirfilters-count');
+			if ( ! b || ! c ) { return; }
+			if ( loading ) {
+				// Cargando: isotipo de marca latiendo (CSS) + texto, botón atenuado.
+				foot.classList.add('is-loading');
+				c.classList.remove('is-empty');
+				c.textContent = 'Buscando…';
+				return;
+			}
+			foot.classList.remove('is-loading');
+			var n = countResults();
+			if ( n > 0 ) {
+				c.classList.remove('is-empty');
+				c.textContent = n + ( n === 1 ? ' resultado encontrado' : ' resultados encontrados' );
+				b.classList.remove('is-empty');
+				b.textContent = 'Ver resultados';
+			} else {
+				// SIN resultados: aviso claro en la línea y en el propio botón.
+				c.classList.add('is-empty');
+				c.textContent = 'Sin resultados con estos filtros';
+				b.classList.add('is-empty');
+				b.textContent = 'Sin resultados';
+			}
+		}
+		// Sincroniza nuestro estado con la clase que alterna Listeo.
+		function syncFromListeo() {
+			html.classList.toggle(OPEN, sb.classList.contains('enabled-sidebar'));
+			if ( html.classList.contains(OPEN) ) { updateApply(false); }
+		}
+		function closeDrawer() {
+			sb.classList.remove('enabled-sidebar');
+			Array.prototype.forEach.call(document.querySelectorAll('.enable-filters-button'), function ( b ) { b.classList.remove('active'); });
+			html.classList.remove(OPEN);
+		}
+
+		document.addEventListener('click', function ( e ) {
+			if ( ! e.target.closest ) { return; }
+			// Después del toggle de Listeo: su handler jQuery vive en el ELEMENTO,
+			// así que ya corrió cuando el evento burbujea hasta document. Sincronizamos
+			// directo (sin setTimeout: los timers se degradan en pestañas en segundo plano).
+			if ( e.target.closest('.enable-filters-button') ) { syncFromListeo(); return; }
+			if ( e.target.closest('.pp-dirfilters-close') || e.target === overlay || e.target.closest('.pp-dirfilters-apply') ) { closeDrawer(); }
+		});
+		document.addEventListener('keydown', function ( e ) { if ( e.key === 'Escape' ) { closeDrawer(); } });
+
+		// Loader + conteo: eventos AJAX globales de jQuery para listeo_get_listings.
+		if ( window.jQuery ) {
+			var isListeo = function ( settings ) {
+				var s = ( settings && ( settings.data || '' ) ) + ' ' + ( settings && ( settings.url || '' ) );
+				return s.indexOf('listeo_get_listings') !== -1;
+			};
+			jQuery(document).ajaxSend(function ( ev, xhr, settings ) { if ( isListeo(settings) ) { updateApply(true); } });
+			// ajaxComplete corre DESPUÉS del success de Listeo (que ya pintó las
+			// tarjetas), así que el conteo directo es fiable — sin setTimeout.
+			jQuery(document).ajaxComplete(function ( ev, xhr, settings ) { if ( isListeo(settings) ) { updateApply(false); } });
+		}
+
+		// Red de seguridad para el conteo: cualquier re-render del contenedor de
+		// resultados (venga del AJAX que venga) actualiza la línea de conteo,
+		// aunque los eventos ajaxSend/Complete no se hayan capturado.
+		var cont = document.querySelector('.listings-container');
+		if ( cont && window.MutationObserver ) {
+			new MutationObserver(function () {
+				if ( ! foot.classList.contains('is-loading') ) { updateApply(false); }
+			}).observe(cont, { childList: true, subtree: true });
+		}
+
+		placeDrawer();
+		if ( mq.addEventListener ) { mq.addEventListener('change', placeDrawer); }
+		updateApply(false);
+	})();
+	</script>
+	<?php
+}
+
+/**
  * Árbol de CATEGORÍAS de la tienda con estilo "app": envuelve cada fila del
  * widget de categorías en .pp-cat-row, agrega un chevron a la izquierda (en los
  * padres) que pliega/despliega sus hijos SIN navegar, y abre automáticamente el
@@ -383,6 +531,7 @@ function ppv2_rename_bookmarks_to_favoritos( $translated, $text, $domain ) {
 	if ( 'listeo_core' === $domain ) {
 		switch ( $text ) {
 			case 'Bookmarks':                         return 'Favoritos'; // menú de usuario del header
+			case 'Bookmarked Listings':               return 'Listados Favoritos'; // título de la página
 			case 'No bookmarks!':                     return '¡No hay favoritos!';
 			case 'You don\'t have any bookmarks yet.': return 'Aún no tienes ningún favorito.';
 		}
@@ -2617,6 +2766,16 @@ function ppv2_header_suggest() {
 		wp_send_json( array() );
 	}
 
+	// Caché por término (10 min): los términos repetidos —los más comunes con
+	// tráfico real— responden sin consultar la base de datos. Se invalida solo
+	// al expirar; 10 min de desfase máximo en sugerencias es aceptable.
+	$term_key  = function_exists( 'mb_strtolower' ) ? mb_strtolower( $term, 'UTF-8' ) : strtolower( $term );
+	$cache_key = 'ppv2_suggest_' . md5( $term_key );
+	$cached    = get_transient( $cache_key );
+	if ( false !== $cached && is_array( $cached ) ) {
+		wp_send_json( $cached );
+	}
+
 	// El orden según el tab activo lo aplica el navegador (sin re-consultar al servidor).
 	$listing_items = array();
 	$product_items = array();
@@ -2673,7 +2832,9 @@ function ppv2_header_suggest() {
 		);
 	}
 
-	wp_send_json( array_merge( $listing_items, $product_items ) );
+	$suggestions = array_merge( $listing_items, $product_items );
+	set_transient( $cache_key, $suggestions, 10 * MINUTE_IN_SECONDS );
+	wp_send_json( $suggestions );
 }
 
 // Garantiza que la librería de autocompletado esté cargada aunque Listeo
@@ -2718,6 +2879,24 @@ function ppv2_header_suggest_js() {
 				});
 				return getScope() === 'tienda' ? products.concat(listings) : listings.concat(products);
 			}
+
+			// --- Panel de estado bajo el campo: "Buscando…" apenas arranca la
+			// búsqueda (feedback inmediato) y "Sin resultados" cuando no hay nada.
+			var $status = $('<div class="ppv2-suggest-status" style="display:none"></div>').appendTo(document.body);
+			function showStatus($field, busy) {
+				var o = $field.offset();
+				$status
+					.html(busy
+						? '<span class="ppv2-suggest-spinner"></span><span>Buscando…</span>'
+						: '<span>Sin resultados en Directorio ni Tienda</span>')
+					.css({
+						top: (o.top + $field.outerHeight() + 4) + 'px',
+						left: o.left + 'px',
+						minWidth: $field.outerWidth() + 'px'
+					})
+					.show();
+			}
+			function hideStatus() { $status.hide(); }
 
 			// --- Tabs Directorio | Tienda siempre visibles en el buscador del header ---
 			function updateTabsUI() {
@@ -2811,6 +2990,23 @@ function ppv2_header_suggest_js() {
 					focus: function() { return false; }
 				});
 
+				// Ciclo de estado: al iniciar la búsqueda → "Buscando…"; al llegar
+				// la respuesta → ocultar (hay menú) o "Sin resultados" (vacía).
+				$input.on('autocompletesearch', function() {
+					showStatus($input, true);
+				});
+				$input.on('autocompleteresponse', function(event, ui) {
+					if (ui && ui.content && ui.content.length) {
+						hideStatus();
+					} else {
+						showStatus($input, false);
+					}
+				});
+				$input.on('blur', function() { window.setTimeout(hideStatus, 150); });
+				$input.on('input', function() {
+					if ($input.val().trim().length < 2) { hideStatus(); }
+				});
+
 				var inst = $input.autocomplete('instance');
 				if (!inst) { return; }
 
@@ -2850,3 +3046,130 @@ function ppv2_header_suggest_js() {
 	</script>
 	<?php
 }
+
+// El chat de creación de listados ([ppv2_chat_listado]) vive ahora en el
+// plugin propio pp-chat-listados (wp-content/plugins/pp-chat-listados/),
+// migrado desde este tema el 2026-07-03.
+
+// --- Nombres de los tipos de cuenta en el registro -------------------------
+// Listeo llama a los roles "Guest" y "Owner"; en Parche Peludo son
+// "Usuario" y "Prestador de servicio". Se renombran vía gettext para no
+// tocar el plugin. Solo en el front: en wp-admin se conservan los nombres
+// de Listeo para no confundir la administración de roles.
+add_filter( 'gettext_with_context', 'ppv2_role_label_guest', 20, 4 );
+function ppv2_role_label_guest( $translated, $text, $context, $domain ) {
+	if ( 'listeo_core' === $domain && 'User role' === $context && 'Guest' === $text && ! is_admin() ) {
+		return 'Usuario';
+	}
+	return $translated;
+}
+add_filter( 'gettext', 'ppv2_role_label_owner', 20, 3 );
+function ppv2_role_label_owner( $translated, $text, $domain ) {
+	if ( 'listeo_core' === $domain && 'Owner' === $text && ! is_admin() ) {
+		return 'Negocio/Servicios';
+	}
+	return $translated;
+}
+
+// --- Español para cadenas de Listeo Booking Plus sin traducir --------------
+// El popup de reserva (paso final, resumen) trae textos en inglés que la
+// traducción oficial del plugin aún no cubre. Filtro gettext del dominio del
+// plugin: no toca el plugin y sobrevive a sus actualizaciones.
+add_filter( 'gettext_listeo-booking-plus', 'ppv2_traducir_booking_plus', 20, 2 );
+function ppv2_traducir_booking_plus( $translated, $text ) {
+	$mapa = array(
+		'Your booking request has been submitted and is awaiting approval.' => 'Tu solicitud de reserva fue enviada y está pendiente de aprobación.',
+		'Thank you for your booking!'                  => '¡Gracias por tu reserva!',
+		'Booking Confirmed'                            => 'Reserva confirmada',
+		'Booking confirmed! Redirecting to payment...' => '¡Reserva confirmada! Redirigiendo al pago…',
+	);
+	return isset( $mapa[ $text ] ) ? $mapa[ $text ] : $translated;
+}
+
+// --- Mensajes de validación HTML5 del navegador en español -----------------
+// El globo nativo ("Please fill out this field.") sale en el idioma del
+// navegador del visitante. Con setCustomValidity forzamos español en TODOS
+// los formularios del sitio (registro, reservas, mascotas, contacto).
+add_action( 'wp_footer', 'ppv2_validacion_html5_es', 130 );
+function ppv2_validacion_html5_es() {
+	if ( is_admin() ) {
+		return;
+	}
+	?>
+	<script id="ppv2-validacion-es">
+	(function () {
+		function mensaje(el) {
+			var v = el.validity;
+			if (!v || v.valid) { return ''; }
+			if (v.valueMissing) { return 'Por favor completa este campo.'; }
+			if (v.typeMismatch && el.type === 'email') { return 'Ingresa un correo electrónico válido.'; }
+			if (v.typeMismatch && el.type === 'url') { return 'Ingresa una dirección web válida.'; }
+			if (v.typeMismatch) { return 'El formato no es válido.'; }
+			if (v.patternMismatch) { return 'El formato no coincide con el solicitado.'; }
+			if (v.tooShort) { return 'Escribe al menos ' + el.minLength + ' caracteres.'; }
+			if (v.tooLong) { return 'El texto es demasiado largo.'; }
+			if (v.rangeUnderflow) { return 'El valor mínimo es ' + el.min + '.'; }
+			if (v.rangeOverflow) { return 'El valor máximo es ' + el.max + '.'; }
+			if (v.stepMismatch) { return 'Ingresa un valor válido.'; }
+			if (v.badInput) { return 'Ingresa un valor válido.'; }
+			return 'Ingresa un valor válido.';
+		}
+		// Al fallar la validación: mensaje en español.
+		document.addEventListener('invalid', function (e) {
+			var el = e.target;
+			if (el && el.setCustomValidity) { el.setCustomValidity(mensaje(el)); }
+		}, true);
+		// Al escribir/cambiar: limpiar el mensaje para no bloquear el reenvío.
+		['input', 'change'].forEach(function (ev) {
+			document.addEventListener(ev, function (e) {
+				var el = e.target;
+				if (el && el.setCustomValidity) { el.setCustomValidity(''); }
+			}, true);
+		});
+	})();
+	</script>
+	<?php
+}
+
+// === Listados por rol: guests publican Adopción y Mascotas perdidas ========
+// MIGRADO al plugin Personalización Parche (módulo Listados,
+// pp-personalizacion/includes/listados.php) el 2026-07-05. Allí viven los
+// helpers pp_tipos_listado_guest()/pp_tipo_listado_permitido_para_rol()/etc.,
+// el candado del guardado, el menú del dashboard para guests y las
+// plantillas sobrescritas (antes en listeo-core/ de este tema).
+
+/* =========================================================================
+ * Pestaña "Ficha técnica" en la página de producto (WooCommerce)
+ * La ficha se guarda por producto en el meta `_pp_ficha_tecnica` (HTML de tabla,
+ * generado por el publicador de catálogo). Si el producto no tiene ficha, la
+ * pestaña no aparece. Relacionado con el catálogo automático desde Laika.
+ * ========================================================================= */
+add_filter( 'woocommerce_product_tabs', 'pp_tab_ficha_tecnica' );
+function pp_tab_ficha_tecnica( $tabs ) {
+	global $product;
+	if ( ! $product instanceof WC_Product ) {
+		return $tabs;
+	}
+	$ficha = get_post_meta( $product->get_id(), '_pp_ficha_tecnica', true );
+	if ( ! empty( $ficha ) ) {
+		$tabs['pp_ficha_tecnica'] = array(
+			'title'    => __( 'Ficha técnica', 'listeo-child' ),
+			'priority' => 15, // entre Descripción (10) e Información adicional (20)
+			'callback' => 'pp_tab_ficha_tecnica_contenido',
+		);
+	}
+	return $tabs;
+}
+function pp_tab_ficha_tecnica_contenido() {
+	global $product;
+	$ficha = get_post_meta( $product->get_id(), '_pp_ficha_tecnica', true );
+	echo '<div class="pp-ficha-tecnica-wrap">' . wp_kses_post( $ficha ) . '</div>';
+}
+
+/* =========================================================================
+ * Filtros de tienda: se usa el sistema NATIVO de WooCommerce (widgets
+ * "Filtrar productos por atributo" en el sidebar de la tienda, params
+ * filter_<atributo>). Los atributos globales pa_marca / pa_especie /
+ * pa_etapa-de-vida / pa_tipo-de-alimento / pa_peso los asigna el publicador
+ * del catálogo (Laika). No hay código de filtrado propio.
+ * ========================================================================= */

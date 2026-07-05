@@ -21,3 +21,9 @@ _parchepeludo.com/
 !/sitio_local/wp-content/themes/
 /sitio_local/wp-content/themes/*
 !/sitio_local/wp-content/themes/listeo-child/
+
+# Permitir nuestros plugins propios
+!/sitio_local/wp-content/plugins/
+/sitio_local/wp-content/plugins/*
+!/sitio_local/wp-content/plugins/pp-chat-listados/
+!/sitio_local/wp-content/plugins/pp-personalizacion/

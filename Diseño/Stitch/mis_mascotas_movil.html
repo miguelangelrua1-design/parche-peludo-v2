@@ -1,0 +1,198 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mis Mascotas - Parche Peludo</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f4f3f2",
+                        "on-primary-fixed": "#2b1609",
+                        "inverse-on-surface": "#f1f0f0",
+                        "outline": "#82746e",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#ffdbc8",
+                        "on-surface-variant": "#50453f",
+                        "primary": "#513728",
+                        "surface-container": "#eeeeed",
+                        "on-tertiary-fixed-variant": "#255015",
+                        "inverse-surface": "#2f3130",
+                        "surface": "#faf9f8",
+                        "on-tertiary-container": "#a4d78c",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#a1d489",
+                        "surface-variant": "#e3e2e1",
+                        "primary-container": "#6b4e3d",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#683e00",
+                        "secondary-fixed": "#ffddbb",
+                        "surface-tint": "#765846",
+                        "inverse-primary": "#e6bea9",
+                        "on-surface": "#1a1c1c",
+                        "secondary-container": "#fda122",
+                        "on-secondary-fixed": "#2b1700",
+                        "tertiary-fixed": "#bdf1a3",
+                        "on-secondary-fixed-variant": "#673d00",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#faf9f8",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#1b470c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#e8c1ab",
+                        "tertiary-container": "#335f22",
+                        "on-tertiary-fixed": "#052100",
+                        "surface-container-highest": "#e3e2e1",
+                        "primary-fixed-dim": "#e6bea9",
+                        "surface-dim": "#dadad9",
+                        "secondary": "#885200",
+                        "outline-variant": "#d3c3bc",
+                        "surface-container-high": "#e9e8e7",
+                        "background": "#faf9f8",
+                        "on-background": "#1a1c1c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Work Sans"],
+                        "body-lg": ["Work Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Work Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Work Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pet-card-shadow {
+            box-shadow: 0 12px 24px -12px rgba(81, 55, 40, 0.15);
+        }
+        body {
+            background-color: #faf9f8;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar (Based on JSON: small_center_aligned) -->
+<header class="bg-surface-container-low fixed top-0 w-full h-16 z-50 shadow-sm flex items-center justify-between px-4">
+<button class="hover:bg-surface-container-high transition-colors active:scale-95 duration-100 rounded-full p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm-mobile text-primary font-bold">Mis Mascotas</h1>
+<div class="w-10"></div> <!-- Spacer for center alignment -->
+</header>
+<main class="pt-20 pb-24 px-4 max-w-md mx-auto">
+<!-- Header Section with Intro -->
+<section class="mb-8">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-2">Mi familia peluda</h2>
+<p class="font-body-md text-on-surface-variant">Comparte la información de tus peludos, de esta forma podremos brindarles el mejor servicio</p>
+</section>
+<!-- Pet List -->
+<div class="space-y-6">
+<!-- Pet Card: Apolo -->
+<div class="bg-white rounded-xl overflow-hidden pet-card-shadow border border-surface-variant transition-transform active:scale-[0.98]">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A friendly Golden Retriever sitting in a sunny park with soft afternoon lighting. The dog has a happy expression and a shiny golden coat. The image has a warm, professional, and empathetic tone, matching the light-mode minimalist aesthetic of the Parche Peludo brand with soft tonal shifts." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTgB3cOognCLYktzz8qEALspmOvxr92ew8YyMGQ5XIkNeKAoihgxTN0Toj_X5SNHsDTqUDD5en7Xg7pCZbyyj0tOkG0NnRdlASA__AVYgpS8TPKFk_d20rbM-WLgNWL8egXIZtwhmTNQg9RFb9Fm_2F_KebX5Ap4B139x4Mea0gOJeSAyC7ACUd45sZR_cvY6LbTI4hgePS5gb-1_uakHIwHInRQtmSYOA7uPLf296AxNCyKZ6FDrV">
+<div class="absolute top-3 right-3 bg-tertiary-container/90 backdrop-blur-sm text-on-tertiary px-3 py-1 rounded-full text-label-sm font-label-sm flex items-center gap-1" style="background-color: rgb(121, 200, 208); color: white;"><span class="material-symbols-outlined text-[16px]" data-icon="pets" style="font-variation-settings: &quot;FILL&quot; 1;">pets</span>Perro</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-md text-headline-md text-primary">Apolo</h3>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_vert">more_vert</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-4">Golden Retriever</p>
+<button class="w-full py-3 px-4 border border-outline-variant text-primary font-label-md rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors active:bg-surface-container-high" style="color: rgb(81, 55, 40); border-color: rgb(121, 200, 208);">
+                        Ver perfil
+                        <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Pet Card: Luna -->
+<div class="bg-white rounded-xl overflow-hidden pet-card-shadow border border-surface-variant transition-transform active:scale-[0.98]">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A graceful domestic short-hair cat with sleek black and white fur, lounging on a minimalist cream-colored sofa. The lighting is soft and bright, highlighting the texture of the fabric and the cat's fur. The style is clean, modern, and high-end, consistent with a community-driven pet care app's aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA17BqESq79zyHHFdwXg3BuXYwwxbokClaehxcJzjljNcS7sq8uXcVILLJF1mj2N0aG1l1rzkzN9y-_iKQ4QPKofa6j2MAGlxC9ypUa6LEC9R6Pkp-rrLcnRZ3ywpejbyczhI9OcB0NE2vkWTeh_0OKHunbz7YfJ_KJOOjwkyaMRSQ6c13kakecs-3pZsUf2b6OWp9awMRf6bVQxr_8HCOia3WB0GhrNUA61UVRLDknugqBHm9j7UWZ">
+<div class="absolute top-3 right-3 bg-secondary-container/90 backdrop-blur-sm text-on-secondary-container px-3 py-1 rounded-full text-label-sm font-label-sm flex items-center gap-1" style="background-color: rgb(121, 200, 208); color: white;"><span class="material-symbols-outlined text-[16px]" data-icon="pets" style="font-variation-settings: &quot;FILL&quot; 1;">pets</span>Gato</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-md text-headline-md text-primary">Luna</h3>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_vert">more_vert</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-4">Persa</p>
+<button class="w-full py-3 px-4 border border-outline-variant text-primary font-label-md rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors active:bg-surface-container-high" style="color: rgb(81, 55, 40); border-color: rgb(121, 200, 208);">
+                        Ver perfil
+                        <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Empty State / Add Option -->
+<button class="w-full py-8 px-4 border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center gap-3 text-on-surface-variant hover:bg-surface-container-low hover:border-primary transition-all group">
+<div class="w-14 h-14 bg-surface-container-high rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors" style="--tw-group-hover-bg: #79C8D0;">
+<span class="material-symbols-outlined text-3xl group-hover:text-white" data-icon="add">add</span>
+</div>
+<p class="font-label-md text-label-md">Añadir nueva mascota</p>
+</button>
+</div>
+</main>
+<!-- Floating Action Button (FAB) -->
+
+<!-- BottomNavBar (Based on JSON) -->
+
+<script>
+        // Micro-interaction for cards
+        document.querySelectorAll('.pet-card-shadow').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('touchend', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+
+
+</body></html>
