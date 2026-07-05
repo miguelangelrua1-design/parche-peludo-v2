@@ -3,7 +3,7 @@
  * Plugin Name: Personalización Parche
  * Plugin URI:  https://parchepeludo.com
  * Description: Personalizaciones de Parche Peludo sobre Listeo, organizadas por módulos: Mascotas (perfiles de los peludos de cada usuario e integración con las reservas), Servicios y Reservas (próximamente).
- * Version:     2.3.0
+ * Version:     2.4.0
  * Author:      Parche Peludo
  * Text Domain: pp-personalizacion
  *
@@ -51,36 +51,37 @@ function pp_pers_menu_principal() {
 	add_submenu_page( 'pp-personalizacion', 'Personalización Parche', 'Inicio', 'manage_options', 'pp-personalizacion', 'pp_pers_pagina_inicio', 0 );
 }
 
-// Servicios y Reservas: marcadores de posición (la lógica llegará después).
-// Prioridad 30 para que queden al final, tras Mascotas (CPT) y Razas/Ajustes (20).
+// Submenús: Servicios, Listados, Reservas. (Mascotas lo aporta el CPT;
+// Razas y Ajustes ya NO son submenús: son tabs dentro de Mascotas y Reservas.)
 add_action( 'admin_menu', 'pp_pers_menus_futuros', 30 );
 function pp_pers_menus_futuros() {
 	add_submenu_page( 'pp-personalizacion', 'Servicios', 'Servicios', 'manage_options', 'pp-servicios', 'pp_pers_pagina_servicios' );
-	add_submenu_page( 'pp-personalizacion', 'Listados', 'Listados', 'manage_options', 'pp-listados', 'pp_pers_pagina_listados' );
+	add_submenu_page( 'pp-personalizacion', 'Listados', 'Listados', 'manage_options', 'pp-listados', 'pp_listados_admin_page' );
 	add_submenu_page( 'pp-personalizacion', 'Reservas', 'Reservas', 'manage_options', 'pp-reservas', 'pp_pers_pagina_reservas' );
 }
 
-/** Página Listados. */
-function pp_pers_pagina_listados() {
-	if ( ! current_user_can( 'manage_options' ) ) {
+// Orden final de los submenús (WordPress los coloca según el momento de
+// registro; el del CPT llega aparte). Los reordenamos explícitamente:
+// Inicio · Mascotas · Servicios · Listados · Reservas.
+add_action( 'admin_menu', 'pp_pers_ordenar_submenu', 999 );
+function pp_pers_ordenar_submenu() {
+	global $submenu;
+	if ( empty( $submenu['pp-personalizacion'] ) ) {
 		return;
 	}
-	?>
-	<div class="wrap">
-		<h1>📋 Listados</h1>
-		<h2>Personalizaciones activas</h2>
-		<div style="background:#fff;border:1px solid #dcdcde;border-radius:12px;padding:18px;max-width:720px">
-			<h3 style="margin-top:0">Publicación por rol</h3>
-			<p>Reglas sobre quién puede publicar cada tipo de listado (Listeo no trae esta opción):</p>
-			<ul style="list-style:disc;padding-left:20px">
-				<li><strong>Usuarios (rol guest)</strong>: pueden crear y gestionar listados de <strong>Adopción</strong> y <strong>Mascotas perdidas</strong>. Ven "Agregar listado" y "Mis listados" en su panel, y al publicar solo se les ofrecen esos dos tipos.</li>
-				<li><strong>Prestadores (rol owner)</strong>: conservan todos los tipos, incluido <strong>Directorio</strong> (exclusivo de ellos).</li>
-				<li><strong>Candado de seguridad</strong>: aunque se manipule el formulario, el servidor rechaza guardar un tipo no permitido para el rol.</li>
-			</ul>
-			<p class="description">Requisitos que NO viajan con el plugin (configuración del sitio): los tipos de listado "Adopción" y "Mascotas perdidas" deben existir y estar activos (panel de Listeo → Listing Types), y el registro debe crear usuarios con rol <code>guest</code>.</p>
-		</div>
-	</div>
-	<?php
+	$orden = array(
+		'pp-personalizacion',              // Inicio
+		'edit.php?post_type=pp_mascota',   // Mascotas (CPT)
+		'pp-servicios',                    // Servicios
+		'pp-listados',                     // Listados
+		'pp-reservas',                     // Reservas
+	);
+	$pos = array_flip( $orden );
+	usort( $submenu['pp-personalizacion'], function ( $a, $b ) use ( $pos ) {
+		$pa = $pos[ $a[2] ] ?? 99;
+		$pb = $pos[ $b[2] ] ?? 99;
+		return $pa <=> $pb;
+	} );
 }
 
 /** Página Inicio: resumen del estado de los módulos. */
@@ -109,7 +110,6 @@ function pp_pers_pagina_inicio() {
 				<p style="margin-top:12px">
 					<a class="button button-primary" href="<?php echo esc_url( admin_url( 'edit.php?post_type=pp_mascota' ) ); ?>">Ver mascotas</a>
 					<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=pp-razas' ) ); ?>">Razas</a>
-					<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=pp-ajustes' ) ); ?>">Ajustes</a>
 				</p>
 			</div>
 
@@ -135,10 +135,15 @@ function pp_pers_pagina_inicio() {
 				<p style="margin-top:12px"><a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=pp-listados' ) ); ?>">Ver detalle</a></p>
 			</div>
 
-			<div style="flex:1;min-width:260px;max-width:360px;background:#fff;border:1px dashed #c3c4c7;border-radius:12px;padding:20px;opacity:.75">
+			<div style="flex:1;min-width:260px;max-width:360px;background:#fff;border:1px solid #dcdcde;border-radius:12px;padding:20px">
 				<h2 style="margin:0 0 4px">📅 Reservas</h2>
-				<p style="margin:0 0 10px"><span style="background:#f0f0f1;color:#50575e;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600">Próximamente</span></p>
-				<p style="color:#50575e">Personalizaciones sobre el flujo de reservas de Listeo. La lógica de este módulo se definirá próximamente.</p>
+				<p style="margin:0 0 10px"><span style="background:#e6f6f0;color:#1b5e40;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600">Activo</span></p>
+				<p style="color:#50575e">Ajustes del flujo de reservas.</p>
+				<ul style="margin:0;color:#50575e">
+					<li>Pedir la mascota al reservar</li>
+					<li>Precio según la mascota (preparación)</li>
+				</ul>
+				<p style="margin-top:12px"><a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=pp-reservas' ) ); ?>">Ver ajustes</a></p>
 			</div>
 
 		</div>
@@ -179,12 +184,39 @@ function pp_pers_pagina_servicios() {
 	<?php
 }
 
-/** Página Reservas (marcador de posición). */
+/**
+ * Página Reservas — organizada por TABS. Hoy: "Ajustes" (mascota en la
+ * reserva / precio según la mascota). A futuro se añadirán más pestañas.
+ */
 function pp_pers_pagina_reservas() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
-	echo '<div class="wrap"><h1>📅 Reservas</h1><p>Este módulo está reservado para las personalizaciones del flujo de reservas de Parche Peludo. Su lógica se definirá próximamente.</p></div>';
+	$tabs = array(
+		'ajustes' => 'Ajustes',
+	);
+	$activo = sanitize_key( $_GET['tab'] ?? 'ajustes' );
+	if ( ! isset( $tabs[ $activo ] ) ) {
+		$activo = 'ajustes';
+	}
+	?>
+	<div class="wrap">
+		<h1>📅 Reservas</h1>
+		<h2 class="nav-tab-wrapper" style="margin-bottom:16px">
+			<?php foreach ( $tabs as $clave => $etiqueta ) :
+				$url   = admin_url( 'admin.php?page=pp-reservas&tab=' . $clave );
+				$clase = 'nav-tab' . ( $clave === $activo ? ' nav-tab-active' : '' ); ?>
+				<a href="<?php echo esc_url( $url ); ?>" class="<?php echo esc_attr( $clase ); ?>"><?php echo esc_html( $etiqueta ); ?></a>
+			<?php endforeach; ?>
+		</h2>
+
+		<?php
+		if ( 'ajustes' === $activo && function_exists( 'pp_mascotas_ajustes_form' ) ) {
+			pp_mascotas_ajustes_form();
+		}
+		?>
+	</div>
+	<?php
 }
 
 /* -------------------------------------------------------------------------

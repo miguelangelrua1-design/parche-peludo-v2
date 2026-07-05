@@ -893,6 +893,8 @@ function pp_mascotas_admin_perfil_usuario( $user ) {
  *    nombre que ya tenían (raza "heredada"). "Otro" es fija.
  * ---------------------------------------------------------------------- */
 
+// "Razas" NO es un ítem del menú lateral: es un TAB dentro de "Mascotas".
+// Se registra como página oculta (accesible por URL) y se quita del menú.
 add_action( 'admin_menu', 'pp_mascotas_admin_menu_razas', 20 );
 function pp_mascotas_admin_menu_razas() {
 	add_submenu_page(
@@ -903,6 +905,36 @@ function pp_mascotas_admin_menu_razas() {
 		'pp-razas',
 		'pp_mascotas_admin_razas_page'
 	);
+	remove_submenu_page( 'pp-personalizacion', 'pp-razas' );
+}
+
+/**
+ * Barra de pestañas de la sección Mascotas: "Registradas" (lista del CPT) y
+ * "Razas". Se muestra en ambas pantallas para que convivan bajo Mascotas.
+ *
+ * @param string $activo 'registradas' | 'razas'
+ */
+function pp_mascotas_render_tabs( $activo ) {
+	$tabs = array(
+		'registradas' => array( 'Registradas', admin_url( 'edit.php?post_type=pp_mascota' ) ),
+		'razas'       => array( 'Razas',       admin_url( 'admin.php?page=pp-razas' ) ),
+	);
+	echo '<h2 class="nav-tab-wrapper" style="margin-bottom:16px">';
+	foreach ( $tabs as $clave => $tab ) {
+		$clase = 'nav-tab' . ( $clave === $activo ? ' nav-tab-active' : '' );
+		echo '<a href="' . esc_url( $tab[1] ) . '" class="' . esc_attr( $clase ) . '">' . esc_html( $tab[0] ) . '</a>';
+	}
+	echo '</h2>';
+}
+
+// Inyecta la barra de pestañas en la pantalla de listado del CPT Mascotas
+// (admin_notices se pinta justo bajo el título "Mascotas" / "Añadir entrada").
+add_action( 'admin_notices', 'pp_mascotas_tabs_en_lista_cpt' );
+function pp_mascotas_tabs_en_lista_cpt() {
+	$screen = get_current_screen();
+	if ( $screen && 'edit-pp_mascota' === $screen->id ) {
+		pp_mascotas_render_tabs( 'registradas' );
+	}
 }
 
 add_action( 'admin_init', 'pp_mascotas_admin_razas_handler' );
@@ -1032,7 +1064,9 @@ function pp_mascotas_admin_razas_page() {
 	);
 	?>
 	<div class="wrap">
-		<h1>Razas de mascotas</h1>
+		<h1>🐾 Mascotas</h1>
+		<?php pp_mascotas_render_tabs( 'razas' ); ?>
+		<h2 style="margin-top:0">Razas</h2>
 		<p>Estas son las razas que los usuarios pueden elegir al registrar una mascota. Se muestran siempre en <strong>orden alfabético</strong> y la opción <strong>"Otro"</strong> aparece fija al final de cada lista.</p>
 
 		<?php if ( $ok && isset( $mensajes_ok[ $ok ] ) ) : ?>
@@ -1351,18 +1385,9 @@ function pp_mascotas_meta_reserva( $booking_id, $args ) {
  * 11. Ajustes: wp-admin → Mascotas → Ajustes
  * ---------------------------------------------------------------------- */
 
-add_action( 'admin_menu', 'pp_mascotas_admin_menu_ajustes', 20 );
-function pp_mascotas_admin_menu_ajustes() {
-	add_submenu_page(
-		'pp-personalizacion',
-		'Ajustes de Mascotas',
-		'Ajustes',
-		'manage_options',
-		'pp-ajustes',
-		'pp_mascotas_admin_ajustes_page'
-	);
-}
-
+// "Ajustes" ya NO es un ítem del menú lateral: es un TAB dentro de "Reservas"
+// (ver pp_pers_pagina_reservas en pp-personalizacion.php, que llama a
+// pp_mascotas_ajustes_form()). El handler redirige al tab correspondiente.
 add_action( 'admin_init', 'pp_mascotas_admin_ajustes_handler' );
 function pp_mascotas_admin_ajustes_handler() {
 	if ( empty( $_POST['pp_ajustes_action'] ) || ! current_user_can( 'manage_options' ) ) {
@@ -1375,11 +1400,19 @@ function pp_mascotas_admin_ajustes_handler() {
 	$cats = array_filter( array_map( 'absint', (array) ( $_POST['pp_precio_categorias'] ?? array() ) ) );
 	update_option( 'pp_mascotas_precio_categorias', $cats );
 
-	wp_safe_redirect( add_query_arg( 'pp_ok', 'guardado', admin_url( 'admin.php?page=pp-ajustes' ) ) );
+	wp_safe_redirect( add_query_arg(
+		array( 'tab' => 'ajustes', 'pp_ok' => 'guardado' ),
+		admin_url( 'admin.php?page=pp-reservas' )
+	) );
 	exit;
 }
 
-function pp_mascotas_admin_ajustes_page() {
+/**
+ * Formulario de Ajustes (mascota en las reservas / precio según la mascota).
+ * Es EMBEBIBLE: no imprime el <div class="wrap"> ni <h1> — eso lo pone la
+ * página contenedora (Reservas → tab Ajustes).
+ */
+function pp_mascotas_ajustes_form() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
@@ -1387,9 +1420,6 @@ function pp_mascotas_admin_ajustes_page() {
 	$marcadas  = array_map( 'absint', (array) get_option( 'pp_mascotas_precio_categorias', array() ) );
 	$terminos  = get_terms( array( 'taxonomy' => 'listing_category', 'hide_empty' => false ) );
 	?>
-	<div class="wrap">
-		<h1>Ajustes de Mascotas</h1>
-
 		<?php if ( 'guardado' === sanitize_key( $_GET['pp_ok'] ?? '' ) ) : ?>
 			<div class="notice notice-success is-dismissible"><p>Ajustes guardados.</p></div>
 		<?php endif; ?>
@@ -1437,7 +1467,6 @@ function pp_mascotas_admin_ajustes_page() {
 
 			<p style="margin-top:20px"><button class="button button-primary">Guardar ajustes</button></p>
 		</form>
-	</div>
 	<?php
 }
 
