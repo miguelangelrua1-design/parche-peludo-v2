@@ -8932,8 +8932,38 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
   .header-search-container .ppv2-scope-tabs .ppv2-scope-tab {
     flex: 1 1 50%;
     text-align: center;
-    padding: 10px 16px;
+    padding: 13px 16px;   /* más altos y cómodos al tocar en móvil */
+    font-size: 15px;      /* texto un poco más grande (base 13px) */
+    line-height: 1.1;
   }
+}
+
+/* --- Panel de estado de las sugerencias: "Buscando…" / "Sin resultados" --- */
+.ppv2-suggest-status {
+  position: absolute;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  background: #fff;
+  border: 1px solid var(--teal-mist);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-lg);
+  font-size: 14px;
+  color: var(--teal-ink);
+}
+.ppv2-suggest-spinner {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--teal-mist);
+  border-top-color: var(--teal-parche);
+  border-radius: 50%;
+  animation: ppv2-spin .7s linear infinite;
+}
+@keyframes ppv2-spin {
+  to { transform: rotate(360deg); }
 }
 
 /* ============================================================

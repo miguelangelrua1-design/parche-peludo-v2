@@ -2621,6 +2621,16 @@ function ppv2_header_suggest() {
 		wp_send_json( array() );
 	}
 
+	// Caché por término (10 min): los términos repetidos —los más comunes con
+	// tráfico real— responden sin consultar la base de datos. Se invalida solo
+	// al expirar; 10 min de desfase máximo en sugerencias es aceptable.
+	$term_key  = function_exists( 'mb_strtolower' ) ? mb_strtolower( $term, 'UTF-8' ) : strtolower( $term );
+	$cache_key = 'ppv2_suggest_' . md5( $term_key );
+	$cached    = get_transient( $cache_key );
+	if ( false !== $cached && is_array( $cached ) ) {
+		wp_send_json( $cached );
+	}
+
 	// El orden según el tab activo lo aplica el navegador (sin re-consultar al servidor).
 	$listing_items = array();
 	$product_items = array();
@@ -2677,7 +2687,9 @@ function ppv2_header_suggest() {
 		);
 	}
 
-	wp_send_json( array_merge( $listing_items, $product_items ) );
+	$suggestions = array_merge( $listing_items, $product_items );
+	set_transient( $cache_key, $suggestions, 10 * MINUTE_IN_SECONDS );
+	wp_send_json( $suggestions );
 }
 
 // Garantiza que la librería de autocompletado esté cargada aunque Listeo
@@ -2722,6 +2734,24 @@ function ppv2_header_suggest_js() {
 				});
 				return getScope() === 'tienda' ? products.concat(listings) : listings.concat(products);
 			}
+
+			// --- Panel de estado bajo el campo: "Buscando…" apenas arranca la
+			// búsqueda (feedback inmediato) y "Sin resultados" cuando no hay nada.
+			var $status = $('<div class="ppv2-suggest-status" style="display:none"></div>').appendTo(document.body);
+			function showStatus($field, busy) {
+				var o = $field.offset();
+				$status
+					.html(busy
+						? '<span class="ppv2-suggest-spinner"></span><span>Buscando…</span>'
+						: '<span>Sin resultados en Directorio ni Tienda</span>')
+					.css({
+						top: (o.top + $field.outerHeight() + 4) + 'px',
+						left: o.left + 'px',
+						minWidth: $field.outerWidth() + 'px'
+					})
+					.show();
+			}
+			function hideStatus() { $status.hide(); }
 
 			// --- Tabs Directorio | Tienda siempre visibles en el buscador del header ---
 			function updateTabsUI() {
@@ -2813,6 +2843,23 @@ function ppv2_header_suggest_js() {
 						return false;
 					},
 					focus: function() { return false; }
+				});
+
+				// Ciclo de estado: al iniciar la búsqueda → "Buscando…"; al llegar
+				// la respuesta → ocultar (hay menú) o "Sin resultados" (vacía).
+				$input.on('autocompletesearch', function() {
+					showStatus($input, true);
+				});
+				$input.on('autocompleteresponse', function(event, ui) {
+					if (ui && ui.content && ui.content.length) {
+						hideStatus();
+					} else {
+						showStatus($input, false);
+					}
+				});
+				$input.on('blur', function() { window.setTimeout(hideStatus, 150); });
+				$input.on('input', function() {
+					if ($input.val().trim().length < 2) { hideStatus(); }
 				});
 
 				var inst = $input.autocomplete('instance');
