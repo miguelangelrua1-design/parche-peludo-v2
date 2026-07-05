@@ -1274,6 +1274,9 @@ function ppv2_listing_header_reorder() {
 					photoUrls.forEach(function(url, idx) {
 						var slide = document.createElement('div');
 						slide.className = 'ppv2-mobile-slider-slide';
+						// La misma foto como fondo del slide: el CSS la difumina detrás
+						// (::before) para rellenar las franjas cuando la foto es vertical.
+						slide.style.backgroundImage = 'url("' + url + '")';
 						
 						// Envoltura de link para restaurar la ventana modal (popup lightbox)
 						var link = document.createElement('a');

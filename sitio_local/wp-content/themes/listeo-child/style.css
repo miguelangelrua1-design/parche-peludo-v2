@@ -3227,8 +3227,24 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     overflow: hidden !important;
     margin: 0 !important;
     padding: 0 !important;
+    /* Opción A (fotos verticales): la foto se ve COMPLETA (contain en el img)
+       y las franjas se rellenan con la misma foto difuminada (::before).
+       El JS pone la foto como background-image inline de este slide. */
+    position: relative !important;
+    background-size: cover !important;
+    background-position: center !important;
   }
-  
+  body.single-listing .ppv2-mobile-slider-slide::before {
+    content: '' !important;
+    position: absolute !important;
+    inset: -24px !important; /* desborda para que el blur no deje bordes claros */
+    background: inherit !important;
+    background-size: cover !important;
+    background-position: center !important;
+    filter: blur(16px) brightness(0.85) !important;
+    z-index: 0 !important;
+  }
+
   body.single-listing .ppv2-mobile-slider-slide a {
     width: 100% !important;
     height: 100% !important;
@@ -3236,12 +3252,17 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     margin: 0 !important;
     padding: 0 !important;
     border-radius: 0 !important;
+    position: relative !important;
+    z-index: 1 !important;
   }
-  
-  body.single-listing .ppv2-mobile-slider-slide img {
+
+  /* Los :not(#…) son SOLO para ganar especificidad: la regla comodín de la
+     galería (arriba, con :not(#titlebar) x2 = 2 IDs) fuerza object-fit:cover
+     sobre todos los descendientes; esta necesita 3 IDs para superarla. */
+  body.single-listing .ppv2-mobile-slider-slide img:not(#ppv2-a):not(#ppv2-b):not(#ppv2-c) {
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
+    object-fit: contain !important;
     border-radius: 0 !important;
     display: block !important;
   }
