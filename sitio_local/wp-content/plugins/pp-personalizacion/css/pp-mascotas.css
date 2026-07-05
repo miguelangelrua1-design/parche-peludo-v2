@@ -1,0 +1,585 @@
+/* =========================================================================
+   PP Mascotas — estilos de la sección "Mis Mascotas" del dashboard.
+   Basado en Diseño/Stitch/mis_mascotas_*.html y registrar_nueva_mascota_*.html
+   Marca: teal #79C8D0 · ink #1E2E33
+   ========================================================================= */
+
+.pp-mascotas {
+	--pp-teal: #79C8D0;
+	--pp-teal-oscuro: #5BAFB7;
+	--pp-ink: #1E2E33;
+	--pp-gris-texto: #50453f;
+	--pp-gris-borde: #e3e2e1;
+	--pp-gris-fondo: #f4f3f2;
+	--pp-error: #ba1a1a;
+	font-size: 16px;
+	max-width: 100%;
+}
+/* Ningún descendiente debe empujar el ancho más allá del contenedor
+   (evita scroll horizontal en móvil). */
+.pp-mascotas *,
+.pp-mascotas *::before,
+.pp-mascotas *::after {
+	box-sizing: border-box;
+}
+
+/* ---------- Avisos ---------- */
+.pp-masc-aviso {
+	border-radius: 12px;
+	padding: 14px 18px;
+	margin-bottom: 24px;
+	font-size: 15px;
+}
+.pp-masc-aviso--ok {
+	background: #e6f6f0;
+	color: #1b5e40;
+	border: 1px solid #bfe8d6;
+}
+.pp-masc-aviso--error {
+	background: #ffdad6;
+	color: #93000a;
+	border: 1px solid #f3b1ab;
+}
+.pp-masc-aviso--error ul {
+	margin: 8px 0 0 18px;
+	padding: 0;
+}
+.pp-masc-aviso--error li {
+	list-style: disc;
+	margin-bottom: 2px;
+}
+
+/* ---------- Cabecera ---------- */
+.pp-masc-header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 32px;
+}
+.pp-masc-titulo {
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--pp-ink);
+	margin: 0 0 6px;
+	line-height: 1.2;
+}
+.pp-masc-sub {
+	color: var(--pp-gris-texto);
+	margin: 0;
+	max-width: 560px;
+}
+
+/* ---------- Botones ---------- */
+.pp-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 13px 26px;
+	border-radius: 12px;
+	font-weight: 600;
+	font-size: 15px;
+	line-height: 1;
+	cursor: pointer;
+	text-decoration: none !important;
+	border: 0;
+	transition: all .2s ease;
+}
+.pp-btn--primario {
+	background: var(--pp-teal);
+	color: #fff !important;
+	box-shadow: 0 6px 16px rgba(121, 200, 208, .35);
+}
+.pp-btn--primario:hover {
+	background: var(--pp-teal-oscuro);
+	color: #fff !important;
+	transform: translateY(-2px);
+}
+.pp-btn--borde {
+	background: transparent;
+	border: 2px solid var(--pp-teal);
+	color: var(--pp-ink) !important;
+	width: 100%;
+}
+.pp-btn--borde:hover {
+	background: var(--pp-teal);
+	color: #fff !important;
+}
+.pp-btn--plano {
+	background: transparent;
+	color: var(--pp-gris-texto) !important;
+	border: 1px solid var(--pp-gris-borde);
+}
+.pp-btn--plano:hover {
+	background: var(--pp-gris-fondo);
+}
+.pp-btn--peligro {
+	background: transparent;
+	border: 1px solid #f3b1ab;
+	color: var(--pp-error) !important;
+	padding: 10px 18px;
+	font-size: 14px;
+}
+.pp-btn--peligro:hover {
+	background: #ffdad6;
+}
+
+/* ---------- Grid de tarjetas ---------- */
+.pp-masc-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: 24px;
+}
+.pp-masc-card {
+	background: #fff;
+	border: 1px solid var(--pp-gris-borde);
+	border-radius: 20px;
+	overflow: hidden;
+	transition: all .25s ease;
+	display: flex;
+	flex-direction: column;
+}
+.pp-masc-card:hover {
+	border-color: var(--pp-teal);
+	box-shadow: 0 14px 34px rgba(30, 46, 51, .12);
+}
+.pp-masc-card__foto {
+	position: relative;
+	aspect-ratio: 4 / 3;
+	overflow: hidden;
+	background: var(--pp-gris-fondo);
+}
+.pp-masc-card__foto img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	transition: transform .4s ease;
+}
+.pp-masc-card:hover .pp-masc-card__foto img {
+	transform: scale(1.05);
+}
+.pp-masc-card__sinfoto {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	font-size: 44px;
+	color: #c9c6c4;
+}
+.pp-masc-card__badge {
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	background: var(--pp-teal);
+	color: #fff;
+	font-size: 12px;
+	font-weight: 600;
+	padding: 4px 12px;
+	border-radius: 999px;
+}
+.pp-masc-card__badge .fa {
+	font-size: 11px;
+	margin-right: 3px;
+}
+.pp-masc-card__cuerpo {
+	padding: 18px 20px 20px;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+}
+.pp-masc-card__nombre {
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--pp-ink);
+	margin: 0 0 2px;
+}
+.pp-masc-card__detalle {
+	color: var(--pp-gris-texto);
+	font-size: 14px;
+	margin: 0 0 16px;
+	flex-grow: 1;
+}
+
+/* Tarjeta "Añadir nueva mascota" (siempre visible) */
+.pp-masc-card--agregar {
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	border: 2px dashed var(--pp-gris-borde);
+	background: transparent;
+	min-height: 260px;
+	color: var(--pp-gris-texto) !important;
+	font-weight: 600;
+	text-decoration: none !important;
+	text-align: center;
+	padding: 24px;
+}
+.pp-masc-card--agregar:hover {
+	border-color: var(--pp-teal);
+	background: #fbfdfd;
+	color: var(--pp-teal) !important;
+	box-shadow: none;
+}
+.pp-masc-card--agregar__icono {
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	background: var(--pp-gris-fondo);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 22px;
+	transition: all .2s ease;
+}
+.pp-masc-card--agregar:hover .pp-masc-card--agregar__icono {
+	background: var(--pp-teal);
+	color: #fff;
+}
+
+/* ---------- Formulario ---------- */
+.pp-masc-form {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+.pp-masc-tarjeta {
+	background: #fff;
+	border: 1px solid var(--pp-gris-borde);
+	border-radius: 20px;
+	padding: 32px;
+}
+.pp-masc-tarjeta__titulo {
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--pp-ink);
+	margin: 0 0 24px;
+	padding-bottom: 14px;
+	border-bottom: 1px solid var(--pp-gris-borde);
+}
+.pp-masc-tarjeta__titulo .fa {
+	color: var(--pp-teal);
+	margin-right: 8px;
+}
+.pp-masc-tarjeta__titulo small {
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--pp-gris-texto);
+}
+.pp-masc-form__grid {
+	display: grid;
+	grid-template-columns: 220px 1fr;
+	gap: 32px;
+}
+.pp-masc-form__campos {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	min-width: 0; /* permite encoger dentro del grid; evita overflow */
+}
+.pp-masc-fila {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+}
+.pp-masc-campo {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-bottom: 0;
+	min-width: 0; /* permite encoger dentro del grid/fila; evita overflow */
+}
+.pp-masc-label {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--pp-ink);
+	margin: 0;
+}
+.pp-req {
+	color: var(--pp-error);
+}
+.pp-masc-input,
+select.pp-masc-input,
+textarea.pp-masc-input {
+	width: 100%;
+	background: var(--pp-gris-fondo);
+	border: 1px solid transparent;
+	border-radius: 12px;
+	padding: 12px 16px;
+	font-size: 15px;
+	color: var(--pp-ink);
+	margin: 0;
+	box-shadow: none;
+	transition: all .2s ease;
+	height: auto;
+	line-height: 1.4;
+}
+.pp-masc-input:focus {
+	background: #fff;
+	border-color: var(--pp-teal);
+	box-shadow: 0 0 0 3px rgba(121, 200, 208, .25);
+	outline: none;
+}
+/* Listeo oculta los <select> obligatorios sin valor con
+   "select:invalid { height:0; opacity:0; position:absolute }" (truco para
+   sus selects decorados). Lo anulamos igual que hace el propio tema en
+   #booking-confirmation y #listeo-core-registration-fields. */
+.pp-mascotas select.pp-masc-input,
+.pp-mascotas select.pp-masc-input:invalid {
+	opacity: 1 !important;
+	display: block !important;
+	height: auto !important;
+	position: static !important;
+	width: 100% !important;
+	line-height: 1.4 !important;
+}
+textarea.pp-masc-input {
+	resize: vertical;
+	min-height: 110px;
+}
+.pp-masc-ayuda {
+	font-size: 12px;
+	color: var(--pp-gris-texto);
+	margin: 6px 0 0;
+	text-align: center;
+}
+
+/* Pills Especie / Sexo */
+.pp-masc-pills {
+	display: flex;
+	gap: 8px;
+	background: var(--pp-gris-fondo);
+	border-radius: 12px;
+	padding: 4px;
+}
+.pp-masc-pill {
+	flex: 1;
+	min-width: 0; /* permite que el pill se encoja; evita overflow en flex */
+	margin: 0;
+	cursor: pointer;
+	position: relative; /* contiene el radio absoluto (fix scroll horizontal iOS) */
+}
+.pp-masc-pill input {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	opacity: 0;
+	pointer-events: none;
+}
+.pp-masc-pill span {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 8px;
+	border-radius: 9px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--pp-gris-texto);
+	transition: all .15s ease;
+}
+.pp-masc-pill input:checked + span {
+	background: #fff;
+	color: var(--pp-teal-oscuro);
+	box-shadow: 0 2px 8px rgba(30, 46, 51, .12);
+}
+.pp-masc-pill input:focus-visible + span {
+	outline: 2px solid var(--pp-teal);
+}
+/* Símbolos ♂ / ♀ junto a Macho y Hembra */
+.pp-sexo-simbolo {
+	font-style: normal;
+	font-weight: 700;
+	font-size: 17px;
+	line-height: 1;
+	margin-right: 4px;
+}
+.pp-sexo-simbolo--m {
+	color: #4a90d9;
+}
+.pp-sexo-simbolo--h {
+	color: #e0669a;
+}
+
+/* Foto de perfil circular */
+.pp-masc-form__foto {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
+.pp-masc-fotocirculo {
+	width: 180px;
+	height: 180px;
+	border-radius: 50%;
+	background: var(--pp-gris-fondo);
+	border: 2px dashed #b9b2ae;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	overflow: hidden;
+	position: relative;
+	transition: all .2s ease;
+	margin: 0;
+}
+.pp-masc-fotocirculo:hover {
+	border-color: var(--pp-teal);
+}
+.pp-masc-fotocirculo img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.pp-masc-fotocirculo__hint {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	text-align: center;
+	color: var(--pp-gris-texto);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1;
+}
+.pp-masc-fotocirculo__hint .fa {
+	font-size: 28px;
+	display: block;
+	margin: 0;
+	color: #82746e;
+}
+.pp-masc-inputfile {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	overflow: hidden;
+}
+
+/* Zona de subida de galería */
+.pp-masc-zona-subida {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	border: 2px dashed var(--pp-gris-borde);
+	border-radius: 16px;
+	padding: 28px 16px;
+	cursor: pointer;
+	color: var(--pp-gris-texto);
+	transition: all .2s ease;
+	margin: 0;
+	text-align: center;
+}
+.pp-masc-zona-subida:hover {
+	border-color: var(--pp-teal);
+	background: #fbfdfd;
+}
+.pp-masc-zona-subida .fa {
+	font-size: 30px;
+	color: var(--pp-teal);
+}
+.pp-masc-zona-subida small {
+	font-size: 12px;
+	color: #82746e;
+}
+
+/* Miniaturas de galería */
+.pp-masc-galeria {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+	gap: 10px;
+	margin: 12px 0;
+}
+.pp-masc-galeria:empty {
+	display: none;
+}
+.pp-masc-galeria__item {
+	position: relative;
+	aspect-ratio: 1;
+	border-radius: 12px;
+	overflow: hidden;
+	background: var(--pp-gris-fondo);
+}
+.pp-masc-galeria__item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+.pp-masc-galeria__item--fuera img {
+	opacity: .3;
+	filter: grayscale(1);
+}
+.pp-masc-galeria__quitar {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	border: 0;
+	background: rgba(30, 46, 51, .75);
+	color: #fff;
+	font-size: 14px;
+	line-height: 1;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+}
+.pp-masc-galeria__quitar:hover {
+	background: var(--pp-error);
+}
+
+/* Acciones del formulario */
+.pp-masc-acciones {
+	display: flex;
+	justify-content: flex-end;
+	gap: 14px;
+	flex-wrap: wrap;
+}
+.pp-masc-eliminar {
+	margin-top: 18px;
+	text-align: right;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+	.pp-masc-form__grid {
+		grid-template-columns: 1fr;
+	}
+	.pp-masc-form__foto {
+		order: -1;
+	}
+	.pp-masc-tarjeta {
+		padding: 22px 18px;
+	}
+}
+@media (max-width: 600px) {
+	.pp-masc-fila {
+		grid-template-columns: 1fr;
+	}
+	.pp-masc-header .pp-btn {
+		width: 100%;
+	}
+	.pp-masc-acciones {
+		flex-direction: column-reverse;
+	}
+	.pp-masc-acciones .pp-btn {
+		width: 100%;
+	}
+	.pp-masc-eliminar {
+		text-align: center;
+	}
+	.pp-masc-eliminar .pp-btn {
+		width: 100%;
+	}
+}

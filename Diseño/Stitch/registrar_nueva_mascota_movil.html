@@ -1,0 +1,279 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Registrar Mascota | Parche Peludo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400;1,700&amp;family=Caveat:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        'teal-parche': '#79C8D0',
+                        'teal-deep': '#4AA5AD',
+                        'teal-soft': '#BEE3E7',
+                        'teal-mist': '#E8F4F6',
+                        'teal-ink': '#1E5D64',
+                        'paper': '#FFFFFF',
+                        'bone': '#F7F3EC',
+                        'ink': '#1E2E33',
+                        'ink-muted': '#5A6B70',
+                        'ink-faint': '#8E9A9E',
+                        'ink-line': 'rgba(30,46,51,.10)',
+                        'ink-line-2': 'rgba(30,46,51,.06)',
+                        'marigold': '#FFD166',
+                        'coral': '#E85D75'
+                    },
+                    borderRadius: {
+                        'DEFAULT': '0.5rem',
+                        'lg': '1.25rem', // --r-lg: 20px
+                        'xl': '1.75rem', // --r-xl: 28px
+                        'pill': '9999px'
+                    },
+                    fontFamily: {
+                        'display': ['Ubuntu', 'sans-serif'],
+                        'sans': ['Ubuntu', 'sans-serif'],
+                        'hand': ['Caveat', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        :root {
+            --teal-parche: #79C8D0;
+            --ink: #1E2E33;
+            --shadow-md: 0 4px 12px rgba(30,46,51,.08), 0 2px 4px rgba(30,46,51,.04);
+            --shadow-lg: 0 12px 32px rgba(30,46,51,.10), 0 4px 8px rgba(30,46,51,.06);
+        }
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background-color: #FFFFFF;
+            color: #1E2E33;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .input-standard {
+            background-color: #FFFFFF;
+            border: 1px solid rgba(30,46,51,.10);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            transition: all 220ms ease;
+        }
+        .input-standard:focus {
+            border-color: #79C8D0;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(121,200,208,.20);
+        }
+        .btn-primary {
+            background-color: #79C8D0;
+            color: #FFFFFF;
+            font-weight: 800;
+            border-radius: 9999px;
+            box-shadow: 0 12px 32px rgba(121,200,208,.40);
+        }
+        .btn-secondary {
+            border: 2px solid #79C8D0;
+            color: #1E2E33;
+            font-weight: 800;
+            border-radius: 9999px;
+        }
+        .custom-radio:checked + label {
+            background-color: #E8F4F6;
+            border-color: #79C8D0;
+            color: #1E5D64;
+        }
+        .custom-radio:checked + label span.material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen pb-24">
+<!-- Top Navigation Bar -->
+<header class="bg-white sticky top-0 z-40 flex items-center justify-between px-6 w-full h-16 shadow-sm">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-teal-mist active:scale-95 transition-all">
+<span class="material-symbols-outlined text-teal-ink">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold text-ink">Mis Mascotas</h1>
+<div class="w-10"></div> <!-- Spacer for centering -->
+</header>
+<main class="px-6 py-8 max-w-md mx-auto">
+<!-- Hero Section Title -->
+<section class="mb-10 text-center">
+<h2 class="text-3xl font-black text-ink leading-tight mb-2">Añadir nueva mascota</h2>
+<p class="text-ink-muted leading-relaxed"><span style="color: rgb(80, 69, 63); font-family: &quot;Work Sans&quot;; text-align: start; background-color: rgb(250, 249, 248);" class="">Comparte la información de tus peludos, de esta forma podremos brindarles el mejor servicio</span></p>
+</section>
+<form class="space-y-10" id="petRegistrationForm">
+<!-- Section: Información Mascota -->
+<fieldset class="space-y-6">
+<legend class="text-teal-deep font-bold text-xs uppercase tracking-widest mb-4">Información Mascota</legend>
+<!-- Profile Photo Selector -->
+<div class="flex flex-col items-center">
+<div class="relative group cursor-pointer">
+<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-teal-soft shadow-md bg-teal-mist flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A professional, warm portrait of a friendly Golden Retriever puppy looking directly at the camera with soft, natural morning light illuminating its fur. The background is a blurred lush green park setting, creating a serene and welcoming aesthetic consistent with the Parche Peludo brand identity. The lighting is bright and airy, emphasizing the joy of pet ownership." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8qGprtFX-PVdIAO8z7IYD4-76n__Jl_zm-7EDsxcfTWZpGcSmmmoUZRmlC7TzD4N4yy5cvnmoNcoGGhp2MoUrCfVLsTDZJ1gPzgU0EVx-j7ECb7n3S1oq0RurWozdEUlYYGXN5F8v2Dih0sF5dgZpHuwRKAvGl8b7X8bGquoc0OJ-NsoleBSXnfcHgvavpXGvF1dHg9DiY9vq0QYvqqD-j5FRnb2UoFtQMyfXOyUR46VpMGQuF0X5">
+<div class="absolute inset-0 bg-ink bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white text-3xl">add_a_photo</span>
+</div>
+</div>
+<button class="absolute bottom-0 right-0 bg-teal-parche text-white p-2 rounded-full shadow-lg border-2 border-white" type="button">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<p class="mt-2 text-xs font-medium text-ink-faint">Toca para cambiar foto</p>
+</div>
+<!-- Nombre -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-ink" for="pet_name">Nombre</label>
+<input class="input-standard" id="pet_name" placeholder="Ej. Bruno" type="text">
+</div>
+<!-- Especie -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-ink">Especie</label>
+<div class="grid grid-cols-2 gap-4">
+<div class="relative">
+<input checked="" class="hidden custom-radio" id="species_dog" name="species" type="radio">
+<label class="flex flex-col items-center justify-center p-4 border border-ink-line rounded-lg cursor-pointer transition-all hover:bg-teal-mist" for="species_dog">
+<span class="material-symbols-outlined text-3xl mb-1">pets</span>
+<span class="text-sm font-bold">Perro</span>
+</label>
+</div>
+<div class="relative">
+<input class="hidden custom-radio" id="species_cat" name="species" type="radio">
+<label class="flex flex-col items-center justify-center p-4 border border-ink-line rounded-lg cursor-pointer transition-all hover:bg-teal-mist" for="species_cat">
+<span class="material-symbols-outlined text-3xl mb-1">cast</span>
+<span class="text-sm font-bold">Gato</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Sexo -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-ink">Sexo</label>
+<div class="grid grid-cols-2 gap-4">
+<div class="relative">
+<input class="hidden custom-radio" id="gender_male" name="gender" type="radio">
+<label class="flex items-center justify-center gap-2 p-3 border border-ink-line rounded-pill cursor-pointer transition-all hover:bg-teal-mist" for="gender_male">
+<span class="material-symbols-outlined text-xl">male</span>
+<span class="text-sm font-bold">Macho</span>
+</label>
+</div>
+<div class="relative">
+<input class="hidden custom-radio" id="gender_female" name="gender" type="radio">
+<label class="flex items-center justify-center gap-2 p-3 border border-ink-line rounded-pill cursor-pointer transition-all hover:bg-teal-mist" for="gender_female">
+<span class="material-symbols-outlined text-xl">female</span>
+<span class="text-sm font-bold">Hembra</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Fecha de Nacimiento -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-ink" for="birth_date">Fecha de Nacimiento</label>
+<div class="relative">
+<input class="input-standard" id="birth_date" type="date">
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-ink-faint pointer-events-none">calendar_month</span>
+</div>
+</div>
+<!-- Peso -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-ink" for="weight">Peso (en kilos)</label>
+<input class="input-standard" id="weight" placeholder="Ej. 12" type="number">
+</div>
+<!-- Raza -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-ink" for="breed">Raza</label>
+<input class="input-standard" id="breed" placeholder="Ej. Labrador" type="text">
+</div>
+<!-- Tipo de pelaje -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-ink">Tipo de pelaje</label>
+<div class="flex gap-4">
+<div class="flex-1">
+<input class="hidden custom-radio" id="fur_short" name="fur" type="radio">
+<label class="flex items-center justify-center p-3 border border-ink-line rounded-lg cursor-pointer transition-all text-sm font-bold" for="fur_short">Corto</label>
+</div>
+<div class="flex-1">
+<input class="hidden custom-radio" id="fur_long" name="fur" type="radio">
+<label class="flex items-center justify-center p-3 border border-ink-line rounded-lg cursor-pointer transition-all text-sm font-bold" for="fur_long">Largo</label>
+</div>
+</div>
+</div>
+</fieldset>
+<!-- Section: Detalles adicionales -->
+<fieldset class="space-y-6">
+<legend class="text-teal-deep font-bold text-xs uppercase tracking-widest mb-4">Detalles adicionales</legend>
+<!-- Photo Gallery -->
+<div class="space-y-3">
+<label class="block text-sm font-semibold text-ink">Galería de fotos</label>
+<div class="grid grid-cols-3 gap-3">
+<div class="aspect-square rounded-lg overflow-hidden shadow-sm border border-ink-line-2">
+<img class="w-full h-full object-cover" data-alt="Close-up artistic photograph of a fluffy cat's paws on a soft knit blanket, warm neutral tones, soft-focus background, clean lifestyle photography for pets." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmyoW8-nwdWK2UGCKj9oWhE4mJ4j1Q2ibi7wW7kn-gYLWOZVmukG8vQzTrVOHXe37bMiwVd3cJp1kYfao_XziQ8oEUQOZHiAZMx-OkwuAfVP602mKqzyBBhj6LTF9Nd_3bseSBkhH-yaG5e1cofBmRwaN0W3p9GWnU27BgoGez_noIZCeArA20xZmR9_bx7Tl97w-PjHaEV8FdSHcGJIGpNaHtJFs8_P7tR8jpxcwZ6gyKWHELBIxH">
+</div>
+<div class="aspect-square rounded-lg overflow-hidden shadow-sm border border-ink-line-2">
+<img class="w-full h-full object-cover" data-alt="Vibrant outdoor action shot of a playful dog running through tall grass in a sunny Colombian park, bright blue skies, warm natural sunlight, high-quality pet photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmrRTbEG9VV0M3_FvL_4oKi8Ykr5EaDKTslxlUzrjSa5sEMAnhrLkCPU0Zi-4ERtTdFgZwM20jhdLdfBUjGZy1j5stOkhEXUtVainUMFN58GfwKvp0A2u-ED5x5iWHkTt9Mj1GJGdHG-OupMXNX7YT2EVwCNFdm9sLmnO64TGTTYkNZDtuYxkvZcEpZj30hZOE5vhFeokomrY21LbYBe12KRFkuMjkb92fEPvGbZer09RktrWGlRok">
+</div>
+<button class="aspect-square rounded-lg border-2 border-dashed border-teal-soft bg-teal-mist flex flex-col items-center justify-center text-teal-deep hover:bg-teal-soft transition-colors active:scale-95" type="button">
+<span class="material-symbols-outlined">add</span>
+<span class="text-[10px] font-bold mt-1">Añadir</span>
+</button>
+</div>
+</div>
+<!-- Biografía -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-ink" for="bio">Sobre tu mascota</label>
+<textarea class="input-standard resize-none" id="bio" placeholder="Cuéntanos su personalidad, gustos o historias divertidas..." rows="4"></textarea>
+</div>
+</fieldset>
+<!-- Action Buttons -->
+<div class="pt-6 space-y-4">
+<button class="w-full py-4 btn-primary text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-transform" type="submit">
+<span class="">Guardar Perfil</span>
+<span class="material-symbols-outlined">save</span>
+</button>
+<button class="w-full py-4 btn-secondary text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-transform" type="button">
+<span class="">Cancelar</span>
+</button>
+</div>
+</form>
+</main>
+<!-- Bottom Navigation Bar -->
+
+<script>
+        // Simple form handling
+        document.getElementById('petRegistrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Animation for success
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> <span>Guardando...</span>';
+            btn.classList.add('opacity-80');
+            
+            setTimeout(() => {
+                btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> <span>¡Guardado!</span>';
+                btn.classList.remove('opacity-80');
+                btn.classList.replace('bg-teal-parche', 'bg-emerald-500');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.replace('bg-emerald-500', 'bg-teal-parche');
+                }, 2000);
+            }, 1500);
+        });
+
+        // Toggle focus state for radio labels for accessibility visually
+        const radioLabels = document.querySelectorAll('.custom-radio');
+        radioLabels.forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Potential logic to update sibling styles if needed
+            });
+        });
+    </script>
+
+
+</body></html>

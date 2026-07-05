@@ -5786,17 +5786,19 @@ body:has(.mfp-content #lbp-booking-modal) #listeo-floating-chat-widget {
    ~0,67px (casi invisible). La reforzamos: pestaña activa = texto oscuro en
    negrita + subrayado teal de marca (#79c8d0) de 3px; inactiva = gris apagado.
    ============================================================================ */
-#sign-in-dialog .tabs-nav li a {
+/* Ancla en .sign-in-form para cubrir el modal (#sign-in-dialog) Y la página
+   "Mi Cuenta" ([listeo_my_account]), que comparten el mismo formulario. */
+.sign-in-form .tabs-nav li a {
   color: #8a8a8a !important;
   font-weight: 500 !important;
   border-bottom: 3px solid transparent !important; /* reserva espacio: sin salto al cambiar */
   padding-bottom: 8px !important;
   transition: color 0.2s ease, border-color 0.2s ease !important;
 }
-#sign-in-dialog .tabs-nav li a:hover {
+.sign-in-form .tabs-nav li a:hover {
   color: #444 !important;
 }
-#sign-in-dialog .tabs-nav li.active a {
+.sign-in-form .tabs-nav li.active a {
   color: #2b2b2b !important;
   font-weight: 700 !important;
   border-bottom-color: #79c8d0 !important;
@@ -9017,4 +9019,412 @@ a.listeo_core-unbookmark-it:focus {
 a.listeo_core-unbookmark-it:hover i,
 a.listeo_core-unbookmark-it:focus i {
   color: #fff !important;
+}
+
+/* ============================================================================
+   FORMULARIO DE ACCESO (.sign-in-form) — Identidad de marca Parche Peludo
+   Rediseño de Iniciar sesión / Registrar: botones en teal de marca (#79c8d0),
+   selector Usuario/Negocio tipo "segmented control", inputs redondeados con
+   foco teal y detalles finos. (2026-07-03)
+
+   Ancla en `.sign-in-form` (no en #sign-in-dialog) para cubrir AMBOS lugares
+   donde aparece el mismo formulario: el MODAL del header (#sign-in-dialog >
+   .sign-in-form) y la PÁGINA "Mi Cuenta" cuando el usuario no ha iniciado
+   sesión ([listeo_my_account], .sign-in-form en /mi-cuenta-2/). `.sign-in-form`
+   es exclusivo del login/registro de Listeo, así que no afecta al resto del sitio.
+   Paleta: teal #79c8d0 · teal oscuro (hover) #5fb3bc · tinte #eef8f9 · tinta #2b2b2b
+   ============================================================================ */
+
+/* --- Encabezado (solo el modal tiene .small-dialog-header) ------------------ */
+#sign-in-dialog .small-dialog-header h3 {
+  font-weight: 700 !important;
+  color: #2b2b2b !important;
+}
+
+/* --- Selector de tipo de cuenta (Usuario / Negocio/Servicios) --------------- */
+/* Dos botones de igual ancho, tipo pastilla. Inactivo = claro con borde suave;
+   hover = borde teal + tinte; ACTIVO = relleno teal con texto blanco. */
+.sign-in-form .account-type {
+  display: flex !important;
+  gap: 10px !important;
+  margin-bottom: 22px !important;
+}
+.sign-in-form .account-type > div {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+/* El radio real queda oculto pero accesible (la etiqueta es el botón). */
+.sign-in-form .account-type .account-type-radio {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  pointer-events: none !important;
+}
+.sign-in-form .account-type label {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 13px 10px !important;
+  box-sizing: border-box !important;
+  background: #ffffff !important;
+  border: 1.5px solid #e2e6e8 !important;
+  border-radius: 12px !important;
+  color: #5a6b70 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  transition: background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease !important;
+}
+.sign-in-form .account-type label i {
+  font-size: 17px !important;
+  line-height: 1 !important;
+}
+.sign-in-form .account-type label:hover {
+  border-color: #79c8d0 !important;
+  color: #2b2b2b !important;
+  background: #eef8f9 !important;
+}
+/* Estado seleccionado (gana a la regla del tema padre). */
+.sign-in-form .account-type .account-type-radio:checked ~ label,
+.sign-in-form .account-type .account-type-radio:checked + label {
+  background: #79c8d0 !important;
+  border-color: #79c8d0 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(121, 200, 208, 0.35) !important;
+}
+/* Foco por teclado (accesibilidad): halo teal alrededor del botón activo. */
+.sign-in-form .account-type .account-type-radio:focus-visible ~ label {
+  outline: 2px solid #5fb3bc !important;
+  outline-offset: 2px !important;
+}
+
+/* --- Campos de texto -------------------------------------------------------- */
+/* Bordes redondeados y foco teal (el tema los deja rectos con foco gris). */
+.sign-in-form .input-text,
+.sign-in-form input[type="text"],
+.sign-in-form input[type="email"],
+.sign-in-form input[type="password"] {
+  border-radius: 12px !important;
+  transition: border-color .18s ease, box-shadow .18s ease !important;
+}
+.sign-in-form .input-text:focus,
+.sign-in-form input[type="text"]:focus,
+.sign-in-form input[type="email"]:focus,
+.sign-in-form input[type="password"]:focus {
+  border-color: #79c8d0 !important;
+  box-shadow: 0 0 0 3px rgba(121, 200, 208, 0.18) !important;
+}
+/* El ícono dentro del campo se tiñe de teal cuando el campo tiene foco. */
+.sign-in-form .form-row label:focus-within > i {
+  color: #79c8d0 !important;
+}
+/* Red de seguridad para campos personalizados (p. ej. Whatsapp del rol Negocio):
+   si el campo se guardó con ícono en BLANCO, el tema imprime un `<i class="">`
+   vacío que —al ir position:absolute— RESERVA el espacio del ícono y corre el
+   placeholder. Lo ocultamos y quitamos el padding de ícono del input (igual que
+   `field-no-icon`). Así el arreglo viaja en el CSS sin depender del ajuste en BD,
+   y funciona igual en local y en producción. `i[class=""]` apunta SOLO al ícono
+   vacío (los íconos reales llevan clase `sl sl-icon-...`). */
+.sign-in-form .form-row label > i[class=""] { display: none !important; }
+.sign-in-form .form-row label:has(> i[class=""]) input:not(.input-checkbox) {
+  padding-left: 20px !important;
+}
+
+/* --- Botones de envío (Iniciar sesión / Registrar) -------------------------- */
+/* El tema los pinta gris oscuro; los llevamos al teal de marca tipo pastilla,
+   ancho completo, con leve elevación al pasar el mouse. */
+.sign-in-form .button,
+.sign-in-form input[type="submit"].button {
+  background-color: #79c8d0 !important;
+  border: 1.5px solid #79c8d0 !important;
+  color: #ffffff !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  letter-spacing: .01em !important;
+  padding: 12px 30px !important;
+  box-shadow: 0 6px 16px rgba(121, 200, 208, 0.30) !important;
+  transition: background-color .18s ease, box-shadow .18s ease, transform .06s ease !important;
+}
+.sign-in-form .button:hover,
+.sign-in-form input[type="submit"].button:hover {
+  background-color: #5fb3bc !important;
+  border-color: #5fb3bc !important;
+  box-shadow: 0 8px 22px rgba(121, 200, 208, 0.45) !important;
+}
+.sign-in-form .button:active,
+.sign-in-form input[type="submit"].button:active {
+  transform: translateY(1px) !important;
+  box-shadow: 0 4px 12px rgba(121, 200, 208, 0.35) !important;
+}
+/* El botón "Registrar" ocupa todo el ancho (.fw); "Iniciar sesión" también,
+   para que ambos formularios se vean parejos y con más presencia. */
+.sign-in-form #login .button[name="login"] {
+  width: 100% !important;
+  display: block !important;
+}
+
+/* --- Enlaces y casillas ----------------------------------------------------- */
+/* "¿Perdiste tu contraseña?" en teal (era gris). */
+.sign-in-form .lost_password a {
+  color: #79c8d0 !important;
+  transition: color .15s ease !important;
+}
+.sign-in-form .lost_password a:hover {
+  color: #5fb3bc !important;
+}
+/* Casillas (Recuérdame / Acepto Política / Acepto Términos): el tema OCULTA el
+   checkbox nativo (display:none) y dibuja la casilla con `.checkboxes label:before`;
+   al marcar la pinta gris (#66676b). Por eso `accent-color` no aplica: hay que
+   teñir ese pseudo-elemento. Lo llevamos al teal de marca. */
+.sign-in-form .checkboxes input[type="checkbox"]:checked + label:before {
+  background-color: #79c8d0 !important;
+  border-color: #79c8d0 !important;
+  color: #ffffff !important;
+}
+/* Fallback por si en algún caso el checkbox se renderiza nativo. */
+.sign-in-form input[type="checkbox"] {
+  accent-color: #79c8d0 !important;
+}
+
+/* --- Ajuste MÓVIL del selector Usuario / Negocio ---------------------------- */
+/* En pantallas angostas "Negocio/Servicios" es largo: reducimos un poco fuente
+   y padding y permitimos que el texto ajuste sin romper el botón. El resto del
+   rediseño (scopeado a .sign-in-form, sin media query) ya aplica en móvil. */
+@media (max-width: 480px) {
+  .sign-in-form .account-type { gap: 8px !important; }
+  .sign-in-form .account-type label {
+    padding: 12px 6px !important;
+    font-size: 13px !important;
+    gap: 5px !important;
+    text-align: center !important;
+    line-height: 1.15 !important;
+  }
+  .sign-in-form .account-type label i { font-size: 15px !important; }
+}
+
+/* ============================================================
+   DIRECTORIO — filtros como PANEL DESLIZANTE desde la izquierda (móvil).
+   Mismo patrón del cajón de la Tienda. El estado lo pone pp-dirfilters-open
+   en <html> (sincronizado con la clase enabled-sidebar de Listeo por JS,
+   ppv2_dirfilters_drawer). En móvil el JS mueve sidebar+overlay a
+   .pp-dirfilters-host (colgado de <html>) para escapar de los contenedores
+   con transform del tema, que rompen position:fixed. Por eso cada regla
+   cubre AMBAS ubicaciones (host y body). En ESCRITORIO (≥992px) nada aplica.
+   ============================================================ */
+/* Elementos del cajón: ocultos por defecto (escritorio intacto) */
+.pp-dirfilters-head,
+.pp-dirfilters-foot,
+.pp-dirfilters-overlay { display: none; }
+
+@media (max-width: 991px) {
+  /* El sidebar de filtros se vuelve un cajón fijo al 85% de la pantalla */
+  .pp-dirfilters-host .full-page-sidebar,
+  body.ppv2-listings .full-page-sidebar {
+    position: fixed !important;
+    top: 0; left: 0; bottom: 0;
+    height: 100% !important;
+    width: 85vw !important;
+    max-width: 420px !important; /* Listeo trae un max-width menor que limitaria tablets */
+    z-index: 100000;
+    background: #fff;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 20px !important;
+    transform: translateX(-105%);
+    transition: transform .28s ease;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 0 40px rgba(0, 0, 0, .18);
+  }
+  html.pp-dirfilters-open .pp-dirfilters-host .full-page-sidebar,
+  html.pp-dirfilters-open body.ppv2-listings .full-page-sidebar { transform: translateX(0); }
+
+  /* Dentro del cajón sobran: el botón Mostrar/Ocultar de Listeo y el
+     contador/barra de carga de la versión anterior (los reemplaza el
+     botón "Ver N resultados"). Solo en móvil. */
+  .pp-dirfilters-host .full-page-sidebar .filter-button-container,
+  body.ppv2-listings .full-page-sidebar .filter-button-container,
+  .pp-dirfilters-host .full-page-sidebar .ppv2-filter-status,
+  body.ppv2-listings .full-page-sidebar .ppv2-filter-status,
+  .pp-dirfilters-host .full-page-sidebar .ppv2-filter-loadingbar,
+  body.ppv2-listings .full-page-sidebar .ppv2-filter-loadingbar { display: none !important; }
+
+  /* Fondo oscuro detrás del cajón (se ve que los resultados siguen ahí) */
+  .pp-dirfilters-host .pp-dirfilters-overlay,
+  body.ppv2-listings .pp-dirfilters-overlay {
+    display: block;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, .5);
+    z-index: 99999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .28s ease;
+  }
+  html.pp-dirfilters-open .pp-dirfilters-host .pp-dirfilters-overlay,
+  html.pp-dirfilters-open body.ppv2-listings .pp-dirfilters-overlay { opacity: 1; pointer-events: auto; }
+  html.pp-dirfilters-open body { overflow: hidden; }
+
+  /* Barra superior: "Filtros" + X (pegada arriba al hacer scroll) */
+  .pp-dirfilters-host .pp-dirfilters-head,
+  body.ppv2-listings .pp-dirfilters-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 5;
+    background: #fff;
+    margin: 0 -20px 4px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #EEF0F2;
+    font-weight: 700; font-size: 16px;
+    color: var(--ink, #1E2E33);
+  }
+  .pp-dirfilters-host .pp-dirfilters-close,
+  body.ppv2-listings .pp-dirfilters-close {
+    width: 32px; height: 32px;
+    border: 0; border-radius: 999px;
+    background: #F3F4F6; color: #1E2E33;
+    font-size: 20px; line-height: 1;
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+
+  /* Barra inferior fija: "Ver N resultados" */
+  .pp-dirfilters-host .pp-dirfilters-foot,
+  body.ppv2-listings .pp-dirfilters-foot {
+    display: block;
+    position: sticky; bottom: 0; z-index: 5;
+    background: #fff;
+    margin: 12px -20px 0;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid #EEF0F2;
+  }
+  .pp-dirfilters-host .pp-dirfilters-apply,
+  body.ppv2-listings .pp-dirfilters-apply {
+    width: 100%;
+    border: 0; border-radius: 999px;
+    background: var(--teal-parche, #79C8D0);
+    color: #fff;
+    font-weight: 700; font-size: 15px;
+    padding: 13px 16px;
+    cursor: pointer;
+  }
+  .pp-dirfilters-host .pp-dirfilters-apply.is-loading,
+  body.ppv2-listings .pp-dirfilters-apply.is-loading { opacity: .8; }
+  .pp-dirfilters-host .pp-dirfilters-apply.is-loading::before,
+  body.ppv2-listings .pp-dirfilters-apply.is-loading::before {
+    content: "";
+    display: inline-block;
+    width: 14px; height: 14px;
+    margin-right: 8px;
+    border: 2px solid rgba(255, 255, 255, .5);
+    border-top-color: #fff;
+    border-radius: 999px;
+    vertical-align: -2px;
+    animation: pp-dirspin .7s linear infinite;
+  }
+  @keyframes pp-dirspin { to { transform: rotate(360deg); } }
+}
+
+/* Cajón del directorio: el contenido interno de Listeo (sidebar-container,
+   filas del formulario) trae anchos fijos y desplazamientos que generaban
+   SCROLL HORIZONTAL dentro del panel. Aquí se normaliza todo al 100% del
+   cajón. Solo móvil. */
+@media (max-width: 991px) {
+  .pp-dirfilters-host .full-page-sidebar,
+  body.ppv2-listings .full-page-sidebar { overflow-x: hidden !important; }
+
+  .pp-dirfilters-host .full-page-sidebar .full-page-sidebar-inner,
+  body.ppv2-listings .full-page-sidebar .full-page-sidebar-inner,
+  .pp-dirfilters-host .full-page-sidebar .sidebar-container,
+  body.ppv2-listings .full-page-sidebar .sidebar-container,
+  .pp-dirfilters-host .full-page-sidebar .sidebar,
+  body.ppv2-listings .full-page-sidebar .sidebar,
+  .pp-dirfilters-host .full-page-sidebar .listing-widget,
+  body.ppv2-listings .full-page-sidebar .listing-widget,
+  .pp-dirfilters-host .full-page-sidebar form,
+  body.ppv2-listings .full-page-sidebar form {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    position: static !important;   /* anula el sticky del sidebar de escritorio */
+    box-sizing: border-box;
+  }
+  /* Filas y columnas del formulario: sin márgenes negativos ni gutters */
+  .pp-dirfilters-host .full-page-sidebar .row,
+  body.ppv2-listings .full-page-sidebar .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  .pp-dirfilters-host .full-page-sidebar [class*="col-"],
+  body.ppv2-listings .full-page-sidebar [class*="col-"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  /* Campos e hijos directos: nunca más anchos que el cajón */
+  .pp-dirfilters-host .full-page-sidebar input,
+  body.ppv2-listings .full-page-sidebar input,
+  .pp-dirfilters-host .full-page-sidebar select,
+  body.ppv2-listings .full-page-sidebar select,
+  .pp-dirfilters-host .full-page-sidebar .bootstrap-select,
+  body.ppv2-listings .full-page-sidebar .bootstrap-select {
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+}
+
+/* Cajón del directorio — línea de CONTEO fija sobre el botón "Ver resultados",
+   estado "sin resultados" evidente, y loader con el ISOTIPO de marca latiendo
+   (reutiliza la imagen y el keyframe pp-beat del loader global). Solo móvil. */
+@media (max-width: 991px) {
+  .pp-dirfilters-host .pp-dirfilters-count,
+  body.ppv2-listings .pp-dirfilters-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 22px;
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-muted, #5A6B70);
+    text-align: center;
+  }
+  /* Sin resultados: aviso en rojo + botón apagado (pero sigue cerrando el panel) */
+  .pp-dirfilters-host .pp-dirfilters-count.is-empty,
+  body.ppv2-listings .pp-dirfilters-count.is-empty { color: #DC2626; }
+  .pp-dirfilters-host .pp-dirfilters-apply.is-empty,
+  body.ppv2-listings .pp-dirfilters-apply.is-empty {
+    background: #E5E7EB !important;
+    color: #6B7280 !important;
+  }
+  /* Cargando: isotipo Parche Peludo latiendo junto a "Buscando…" */
+  .pp-dirfilters-host .pp-dirfilters-foot.is-loading .pp-dirfilters-count::before,
+  body.ppv2-listings .pp-dirfilters-foot.is-loading .pp-dirfilters-count::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 34px;
+    height: 22px;
+    background: url(/wp-content/themes/listeo-child/images/parche-loader-isotipo.png) center / contain no-repeat;
+    transform-origin: center 58%;
+    animation: pp-beat 1.5s cubic-bezier(.34, 0, .22, 1) infinite both;
+  }
+  .pp-dirfilters-host .pp-dirfilters-foot.is-loading .pp-dirfilters-apply,
+  body.ppv2-listings .pp-dirfilters-foot.is-loading .pp-dirfilters-apply { opacity: .7; }
+  @media (prefers-reduced-motion: reduce) {
+    .pp-dirfilters-host .pp-dirfilters-foot.is-loading .pp-dirfilters-count::before,
+    body.ppv2-listings .pp-dirfilters-foot.is-loading .pp-dirfilters-count::before { animation: none; }
+  }
 }

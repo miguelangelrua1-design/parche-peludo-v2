@@ -1,0 +1,428 @@
+/* =========================================================================
+   PP Mascotas — paso "Mascota" al inicio del popup de reserva (Booking Plus)
+   Marca: teal #79C8D0 · ink #1E2E33
+   ========================================================================= */
+
+#lbp-booking-modal {
+	position: relative;
+}
+
+/* ---------- Gate: pantalla inicial que cubre el modal ---------- */
+.pp-gate {
+	position: absolute;
+	inset: 0;
+	z-index: 60;
+	background: #fff;
+	border-radius: inherit;
+	overflow: hidden;
+	display: flex;
+	align-items: stretch;
+}
+
+/* X de cierre (esquina superior derecha) */
+.pp-gate__x {
+	position: absolute;
+	top: 10px;
+	right: 14px;
+	z-index: 5;
+	background: none;
+	border: none;
+	font-size: 30px;
+	line-height: 1;
+	color: #9aa6aa;
+	cursor: pointer;
+	padding: 4px 8px;
+}
+.pp-gate__x:hover {
+	color: #1E2E33;
+}
+
+/* Barra lateral: réplica visual de la de Booking Plus (mismo color vía
+   la variable que inyecta el propio plugin) */
+.pp-gate__sidebar {
+	width: 260px;
+	min-width: 260px;
+	background: var(--lbp-popup-sidebar, #2d2d32);
+	color: #fff;
+	padding: 30px 24px;
+	display: flex;
+	flex-direction: column;
+}
+.pp-gate__sb-eyebrow {
+	font-size: 13px;
+	color: rgba(255, 255, 255, .7);
+}
+.pp-gate__sb-titulo {
+	font-size: 17px;
+	font-weight: 700;
+	color: #fff;
+	margin: 2px 0 24px;
+	line-height: 1.3;
+}
+.pp-gate__sb-pasos {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+.pp-gate__sb-paso {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	border-radius: 8px;
+	font-size: 15px;
+	color: rgba(255, 255, 255, .75);
+}
+.pp-gate__sb-paso i {
+	width: 28px;
+	height: 28px;
+	min-width: 28px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, .18);
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-style: normal;
+	font-size: 13px;
+	font-weight: 700;
+}
+.pp-gate__sb-paso.activo {
+	background: rgba(255, 255, 255, .1);
+	color: #fff;
+	font-weight: 600;
+}
+.pp-gate__sb-paso.activo i {
+	background: #fff;
+	color: #2d2d32;
+	font-size: 14px;
+}
+
+/* Área de contenido (derecha) */
+.pp-gate__contenido {
+	flex: 1;
+	overflow-y: auto;
+	padding: 28px 30px 20px;
+	display: flex;
+	flex-direction: column;
+}
+.pp-gate__panel {
+	width: 100%;
+	max-width: 560px;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+.pp-gate__panel > * {
+	flex-shrink: 0;
+}
+.pp-gate__panel--login {
+	text-align: center;
+	padding-top: 40px;
+}
+.pp-gate__icono {
+	font-size: 42px;
+	margin-bottom: 6px;
+}
+.pp-gate__titulo {
+	font-size: 22px;
+	font-weight: 700;
+	color: #1E2E33;
+	margin: 0 0 6px;
+	line-height: 1.25;
+}
+.pp-gate__sub {
+	color: #5c6f74;
+	font-size: 14px;
+	margin: 0 0 18px;
+}
+
+/* ---------- Tarjetas de mascotas ---------- */
+.pp-gate__cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	gap: 12px;
+	margin-bottom: 16px;
+}
+.pp-gate__card {
+	background: #fff;
+	border: 2px solid #e3e2e1;
+	border-radius: 16px;
+	padding: 16px 10px 14px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	cursor: pointer;
+	transition: all .15s ease;
+	text-align: center;
+}
+.pp-gate__card:hover {
+	border-color: #79C8D0;
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px rgba(30, 46, 51, .08);
+}
+.pp-gate__card.activa {
+	border-color: #79C8D0;
+	background: #f2fafb;
+	box-shadow: 0 0 0 3px rgba(121, 200, 208, .3);
+}
+.pp-gate__avatar {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	background: #f4f3f2;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 4px;
+}
+.pp-gate__avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.pp-gate__huella {
+	font-size: 26px;
+}
+.pp-gate__mas {
+	font-size: 30px;
+	font-weight: 700;
+	color: #79C8D0;
+	line-height: 1;
+}
+.pp-gate__nombre {
+	font-weight: 700;
+	color: #1E2E33;
+	font-size: 15px;
+}
+.pp-gate__detalle {
+	font-size: 12px;
+	color: #7a8b90;
+}
+.pp-gate__card--nueva {
+	border-style: dashed;
+	background: #fbfdfd;
+}
+
+/* ---------- Formulario "Nueva mascota" ---------- */
+.pp-gate__form {
+	background: #f6fbfc;
+	border: 1px solid #cfe9ec;
+	border-radius: 16px;
+	padding: 18px;
+	margin-bottom: 16px;
+}
+.pp-gate__form-titulo {
+	margin: 0 0 12px;
+	font-size: 16px;
+	font-weight: 700;
+	color: #1E2E33;
+}
+.pp-gate__grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px 14px;
+}
+.pp-gate__campo {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #41565c;
+	margin: 0;
+}
+.pp-gate__campo b {
+	color: #ba1a1a;
+}
+.pp-gate__campo--full {
+	grid-column: 1 / -1;
+}
+.pp-gate__campo input,
+.pp-gate__campo select {
+	width: 100%;
+	margin: 0 !important;
+	height: 44px !important;
+	line-height: 1.3 !important;
+	padding: 8px 12px !important;
+	font-size: 14px !important;
+	font-weight: 400;
+	background: #fff;
+	border: 1px solid #d7dcdd;
+	border-radius: 10px;
+	box-shadow: none;
+}
+.pp-gate__campo input:focus,
+.pp-gate__campo select:focus {
+	border-color: #79C8D0;
+	box-shadow: 0 0 0 3px rgba(121, 200, 208, .25);
+	outline: none;
+}
+/* Contrarresta el select:invalid { opacity:0 } global de Listeo */
+.pp-gate select,
+.pp-gate select:invalid {
+	opacity: 1 !important;
+	display: block !important;
+	height: 44px !important;
+	position: static !important;
+}
+
+/* Pills Especie / Sexo */
+.pp-gate__pills {
+	display: flex;
+	gap: 6px;
+	background: #eef0f0;
+	border-radius: 10px;
+	padding: 4px;
+}
+.pp-gate__pills button {
+	flex: 1;
+	border: none;
+	background: transparent;
+	border-radius: 8px;
+	padding: 9px 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #5c6f74;
+	cursor: pointer;
+	transition: all .12s ease;
+}
+.pp-gate__pills button.activa {
+	background: #fff;
+	color: #3f8d96;
+	box-shadow: 0 2px 6px rgba(30, 46, 51, .14);
+}
+
+.pp-gate__nota {
+	font-size: 12px;
+	color: #6b7f84;
+	margin: 12px 0 0;
+}
+.pp-gate__error {
+	display: block;
+	color: #ba1a1a;
+	font-size: 13px;
+	font-weight: 600;
+	margin-top: 8px;
+}
+.pp-gate__error:empty {
+	display: none;
+}
+.pp-gate__form-acciones {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 14px;
+}
+
+/* ---------- Botones y pie ---------- */
+.pp-gate__btn {
+	border-radius: 10px;
+	padding: 11px 22px;
+	font-size: 14px;
+	font-weight: 700;
+	cursor: pointer;
+	border: 1px solid #d7dcdd;
+	background: #fff;
+	color: #5c6f74;
+	text-decoration: none !important;
+	display: inline-block;
+}
+.pp-gate__btn--primario {
+	background: #79C8D0;
+	border-color: #79C8D0;
+	color: #fff !important;
+	box-shadow: 0 6px 16px rgba(121, 200, 208, .35);
+}
+.pp-gate__btn--primario:hover {
+	background: #5BAFB7;
+	border-color: #5BAFB7;
+	color: #fff !important;
+}
+.pp-gate__btn--primario:disabled {
+	opacity: .45;
+	cursor: not-allowed;
+	box-shadow: none;
+}
+/* Pie: botón Siguiente abajo a la IZQUIERDA (homologado con Booking Plus) */
+.pp-gate__pie {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 14px;
+	border-top: 1px solid #edf0f0;
+	padding-top: 14px;
+	margin-top: auto;
+}
+.pp-gate__eleccion {
+	font-size: 14px;
+	color: #41565c;
+}
+.pp-gate__continuar-invitado {
+	display: block;
+	margin: 14px auto 0;
+	background: none;
+	border: none;
+	color: #7a8b90;
+	font-size: 13px;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+/* ---------- Chip "Reserva para" en el paso Confirmar ---------- */
+.pp-chip {
+	background: #f2fafb;
+	border: 1px solid #cfe9ec;
+	border-radius: 12px;
+	padding: 10px 14px;
+	font-size: 14px;
+	color: #1E2E33;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+.pp-chip__det {
+	color: #5c6f74;
+	font-size: 13px;
+}
+.pp-chip__cambiar {
+	margin-left: auto;
+	background: none;
+	border: none;
+	color: #3f8d96;
+	font-weight: 700;
+	font-size: 13px;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+/* Móvil: sin barra lateral ni X (la vista móvil se conserva como estaba) */
+@media (max-width: 767px) {
+	.pp-gate__sidebar,
+	.pp-gate__x {
+		display: none;
+	}
+	.pp-gate {
+		overflow-y: auto;
+	}
+	.pp-gate__contenido {
+		padding: 18px 14px;
+		overflow: visible;
+	}
+}
+@media (max-width: 560px) {
+	.pp-gate__grid {
+		grid-template-columns: 1fr;
+	}
+	.pp-gate__cards {
+		grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+	}
+	.pp-gate__pie {
+		flex-direction: column;
+		align-items: stretch;
+		text-align: center;
+	}
+}

@@ -1,0 +1,95 @@
+/* =========================================================================
+   Personalización Parche — módulo Servicios: tabs por tipo de servicio
+   en el popup de reserva (Booking Plus).
+   Marca: teal #79C8D0 · ink #1E2E33
+   ========================================================================= */
+
+/* Zona de tabs: vive FUERA del desplegable de servicios */
+.pp-serv-zona {
+	margin: 14px 0 10px;
+}
+.pp-serv-zona__titulo {
+	font-size: 14px;
+	font-weight: 700;
+	color: #1E2E33;
+	margin-bottom: 8px;
+}
+.pp-serv-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+/* Desplegable deshabilitado hasta elegir un tipo */
+.lbp-panel-services.pp-serv-bloqueado {
+	opacity: .5;
+	pointer-events: none;
+	filter: grayscale(.3);
+}
+
+.pp-serv-tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 9px 16px;
+	border-radius: 999px;
+	border: 1.5px solid #d7dcdd;
+	background: #fff;
+	color: #41565c;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	cursor: pointer;
+	transition: all .15s ease;
+}
+.pp-serv-tab:hover {
+	border-color: #79C8D0;
+	color: #1E2E33;
+}
+.pp-serv-tab.activa {
+	background: #79C8D0;
+	border-color: #79C8D0;
+	color: #fff;
+	box-shadow: 0 4px 12px rgba(121, 200, 208, .35);
+}
+
+/* Contador de servicios seleccionados en cada pestaña */
+.pp-serv-tab__num {
+	background: #1E2E33;
+	color: #fff;
+	border-radius: 999px;
+	min-width: 18px;
+	height: 18px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 11px;
+	font-weight: 700;
+	padding: 0 5px;
+}
+.pp-serv-tab.activa .pp-serv-tab__num {
+	background: #fff;
+	color: #1E2E33;
+}
+
+/* Pista antes de elegir tipo */
+.pp-serv-hint {
+	color: #7a8b90;
+	font-size: 13px;
+	margin: 8px 0 0;
+	font-style: italic;
+}
+
+/* Móvil: tabs más compactos, siempre envolviendo en varias líneas */
+@media (max-width: 560px) {
+	.pp-serv-tabs {
+		gap: 6px;
+	}
+	.pp-serv-tab {
+		padding: 8px 12px;
+		font-size: 13px;
+	}
+	.pp-serv-zona {
+		margin: 10px 0 8px;
+	}
+}
