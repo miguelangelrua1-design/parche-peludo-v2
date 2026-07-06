@@ -6160,12 +6160,19 @@ body.ppv2-listings #header .header-widget .user-menu {
   border-radius: 8px !important;
   background-color: #fff !important;
   height: auto !important;
-  min-height: 44px !important;
-  padding: 10px 14px !important;
+  min-height: 42px !important;   /* 44 → 38 → 32 → 42 (subimos ~30% tras quedar muy bajos) */
+  padding: 9px 14px !important;
+  line-height: 1.3 !important;    /* clave: el tema traía line-height:51px que los inflaba */
   font-size: 13px !important;
   color: #4B5563 !important;
   box-shadow: none !important;
   transition: border-color .15s ease, box-shadow .15s ease;
+}
+/* El select de Categorías (bootstrap-select) tenía un inner .filter-option con
+   height:48px que inflaba el botón. Lo dejamos a la altura del texto. */
+.full-page-sidebar #listeo_core-search-form .bootstrap-select .filter-option {
+  height: auto !important;
+  line-height: 1.3 !important;
 }
 .full-page-sidebar #listeo_core-search-form input.keyword_search::placeholder,
 .full-page-sidebar #listeo_core-search-form .input-with-icon input::placeholder {
@@ -6200,6 +6207,12 @@ body.ppv2-listings #header .header-widget .user-menu {
   transform: translateY(-50%) !important;
   color: #9CA3AF !important;
   font-size: 16px !important;
+  /* El ícono traía una caja (height:43px + padding) que se salía del input al
+     bajarlo de altura. La reducimos al glifo y sin fondo para que quede dentro. */
+  height: auto !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  background: transparent !important;
 }
 
 /* --- Cajas grises (radio de búsqueda y precio) --- */
@@ -8112,6 +8125,33 @@ body.woocommerce-checkout .wc-block-components-address-form__postcode {
 .listeo-shop-grid ul.products::after { content: none !important; display: none !important; }
 @media (min-width: 768px)  { .listeo-shop-grid ul.products { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1280px) { .listeo-shop-grid ul.products { grid-template-columns: repeat(4, 1fr); } }
+/* Móvil: margen SIMÉTRICO a ambos lados de la grilla de productos. Antes la
+   derecha se desbordaba porque el min-content de la columna la ensanchaba;
+   min-width:0 deja encogerla y minmax(0,1fr) que las cards quepan. Padding 12px
+   (un poco menos que los 15px que había a la izquierda) = margen igual a los dos lados. */
+@media (max-width: 767px) {
+  .listeo-shop-grid .col-md-8,
+  .listeo-shop-grid .col-lg-9 { min-width: 0 !important; padding-left: 12px !important; padding-right: 12px !important; }
+  .listeo-shop-grid ul.products { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+/* Panel de Control (dashboard) en MÓVIL: el contenido se desbordaba a la derecha
+   porque .dashboard-content tenía min-width:auto (crecía al min-content de las
+   tarjetas). Con min-width:0 se ajusta al ancho de pantalla y queda margen
+   SIMÉTRICO (12px) a ambos lados. Además el correo del saludo (H2) se cortaba:
+   reducimos su tamaño de fuente para que quepa. */
+@media (max-width: 767px) {
+  .dashboard-content {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    overflow-x: hidden !important;
+  }
+  .dashboard-content .row { margin-left: 0 !important; margin-right: 0 !important; }
+  .dashboard-content [class*="col-"] { padding-left: 0 !important; padding-right: 0 !important; min-width: 0 !important; }
+  .dashboard-content h2 { font-size: 20px !important; overflow-wrap: anywhere !important; }
+}
 
 /* Tarjeta — VALORES EXACTOS del diseño (tienda_plp.html) */
 .listeo-shop-grid ul.products li.product.pp-product-card {
@@ -8531,6 +8571,23 @@ body.woocommerce-checkout .wc-block-components-address-form__postcode {
 .listeo-shop-grid .col-sidebar .price_slider_wrapper .ui-slider { background: var(--ink-line-2, rgba(30, 46, 51, .12)); }
 .listeo-shop-grid .col-sidebar .price_slider_wrapper .ui-slider .ui-slider-range { background: var(--teal-parche, #79C8D0) !important; }
 .listeo-shop-grid .col-sidebar .price_slider_wrapper .ui-slider .ui-slider-handle { background: var(--teal-parche, #79C8D0) !important; border: 2px solid #fff !important; }
+/* Aire entre el título "Precio" y la barra del slider (venía muy pegada). */
+.listeo-shop-grid .col-sidebar .widget_price_filter .price_slider_wrapper { margin-top: 18px !important; }
+/* Orden vertical del filtro de precio: barra → números (price_label) → botón Filtrar.
+   El DOM trae el botón antes del label, así que usamos column-reverse. */
+.listeo-shop-grid .col-sidebar .price_slider_amount {
+  display: flex !important;
+  flex-direction: column-reverse !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+}
+.listeo-shop-grid .col-sidebar .price_slider_amount .price_label {
+  float: none !important;
+  text-align: left !important;
+  padding-top: 0 !important;
+}
+.listeo-shop-grid .col-sidebar .price_slider_amount .button { float: none !important; }
+.listeo-shop-grid .col-sidebar .price_slider_amount .clear { display: none !important; }
 
 /* Buscar producto: input redondeado */
 .listeo-shop-grid .col-sidebar .widget_product_search input[type="search"],
@@ -8921,6 +8978,21 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
    que quedaba al doble de separación que Directorio↔Tienda. Lo igualamos: solo el
    gap de 6px, mismo espacio entre las tres. */
 .ppv2-scope-tabs .pp-sep { margin-left: 0 !important; }
+/* Signo "+" perfectamente centrado dentro del botón redondo (evita que el glifo
+   quede corrido por sus métricas de fuente). */
+.pp-sep-mas__signo {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  line-height: 1 !important;
+}
+/* Desplegable de tipos en MÓVIL: abrir hacia la IZQUIERDA para que no se corte
+   en el borde derecho de la pantalla (antes se anclaba con left:0 y se salía). */
+@media (max-width: 767px) {
+  .pp-sep-lista { right: 0 !important; left: auto !important; }
+}
 .ppv2-scope-tab {
   font-family: inherit;
   font-size: 13px;
