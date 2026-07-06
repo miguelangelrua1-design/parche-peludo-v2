@@ -4140,8 +4140,15 @@ body.single-listing #listing-nav {
   body.single-listing .ppv2-bottom-sheet__content .listing-widget .widget-title {
     display: none !important;
   }
-  /* Cuando el sheet está abierto, bloquear el scroll del body */
+  /* Cuando el sheet está abierto, bloquear el scroll del body SIN perder la
+     posición: overflow:hidden a secas la pierde en móvil y al cerrar el panel
+     la página saltaba. Patrón estándar: body fijo desplazado a -scrollY (el
+     top lo pone el JS de openSheet) y al cerrar se restaura el scroll exacto. */
   body.ppv2-sheet-open {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
     overflow: hidden !important;
     touch-action: none !important;
   }

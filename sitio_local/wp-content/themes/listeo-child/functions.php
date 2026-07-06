@@ -62,6 +62,27 @@ function listeo_child_enqueue_styles() {
         }
     }
 
+    // PDP (detalle de listado) — ANTI-SALTO de la galería en móvil.
+    // El JS del footer reordena el DOM (galería antes del titlebar) y convierte
+    // el grid en el slider full-bleed (280px) DESPUÉS del primer render → se
+    // veía un doble salto al cargar. Este CSS va en el <head>: (1) el grid
+    // pre-JS ya ocupa la ALTURA FINAL del slider (el contenido de abajo no se
+    // mueve) y (2) titlebar+galería quedan invisibles hasta que el JS termina
+    // (clase ppv2-pdp-lista en <html>); si el JS no corriera, un keyframes los
+    // revela solo a los 0.9s (nunca se queda oculto).
+    if ( is_singular( 'listing' ) ) {
+        $pp_pdp_css = '@media (max-width: 767.98px) {'
+            . 'html:not(.ppv2-pdp-lista) body.single-listing .listeo-single-listing-gallery-grid:not(.ppv2-mobile-slider-container){'
+            . 'height:280px !important;overflow:hidden !important;}'
+            . 'html:not(.ppv2-pdp-lista) body.single-listing #titlebar,'
+            . 'html:not(.ppv2-pdp-lista) body.single-listing #listing-gallery,'
+            . 'html:not(.ppv2-pdp-lista) body.single-listing .listeo-single-listing-gallery-grid{'
+            . 'opacity:0;animation:ppv2PdpReveal 0s .9s forwards;}'
+            . '@keyframes ppv2PdpReveal{to{opacity:1;}}'
+            . '}';
+        wp_add_inline_style( 'listeo-child-style', $pp_pdp_css );
+    }
+
     // Popup de reserva (Booking Plus): sus estilos dan recuadro a los <input>/
     // <textarea> del formulario, pero NO a los <select>. Al volver "Departamento"
     // (y opcionalmente "País") un desplegable, quedaba SIN recuadro ni alto =
@@ -1443,6 +1464,11 @@ function ppv2_listing_header_reorder() {
 		// Disparar resize para que cualquier slider/grid responsivo recalcule
 		try { window.dispatchEvent(new Event('resize')); } catch(e) {}
 
+		// Señal "vista del PDP lista": el CSS anti-salto (inline en el head)
+		// mantiene invisibles titlebar+galería en móvil hasta este punto, en el
+		// que el reordenado y el slider ya quedaron armados → revelar SIN salto.
+		document.documentElement.classList.add('ppv2-pdp-lista');
+
 		// Reconstruir la galería móvil si el viewport pasa a < 768px DESPUÉS de la
 		// carga (preview que carga en escritorio y muestra en móvil, redimensionar la
 		// ventana, rotar el dispositivo). El bloque de arriba sólo corre una vez en la
@@ -2129,6 +2155,7 @@ function ppv2_listing_mobile_bottom_bar() {
 		var originalParent = null;
 		var originalNextSibling = null;
 		var currentPlaceholder = null;
+		var ppv2SheetScrollY = 0; // scroll del body al abrir (se restaura al cerrar)
 
 		function getWidget(type) {
 			if (type === 'message') {
@@ -2175,6 +2202,12 @@ function ppv2_listing_mobile_bottom_bar() {
 			sheet.removeAttribute('hidden');
 			void sheet.offsetWidth; // reflow
 			sheet.classList.add('is-open');
+			// Bloqueo de scroll SIN perder la posición: overflow:hidden a secas
+			// pierde el scroll en móvil (salto al cerrar). Patrón estándar:
+			// body position:fixed (lo pone la clase) desplazado a -scrollY, y al
+			// cerrar se restaura el scroll exacto.
+			ppv2SheetScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+			document.body.style.top = '-' + ppv2SheetScrollY + 'px';
 			document.body.classList.add('ppv2-sheet-open');
 			// Foco accesible al botón cerrar
 			var closeBtn = sheet.querySelector('.ppv2-bottom-sheet__close');
@@ -2187,6 +2220,9 @@ function ppv2_listing_mobile_bottom_bar() {
 		function closeSheet() {
 			sheet.classList.remove('is-open');
 			document.body.classList.remove('ppv2-sheet-open');
+			// Restaurar el scroll exacto donde estaba al abrir (sin salto).
+			document.body.style.top = '';
+			window.scrollTo(0, ppv2SheetScrollY || 0);
 			// Capturar las referencias LOCALMENTE y limpiar el estado global ya,
 			// para evitar una carrera si se abre otro sheet antes de que termine
 			// la animación de salida (las variables compartidas no se corromperían).
@@ -2829,22 +2865,42 @@ function ppv2_header_suggest() {
 	$product_items = array();
 
 	// --- Listados (directorio / adopción / mascotas perdidas) ---
-	$listing_args = array(
-		's'              => $term,
-		'post_type'      => 'listing',
-		'post_status'    => 'publish',
-		'posts_per_page' => 5,
-	);
+	// Regla de las sugerencias: el DIRECTORIO es la base y SIEMPRE acompaña.
+	// Con un tipo separado elegido, sus resultados van PRIMERO (prioridad) y
+	// además se muestra el Directorio debajo; se excluyen los OTROS tipos
+	// separados. Sin tipo elegido, se muestran todos agrupados.
 	if ( $tipo ) {
-		$listing_args['meta_query'] = array(
-			array(
-				'key'     => '_listing_type',
-				'value'   => $tipo,
-				'compare' => '=',
+		// 1) El tipo elegido (prioridad).
+		$sel_posts = get_posts( array(
+			's'              => $term,
+			'post_type'      => 'listing',
+			'post_status'    => 'publish',
+			'posts_per_page' => 5,
+			'meta_query'     => array(
+				array( 'key' => '_listing_type', 'value' => $tipo, 'compare' => '=' ),
 			),
-		);
+		) );
+		// 2) Base = Directorio y listados sin tipo; excluye TODOS los separados.
+		$base_posts = get_posts( array(
+			's'              => $term,
+			'post_type'      => 'listing',
+			'post_status'    => 'publish',
+			'posts_per_page' => 4,
+			'meta_query'     => array(
+				'relation' => 'OR',
+				array( 'key' => '_listing_type', 'value' => $separados, 'compare' => 'NOT IN' ),
+				array( 'key' => '_listing_type', 'compare' => 'NOT EXISTS' ),
+			),
+		) );
+		$listings = array_merge( $sel_posts, $base_posts );
+	} else {
+		$listings = get_posts( array(
+			's'              => $term,
+			'post_type'      => 'listing',
+			'post_status'    => 'publish',
+			'posts_per_page' => 5,
+		) );
 	}
-	$listings = get_posts( $listing_args );
 
 	// Agrupar por tipo real para que cada uno salga bajo su encabezado
 	// (y los encabezados no se repitan al intercalarse).
@@ -2861,14 +2917,26 @@ function ppv2_header_suggest() {
 			'meta'  => '',
 		);
 	}
-	// Orden de grupos: Directorio primero, luego los tipos separados.
-	if ( isset( $por_grupo['Directorio'] ) ) {
-		$listing_items = $por_grupo['Directorio'];
+	// Orden de grupos: el tipo elegido primero (si hay), luego Directorio,
+	// luego el resto (solo aplica cuando no hay tipo elegido).
+	$orden_grupos = array();
+	if ( $tipo && isset( $nombres_tipo[ $tipo ] ) ) {
+		$orden_grupos[] = $nombres_tipo[ $tipo ];
 	}
+	$orden_grupos[] = 'Directorio';
 	foreach ( $nombres_tipo as $nombre_grupo ) {
-		if ( isset( $por_grupo[ $nombre_grupo ] ) ) {
-			$listing_items = array_merge( $listing_items, $por_grupo[ $nombre_grupo ] );
+		if ( ! in_array( $nombre_grupo, $orden_grupos, true ) ) {
+			$orden_grupos[] = $nombre_grupo;
 		}
+	}
+	foreach ( $orden_grupos as $g ) {
+		if ( isset( $por_grupo[ $g ] ) ) {
+			$listing_items = array_merge( $listing_items, $por_grupo[ $g ] );
+		}
+	}
+	// Cap para no alargar el desplegable (el tipo elegido ya va primero).
+	if ( count( $listing_items ) > 6 ) {
+		$listing_items = array_slice( $listing_items, 0, 6 );
 	}
 
 	// --- Productos (tienda WooCommerce) ---

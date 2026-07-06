@@ -174,9 +174,13 @@ function pp_serv_tipos() {
 		if ( ! is_array( $t ) ) {
 			$t = array( 'nombre' => (string) $t );
 		}
+		// aviso = antelación mínima de reserva (minutos) propia del tipo.
+		// '' = no define (hereda listado/global) · 0 = permite último minuto · N = minutos.
+		$aviso = $t['aviso'] ?? '';
 		$out[ $slug ] = array(
 			'nombre'  => sanitize_text_field( $t['nombre'] ?? $slug ),
 			'mascota' => empty( $t['mascota'] ) ? 0 : 1,
+			'aviso'   => ( '' !== $aviso && is_numeric( $aviso ) ) ? max( 0, (int) $aviso ) : '',
 		);
 	}
 	return $out;
@@ -200,6 +204,10 @@ function pp_serv_tipos_handler() {
 	$tipos  = pp_serv_tipos();
 	$msg    = 'ok';
 
+	// Antelación mínima propia del tipo: '' = hereda, 0 = último minuto, N = minutos.
+	$aviso_raw = trim( (string) wp_unslash( $_POST['pp_aviso'] ?? '' ) );
+	$aviso     = ( '' !== $aviso_raw && is_numeric( $aviso_raw ) ) ? max( 0, (int) $aviso_raw ) : '';
+
 	if ( 'crear' === $accion ) {
 		$nombre  = sanitize_text_field( wp_unslash( $_POST['pp_nombre'] ?? '' ) );
 		$mascota = empty( $_POST['pp_mascota'] ) ? 0 : 1;
@@ -209,7 +217,7 @@ function pp_serv_tipos_handler() {
 		} elseif ( isset( $tipos[ $slug ] ) ) {
 			$msg = 'duplicado';
 		} else {
-			$tipos[ $slug ] = array( 'nombre' => $nombre, 'mascota' => $mascota );
+			$tipos[ $slug ] = array( 'nombre' => $nombre, 'mascota' => $mascota, 'aviso' => $aviso );
 			update_option( 'pp_serv_tipos', $tipos );
 			$msg = 'creado';
 		}
@@ -221,7 +229,7 @@ function pp_serv_tipos_handler() {
 			$msg = 'vacio';
 		} else {
 			// El slug NO cambia al renombrar: los menús guardados lo referencian.
-			$tipos[ $slug ] = array( 'nombre' => $nombre, 'mascota' => $mascota );
+			$tipos[ $slug ] = array( 'nombre' => $nombre, 'mascota' => $mascota, 'aviso' => $aviso );
 			update_option( 'pp_serv_tipos', $tipos );
 			$msg = 'editado';
 		}
@@ -268,17 +276,27 @@ function pp_serv_tab_tipos() {
 				<thead>
 					<tr>
 						<th>Nombre</th>
-						<th style="width:130px">Según mascota</th>
+						<th style="width:110px">Según mascota</th>
+						<th style="width:120px">Antelación mín.</th>
 						<th style="width:150px">Acciones</th>
 					</tr>
 				</thead>
 				<tbody>
 				<?php if ( empty( $tipos ) ) : ?>
-					<tr><td colspan="3">No hay tipos configurados.</td></tr>
+					<tr><td colspan="4">No hay tipos configurados.</td></tr>
 				<?php else : foreach ( $tipos as $slug => $t ) : ?>
 					<tr>
 						<td><strong><?php echo esc_html( $t['nombre'] ); ?></strong><br><span class="description" style="font-size:11px"><?php echo esc_html( $slug ); ?></span></td>
 						<td><?php echo $t['mascota'] ? '<span style="color:#1b5e40;font-weight:600">Sí 🐾</span>' : '—'; ?></td>
+						<td><?php
+							if ( '' === $t['aviso'] ) {
+								echo '<span style="opacity:.6" title="Hereda la configuración del listado o la global">Hereda</span>';
+							} elseif ( 0 === (int) $t['aviso'] ) {
+								echo '<span title="Permite reservas de último minuto">Sin antelación</span>';
+							} else {
+								echo '<strong>' . esc_html( $t['aviso'] ) . '</strong> min';
+							}
+						?></td>
 						<td>
 							<a class="button button-small" href="<?php echo esc_url( admin_url( 'admin.php?page=pp-servicios&tab=tipos&editar=' . $slug ) ); ?>">Editar</a>
 							<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('¿Eliminar el tipo «<?php echo esc_js( $t['nombre'] ); ?>»? Los menús que lo usan quedarán sin tipo hasta que se editen.');">
@@ -314,6 +332,12 @@ function pp_serv_tab_tipos() {
 						<input type="checkbox" name="pp_mascota" value="1" <?php checked( $en_edicion && $en_edicion['mascota'] ); ?>>
 						<strong>Según mascota</strong> — sus servicios podrán depender de especie, pelaje y peso
 					</label>
+				</p>
+				<p>
+					<label for="pp-tipo-aviso"><strong>Antelación mínima de reserva (minutos)</strong></label><br>
+					<input type="number" id="pp-tipo-aviso" name="pp_aviso" min="0" step="1" style="width:140px"
+						value="<?php echo $en_edicion ? esc_attr( $en_edicion['aviso'] ) : ''; ?>" placeholder="Hereda">
+					<br><span class="description">Vacío = hereda la configuración del listado/global · <code>0</code> = permite último minuto · Ej: <code>1440</code> = 1 día, <code>4320</code> = 3 días. Manda sobre el listado cuando se reserva un servicio de este tipo.</span>
 				</p>
 				<p>
 					<button type="submit" class="button button-primary"><?php echo $en_edicion ? 'Guardar cambios' : 'Crear tipo'; ?></button>
@@ -706,4 +730,127 @@ function pp_serv_restricciones_mascota( $listing_id ) {
 		}
 	}
 	return $out;
+}
+
+/* =========================================================================
+ * ANTELACIÓN MÍNIMA POR TIPO DE SERVICIO (v2.6.0)
+ *
+ * Cada tipo de servicio puede definir su propia antelación mínima de
+ * reserva ('aviso', en minutos). Cuando aplica, ese valor MANDA sobre la
+ * configuración del listado y la global de Booking Plus.
+ *
+ * Mecanismo (un solo punto, cubre todo): Booking Plus resuelve la
+ * antelación en LBP_Booking_Cutoff::get_minutes(), que lee el meta del
+ * listado `_lbp_min_advance_notice`. Interceptamos ESA lectura con el
+ * filtro estándar `get_post_metadata`: así el valor del tipo alimenta a
+ * la vez (a) los horarios visibles del popup (lbp_slot_lead_time_minutes),
+ * (b) el candado del submit del popup (is_too_soon) y (c) el gate del
+ * widget clásico (listeo_count_free_places) — sin duplicar su lógica y a
+ * prueba de sus actualizaciones.
+ *
+ * Resolución del contexto:
+ *  1. Servicios elegidos en la petición ($_REQUEST['services'] /
+ *     'lbp_services', índices planos de los checkboxes del popup) →
+ *     el aviso MÁS ESTRICTO (max) de sus tipos.
+ *  2. Sin selección: si TODOS los menús reservables del listado son de un
+ *     mismo tipo con aviso definido, aplica ese (cubre la vista de
+ *     horarios de listados mono-tipo, p. ej. una repostería).
+ *  3. Listado mixto sin selección → null (comportamiento actual intacto).
+ *
+ * wp-admin puro (reservas manuales del staff) queda intacto.
+ * ====================================================================== */
+
+/** Aviso (minutos) que aplica a la petición actual para un listado, o null. */
+function pp_serv_aviso_para_peticion( $listing_id ) {
+	// Caché por petición SOLO de resultados positivos. Un null NO se cachea:
+	// puede venir de una lectura temprana (p. ej. la comparación interna de
+	// update_post_meta durante un guardado, antes de que exista el _menu) y
+	// recalcularlo es barato (el _menu ya está en la caché de metas de WP).
+	static $cache = array();
+	$listing_id = (int) $listing_id;
+	if ( isset( $cache[ $listing_id ] ) ) {
+		return $cache[ $listing_id ];
+	}
+
+	$out   = null;
+	$tipos = pp_serv_tipos();
+
+	// Mapa índice-plano-de-servicio → tipo del menú (mismo recorrido que
+	// listeo_get_bookable_services / los checkboxes del popup).
+	$menu              = get_post_meta( $listing_id, '_menu', true );
+	$tipo_por_indice   = array();
+	$tipos_del_listado = array();
+	if ( is_array( $menu ) ) {
+		$ix = 0;
+		foreach ( $menu as $g ) {
+			if ( ! is_array( $g ) || empty( $g['menu_elements'] ) || ! is_array( $g['menu_elements'] ) ) {
+				continue;
+			}
+			$tipo_g = sanitize_key( $g['pp_tipo_servicio'] ?? '' );
+			foreach ( $g['menu_elements'] as $el ) {
+				if ( ! is_array( $el ) || ! isset( $el['bookable'] ) ) {
+					continue;
+				}
+				$tipo_por_indice[ $ix ] = $tipo_g;
+				if ( $tipo_g ) {
+					$tipos_del_listado[ $tipo_g ] = 1;
+				}
+				$ix++;
+			}
+		}
+	}
+
+	// 1) Servicios elegidos en la petición (submit / disponibilidad del popup).
+	$sel = array();
+	if ( isset( $_REQUEST['services'] ) ) {
+		$sel = (array) $_REQUEST['services'];
+	} elseif ( isset( $_REQUEST['lbp_services'] ) ) {
+		$sel = (array) $_REQUEST['lbp_services'];
+	}
+	$avisos = array();
+	foreach ( $sel as $ix_sel ) {
+		if ( ! is_scalar( $ix_sel ) ) {
+			continue;
+		}
+		$tipo_slug = $tipo_por_indice[ (int) $ix_sel ] ?? '';
+		if ( $tipo_slug && isset( $tipos[ $tipo_slug ] ) && '' !== $tipos[ $tipo_slug ]['aviso'] ) {
+			$avisos[] = (int) $tipos[ $tipo_slug ]['aviso'];
+		}
+	}
+	if ( $avisos ) {
+		$out = max( $avisos ); // el más estricto de los servicios elegidos
+	} elseif ( 1 === count( $tipos_del_listado ) ) {
+		// 2) Listado mono-tipo: su aviso aplica también antes de elegir servicio.
+		$unico = array_keys( $tipos_del_listado );
+		$unico = $unico[0];
+		if ( isset( $tipos[ $unico ] ) && '' !== $tipos[ $unico ]['aviso'] ) {
+			$out = (int) $tipos[ $unico ]['aviso'];
+		}
+	}
+
+	if ( null !== $out ) {
+		$cache[ $listing_id ] = $out; // solo positivos (ver nota de arriba)
+	}
+	return $out;
+}
+
+add_filter( 'get_post_metadata', 'pp_serv_interceptar_aviso', 10, 4 );
+function pp_serv_interceptar_aviso( $valor, $object_id, $meta_key, $single ) {
+	// Salida ultra barata para el 99.99% de lecturas de meta.
+	if ( '_lbp_min_advance_notice' !== $meta_key ) {
+		return $valor;
+	}
+	// wp-admin puro (reservas manuales del staff): intacto.
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return $valor;
+	}
+	if ( 'listing' !== get_post_type( $object_id ) ) {
+		return $valor;
+	}
+	$aviso = pp_serv_aviso_para_peticion( (int) $object_id );
+	if ( null === $aviso ) {
+		return $valor; // sin contexto de tipo → meta real del listado
+	}
+	// Formato que espera get_metadata: array; con $single toma el [0].
+	return array( (string) $aviso );
 }
