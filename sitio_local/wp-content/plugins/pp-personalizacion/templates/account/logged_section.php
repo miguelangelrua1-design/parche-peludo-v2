@@ -57,7 +57,9 @@ if (true == $my_account_display) : ?>
 					<li><a href="<?php echo esc_url(get_permalink($pp_mascotas_page)); ?>"><i class="fa fa-paw"></i> Mis Mascotas</a></li>
 				<?php endif; ?>
 
-				<?php if (in_array($role, array('administrator', 'admin', 'owner', 'seller'))) : ?>
+				<?php // PP: 'guest' añadido — los guests publican Adopción/Mascotas perdidas
+				//     (ver módulo Listados), así que también ven "Mis listados" en el header.
+				if (in_array($role, array('administrator', 'admin', 'owner', 'seller', 'guest'))) : ?>
 					<?php $listings_page = get_option('listeo_listings_page');
 					if ($listings_page) : ?>
 						<li><a href="<?php echo esc_url(get_permalink($listings_page)); ?>"><i class="sl sl-icon-layers"></i> <?php esc_html_e('My Listings', 'listeo_core'); ?></a></li>

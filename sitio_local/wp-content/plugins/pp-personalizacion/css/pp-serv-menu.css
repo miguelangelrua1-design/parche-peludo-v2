@@ -1,0 +1,119 @@
+/**
+ * Personalización Parche — Tipos de servicio en el builder de menús
+ * (formulario de publicar/editar listado).
+ */
+
+/* Select "Tipo de servicio" en la fila de categoría (junto al título). */
+tr.pricing-submenu td {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+tr.pricing-submenu .fm-input {
+	flex: 1 1 220px;
+	margin: 0;
+}
+.pp-tipo-wrap {
+	flex: 0 1 260px !important;
+}
+select.pp-tipo-servicio {
+	width: 100%;
+	padding: 8px 10px;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	background: #fff;
+	font-size: 14px;
+	line-height: 1.4;
+}
+select.pp-tipo-servicio.pp-tipo-error {
+	border-color: #dc3545;
+	box-shadow: 0 0 0 2px rgba(220, 53, 69, .15);
+}
+/* Fila sintética para menús sin título de categoría. */
+tr.pp-tipo-suelto td {
+	padding: 8px 10px;
+}
+.pp-tipo-wrap--suelto {
+	flex: 1 1 100% !important;
+	max-width: 380px;
+}
+.pp-tipo-wrap--suelto .fm-input-label {
+	display: block;
+	margin-bottom: 4px;
+	font-weight: 600;
+}
+
+/* Bloque "Depende de mascota" dentro de la fila del servicio. */
+.pp-dm-wrap {
+	margin-top: 10px;
+	padding: 10px 12px;
+	background: #f4fbfc;
+	border: 1px solid #d6eef1;
+	border-radius: 8px;
+}
+.pp-dm-check-fila label {
+	font-weight: 600;
+}
+.pp-dm-campos {
+	margin-top: 10px;
+}
+.pp-dm-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+}
+.pp-dm-campo select {
+	width: 100%;
+	padding: 7px 9px;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	background: #fff;
+}
+.pp-dm-pesos {
+	margin-top: 10px;
+}
+.pp-dm-pesos .fm-input-label {
+	display: block;
+	margin-bottom: 6px;
+}
+.pp-dm-rango {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 6px;
+}
+.pp-dm-rango input[type="number"] {
+	width: 90px;
+	padding: 6px 8px;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+}
+.pp-dm-rango-sep {
+	color: #888;
+}
+.pp-dm-rango-quitar {
+	border: 0;
+	background: transparent;
+	color: #c0392b;
+	font-size: 18px;
+	line-height: 1;
+	cursor: pointer;
+	padding: 2px 6px;
+}
+.pp-dm-rango-quitar:hover {
+	color: #e74c3c;
+}
+button.pp-dm-rango-anadir {
+	margin-top: 2px;
+}
+
+/* Móvil: las variables en una sola columna. */
+@media (max-width: 767px) {
+	.pp-dm-grid {
+		grid-template-columns: 1fr;
+	}
+	.pp-tipo-wrap {
+		flex-basis: 100% !important;
+	}
+}

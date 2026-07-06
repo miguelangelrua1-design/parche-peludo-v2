@@ -1204,6 +1204,10 @@ function pp_mascotas_reserva_assets() {
 				'nombre'  => $m->post_title,
 				'especie' => get_post_meta( $m->ID, '_pp_especie', true ),
 				'raza'    => get_post_meta( $m->ID, '_pp_raza', true ),
+				// pelaje y peso alimentan el filtrado de servicios por
+				// mascota (Tipos de servicio, módulo Servicios v2.5.0).
+				'pelaje'  => get_post_meta( $m->ID, '_pp_pelaje', true ),
+				'peso'    => get_post_meta( $m->ID, '_pp_peso', true ),
 				'foto'    => get_the_post_thumbnail_url( $m->ID, 'thumbnail' ) ?: '',
 			);
 		}
@@ -1288,6 +1292,9 @@ function pp_mascotas_ajax_crear_rapida() {
 		'nombre'  => $valores['nombre'],
 		'especie' => $valores['especie'],
 		'raza'    => $valores['raza'],
+		// pelaje y peso: los usa el filtrado de servicios por mascota.
+		'pelaje'  => $valores['pelaje'],
+		'peso'    => $peso,
 	) );
 }
 

@@ -61,6 +61,30 @@ function listeo_child_enqueue_styles() {
             );
         }
     }
+
+    // Popup de reserva (Booking Plus): sus estilos dan recuadro a los <input>/
+    // <textarea> del formulario, pero NO a los <select>. Al volver "Departamento"
+    // (y opcionalmente "País") un desplegable, quedaba SIN recuadro ni alto =
+    // invisible (aunque funcionaba al hacer clic). Forzamos que el <select> se
+    // vea igual que los campos de texto. Va en el <head> (siempre presente,
+    // gane quien gane en especificidad) con !important + selección por id.
+    $pp_select_css = '.lbp-modal .lbp-info-form select,'
+        . '.lbp-info-form select.lbp-billing-state,'
+        . '.lbp-info-form select.lbp-billing-country,'
+        . '#lbp-billing_state,#lbp-billing_country{'
+        . 'display:block !important;width:100% !important;'
+        . 'min-height:46px !important;height:auto !important;'
+        . 'padding:10px 14px !important;margin:0 0 18px !important;'
+        . 'border:1px solid #ddd !important;border-radius:8px !important;'
+        . 'font-size:14px !important;line-height:1.4 !important;'
+        . 'color:#333 !important;background-color:#fff !important;'
+        . 'opacity:1 !important;visibility:visible !important;'
+        . 'position:static !important;clip:auto !important;'
+        . '-webkit-appearance:menulist !important;'
+        . '-moz-appearance:menulist !important;appearance:menulist !important;'
+        . 'box-sizing:border-box !important;}'
+        . '.lbp-info-form select:focus{border-color:#66676b !important;}';
+    wp_add_inline_style( 'listeo-child-style', $pp_select_css );
 }
 add_action( 'wp_enqueue_scripts', 'listeo_child_enqueue_styles', 99 );
 
@@ -2769,11 +2793,32 @@ function ppv2_header_suggest() {
 		wp_send_json( array() );
 	}
 
-	// Caché por término (10 min): los términos repetidos —los más comunes con
-	// tráfico real— responden sin consultar la base de datos. Se invalida solo
-	// al expirar; 10 min de desfase máximo en sugerencias es aceptable.
+	// Tipo de listado activo en el buscador (chip "+" del plugin Personalización
+	// Parche): si viene y es un tipo separado válido, las sugerencias del
+	// directorio se limitan a ese tipo (p. ej. con "Mascotas perdidas" activa,
+	// no se sugieren listados de Adopción ni de Directorio).
+	$tipo      = isset( $_GET['listing_type'] ) ? sanitize_key( wp_unslash( $_GET['listing_type'] ) ) : '';
+	$separados = function_exists( 'pp_listados_tipos_separados' ) ? pp_listados_tipos_separados() : array();
+	if ( $tipo && ! in_array( $tipo, $separados, true ) ) {
+		$tipo = '';
+	}
+
+	// Nombres visibles de los tipos separados: cada sugerencia se cataloga
+	// bajo su tipo real (Adopción / Mascotas perdidas), no todo "Directorio".
+	$nombres_tipo = array();
+	if ( $separados && function_exists( 'pp_listados_tipos_activos' ) ) {
+		foreach ( pp_listados_tipos_activos() as $t ) {
+			if ( in_array( $t->slug, $separados, true ) && ! empty( $t->name ) ) {
+				$nombres_tipo[ $t->slug ] = $t->name;
+			}
+		}
+	}
+
+	// Caché por término + tipo (10 min): los términos repetidos —los más comunes
+	// con tráfico real— responden sin consultar la base de datos. Se invalida
+	// solo al expirar; 10 min de desfase máximo en sugerencias es aceptable.
 	$term_key  = function_exists( 'mb_strtolower' ) ? mb_strtolower( $term, 'UTF-8' ) : strtolower( $term );
-	$cache_key = 'ppv2_suggest_' . md5( $term_key );
+	$cache_key = 'ppv2_suggest_' . md5( $term_key . '|' . $tipo );
 	$cached    = get_transient( $cache_key );
 	if ( false !== $cached && is_array( $cached ) ) {
 		wp_send_json( $cached );
@@ -2783,22 +2828,47 @@ function ppv2_header_suggest() {
 	$listing_items = array();
 	$product_items = array();
 
-	// --- Listados (directorio de servicios) ---
-	$listings = get_posts( array(
+	// --- Listados (directorio / adopción / mascotas perdidas) ---
+	$listing_args = array(
 		's'              => $term,
 		'post_type'      => 'listing',
 		'post_status'    => 'publish',
 		'posts_per_page' => 5,
-	) );
+	);
+	if ( $tipo ) {
+		$listing_args['meta_query'] = array(
+			array(
+				'key'     => '_listing_type',
+				'value'   => $tipo,
+				'compare' => '=',
+			),
+		);
+	}
+	$listings = get_posts( $listing_args );
+
+	// Agrupar por tipo real para que cada uno salga bajo su encabezado
+	// (y los encabezados no se repitan al intercalarse).
+	$por_grupo = array();
 	foreach ( $listings as $p ) {
-		$listing_items[] = array(
+		$tipo_item = get_post_meta( $p->ID, '_listing_type', true );
+		$grupo     = isset( $nombres_tipo[ $tipo_item ] ) ? $nombres_tipo[ $tipo_item ] : 'Directorio';
+		$por_grupo[ $grupo ][] = array(
 			'label' => html_entity_decode( get_the_title( $p ), ENT_QUOTES, 'UTF-8' ),
 			'value' => html_entity_decode( get_the_title( $p ), ENT_QUOTES, 'UTF-8' ),
 			'link'  => get_permalink( $p ),
-			'group' => 'Directorio',
+			'group' => $grupo,
 			'img'   => get_the_post_thumbnail_url( $p, 'thumbnail' ),
 			'meta'  => '',
 		);
+	}
+	// Orden de grupos: Directorio primero, luego los tipos separados.
+	if ( isset( $por_grupo['Directorio'] ) ) {
+		$listing_items = $por_grupo['Directorio'];
+	}
+	foreach ( $nombres_tipo as $nombre_grupo ) {
+		if ( isset( $por_grupo[ $nombre_grupo ] ) ) {
+			$listing_items = array_merge( $listing_items, $por_grupo[ $nombre_grupo ] );
+		}
 	}
 
 	// --- Productos (tienda WooCommerce) ---
@@ -2975,14 +3045,21 @@ function ppv2_header_suggest_js() {
 					delay: 350,
 					source: function(req, response) {
 						var term = req.term;
-						if (cache[term]) {
-							response(orderByScope(cache[term]));
+						// Tipo de listado activo (chip "+" de Personalización Parche):
+						// viaja como input oculto en el form del buscador. Las
+						// sugerencias se limitan a ese tipo y se cachean aparte.
+						var tipo = '';
+						var tipoInput = document.querySelector('.header-search-container form input[name="_listing_type"]');
+						if (tipoInput && tipoInput.value) { tipo = tipoInput.value; }
+						var cacheKey = term + '|' + tipo;
+						if (cache[cacheKey]) {
+							response(orderByScope(cache[cacheKey]));
 							return;
 						}
-						$.getJSON(ajaxUrl, { action: 'ppv2_header_suggest', term: term })
+						$.getJSON(ajaxUrl, { action: 'ppv2_header_suggest', term: term, listing_type: tipo })
 							.done(function(data) {
-								cache[term] = data || [];
-								response(orderByScope(cache[term]));
+								cache[cacheKey] = data || [];
+								response(orderByScope(cache[cacheKey]));
 							})
 							.fail(function() { response([]); });
 					},

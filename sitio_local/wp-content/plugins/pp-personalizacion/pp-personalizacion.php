@@ -3,7 +3,7 @@
  * Plugin Name: Personalización Parche
  * Plugin URI:  https://parchepeludo.com
  * Description: Personalizaciones de Parche Peludo sobre Listeo, organizadas por módulos: Mascotas (perfiles de los peludos de cada usuario e integración con las reservas), Servicios y Reservas (próximamente).
- * Version:     2.4.0
+ * Version:     2.5.0
  * Author:      Parche Peludo
  * Text Domain: pp-personalizacion
  *
@@ -151,14 +151,37 @@ function pp_pers_pagina_inicio() {
 	<?php
 }
 
-/** Página Servicios. */
+/** Página Servicios — organizada por TABS: Tipos de Servicio | Personalizaciones. */
 function pp_pers_pagina_servicios() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
+	$tabs = array(
+		'tipos'  => 'Tipos de Servicio',
+		'extras' => 'Personalizaciones',
+	);
+	$activo = sanitize_key( $_GET['tab'] ?? 'tipos' );
+	if ( ! isset( $tabs[ $activo ] ) ) {
+		$activo = 'tipos';
+	}
 	?>
 	<div class="wrap">
 		<h1>🧰 Servicios</h1>
+		<h2 class="nav-tab-wrapper" style="margin-bottom:16px">
+			<?php foreach ( $tabs as $clave => $etiqueta ) :
+				$url   = admin_url( 'admin.php?page=pp-servicios&tab=' . $clave );
+				$clase = 'nav-tab' . ( $clave === $activo ? ' nav-tab-active' : '' ); ?>
+				<a href="<?php echo esc_url( $url ); ?>" class="<?php echo esc_attr( $clase ); ?>"><?php echo esc_html( $etiqueta ); ?></a>
+			<?php endforeach; ?>
+		</h2>
+
+		<?php
+		if ( 'tipos' === $activo && function_exists( 'pp_serv_tab_tipos' ) ) {
+			pp_serv_tab_tipos();
+			echo '</div>';
+			return;
+		}
+		?>
 		<h2>Personalizaciones activas</h2>
 		<div style="background:#fff;border:1px solid #dcdcde;border-radius:12px;padding:18px;max-width:720px">
 			<h3 style="margin-top:0">"Elige tu servicio" en la reserva</h3>

@@ -254,6 +254,9 @@
 			$gate.find('.pp-gate__continuar').prop('disabled', false);
 			$gate.find('.pp-gate__eleccion').html('Elegiste a <strong>' + esc(m.nombre) + '</strong>');
 			actualizarChip();
+			// Avisar al resto de módulos (p. ej. el filtrado de servicios por
+			// mascota de pp-servicios-reserva.js) qué mascota quedó elegida.
+			$(document).trigger('pp:mascota-elegida', [m]);
 		}
 
 		$gate.on('click', '.pp-gate__card:not(.pp-gate__card--nueva)', function () {

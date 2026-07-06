@@ -208,8 +208,70 @@
 		refrescarContadores();
 	}
 
+	/* =====================================================================
+	   3) Filtrado de servicios según la MASCOTA elegida (Tipos de servicio)
+	   - Datos: PP_SERV.restricciones = { índice: {especie, pelaje, pesos[]} }
+	     (el índice es el value del checkbox del servicio en el popup).
+	   - Escucha el evento `pp:mascota-elegida` que emite
+	     pp-mascotas-reserva.js al confirmar la mascota en el paso 1.
+	   - Oculta con la clase .pp-oculta-mascota (CSS con !important, para
+	     que sobreviva a los .toggle() de los tabs) y desmarca el servicio
+	     si estaba seleccionado.
+	   ================================================================== */
+	function iniciarFiltroMascota() {
+		var D = window.PP_SERV || null;
+		if (!D || !D.restricciones) { return; }
+		var R = D.restricciones;
+		if ($.isEmptyObject(R)) { return; }
+
+		function aplica(r, m) {
+			if (!m) { return true; }
+			if (r.especie && m.especie && r.especie !== m.especie) { return false; }
+			if (r.pelaje && m.pelaje && r.pelaje !== m.pelaje) { return false; }
+			var peso = parseFloat(m.peso);
+			if (r.pesos && r.pesos.length && peso > 0) {
+				var dentro = false;
+				r.pesos.forEach(function (p) {
+					var minOk = (p.min === null || typeof p.min === 'undefined') || peso >= p.min;
+					var maxOk = (p.max === null || typeof p.max === 'undefined') || peso <= p.max;
+					if (minOk && maxOk) { dentro = true; }
+				});
+				if (!dentro) { return false; }
+			}
+			return true;
+		}
+
+		function filtrar(m) {
+			$('.lbp-single-service').each(function () {
+				var $fila = $(this);
+				var $cb = $fila.find('input.bookable-service-checkbox');
+				if (!$cb.length) { return; }
+				var r = R[String($cb.val())];
+				var ok = !r || aplica(r, m);
+				$fila.toggleClass('pp-oculta-mascota', !ok);
+				if (!ok && $cb.prop('checked')) {
+					$cb.prop('checked', false).trigger('change');
+				}
+			});
+
+			// Tabs sin servicios aplicables: se ocultan (y reaparecen si la
+			// mascota cambia a una que sí aplica).
+			$('.pp-serv-tab').each(function () {
+				var i = $(this).attr('data-menu');
+				var $filas = $('.lbp-single-service[data-pp-menu="' + i + '"]');
+				var ocultas = $filas.filter('.pp-oculta-mascota').length;
+				$(this).toggle($filas.length === 0 || ocultas < $filas.length);
+			});
+		}
+
+		$(document).on('pp:mascota-elegida', function (e, m) {
+			filtrar(m || null);
+		});
+	}
+
 	$(function () {
 		iniciarEtiqueta();
 		iniciarTabs();
+		iniciarFiltroMascota();
 	});
 })(jQuery);
