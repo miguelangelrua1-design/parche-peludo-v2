@@ -10,6 +10,22 @@
 // La sección "Mis Mascotas" vive ahora en el plugin propio pp-mascotas
 // (wp-content/plugins/pp-mascotas/), migrada desde este tema el 2026-07-03.
 
+// Popup de reserva (Booking Plus): en el resumen la cantidad se rotula "Adultos".
+// Para Parche Peludo la unidad es la MASCOTA, así que reemplazamos esa etiqueta
+// localizada (lbpData.i18n.adults) sin tocar el plugin premium. El inline corre
+// justo después de lbp-booking.js, cuando lbpData ya existe pero antes de abrir
+// el popup, así el resumen usa la nueva palabra.
+add_action( 'wp_enqueue_scripts', 'ppv2_lbp_relabel_pet_unit', 100 );
+function ppv2_lbp_relabel_pet_unit() {
+	if ( wp_script_is( 'lbp-booking', 'registered' ) || wp_script_is( 'lbp-booking', 'enqueued' ) ) {
+		wp_add_inline_script(
+			'lbp-booking',
+			'if(window.lbpData&&lbpData.i18n){lbpData.i18n.adults="Mascota";lbpData.i18n.adult="Mascota";}',
+			'after'
+		);
+	}
+}
+
 function listeo_child_enqueue_styles() {
     // Cargar estilo del tema padre
     wp_enqueue_style( 'listeo-parent-style', get_template_directory_uri() . '/style.css' );
@@ -1736,7 +1752,10 @@ function ppv2_listing_header_reorder() {
 				var overlay = document.createElement('div');
 				overlay.className = 'ppv2-more-overlay';
 				var span = document.createElement('span');
-				span.textContent = '+' + moreCount + ' fotos';
+				// Ícono de lupa + "+N foto(s)" (la lupa invita a dar clic para abrir la galería).
+				var _fotoWord = ( moreCount === 1 ) ? 'foto' : 'fotos';
+				span.innerHTML = '<svg class="ppv2-more-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="20" y1="20" x2="16.05" y2="16.05"></line></svg>'
+					+ '<span class="ppv2-more-txt">+' + moreCount + ' ' + _fotoWord + '</span>';
 				overlay.appendChild(span);
 				lastSlot.appendChild(overlay);
 			}

@@ -638,6 +638,13 @@ Text Domain:  listeo-child
 .ppv2-shop-filter .elementor-button { background: var(--paper) !important; color: var(--ink-muted) !important; border: 1px solid var(--ink-line) !important; border-radius: var(--r-pill) !important; font-size: 12px !important; font-weight: 700 !important; padding: 8px 18px !important; box-shadow: none !important; }
 .ppv2-shop-filter .elementor-button:hover { border-color: var(--teal-soft) !important; color: var(--teal-deep) !important; background: var(--paper) !important; transform: none !important; }
 .ppv2-shop-filter.is-active .elementor-button { background: var(--teal-parche) !important; color: var(--paper) !important; border-color: var(--teal-parche) !important; box-shadow: var(--shadow-sm) !important; }
+
+/* Ocultar el widget "Buscar producto" del sidebar de filtros en TODA la Tienda
+   (Tienda principal, categorías y resultados de búsqueda): se cruza con el
+   buscador general del header. Al ocultarlo con display:none no deja hueco y los
+   demás filtros suben solos. */
+body.woocommerce .widget_product_search,
+body.woocommerce-page .widget_product_search { display: none !important; }
 .elementor-inner-section:has(.ppv2-shop-filter) { margin-bottom: 22px !important; width: 100% !important; }
 
 /* Grilla de productos 4 -> 2 -> 1 */
@@ -1209,6 +1216,17 @@ Text Domain:  listeo-child
   font-size: 18px !important;
   letter-spacing: -0.01em !important;
   text-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+/* Lupa junto a "+N fotos" (invita a dar clic para abrir la galería) */
+.single-listing #single-listing-grid-gallery .ppv2-more-overlay .ppv2-more-ico {
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 auto !important;
+  stroke: var(--paper) !important;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)) !important;
 }
 
 /* --- FASE 4: Características (features → tarjetas) --- */
@@ -3302,13 +3320,17 @@ body.single-listing.admin-bar .listeo-single-listing-sidebar {
     transform: translateY(-50%) scale(0.9) !important;
   }
   
+  /* Las flechas cuelgan de la grilla de galería, que por el .row de Bootstrap
+     tiene margin-left:-15px y margin-right:-15px → se sale 15px por CADA lado en
+     el teléfono. Por eso AMBAS necesitan 24px (24 − 15 de sangrado ≈ 9px visibles),
+     para que queden con el MISMO margen a cada lado y no pegadas a los bordes. */
   body.single-listing .ppv2-slider-arrow--prev {
-    left: 16px !important;
+    left: 24px !important;    /* 24 − 15 de sangrado ≈ 9px visibles a la izquierda */
     padding-right: 3px !important;
   }
-  
+
   body.single-listing .ppv2-slider-arrow--next {
-    right: 16px !important;
+    right: 24px !important;   /* 24 − 15 de sangrado ≈ 9px visibles a la derecha */
     padding-left: 3px !important;
   }
   
@@ -8895,6 +8917,10 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
   display: inline-flex;
   gap: 6px;
 }
+/* El separador "+" traía un margin-left extra (6px) ADEMÁS del gap del flex, así
+   que quedaba al doble de separación que Directorio↔Tienda. Lo igualamos: solo el
+   gap de 6px, mismo espacio entre las tres. */
+.ppv2-scope-tabs .pp-sep { margin-left: 0 !important; }
 .ppv2-scope-tab {
   font-family: inherit;
   font-size: 13px;
@@ -8923,6 +8949,13 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
 
 /* Escritorio: pills dentro del campo, a la izquierda (estilo Behance) */
 @media (min-width: 768px) {
+  /* Logo del header más pequeño en desktop (baja de 43px a 34px de alto, ~21% menos;
+     el ancho baja en proporción, de ~299px a ~236px). */
+  .hws-container > div:first-child img { max-height: 34px !important; }
+  /* Buscador más ancho hacia la IZQUIERDA: se acerca al logo y crece por ese lado
+     (con el logo más pequeño, se extiende ~80px más a la izquierda que el original).
+     El borde derecho (junto a cuenta/carrito) no se toca. */
+  .hws-container .header-search-container { margin-left: -40px; }
   .header-search-container .main-search-input-item.text.ppv2-has-scope-tabs {
     position: relative;
   }
