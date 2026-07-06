@@ -181,6 +181,44 @@
 			}
 		});
 
+		// Botón "Atrás" en el paso Fecha y hora (Booking Plus en modo "listing"
+		// no pinta el "Back" nativo, que iría al paso de recursos). Vuelve al
+		// gate de Mascota. La fila .lbp-step-actions ya es flex space-between →
+		// Atrás queda a la izquierda y "Siguiente" a la derecha, misma fila.
+		function ppInyectarAtras() {
+			var $next = $modal.find('.lbp-step-1 .lbp-step-actions .lbp-btn-next[data-step="2"]').first();
+			if (!$next.length) { $next = $modal.find('.lbp-btn-next[data-step="2"]').first(); }
+			if (!$next.length) { return; }
+			var $acciones = $next.closest('.lbp-step-actions');
+			if (!$acciones.length) { return; }
+			if ($acciones.find('.pp-gate-volver').length) { return; } // ya inyectado
+			if ($acciones.find('.lbp-btn-back').length) { return; }   // hay "Back" nativo → no duplicar
+			// OJO data-step="1": Booking Plus tiene un manejador delegado sobre
+			// .lbp-btn-back que navega a parseInt(data('step')) — sin el atributo
+			// da NaN → goToStep(NaN) OCULTA TODOS los pasos y la modal queda
+			// vacía al volver del gate. Con "1" su manejador re-muestra el paso
+			// Fecha y hora (queda debajo del gate) y ambos comportamientos
+			// se componen sin conflicto.
+			$acciones.prepend(
+				'<button type="button" class="button lbp-btn-back pp-gate-volver" data-step="1">' +
+					'<i class="fa fa-arrow-left"></i> Atrás' +
+				'</button>'
+			);
+			// Marca para forzar la fila también en móvil (Booking Plus apila los
+			// botones con column-reverse en pantallas pequeñas).
+			$acciones.addClass('pp-acciones-fila');
+		}
+		ppInyectarAtras();
+
+		// Clic en "Atrás" → reabrir el gate de Mascota. Si el cliente cambia de
+		// mascota, el filtrado de servicios se recalcula (evento
+		// pp:mascota-elegida, ver pp-servicios-reserva.js); si no la cambia, la
+		// selección de servicios se mantiene tal cual.
+		$(document).on('click', '.pp-gate-volver', function (e) {
+			e.preventDefault();
+			mostrarGate();
+		});
+
 		/* ---------- Resumen en el paso Confirmar ---------- */
 		var $msgRow = $('#lbp-message').closest('.lbp-form-row');
 		if ($msgRow.length && D.logueado) {
@@ -227,7 +265,8 @@
 			var visible = $modal.is(':visible');
 			if (visible && !modalAbierto) {
 				modalAbierto = true;
-				if (!gateResuelto) { mostrarGate(); }
+				ppInyectarAtras(); // los pasos del modal ya están renderizados
+					if (!gateResuelto) { mostrarGate(); }
 			} else if (!visible && modalAbierto) {
 				modalAbierto = false;
 				gateResuelto = false; // en la próxima apertura, mostrar de nuevo

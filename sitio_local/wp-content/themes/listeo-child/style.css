@@ -5646,7 +5646,11 @@ body.single-listing #listing-nav {
   }
 
   /* El modal en sí: hoja con esquinas superiores redondeadas, sombra y scroll
-     interno. max-height 92vh deja ver el fondo oscurecido arriba (look panel). */
+     interno. ALTURA FIJA (no max): con max-height la altura dependía del
+     contenido y el panel "crecía" a los segundos de abrir (los horarios del
+     paso Fecha y hora llegan por AJAX después del primer render) → salto
+     visible con el gate de Mascotas encima. Con height fija abre de una vez
+     en su tamaño final, cargue lo que cargue adentro. */
   #lbp-booking-modal.lbp-modal {
     width: 100% !important;
     max-width: 100% !important;
@@ -5654,15 +5658,15 @@ body.single-listing #listing-nav {
     border-radius: 18px 18px 0 0 !important;
     /* 88dvh deja ~12% de fondo oscurecido arriba (esquinas redondeadas visibles)
        y garantiza que la parte superior del panel NUNCA se corte en iOS. */
-    max-height: 88vh !important;
-    max-height: 88dvh !important;
+    height: 88vh !important;
+    height: 88dvh !important;
     overflow: hidden !important;
     box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.18) !important;
   }
   /* El scroll lo lleva el inner; así el redondeo del panel no se recorta */
   #lbp-booking-modal .lbp-modal-inner {
-    max-height: 88vh !important;
-    max-height: 88dvh !important;
+    height: 100% !important;
+    max-height: none !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
   }

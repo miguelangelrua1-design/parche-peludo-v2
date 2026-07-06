@@ -401,16 +401,43 @@
 
 /* Móvil: sin barra lateral ni X (la vista móvil se conserva como estaba) */
 @media (max-width: 767px) {
-	.pp-gate__sidebar,
-	.pp-gate__x {
+	.pp-gate__sidebar {
 		display: none;
 	}
+	/* La X SÍ se muestra en móvil (antes se ocultaba junto con el sidebar).
+	   Queda FIJA en la esquina superior derecha: el contenido scrollea por
+	   dentro (.pp-gate__contenido), no todo el panel, así la X no se pierde. */
+	.pp-gate__x {
+		display: block;
+		top: 8px;
+		right: 10px;
+		z-index: 70;
+	}
 	.pp-gate {
-		overflow-y: auto;
+		overflow: hidden;
 	}
 	.pp-gate__contenido {
 		padding: 18px 14px;
-		overflow: visible;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+	/* El título no debe quedar por debajo de la X. */
+	.pp-gate__titulo {
+		padding-right: 40px;
+	}
+
+	/* Atrás + Siguiente en la MISMA fila también en móvil (Booking Plus los
+	   apila con column-reverse). Solo la fila del paso Fecha y hora, marcada
+	   con .pp-acciones-fila al inyectar nuestro botón "Atrás". */
+	.lbp-step-actions.pp-acciones-fila {
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.lbp-step-actions.pp-acciones-fila .lbp-btn-back,
+	.lbp-step-actions.pp-acciones-fila .lbp-btn-next {
+		width: auto;
+		flex: 0 1 auto;
 	}
 }
 @media (max-width: 560px) {
