@@ -797,6 +797,14 @@ function pp_serv_assets_submit() {
 	if ( is_admin() || ! is_user_logged_in() ) {
 		return;
 	}
+	// PERF: solo en la página del formulario de listado (crear + editar usan la
+	// misma página). Evita cargar el JS + los datos localizados en CADA página
+	// para los usuarios logueados. Fallback seguro: si la opción no está
+	// configurada, no acota (comportamiento anterior).
+	$submit_page = (int) get_option( 'listeo_submit_page' );
+	if ( $submit_page && ! is_page( $submit_page ) ) {
+		return;
+	}
 	$js = PP_PERS_DIR . 'js/pp-serv-menu.js';
 	if ( ! file_exists( $js ) ) {
 		return;

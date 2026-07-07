@@ -622,9 +622,14 @@ function pp_listados_separar_assets() {
 	}
 
 	// Carrusel por tipo separado (términos raíz de {tipo}_category).
+	// PERF: solo se USA en el archivo y en las páginas de categoría de un tipo
+	// separado (el JS intercambia el carrusel ahí). En el resto del sitio el
+	// chip "+" solo necesita los NOMBRES → evitamos 2 get_terms por página.
 	$carruseles = array();
-	foreach ( $sep as $tipo ) {
-		$carruseles[ $tipo ] = pp_listados_items_carrusel( $tipo . '_category' );
+	if ( $es_archivo || $es_tax_tipo ) {
+		foreach ( $sep as $tipo ) {
+			$carruseles[ $tipo ] = pp_listados_items_carrusel( $tipo . '_category' );
+		}
 	}
 
 	// URL destino de la búsqueda de listados (por si el form del header

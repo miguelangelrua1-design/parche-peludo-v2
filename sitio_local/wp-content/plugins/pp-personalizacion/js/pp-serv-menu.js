@@ -375,10 +375,15 @@
 
 		/* ================= Envío del formulario ================= */
 
-		/* Selects de tipología SIN valor en menús que sí tienen contenido. */
+		/* Selects de tipología SIN valor en menús que sí tienen contenido.
+		   OJO: SIN :visible — el asistente multipaso oculta la sección de
+		   Servicios cuando el usuario está en otro paso, y con :visible la
+		   validación "no veía" los selects vacíos, el envío pasaba y el
+		   servidor rechazaba aterrizando en una página rota (bug de Miguel
+		   2026-07-06, segunda aparición). */
 		function tiposFaltantes() {
 			var $faltan = $();
-			$cont.find('select.pp-tipo-servicio:visible').each(function () {
+			$cont.find('select.pp-tipo-servicio').each(function () {
 				var $sel = $(this);
 				if ($sel.val()) { return; }
 				var $fila = $sel.closest('tr');
@@ -395,8 +400,24 @@
 
 		function avisarFaltantes($faltan) {
 			$faltan.addClass('pp-tipo-error');
+			var $primero = $faltan.first();
+			// Si el select está en una sección oculta por el asistente
+			// multipaso, activar el paso que la contiene: clic en los pasos
+			// de progreso (ir hacia atrás siempre está permitido) hasta que
+			// el campo quede visible. Así el usuario ATERRIZA en la sección
+			// de Servicios con el campo marcado, en vez de quedarse en otro
+			// paso sin contexto.
+			if (!$primero.is(':visible')) {
+				var pasos = document.querySelectorAll('.form-progress-step');
+				for (var k = 0; k < pasos.length; k++) {
+					pasos[k].click();
+					if ($primero.is(':visible')) { break; }
+				}
+			}
 			window.alert(D.msgFalta || 'Selecciona el "Tipo de servicio" en cada menú de servicios.');
-			$('html, body').animate({ scrollTop: $faltan.first().offset().top - 120 }, 250);
+			if ($primero.is(':visible') && $primero.offset()) {
+				$('html, body').animate({ scrollTop: $primero.offset().top - 120 }, 250);
+			}
 		}
 
 		/* Validación EN EL CLIC del botón guardar, en fase de CAPTURA: corre
