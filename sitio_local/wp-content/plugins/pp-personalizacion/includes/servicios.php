@@ -178,9 +178,12 @@ function pp_serv_tipos() {
 		// '' = no define (hereda listado/global) · 0 = permite último minuto · N = minutos.
 		$aviso = $t['aviso'] ?? '';
 		$out[ $slug ] = array(
-			'nombre'  => sanitize_text_field( $t['nombre'] ?? $slug ),
-			'mascota' => empty( $t['mascota'] ) ? 0 : 1,
-			'aviso'   => ( '' !== $aviso && is_numeric( $aviso ) ) ? max( 0, (int) $aviso ) : '',
+			'nombre'    => sanitize_text_field( $t['nombre'] ?? $slug ),
+			'mascota'   => empty( $t['mascota'] ) ? 0 : 1,
+			'aviso'     => ( '' !== $aviso && is_numeric( $aviso ) ) ? max( 0, (int) $aviso ) : '',
+			// domicilio = sus servicios pueden ofrecerse "A domicilio o En sede"
+			// (el prestador define el valor del domicilio por menú; vacío = gratis).
+			'domicilio' => empty( $t['domicilio'] ) ? 0 : 1,
 		);
 	}
 	return $out;
@@ -190,6 +193,32 @@ function pp_serv_tipos() {
 function pp_serv_tipo_permite_mascota( $slug ) {
 	$tipos = pp_serv_tipos();
 	return ! empty( $tipos[ $slug ]['mascota'] );
+}
+
+/* ---- Tipos de servicio POR TIPO DE LISTADO (v2.7.0) ----
+ * Opción `pp_serv_tipos_por_listado`: array( tipo_de_listado => array(slugs
+ * de tipos de servicio permitidos) ). Un tipo de listado SIN entrada (o con
+ * la lista vacía) permite TODOS los tipos de servicio (compatibilidad).
+ * Cuando un tipo de listado permite UNO solo, el formulario lo asume por
+ * defecto y no se lo pregunta al usuario. */
+function pp_serv_tipos_por_listado() {
+	$cfg = get_option( 'pp_serv_tipos_por_listado', array() );
+	return is_array( $cfg ) ? $cfg : array();
+}
+
+/** Tipos de servicio permitidos para un tipo de listado (slugs del catálogo). */
+function pp_serv_tipos_permitidos_para_listado( $listing_slug ) {
+	$listing_slug = sanitize_key( $listing_slug );
+	$catalogo     = array_keys( pp_serv_tipos() );
+	if ( '' === $listing_slug ) {
+		return $catalogo;
+	}
+	$cfg = pp_serv_tipos_por_listado();
+	if ( ! isset( $cfg[ $listing_slug ] ) || ! is_array( $cfg[ $listing_slug ] ) ) {
+		return $catalogo; // sin configuración → todos
+	}
+	$permitidos = array_values( array_intersect( $catalogo, array_map( 'sanitize_key', $cfg[ $listing_slug ] ) ) );
+	return $permitidos ? $permitidos : $catalogo; // lista vacía → todos (a prueba de errores)
 }
 
 /* ---- CRUD del catálogo (admin) ---- */
@@ -207,6 +236,8 @@ function pp_serv_tipos_handler() {
 	// Antelación mínima propia del tipo: '' = hereda, 0 = último minuto, N = minutos.
 	$aviso_raw = trim( (string) wp_unslash( $_POST['pp_aviso'] ?? '' ) );
 	$aviso     = ( '' !== $aviso_raw && is_numeric( $aviso_raw ) ) ? max( 0, (int) $aviso_raw ) : '';
+	// Domicilio: los servicios de este tipo pueden ofrecerse a domicilio o en sede.
+	$domicilio = empty( $_POST['pp_domicilio'] ) ? 0 : 1;
 
 	if ( 'crear' === $accion ) {
 		$nombre  = sanitize_text_field( wp_unslash( $_POST['pp_nombre'] ?? '' ) );
@@ -217,7 +248,7 @@ function pp_serv_tipos_handler() {
 		} elseif ( isset( $tipos[ $slug ] ) ) {
 			$msg = 'duplicado';
 		} else {
-			$tipos[ $slug ] = array( 'nombre' => $nombre, 'mascota' => $mascota, 'aviso' => $aviso );
+			$tipos[ $slug ] = array( 'nombre' => $nombre, 'mascota' => $mascota, 'aviso' => $aviso, 'domicilio' => $domicilio );
 			update_option( 'pp_serv_tipos', $tipos );
 			$msg = 'creado';
 		}
@@ -229,7 +260,7 @@ function pp_serv_tipos_handler() {
 			$msg = 'vacio';
 		} else {
 			// El slug NO cambia al renombrar: los menús guardados lo referencian.
-			$tipos[ $slug ] = array( 'nombre' => $nombre, 'mascota' => $mascota, 'aviso' => $aviso );
+			$tipos[ $slug ] = array( 'nombre' => $nombre, 'mascota' => $mascota, 'aviso' => $aviso, 'domicilio' => $domicilio );
 			update_option( 'pp_serv_tipos', $tipos );
 			$msg = 'editado';
 		}
@@ -240,6 +271,18 @@ function pp_serv_tipos_handler() {
 			update_option( 'pp_serv_tipos', $tipos );
 			$msg = 'eliminado';
 		}
+	} elseif ( 'matriz' === $accion ) {
+		// Matriz Tipo de listado × Tipos de servicio permitidos.
+		$catalogo = array_keys( $tipos );
+		$listados = function_exists( 'pp_listados_tipos_activos_slugs' ) ? pp_listados_tipos_activos_slugs() : array();
+		$marcados = ( isset( $_POST['pp_matriz'] ) && is_array( $_POST['pp_matriz'] ) ) ? $_POST['pp_matriz'] : array();
+		$nueva    = array();
+		foreach ( $listados as $lt ) {
+			$de_listado = isset( $marcados[ $lt ] ) ? array_map( 'sanitize_key', (array) $marcados[ $lt ] ) : array();
+			$nueva[ $lt ] = array_values( array_intersect( $catalogo, $de_listado ) );
+		}
+		update_option( 'pp_serv_tipos_por_listado', $nueva );
+		$msg = 'matriz';
 	}
 
 	wp_safe_redirect( admin_url( 'admin.php?page=pp-servicios&tab=tipos&pp_msg=' . $msg ) );
@@ -258,6 +301,7 @@ function pp_serv_tab_tipos() {
 		'eliminado' => array( 'success', 'Tipo de servicio eliminado.' ),
 		'duplicado' => array( 'error', 'Ya existe un tipo con ese nombre.' ),
 		'vacio'     => array( 'error', 'El nombre no puede estar vacío.' ),
+		'matriz'    => array( 'success', 'Tipos de servicio por tipo de listado guardados.' ),
 	);
 	if ( isset( $avisos[ $msg ] ) ) {
 		printf(
@@ -276,14 +320,15 @@ function pp_serv_tab_tipos() {
 				<thead>
 					<tr>
 						<th>Nombre</th>
-						<th style="width:110px">Según mascota</th>
-						<th style="width:120px">Antelación mín.</th>
+						<th style="width:100px">Según mascota</th>
+						<th style="width:110px">Antelación mín.</th>
+						<th style="width:90px">Domicilio</th>
 						<th style="width:150px">Acciones</th>
 					</tr>
 				</thead>
 				<tbody>
 				<?php if ( empty( $tipos ) ) : ?>
-					<tr><td colspan="4">No hay tipos configurados.</td></tr>
+					<tr><td colspan="5">No hay tipos configurados.</td></tr>
 				<?php else : foreach ( $tipos as $slug => $t ) : ?>
 					<tr>
 						<td><strong><?php echo esc_html( $t['nombre'] ); ?></strong><br><span class="description" style="font-size:11px"><?php echo esc_html( $slug ); ?></span></td>
@@ -297,6 +342,7 @@ function pp_serv_tab_tipos() {
 								echo '<strong>' . esc_html( $t['aviso'] ) . '</strong> min';
 							}
 						?></td>
+						<td><?php echo ! empty( $t['domicilio'] ) ? '<span style="color:#1b5e40;font-weight:600">Sí 🏠</span>' : '—'; ?></td>
 						<td>
 							<a class="button button-small" href="<?php echo esc_url( admin_url( 'admin.php?page=pp-servicios&tab=tipos&editar=' . $slug ) ); ?>">Editar</a>
 							<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('¿Eliminar el tipo «<?php echo esc_js( $t['nombre'] ); ?>»? Los menús que lo usan quedarán sin tipo hasta que se editen.');">
@@ -334,6 +380,12 @@ function pp_serv_tab_tipos() {
 					</label>
 				</p>
 				<p>
+					<label>
+						<input type="checkbox" name="pp_domicilio" value="1" <?php checked( $en_edicion && ! empty( $en_edicion['domicilio'] ) ); ?>>
+						<strong>Domicilio</strong> — sus servicios podrán ofrecerse "A domicilio o En sede"; el prestador define el valor del domicilio en cada menú (vacío = gratis)
+					</label>
+				</p>
+				<p>
 					<label for="pp-tipo-aviso"><strong>Antelación mínima de reserva (minutos)</strong></label><br>
 					<input type="number" id="pp-tipo-aviso" name="pp_aviso" min="0" step="1" style="width:140px"
 						value="<?php echo $en_edicion ? esc_attr( $en_edicion['aviso'] ) : ''; ?>" placeholder="Hereda">
@@ -349,6 +401,54 @@ function pp_serv_tab_tipos() {
 			<p class="description">Al renombrar un tipo, los menús existentes lo conservan (el identificador interno no cambia). Al eliminarlo, los menús que lo usaban deberán elegir otro tipo la próxima vez que se editen.</p>
 		</div>
 	</div>
+
+	<?php
+	// ---- Matriz: qué tipos de servicio permite cada TIPO DE LISTADO ----
+	$listados_activos = function_exists( 'pp_listados_tipos_activos' ) ? pp_listados_tipos_activos() : array();
+	if ( $listados_activos && $tipos ) :
+	?>
+	<div style="background:#fff;border:1px solid #dcdcde;border-radius:12px;padding:18px;margin-top:20px;max-width:1020px">
+		<h3 style="margin-top:0">Tipos de servicio por tipo de listado</h3>
+		<p class="description" style="max-width:820px;margin-bottom:12px">Controla qué <strong>tipologías de servicio</strong> puede usar cada <strong>tipo de listado</strong> en su menú. Si un tipo de listado permite <strong>una sola</strong> tipología, el formulario la asume por defecto y <strong>no se la pregunta</strong> al prestador. Sin ninguna marcada = permite todas (comportamiento clásico).</p>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<?php wp_nonce_field( 'pp_serv_tipos' ); ?>
+			<input type="hidden" name="action" value="pp_serv_tipos">
+			<input type="hidden" name="pp_accion" value="matriz">
+			<table class="widefat striped">
+				<thead>
+					<tr>
+						<th style="width:220px">Tipo de listado</th>
+						<?php foreach ( $tipos as $t ) : ?>
+							<th style="text-align:center"><?php echo esc_html( $t['nombre'] ); ?></th>
+						<?php endforeach; ?>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ( $listados_activos as $lt ) :
+						$lt_slug    = $lt->slug;
+						$permitidos = pp_serv_tipos_permitidos_para_listado( $lt_slug );
+						$cfg        = pp_serv_tipos_por_listado();
+						$explicito  = isset( $cfg[ $lt_slug ] ) && is_array( $cfg[ $lt_slug ] ) && $cfg[ $lt_slug ];
+						?>
+						<tr>
+							<td><strong><?php echo esc_html( $lt->name ); ?></strong> <code style="opacity:.6"><?php echo esc_html( $lt_slug ); ?></code>
+								<?php if ( ! $explicito ) : ?><br><span class="description" style="font-size:11px">sin configurar → todas</span><?php endif; ?>
+							</td>
+							<?php foreach ( $tipos as $slug => $t ) :
+								// Marcado = permitido HOY (config explícita, o todas por defecto).
+								$on = in_array( $slug, $permitidos, true ); ?>
+								<td style="text-align:center">
+									<input type="checkbox" name="pp_matriz[<?php echo esc_attr( $lt_slug ); ?>][]" value="<?php echo esc_attr( $slug ); ?>" <?php checked( $on ); ?>>
+								</td>
+							<?php endforeach; ?>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+			<p style="margin-top:14px"><button type="submit" class="button button-primary">Guardar matriz</button></p>
+		</form>
+	</div>
+	<?php endif; ?>
 	<?php
 }
 
@@ -444,18 +544,48 @@ function pp_serv_admin_metabox_tipo() {
 	if ( ! $cmb ) {
 		return;
 	}
-	$opciones = array();
-	foreach ( pp_serv_tipos() as $slug => $t ) {
-		$opciones[ $slug ] = $t['nombre'];
-	}
 	$cmb->add_group_field( '_menu', array(
 		'name'             => 'Tipo de servicio',
-		'desc'             => 'Obligatorio. Los tipos con "Según mascota" (p. ej. Peluquería y baño) habilitan "Depende de mascota" en sus servicios. Se administran en Personalización Parche → Servicios → Tipos de Servicio.',
+		'desc'             => 'Obligatorio. Los tipos con "Según mascota" (p. ej. Peluquería y baño) habilitan "Depende de mascota" en sus servicios. Se administran en Personalización Parche → Servicios → Tipos de Servicio (incluida la matriz de tipologías por tipo de listado).',
 		'id'               => 'pp_tipo_servicio',
 		'type'             => 'select',
 		'show_option_none' => '— Elige el tipo —',
-		'options'          => $opciones,
+		'options_cb'       => 'pp_serv_cmb2_opciones_tipo', // filtradas por el tipo del listado
 	), 2 ); // posición 2: después de "Menu Title", antes de los elementos
+
+	$cmb->add_group_field( '_menu', array(
+		'name'       => 'Antelación mínima del menú (minutos)',
+		'desc'       => 'Todos los servicios de este menú la comparten. Vacío = hereda (tipología → listado → global). Ej: 1440 = 1 día.',
+		'id'         => 'pp_aviso',
+		'type'       => 'text_small',
+		'attributes' => array( 'type' => 'number', 'min' => '0', 'step' => '1' ),
+	), 3 );
+}
+
+/** Opciones del select del metabox, limitadas a las tipologías permitidas
+ *  para el TIPO DE LISTADO del post que se está editando. */
+function pp_serv_cmb2_opciones_tipo( $field = null ) {
+	$tipos   = pp_serv_tipos();
+	$post_id = 0;
+	if ( is_object( $field ) && method_exists( $field, 'object_id' ) ) {
+		$post_id = (int) $field->object_id();
+	}
+	$tipo_listado = $post_id ? sanitize_key( (string) get_post_meta( $post_id, '_listing_type', true ) ) : '';
+	$permitidos   = pp_serv_tipos_permitidos_para_listado( $tipo_listado );
+
+	$opciones = array();
+	foreach ( $permitidos as $slug ) {
+		if ( isset( $tipos[ $slug ] ) ) {
+			$opciones[ $slug ] = $tipos[ $slug ]['nombre'];
+		}
+	}
+	// Fallback defensivo: nunca un select vacío.
+	if ( ! $opciones ) {
+		foreach ( $tipos as $slug => $t ) {
+			$opciones[ $slug ] = $t['nombre'];
+		}
+	}
+	return $opciones;
 }
 
 add_action( 'listeo_menu_element_extra_fields_admin', 'pp_serv_campos_mascota_fila_admin', 30, 5 );
@@ -562,7 +692,17 @@ function pp_serv_validar_tipo_servicio_menu( $valido, $fields, $values ) {
 		return $valido;
 	}
 	$tipos = pp_serv_tipos();
-	foreach ( wp_unslash( $_POST['_menu'] ) as $g ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+
+	// Tipo de LISTADO que se está guardando (para las tipologías permitidas).
+	$tipo_listado = '';
+	if ( isset( $_POST['_listing_type'] ) && ! is_array( $_POST['_listing_type'] ) ) {
+		$tipo_listado = sanitize_key( wp_unslash( $_POST['_listing_type'] ) );
+	} elseif ( isset( $_POST['listing_id'] ) && absint( $_POST['listing_id'] ) ) {
+		$tipo_listado = sanitize_key( (string) get_post_meta( absint( $_POST['listing_id'] ), '_listing_type', true ) );
+	}
+	$permitidos = pp_serv_tipos_permitidos_para_listado( $tipo_listado );
+
+	foreach ( wp_unslash( $_POST['_menu'] ) as $i => $g ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		if ( ! is_array( $g ) ) {
 			continue;
 		}
@@ -579,7 +719,19 @@ function pp_serv_validar_tipo_servicio_menu( $valido, $fields, $values ) {
 		}
 		$tipo = sanitize_key( $g['pp_tipo_servicio'] ?? '' );
 		if ( '' === $tipo || ! isset( $tipos[ $tipo ] ) ) {
+			// El tipo de listado permite UNA sola tipología → se asume por
+			// defecto sin preguntar (se inyecta en el POST para que el
+			// guardado de Core la persista con el menú).
+			if ( 1 === count( $permitidos ) ) {
+				$_POST['_menu'][ $i ]['pp_tipo_servicio'] = $permitidos[0];
+				continue;
+			}
 			return new WP_Error( 'pp_tipo_servicio', 'Selecciona el "Tipo de servicio" en cada menú de servicios.' );
+		}
+		// Candado: la tipología debe estar permitida para este tipo de listado.
+		if ( ! in_array( $tipo, $permitidos, true ) ) {
+			$nombre = isset( $tipos[ $tipo ]['nombre'] ) ? $tipos[ $tipo ]['nombre'] : $tipo;
+			return new WP_Error( 'pp_tipo_servicio', sprintf( 'La tipología "%s" no está disponible para este tipo de listado.', $nombre ) );
 		}
 	}
 	return $valido;
@@ -656,15 +808,28 @@ function pp_serv_assets_submit() {
 		wp_enqueue_style( 'pp-serv-menu', PP_PERS_URL . 'css/pp-serv-menu.css', array(), filemtime( $css ) );
 	}
 
-	// Tipos guardados por menú (para prellenar el select al EDITAR).
-	$guardados = array();
+	// Tipos guardados por menú (para prellenar el select al EDITAR) + tipo
+	// de listado actual (en edición viene del meta; al crear lo pone el JS
+	// leyendo el hidden #listing_type que llena el selector de tipos).
+	$guardados     = array();
+	$dom_valores   = array();
+	$aviso_valores = array();
+	$tipo_listado  = '';
 	if ( isset( $_GET['action'], $_GET['listing_id'] ) && 'edit' === $_GET['action'] ) {
-		$menu = get_post_meta( absint( $_GET['listing_id'] ), '_menu', true );
+		$listing_id   = absint( $_GET['listing_id'] );
+		$tipo_listado = sanitize_key( (string) get_post_meta( $listing_id, '_listing_type', true ) );
+		$menu         = get_post_meta( $listing_id, '_menu', true );
 		if ( is_array( $menu ) ) {
 			$ix = 0;
 			foreach ( $menu as $g ) {
 				if ( is_array( $g ) && isset( $g['pp_tipo_servicio'] ) ) {
 					$guardados[ $ix ] = sanitize_key( $g['pp_tipo_servicio'] );
+				}
+				if ( is_array( $g ) && isset( $g['pp_dom_valor'] ) && '' !== $g['pp_dom_valor'] ) {
+					$dom_valores[ $ix ] = (string) $g['pp_dom_valor'];
+				}
+				if ( is_array( $g ) && isset( $g['pp_aviso'] ) && '' !== $g['pp_aviso'] ) {
+					$aviso_valores[ $ix ] = (string) $g['pp_aviso'];
 				}
 				$ix++;
 			}
@@ -673,13 +838,26 @@ function pp_serv_assets_submit() {
 
 	$tipos = array();
 	foreach ( pp_serv_tipos() as $slug => $t ) {
-		$tipos[] = array( 'slug' => $slug, 'nombre' => $t['nombre'], 'mascota' => $t['mascota'] );
+		$tipos[] = array( 'slug' => $slug, 'nombre' => $t['nombre'], 'mascota' => $t['mascota'], 'domicilio' => $t['domicilio'] );
+	}
+
+	// Tipologías permitidas por tipo de listado (solo entradas explícitas;
+	// un tipo de listado ausente = todas, lo resuelve el JS).
+	$por_listado = array();
+	foreach ( pp_serv_tipos_por_listado() as $lt => $lista ) {
+		if ( is_array( $lista ) && $lista ) {
+			$por_listado[ sanitize_key( $lt ) ] = array_values( array_map( 'sanitize_key', $lista ) );
+		}
 	}
 
 	wp_localize_script( 'pp-serv-menu', 'PP_SERV_MENU', array(
-		'tipos'     => $tipos,
-		'guardados' => $guardados ? $guardados : new stdClass(),
-		'msgFalta'  => 'Selecciona el "Tipo de servicio" en cada menú de servicios.',
+		'tipos'       => $tipos,
+		'guardados'   => $guardados ? $guardados : new stdClass(),
+		'domValores'  => $dom_valores ? $dom_valores : new stdClass(),
+		'avisoValores'=> $aviso_valores ? $aviso_valores : new stdClass(),
+		'porListado'  => $por_listado ? $por_listado : new stdClass(),
+		'tipoListado' => $tipo_listado,
+		'msgFalta'    => 'Selecciona el "Tipo de servicio" en cada menú de servicios.',
 	) );
 }
 
@@ -779,6 +957,8 @@ function pp_serv_aviso_para_peticion( $listing_id ) {
 	// listeo_get_bookable_services / los checkboxes del popup).
 	$menu              = get_post_meta( $listing_id, '_menu', true );
 	$tipo_por_indice   = array();
+	$aviso_por_indice  = array(); // aviso RESUELTO por servicio: menú > tipología
+	$avisos_de_menus   = array(); // avisos resueltos distintos entre los menús
 	$tipos_del_listado = array();
 	if ( is_array( $menu ) ) {
 		$ix = 0;
@@ -787,15 +967,26 @@ function pp_serv_aviso_para_peticion( $listing_id ) {
 				continue;
 			}
 			$tipo_g = sanitize_key( $g['pp_tipo_servicio'] ?? '' );
+			// Aviso PROPIO del menú (todos sus servicios lo comparten); si el
+			// menú no define, cae al de su tipología (si esta define).
+			$aviso_menu = ( isset( $g['pp_aviso'] ) && '' !== $g['pp_aviso'] && is_numeric( $g['pp_aviso'] ) )
+				? max( 0, (int) $g['pp_aviso'] )
+				: ( ( $tipo_g && isset( $tipos[ $tipo_g ] ) && '' !== $tipos[ $tipo_g ]['aviso'] ) ? (int) $tipos[ $tipo_g ]['aviso'] : null );
+			$tiene_reservables = false;
 			foreach ( $g['menu_elements'] as $el ) {
 				if ( ! is_array( $el ) || ! isset( $el['bookable'] ) ) {
 					continue;
 				}
-				$tipo_por_indice[ $ix ] = $tipo_g;
+				$tiene_reservables      = true;
+				$tipo_por_indice[ $ix ]  = $tipo_g;
+				$aviso_por_indice[ $ix ] = $aviso_menu;
 				if ( $tipo_g ) {
 					$tipos_del_listado[ $tipo_g ] = 1;
 				}
 				$ix++;
+			}
+			if ( $tiene_reservables ) {
+				$avisos_de_menus[ null === $aviso_menu ? 'null' : (string) $aviso_menu ] = 1;
 			}
 		}
 	}
@@ -812,20 +1003,19 @@ function pp_serv_aviso_para_peticion( $listing_id ) {
 		if ( ! is_scalar( $ix_sel ) ) {
 			continue;
 		}
-		$tipo_slug = $tipo_por_indice[ (int) $ix_sel ] ?? '';
-		if ( $tipo_slug && isset( $tipos[ $tipo_slug ] ) && '' !== $tipos[ $tipo_slug ]['aviso'] ) {
-			$avisos[] = (int) $tipos[ $tipo_slug ]['aviso'];
+		// Precedencia por servicio: aviso del MENÚ > aviso de la tipología.
+		$aviso_sel = $aviso_por_indice[ (int) $ix_sel ] ?? null;
+		if ( null !== $aviso_sel ) {
+			$avisos[] = (int) $aviso_sel;
 		}
 	}
 	if ( $avisos ) {
 		$out = max( $avisos ); // el más estricto de los servicios elegidos
-	} elseif ( 1 === count( $tipos_del_listado ) ) {
-		// 2) Listado mono-tipo: su aviso aplica también antes de elegir servicio.
-		$unico = array_keys( $tipos_del_listado );
-		$unico = $unico[0];
-		if ( isset( $tipos[ $unico ] ) && '' !== $tipos[ $unico ]['aviso'] ) {
-			$out = (int) $tipos[ $unico ]['aviso'];
-		}
+	} elseif ( 1 === count( $avisos_de_menus ) && ! isset( $avisos_de_menus['null'] ) ) {
+		// 2) TODOS los menús reservables resuelven al MISMO aviso: aplica
+		//    también antes de elegir servicio (vista de horarios).
+		$claves = array_keys( $avisos_de_menus );
+		$out    = (int) $claves[0];
 	}
 
 	if ( null !== $out ) {

@@ -143,9 +143,12 @@ if (function_exists('listeo_core_custom_listing_types')) {
 								<?php } ?>
 
 								<h3><?php echo esc_html($type->name); ?></h3>
-								<!-- <?php if (!empty($type->description)) : ?>
-									<p class="listing-type-description"><?php echo esc_html($type->description); ?></p>
-								<?php endif; ?> -->
+								<?php // PP: descripción del tipo VISIBLE para guiar al usuario sobre
+								// qué puede crear en cada tipo de listado (pedido Miguel 2026-07-06).
+								// Se define al editar el tipo en Listeo Editor → Listing Types.
+								if (!empty($type->description)) : ?>
+									<p class="listing-type-description" style="font-size:13px;color:#7a878b;line-height:1.45;margin:6px 10px 0;"><?php echo esc_html($type->description); ?></p>
+								<?php endif; ?>
 							</a>
 						<?php endforeach; ?>
 						<input type="hidden" id="listing_type" name="_listing_type">
