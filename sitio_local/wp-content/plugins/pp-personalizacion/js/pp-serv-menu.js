@@ -226,10 +226,10 @@
 		   listado → global). Viaja en _menu[i][pp_aviso]. */
 		function avisoHtml(i, val) {
 			return '<div class="fm-input pp-dom-wrap pp-aviso-wrap">' +
-				'<label class="fm-input-label">Antelación mín. (min)</label>' +
+				'<label class="fm-input-label">Antelación mínima (min)</label>' +
 				'<input type="number" class="pp-aviso-menu" name="_menu[' + i + '][pp_aviso]" min="0" step="1" ' +
-					'value="' + esc(val) + '" placeholder="Hereda" ' +
-					'title="Minutos mínimos de anticipación para reservar los servicios de este menú; vacío = hereda la configuración">' +
+					'value="' + esc(val) + '" placeholder="Opcional" ' +
+					'title="Minutos mínimos de anticipación con que se puede reservar este menú. Déjalo vacío para usar la antelación general del servicio o del listado. Ejemplos: 1440 = 1 día, 4320 = 3 días.">' +
 			'</div>';
 		}
 

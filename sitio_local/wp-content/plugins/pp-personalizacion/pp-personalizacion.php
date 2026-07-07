@@ -3,7 +3,7 @@
  * Plugin Name: Personalización Parche
  * Plugin URI:  https://parchepeludo.com
  * Description: Personalizaciones de Parche Peludo sobre Listeo, organizadas por módulos: Mascotas (perfiles de los peludos de cada usuario e integración con las reservas), Servicios y Reservas (próximamente).
- * Version:     2.8.0
+ * Version:     2.8.1
  * Author:      Parche Peludo
  * Text Domain: pp-personalizacion
  *
