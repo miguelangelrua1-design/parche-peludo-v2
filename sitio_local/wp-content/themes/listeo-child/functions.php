@@ -467,6 +467,42 @@ function ppv2_dirfilters_drawer() {
 }
 
 /**
+ * DIRECTORIO (escritorio): botón ✕ en la esquina superior derecha del panel de
+ * filtros. El tema ya trae el conmutador "Mostrar/Ocultar Filtros", pero al
+ * estar lejos del panel es fácil perderse; la ✕ da la salida evidente, donde
+ * todo el mundo la busca.
+ *
+ * No reimplementa el cierre: hace clic en el propio `.enable-filters-button` de
+ * Listeo, así que el estado (clases, texto del botón, cajón móvil) queda
+ * consistente sin duplicar lógica. En móvil no cambia nada: el CSS solo muestra
+ * esta ✕ a partir de 992px, porque el cajón ya tiene la suya en su cabecera.
+ */
+add_action( 'wp_footer', 'ppv2_dirfilters_close_desktop', 124 );
+function ppv2_dirfilters_close_desktop() {
+	if ( ! ppv2_is_listings_archive() ) { return; }
+	?>
+	<script>
+	(function () {
+		var inner = document.querySelector('.full-page-sidebar .full-page-sidebar-inner')
+			|| document.querySelector('.full-page-sidebar');
+		if ( ! inner || inner.querySelector('.pp-dirfilters-close-desktop') ) { return; }
+
+		var btn = document.createElement('button');
+		btn.type = 'button';
+		btn.className = 'pp-dirfilters-close-desktop';
+		btn.setAttribute('aria-label', 'Cerrar filtros');
+		btn.innerHTML = '&times;';
+		btn.addEventListener('click', function () {
+			var toggle = document.querySelector('.enable-filters-button');
+			if ( toggle ) { toggle.click(); }
+		});
+		inner.insertBefore(btn, inner.firstChild);
+	})();
+	</script>
+	<?php
+}
+
+/**
  * DIRECTORIO: el filtro de CATEGORÍAS deja de ser un desplegable flotante
  * (bootstrap-select) y pasa a ser un ACORDEÓN dentro de la propia barra de
  * filtros, con el mismo lenguaje visual que el árbol de categorías de la Tienda.
@@ -588,27 +624,6 @@ function ppv2_dirfilters_categorias_acordeon() {
 
 		field.classList.add('pp-dircats-ready'); // el CSS oculta el bootstrap-select
 		field.appendChild(caja);
-
-		// 2b) Ubicación por ENCIMA de Categorías. Se mueve junto con su control de
-		//     radio ("Amplitud radio búsqueda"), que no significa nada separado de
-		//     la ubicación. OJO: Listeo repite el mismo id en la fila y en la
-		//     columna interior, así que hay que quedarse con la que es `.row`.
-		var form = sel.closest('form');
-		function fila( id ) {
-			return Array.prototype.filter.call(
-				form.querySelectorAll('[id="' + id + '"]'),
-				function ( e ) { return e.classList.contains('row'); }
-			)[0] || null;
-		}
-		var filaCat = fila('listeo-search-form_tax-listing_category');
-		var filaLoc = fila('listeo-search-form_location_search');
-		var filaRadio = fila('listeo-search-form_search_radius');
-		if ( filaCat && filaLoc && filaLoc.parentNode === filaCat.parentNode ) {
-			filaCat.parentNode.insertBefore(filaLoc, filaCat);
-			if ( filaRadio && filaRadio.parentNode === filaCat.parentNode ) {
-				filaCat.parentNode.insertBefore(filaRadio, filaCat);
-			}
-		}
 
 		// 3) Estado.
 		// La madre solo queda marcada cuando TODAS sus hijas lo están; si hay unas
