@@ -9647,9 +9647,10 @@ a.listeo_core-unbookmark-it:focus i {
   .full-page-sidebar .pp-dirfilters-close-desktop {
     display: flex;
     position: absolute;
-    /* Separada del borde: el panel tiene su propia barra de desplazamiento
-       pegada a la derecha y la ✕ se montaba encima. */
-    top: 2px;
+    /* Centrada con el título "Filtrar en Directorio" (su centro cae a 42px del
+       borde del panel; 42 - 34/2 = 25). Separada del borde derecho porque el
+       panel tiene su propia barra de desplazamiento y la ✕ se montaba encima. */
+    top: 25px;
     right: 10px;
     z-index: 3;
     width: 34px;
