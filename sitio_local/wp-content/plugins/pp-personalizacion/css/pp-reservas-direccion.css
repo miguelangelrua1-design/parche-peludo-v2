@@ -1,0 +1,117 @@
+/**
+ * Módulo Reservas — Dirección en la modal de reserva y en Mi Perfil.
+ * Se encola solo en fichas de listado y en la página Mi Perfil.
+ */
+
+/* ── Resumen de la dirección guardada (modal de reserva) ── */
+.ppv2-lbp-addr-resumen-caja {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #E7F4F5;                 /* teal-mist de la marca */
+  border: 1px solid rgba(121, 200, 208, .45);
+  border-left: 4px solid #79C8D0;      /* teal Parche */
+  border-radius: 8px;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+}
+.ppv2-lbp-addr-resumen-texto {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ppv2-lbp-addr-resumen-texto strong {
+  font-size: 13px;
+  color: #24606A;
+}
+.ppv2-lbp-addr-resumen-texto span {
+  font-size: 14px;
+  color: #1E5D64;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ppv2-lbp-addr-editar {
+  flex: 0 0 auto;
+  border: 1px solid #79C8D0;
+  background: #fff;
+  color: #5EB2BB;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.ppv2-lbp-addr-editar:hover {
+  background: #79C8D0;
+  color: #fff;
+}
+.ppv2-lbp-addr-campos[hidden] { display: none; }
+
+/* Selects de la modal (departamento/ciudad): mismo recuadro que los inputs.
+   (El tema hijo ya trae una regla equivalente; se repite aquí para que el
+   plugin sea autosuficiente en producción.) */
+.lbp-modal .lbp-info-form select {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  height: auto;
+  padding: 10px 14px;
+  margin: 0 0 18px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+.lbp-modal .lbp-info-form select:focus { border-color: #66676b; }
+
+/* ── Sección "Dirección" de Mi Perfil ── */
+.pp-perfil-direccion .dashboard-list-box-static { padding: 30px; }
+.pp-perfil-direccion-desc { color: #6B7280; margin: 0 0 18px; }
+.pp-perfil-dir-fila {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.pp-perfil-dir-campo {
+  flex: 1 1 260px;
+  min-width: 0;
+  margin-bottom: 18px;
+}
+.pp-perfil-dir-campo label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+}
+.pp-perfil-dir-campo input,
+.pp-perfil-dir-campo select {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+  margin: 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background: #fff;
+  box-sizing: border-box;
+}
+.pp-perfil-dir-guardar {
+  background: #79C8D0 !important;
+  border-color: #79C8D0 !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+}
+.pp-perfil-dir-guardar:hover {
+  background: #5EB2BB !important;
+  border-color: #5EB2BB !important;
+}
