@@ -4037,13 +4037,19 @@ body.single-listing #listing-nav {
   body.single-listing .ppv2-bottom-sheet.is-open .ppv2-bottom-sheet__backdrop {
     opacity: 1 !important;
   }
-  /* Panel: 80vh fijo, slide up animado */
+  /* Panel: alto según contenido, tope 88dvh, slide up animado.
+     `vh` en móvil mide el viewport SIN las barras del navegador, así que 95vh
+     era más alto que el área visible y, como el panel se ancla abajo, la
+     cabecera (título + ✕) quedaba fuera de pantalla por arriba. `dvh` sigue a
+     la barra del navegador; el `min(…, 100%)` lo acota además al contenedor. */
   body.single-listing .ppv2-bottom-sheet__panel {
     position: relative !important;
     width: 100% !important;
     height: auto !important;          /* el panel se ajusta al contenido… */
-    max-height: 95vh !important;      /* …hasta 95vh (antes fijo en 80vh) */
+    max-height: 88vh !important;      /* …fallback para navegadores sin dvh */
+    max-height: min(88dvh, 100%) !important;
     min-height: 30vh !important;
+    min-height: 30dvh !important;
     background: var(--paper) !important;
     border-radius: 24px 24px 0 0 !important;
     box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.18) !important;
@@ -6200,6 +6206,26 @@ body.ppv2-listings #header .header-widget .user-menu {
 .full-page-sidebar #listeo_core-search-form .bootstrap-select > button.dropdown-toggle:focus {
   outline: none !important;
 }
+/* Flecha (chevron) del select: el tema padre la ancla con `top:50%` +
+   `margin-top:-2px`, pero `top` posiciona el BORDE SUPERIOR del icono, no su
+   centro → con nuestro input de 42px quedaba unos 5px por debajo de la mitad.
+   La centramos de verdad con translateY(-50%) y la alineamos con el padding
+   horizontal del input (14px). El estado abierto rota 180° y debe conservar
+   el centrado, por eso se repite la traslación en la regla `.open`. */
+.full-page-sidebar #listeo_core-search-form .bootstrap-select .dropdown-toggle .caret {
+  top: 50% !important;
+  right: 14px !important;
+  margin-top: 0 !important;
+  line-height: 1 !important;
+  transform: translateY(-50%) !important;
+}
+.full-page-sidebar #listeo_core-search-form .bootstrap-select.open .dropdown-toggle .caret {
+  transform: translateY(-50%) rotate(180deg) !important;
+}
+.full-page-sidebar #listeo_core-search-form .bootstrap-select .dropdown-toggle .caret::after {
+  display: block !important;
+  line-height: 1 !important;
+}
 
 /* Icono de ubicación: a la DERECHA y gris (como el mockup). */
 .full-page-sidebar #listeo_core-search-form .input-with-icon.location { position: relative; }
@@ -6363,7 +6389,17 @@ body.ppv2-listings #header .header-widget .user-menu {
   font-size: 11px !important;
 }
 
-/* --- "Más Filtros" --- */
+/* --- "Más Filtros" ---
+   Listeo imprime SIEMPRE el enlace "Más Filtros", aunque dentro solo haya el
+   aviso "Por favor elija una categoría para mostrar filtros": los checkboxes de
+   características llegan por AJAX cuando se elige categoría. Con `:has()` (que
+   se reevalúa en vivo) ocultamos el enlace y su caja mientras no haya ningún
+   checkbox real dentro; en cuanto el AJAX los inyecta, reaparecen solos. */
+.full-page-sidebar #listeo_core-search-form .more-search-options-trigger:not(:has(+ .more-search-options input)),
+.full-page-sidebar #listeo_core-search-form .more-search-options:not(:has(input)) {
+  display: none !important;
+}
+
 .full-page-sidebar #listeo_core-search-form .more-search-options-trigger {
   display: flex !important;
   align-items: center !important;
@@ -6376,6 +6412,229 @@ body.ppv2-listings #header .header-widget .user-menu {
   transition: color .15s ease;
 }
 .full-page-sidebar #listeo_core-search-form .more-search-options-trigger:hover { color: #79C8D0 !important; }
+
+/* ============================================================================
+   DIRECTORIO — filtro de CATEGORÍAS como ACORDEÓN (reemplaza al desplegable
+   bootstrap-select). Lo construye ppv2_dirfilters_categorias_acordeon() en
+   functions.php a partir del <select multiple> nativo, que queda oculto pero
+   sigue siendo el que envía la búsqueda.
+   Mismo lenguaje visual que el árbol de categorías de la Tienda: casilla teal,
+   chevron de plegado y filas de 36px. Sirve igual en escritorio y en el cajón
+   de filtros de móvil, porque ambos son el mismo formulario.
+   ============================================================================ */
+/* El widget del desplegable desaparece; el <select> sigue en el DOM. */
+.full-page-sidebar #listeo_core-search-form .pp-dircats-ready .bootstrap-select {
+  display: none !important;
+}
+/* Cabecera plegable. El bloque arranca CERRADO (el JS pone `hidden` al cuerpo);
+   solo se ve esta fila con el nombre y, si hay filtro activo, un contador. */
+.full-page-sidebar #listeo_core-search-form .pp-dircats-head {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding: 4px 0 !important;
+  margin: 0 0 8px !important;
+  border: 0 !important;
+  background: transparent !important;
+  text-align: left !important;
+  cursor: pointer;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircats-title {
+  flex: 1 1 auto !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #1F2937 !important;
+  margin: 0 !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircats-head:hover .pp-dircats-title { color: #79C8D0 !important; }
+/* Contador: la única pista de que hay categorías filtradas con el bloque cerrado. */
+.full-page-sidebar #listeo_core-search-form .pp-dircats-count {
+  flex: 0 0 auto !important;
+  min-width: 20px !important;
+  padding: 1px 7px !important;
+  border-radius: 999px !important;
+  background: #79C8D0 !important;
+  color: #fff !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1.5 !important;
+  text-align: center !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircats-count[hidden] { display: none !important; }
+.full-page-sidebar #listeo_core-search-form .pp-dircats-head::after {
+  content: "" !important;
+  flex: 0 0 auto !important;
+  width: 16px !important;
+  height: 16px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235A6B70' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat !important;
+  transition: transform .25s ease;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircats.pp-open .pp-dircats-head::after {
+  transform: rotate(180deg);
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircats-body[hidden] { display: none !important; }
+
+/* --- Etiquetas de lo seleccionado (quitables) + "Limpiar" --- */
+.full-page-sidebar #listeo_core-search-form .pp-dircats-chips {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin: 0 0 10px !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircats-chips[hidden] { display: none !important; }
+.full-page-sidebar #listeo_core-search-form .pp-dircat-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  max-width: 100% !important;
+  padding: 4px 8px 4px 10px !important;
+  border: 1px solid rgba(121, 200, 208, .45) !important;
+  border-radius: 999px !important;
+  background: var(--teal-mist, #E7F4F5) !important;
+  color: #24606A !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-chip > span {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-chip > i {
+  font-style: normal !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  color: #5EB2BB !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-chip:hover {
+  background: #D3EBEE !important;
+  border-color: #79C8D0 !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircats-clear {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 4px 2px !important;
+  color: #6B7280 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-decoration: underline !important;
+  cursor: pointer;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircats-clear:hover { color: #79C8D0 !important; }
+
+/* --- Lista --- */
+.full-page-sidebar #listeo_core-search-form .pp-dircats-list,
+.full-page-sidebar #listeo_core-search-form .pp-dircat-children {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-children[hidden] { display: none !important; }
+.full-page-sidebar #listeo_core-search-form .pp-dircat-children { padding-left: 26px !important; }
+.full-page-sidebar #listeo_core-search-form .pp-dircat-children > li { margin: 0 !important; }
+
+.full-page-sidebar #listeo_core-search-form .pp-dircat-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-height: 36px !important;
+}
+/* Casilla + texto: el <label> entero es zona de clic. */
+.full-page-sidebar #listeo_core-search-form .pp-dircat-check {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  min-height: 32px !important;
+  margin: 0 !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+  color: #4B5563 !important;
+  cursor: pointer;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-check.is-parent {
+  font-weight: 600 !important;
+  color: #1F2937 !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-check > span {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+/* Casilla propia (la nativa se repinta con appearance:none). El estado
+   intermedio (madre con solo algunas hijas marcadas) muestra un guion. */
+.full-page-sidebar #listeo_core-search-form .pp-dircat-check > input[type="checkbox"] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  flex: 0 0 auto !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  border: 1.5px solid #D1D5DB !important;
+  border-radius: 5px !important;
+  background: #fff !important;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-check:hover > input[type="checkbox"] {
+  border-color: #79C8D0 !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-check > input[type="checkbox"]:checked,
+.full-page-sidebar #listeo_core-search-form .pp-dircat-check > input[type="checkbox"]:indeterminate {
+  background-color: #79C8D0 !important;
+  border-color: #79C8D0 !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-check > input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") !important;
+  background-size: 12px !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-check > input[type="checkbox"]:indeterminate {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3C/svg%3E") !important;
+  background-size: 12px !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-check > input[type="checkbox"]:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(121, 200, 208, .28) !important;
+}
+
+/* Chevron de plegado (solo en madres con hijas) */
+.full-page-sidebar #listeo_core-search-form .pp-dircat-toggle {
+  flex: 0 0 auto !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  transition: background .15s ease;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat-toggle:hover { background: var(--teal-mist, #E7F4F5) !important; }
+.full-page-sidebar #listeo_core-search-form .pp-dircat-toggle::before {
+  content: "" !important;
+  width: 16px !important;
+  height: 16px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E") center/12px no-repeat !important;
+  transition: transform .18s ease;
+}
+.full-page-sidebar #listeo_core-search-form .pp-dircat.pp-open > .pp-dircat-row .pp-dircat-toggle::before {
+  transform: rotate(90deg);
+}
 
 /* ============================================================================
    "Mi Cuenta" (.user-menu): en vez del desplegable por HOVER, un PANEL
