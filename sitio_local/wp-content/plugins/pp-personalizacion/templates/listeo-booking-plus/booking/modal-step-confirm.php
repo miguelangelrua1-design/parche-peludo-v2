@@ -209,6 +209,22 @@ $addr_required = function ($key) use ($address_required) {
 
             <div class="ppv2-lbp-addr-campos" id="ppv2-lbp-addr-campos"<?php if ($ppv2_tiene_direccion) echo ' hidden'; ?>>
 
+                <?php if ($ppv2_tiene_direccion) : ?>
+                    <?php
+                    /*
+                     * "Cancelar" solo existe cuando hay un resumen al cual
+                     * volver. No es un simple colapso: el JS RESTAURA los
+                     * valores guardados antes de cerrar — si colapsara sin
+                     * restaurar, el resumen mostraría la dirección vieja
+                     * mientras el formulario enviaría la editada.
+                     */
+                    ?>
+                    <div class="ppv2-lbp-addr-campos-head">
+                        <span><?php echo esc_html__('Editar dirección', 'listeo-child'); ?></span>
+                        <button type="button" class="ppv2-lbp-addr-cancelar" id="ppv2-lbp-addr-cancelar"><?php echo esc_html__('Cancelar', 'listeo-child'); ?></button>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($addr_visible('billing_country') && function_exists('WC') && WC() && WC()->countries) :
                     $country_required = $addr_required('billing_country');
                 ?>

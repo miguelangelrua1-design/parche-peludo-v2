@@ -115,10 +115,26 @@
 			// Modal de reserva (existe solo en fichas con reserva activa).
 			vincular( 'lbp-billing_state', 'lbp-billing_city' );
 
-			// Botón Editar del resumen de dirección de la modal.
+			// Botones Editar/Cancelar del resumen de dirección de la modal.
 			var editar = document.getElementById( 'ppv2-lbp-addr-editar' );
+			var cancelar = document.getElementById( 'ppv2-lbp-addr-cancelar' );
 			var resumen = document.getElementById( 'ppv2-lbp-addr-resumen' );
 			var campos = document.getElementById( 'ppv2-lbp-addr-campos' );
+
+			// Los valores GUARDADOS (los que describe el resumen). Se capturan
+			// una sola vez al cargar: son los que el PHP prellenó desde el
+			// perfil del usuario.
+			function leerDireccion() {
+				var ids = [ 'lbp-billing_state', 'lbp-billing_city', 'lbp-billing_address_1', 'lbp-billing_address_2' ];
+				var out = {};
+				ids.forEach( function ( id ) {
+					var el = document.getElementById( id );
+					out[ id ] = el ? el.value : '';
+				} );
+				return out;
+			}
+			var guardada = ( resumen && campos ) ? leerDireccion() : null;
+
 			if ( editar && campos ) {
 				editar.addEventListener( 'click', function () {
 					campos.hidden = false;
@@ -126,6 +142,29 @@
 					editar.setAttribute( 'aria-expanded', 'true' );
 					var primero = campos.querySelector( 'select, input:not([type=hidden])' );
 					if ( primero ) { primero.focus(); }
+				} );
+			}
+			if ( cancelar && campos && guardada ) {
+				cancelar.addEventListener( 'click', function () {
+					// Restaurar ANTES de cerrar: un colapso a secas dejaría el
+					// resumen mostrando una dirección distinta de la que
+					// viajaría en la reserva.
+					var st = document.getElementById( 'lbp-billing_state' );
+					if ( st && st.value !== guardada[ 'lbp-billing_state' ] ) {
+						st.value = guardada[ 'lbp-billing_state' ];
+						// Reconstruye el desplegable de ciudades del depto guardado.
+						st.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+					}
+					[ 'lbp-billing_city', 'lbp-billing_address_1', 'lbp-billing_address_2' ].forEach( function ( id ) {
+						var el = document.getElementById( id );
+						if ( el ) { el.value = guardada[ id ]; }
+					} );
+					campos.hidden = true;
+					if ( resumen ) { resumen.hidden = false; }
+					if ( editar ) {
+						editar.setAttribute( 'aria-expanded', 'false' );
+						editar.focus();
+					}
 				} );
 			}
 

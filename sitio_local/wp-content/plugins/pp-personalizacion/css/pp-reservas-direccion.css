@@ -115,3 +115,30 @@
   background: #5EB2BB !important;
   border-color: #5EB2BB !important;
 }
+
+/* Encabezado del bloque de edición: título pequeño + "Cancelar" (vuelve al
+   resumen restaurando los valores guardados; lo hace el JS). */
+.ppv2-lbp-addr-campos-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+.ppv2-lbp-addr-campos-head > span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #24606A;
+}
+.ppv2-lbp-addr-cancelar {
+  border: 0;
+  background: transparent;
+  padding: 4px 2px;
+  color: #6B7280;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color .15s ease;
+}
+.ppv2-lbp-addr-cancelar:hover { color: #5EB2BB; }
