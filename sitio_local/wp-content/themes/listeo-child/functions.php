@@ -3653,3 +3653,46 @@ function pp_tab_ficha_tecnica_contenido() {
  * pa_etapa-de-vida / pa_tipo-de-alimento / pa_peso los asigna el publicador
  * del catálogo (Laika). No hay código de filtrado propio.
  * ========================================================================= */
+
+/* =========================================================================
+ * CHECKOUT — Departamento antes que Ciudad + Ciudad como desplegable
+ * =========================================================================
+ * El checkout es el de BLOQUES de WooCommerce (React), así que los filtros
+ * clásicos de campos no aplican. Se usan los dos mecanismos que el bloque SÍ
+ * respeta:
+ *
+ * 1) Orden: prioridades del "locale" del país (woocommerce_get_country_locale).
+ *    Departamento (state) pasa a prioridad 65, delante de Ciudad (70, la de
+ *    fábrica). Aplica igual al checkout clásico y a Mi Cuenta → Direcciones,
+ *    lo cual mantiene los formularios coherentes entre sí.
+ *
+ * 2) Ciudad desplegable: JS que superpone un <select> dependiente del
+ *    departamento sobre el input nativo de React (js/ppv2-checkout-ciudad.js
+ *    + dataset js/ppv2-ciudades-co.js: 1.123 municipios de los 33
+ *    departamentos, generado de api-colombia.com y agrupado por el código
+ *    CO-XXX que usa WooCommerce). El input original NUNCA se quita del DOM:
+ *    sigue siendo el que React lee y el que viaja al servidor; el select solo
+ *    escribe en él. Si el JS fallara por cualquier motivo, el campo vuelve a
+ *    ser el input de texto de siempre y el checkout sigue operando.
+ *
+ * Performance: los dos scripts (≈18 KB en total, ≈6 KB comprimidos) se
+ * encolan SOLO en la página del checkout, en el footer. Ninguna otra página
+ * los carga.
+ * ========================================================================= */
+add_filter( 'woocommerce_get_country_locale', 'ppv2_checkout_departamento_primero' );
+function ppv2_checkout_departamento_primero( $locale ) {
+	if ( ! isset( $locale['CO'] ) ) { $locale['CO'] = array(); }
+	if ( ! isset( $locale['CO']['state'] ) ) { $locale['CO']['state'] = array(); }
+	$locale['CO']['state']['priority'] = 65; // Ciudad conserva su 70 de fábrica
+	return $locale;
+}
+
+add_action( 'wp_enqueue_scripts', 'ppv2_checkout_ciudad_scripts' );
+function ppv2_checkout_ciudad_scripts() {
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) { return; }
+	$dir = get_stylesheet_directory();
+	$uri = get_stylesheet_directory_uri();
+	if ( ! file_exists( $dir . '/js/ppv2-ciudades-co.js' ) || ! file_exists( $dir . '/js/ppv2-checkout-ciudad.js' ) ) { return; }
+	wp_enqueue_script( 'ppv2-ciudades-co', $uri . '/js/ppv2-ciudades-co.js', array(), filemtime( $dir . '/js/ppv2-ciudades-co.js' ), true );
+	wp_enqueue_script( 'ppv2-checkout-ciudad', $uri . '/js/ppv2-checkout-ciudad.js', array( 'ppv2-ciudades-co' ), filemtime( $dir . '/js/ppv2-checkout-ciudad.js' ), true );
+}

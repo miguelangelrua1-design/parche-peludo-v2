@@ -9881,3 +9881,42 @@ a.listeo_core-unbookmark-it:focus i {
     body.ppv2-listings .pp-dirfilters-foot.is-loading .pp-dirfilters-count::before { animation: none; }
   }
 }
+
+/* ============================================================================
+   CHECKOUT — Ciudad como desplegable (bloques de WooCommerce)
+   El JS (js/ppv2-checkout-ciudad.js) inserta un select con las clases nativas
+   del bloque dentro de la celda de Ciudad. Mientras ese select esté visible,
+   el input de texto original y su label se ocultan SIN sacarlos del DOM (React
+   los necesita; son los que viajan al servidor). Se usa :has() a propósito:
+   React re-escribe las clases de los nodos que administra en cada re-render,
+   pero no puede deshacer una relación :has() con un nodo que no es suyo.
+   El error de validación del bloque queda visible debajo del select.
+   ============================================================================ */
+.wc-block-components-address-form__city:has(.ppv2-ciudad-wrap:not([hidden])) > label,
+.wc-block-components-address-form__city:has(.ppv2-ciudad-wrap:not([hidden])) > input {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  /* El input del bloque trae transition:all → sin esto, opacity/width se
+     quedan "viajando" hacia su destino y el input se ve superpuesto al select.
+     Ocultar tiene que ser instantáneo. */
+  transition: none !important;
+}
+/* La celda es position:static por defecto; anclar los nodos ocultos a ella. */
+.wc-block-components-address-form__city:has(.ppv2-ciudad-wrap) {
+  position: relative !important;
+}
+/* Placeholder gris mientras no se ha elegido ciudad (imita al input vacío). */
+.ppv2-ciudad-select.ppv2-ciudad-vacia {
+  color: #757575 !important;
+}
+/* La celda de Ciudad (text-input) ya trae margin-top:12px y nuestro wrap, por
+   llevar la clase del select del bloque, añadía otros 12 → la caja quedaba
+   14px más abajo que la de Departamento en la misma fila. Un solo margen. */
+.wc-block-components-address-form__city > .ppv2-ciudad-wrap {
+  margin-top: 0 !important;
+}
