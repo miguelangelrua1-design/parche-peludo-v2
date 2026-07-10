@@ -3683,7 +3683,15 @@ add_filter( 'woocommerce_get_country_locale', 'ppv2_checkout_departamento_primer
 function ppv2_checkout_departamento_primero( $locale ) {
 	if ( ! isset( $locale['CO'] ) ) { $locale['CO'] = array(); }
 	if ( ! isset( $locale['CO']['state'] ) ) { $locale['CO']['state'] = array(); }
-	$locale['CO']['state']['priority'] = 65; // Ciudad conserva su 70 de fábrica
+	if ( ! isset( $locale['CO']['city'] ) ) { $locale['CO']['city'] = array(); }
+	// Orden pedido: Departamento → Ciudad → Dirección. OJO: en el checkout de
+	// BLOQUES address_1 (Dirección) tiene índice 40 (no 50 como el clásico) y
+	// en empate gana el campo definido primero — por eso 30/35, estrictamente
+	// menores. El "+ Añadir apartamento…" (address_2) cuelga de Dirección y se
+	// mueve con ella. En el checkout clásico y Mi Cuenta (address_1 = 50) este
+	// orden da el mismo resultado.
+	$locale['CO']['state']['priority'] = 30;
+	$locale['CO']['city']['priority']  = 35;
 	return $locale;
 }
 
