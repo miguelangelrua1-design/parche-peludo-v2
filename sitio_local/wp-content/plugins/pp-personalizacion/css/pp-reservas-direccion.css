@@ -134,14 +134,14 @@
   border: 0;
   background: transparent;
   padding: 4px 2px;
-  color: #6B7280;
+  color: #E03131;              /* rojo: acción que descarta cambios */
   font-size: 13px;
   font-weight: 600;
   text-decoration: underline;
   cursor: pointer;
   transition: color .15s ease;
 }
-.ppv2-lbp-addr-cancelar:hover { color: #5EB2BB; }
+.ppv2-lbp-addr-cancelar:hover { color: #B02525; }
 
 /* Pie del bloque de edición: "Cancelar" a la derecha, después de los campos
    de dirección y antes del chip de Mascota. Margen negativo: los inputs de
