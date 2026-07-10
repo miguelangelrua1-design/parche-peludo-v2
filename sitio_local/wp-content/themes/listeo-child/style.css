@@ -9910,8 +9910,19 @@ a.listeo_core-unbookmark-it:focus i {
 .wc-block-components-address-form__city:has(.ppv2-ciudad-wrap) {
   position: relative !important;
 }
-/* Placeholder gris mientras no se ha elegido ciudad (imita al input vacío). */
-.ppv2-ciudad-select.ppv2-ciudad-vacia {
+/* Estado VACÍO: la etiqueta hace de placeholder, grande y centrada — el mismo
+   patrón que usan los inputs de texto vacíos del bloque (p. ej. "Dirección").
+   La opción placeholder del select va sin texto y oculta: si llevara texto se
+   pintaba encima de la etiqueta flotante (los <select> no colocan su texto
+   igual que un input y el solape variaba según el navegador). */
+.ppv2-ciudad-wrap .wc-blocks-components-select__label {
+  pointer-events: none !important;   /* el clic pasa directo al select */
+  transition: all 0.2s ease !important;
+}
+.ppv2-ciudad-wrap.ppv2-ciudad-vacia .wc-blocks-components-select__label {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  font-size: 16px !important;
   color: #757575 !important;
 }
 /* La celda de Ciudad (text-input) ya trae margin-top:12px y nuestro wrap, por
@@ -9920,3 +9931,25 @@ a.listeo_core-unbookmark-it:focus i {
 .wc-block-components-address-form__city > .ppv2-ciudad-wrap {
   margin-top: 0 !important;
 }
+
+/* ============================================================================
+   PANEL DE CONTROL — avisos informativos en color de marca
+   Los avisos azules de Listeo (.notification.notice: fondo #E9F7FE y texto
+   #3184ae, p. ej. "Sin Listados Publicados" en Cupones) pasan a la paleta
+   teal: fondo menta (tinte de #79C8D0), filete izquierdo teal de marca y
+   texto teal-ink legible (el #79C8D0 puro como texto no da contraste sobre
+   fondo claro). Solo se toca el tipo INFORMATIVO y solo dentro del panel
+   (#dashboard): éxito/alerta/error conservan su semántica de color.
+   ============================================================================ */
+#dashboard .notification.notice,
+#dashboard .notice {
+  background-color: var(--teal-mist, #E7F4F5) !important;
+  border-left: 4px solid var(--teal-parche, #79C8D0) !important;
+}
+#dashboard .notification.notice,
+#dashboard .notification.notice a,
+#dashboard .notification.notice strong,
+#dashboard .notification.notice h4 {
+  color: var(--teal-ink, #24606A) !important;
+}
+#dashboard .notification.notice a { text-decoration: underline; }

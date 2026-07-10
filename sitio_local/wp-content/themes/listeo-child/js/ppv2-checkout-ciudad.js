@@ -102,7 +102,7 @@
 			select.addEventListener( 'change', function () {
 				var inp = document.getElementById( prefijo + '-city' );
 				if ( inp ) { escribirEnInput( inp, select.value ); }
-				select.classList.toggle( 'ppv2-ciudad-vacia', ! select.value );
+				wrap.classList.toggle( 'ppv2-ciudad-vacia', ! select.value );
 			} );
 		}
 
@@ -151,10 +151,15 @@
 
 		var actual = input.value;
 		select.innerHTML = '';
+		// Opción placeholder VACÍA y oculta: con texto se pintaba encima de la
+		// etiqueta flotante. El patrón del bloque para "campo vacío" es que la
+		// ETIQUETA haga de placeholder (grande y centrada — lo pone el CSS con
+		// la clase ppv2-ciudad-vacia en el wrap), igual que sus inputs de texto.
 		var ph = document.createElement( 'option' );
 		ph.value = '';
-		ph.textContent = 'Selecciona tu ciudad';
+		ph.textContent = '';
 		ph.disabled = true;
+		ph.hidden = true;
 		select.appendChild( ph );
 		for ( var i = 0; i < ciudades.length; i++ ) {
 			var op = document.createElement( 'option' );
@@ -172,7 +177,7 @@
 				escribirEnInput( input, '' );
 			}
 		}
-		select.classList.toggle( 'ppv2-ciudad-vacia', ! select.value );
+		wrap.classList.toggle( 'ppv2-ciudad-vacia', ! select.value );
 	}
 
 	// Tras re-render o autofill: el store de React manda; alinear el select.
@@ -187,7 +192,7 @@
 			if ( hay ) {
 				select.value = input.value;
 			}
-			select.classList.toggle( 'ppv2-ciudad-vacia', ! select.value );
+			wrap.classList.toggle( 'ppv2-ciudad-vacia', ! select.value );
 		}
 	}
 
