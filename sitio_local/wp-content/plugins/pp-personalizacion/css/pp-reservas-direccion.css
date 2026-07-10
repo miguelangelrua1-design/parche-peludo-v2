@@ -142,3 +142,12 @@
   transition: color .15s ease;
 }
 .ppv2-lbp-addr-cancelar:hover { color: #5EB2BB; }
+
+/* Pie del bloque de edición: "Cancelar" a la derecha, después de los campos
+   de dirección y antes del chip de Mascota. Margen negativo: los inputs de
+   la fila anterior ya traen margin-bottom de 18px del plugin. */
+.ppv2-lbp-addr-campos-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin: -6px 0 14px;
+}
