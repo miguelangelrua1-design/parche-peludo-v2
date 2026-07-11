@@ -4940,6 +4940,20 @@ body.single-listing #listing-nav {
   #header-container.dashboard #logo {
     order: 0;
   }
+
+  /* 5) Logo del MISMO tamaño que en el header normal (34px de alto, ver
+        .hws-container). Además el tema le fija min-width:260px a la caja
+        #logo (para su franja lateral), lo que dejaba ~25px de aire muerto
+        entre el logo y el buscador cuando va en línea: la caja se ajusta
+        al contenido. */
+  #header-container.dashboard #logo {
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+  #header-container.dashboard #logo img {
+    max-height: 34px !important;
+    width: auto !important;
+  }
 }
 
 /* ------------------------------------------------------------
@@ -5062,13 +5076,14 @@ body.single-listing #listing-nav {
     display: none;
   }
 
-  /* (2) Logo del MISMO tamaño que en el Home (máx 40px alto / 150px ancho).
+  /* (2) Logo un ~25% MÁS GRANDE que en el Home (máx 50px alto / 188px ancho),
+     solo en el header del Panel de Control en móvil.
      Quitamos el margin-top:5px del tema que lo bajaba respecto a los demás. */
   #header-container.dashboard #logo {
     order: 0;
     height: auto !important;
-    max-height: 40px !important;
-    max-width: 150px !important;
+    max-height: 50px !important;
+    max-width: 188px !important;
     margin-top: 0 !important;
   }
 
@@ -5078,11 +5093,169 @@ body.single-listing #listing-nav {
     order: 99 !important;
   }
 }
-/* En pantallas pequeñas el Home reduce el logo a 100px de ancho: igualamos. */
+/* En pantallas pequeñas el Home reduce el logo a 100px de ancho: en el
+   Panel de Control lo dejamos un ~25% más grande (125px). */
 @media (max-width: 480px) {
   #header-container.dashboard #logo {
-    max-width: 100px !important;
+    max-width: 125px !important;
   }
+}
+
+/* ============================================================
+   BUSCADOR EN EL HEADER DEL PANEL DE CONTROL (Mi Cuenta)
+   El formulario lo inyecta js/migrados/ppv2-dashboard-inject-header-search.js
+   (ver functions.php::ppv2_dashboard_inject_header_search). Aquí solo el
+   layout: el header del dashboard no usa .hws-container, así que las reglas
+   del buscador del header normal (atadas a .hws-container) no le aplican.
+   - >1200px: buscador EN LÍNEA ocupando el centro de la barra (flex).
+   - ≤1200px: lupa junto al avatar y panel desplegable bajo el header
+     (el toggle .visible lo maneja custom.js del tema padre; las reglas
+     genéricas de opacity/pointer-events del padre aplican solas).
+   ============================================================ */
+@media (min-width: 1201px) {
+  #header-container.dashboard #header .container {
+    display: flex;
+    align-items: center;
+  }
+  #header-container.dashboard .left-side { flex: 0 0 auto; }
+  #header-container.dashboard .header-search-container {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0 20px 0 10px;   /* pegado al logo/hamburguesa, como en el Home */
+    display: flex;
+    justify-content: center;
+  }
+  #header-container.dashboard .header-search-container form {
+    width: 100%;
+  }
+  /* La píldora gris IGUAL que en las demás páginas. El tema la escala a 0.92
+     también en el Home (de ahí su altura "esbelta" de ~53px): conservamos ese
+     scale para que altura y tipografía queden IDÉNTICAS, y compensamos el
+     ancho declarando la caja un 8.7% más ancha y centrada — al escalar queda
+     exactamente al 100% del espacio disponible (sin el hueco que dejaba). */
+  #header-container.dashboard .header-search-container .main-search-input {
+    width: calc(100% / 0.92) !important;
+    max-width: none !important;
+    margin-left: calc((100% - 100% / 0.92) / 2) !important;
+    margin-right: 0 !important;
+  }
+  /* El bloque derecho vuelve al flujo (el tema lo sube con margen negativo
+     en su layout de bloques; en flex ya no hace falta y descuadra). */
+  #header-container.dashboard .right-side {
+    flex: 0 0 auto;
+    position: static;
+    margin-top: 0 !important;
+  }
+  /* La lupa del toggle es solo para ≤1200px. */
+  #header-container.dashboard .mobile-search-trigger { display: none !important; }
+}
+
+@media (max-width: 1200px) {
+  /* Panel desplegable a lo ancho, colgado del borde inferior del header
+     (réplica del comportamiento del header normal, que lo ancla a
+     .hws-container; aquí lo anclamos a #header). Padding 20px = el mismo
+     del overlay del header normal. */
+  #header-container.dashboard #header { position: relative; }
+  #header-container.dashboard .header-search-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    background: #fff;
+    padding: 20px !important;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    z-index: 999;
+  }
+  /* Desplegable IGUAL al del header normal: allí .main-search-input va
+     TRANSPARENTE sobre el panel blanco (solo el campo de texto lleva el gris
+     #f2f2f2); aquí heredaba el gris del gray-style y se veía una plancha gris
+     detrás de pestañas + campo + botón. */
+  #header-container.dashboard .header-search-container .main-search-input {
+    background: transparent !important;
+  }
+  /* Lupa IGUAL que en el resto del sitio: solo el ícono, SIN caja gris de fondo
+     y con el MISMO tamaño (44×44, como la del header normal en móvil). El
+     display:flex genérico del padre la volvería de bloque y rompería la fila
+     del .header-widget, por eso la forzamos inline-flex. */
+  #header-container.dashboard .mobile-search-trigger {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    vertical-align: middle;
+    flex: 0 0 auto;
+    margin-right: 6px;
+    position: relative;
+  }
+  /* Hamburguesa del MISMO ancho que la del header normal en móvil (44×44;
+     la regla global del dashboard la deja en 50px de ancho). */
+  #header-container.dashboard .mmenu-trigger {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  /* El tema le pone zoom:0.9 al grupo derecho del dashboard, encogiendo un 10%
+     la lupa, el avatar y el carrito respecto al header normal (que no lo lleva).
+     Lo neutralizamos: mismos tamaños que en el resto del sitio. */
+  #header-container.dashboard .right-side {
+    zoom: 1 !important;
+  }
+
+  /* --- Alineación vertical + espaciados IGUALES al header normal ---
+     Referencia (Home a 390px): centros de hamburguesa/logo/lupa/avatar/carrito
+     todos a la misma altura; lupa→avatar 14px, avatar→carrito 18px, carrito→borde 6px.
+     En el dashboard la lupa quedaba 5px alta y el avatar 3px bajo (iban en flujo
+     inline con offsets sueltos): una sola fila flex centra TODO. */
+  #header-container.dashboard .right-side,
+  #header-container.dashboard .header-widget {
+    display: flex !important;
+    align-items: center !important;
+  }
+  #header-container.dashboard .mobile-search-trigger { order: 1; margin: 0 !important; }
+  #header-container.dashboard .header-widget .user-menu {
+    order: 2;
+    width: 41px !important;
+    height: 35px !important;
+    flex: 0 0 auto;
+    top: 0 !important;
+    margin: 0 0 0 14px !important;   /* misma separación lupa→avatar del Home */
+  }
+  /* El avatar anclado dentro de su caja (misma corrección que en el header normal). */
+  #header-container.dashboard .header-widget .user-name span {
+    top: -3px;
+    left: 0;
+    right: auto;
+  }
+  #header-container.dashboard .header-widget .listeo-cart-container {
+    order: 3;
+    flex: 0 0 auto;
+    margin: 0 6px 0 18px !important; /* misma separación avatar→carrito del Home */
+  }
+
+  /* Logo igual al del header normal en móvil (120px de ancho; la regla previa
+     de ≤480px lo dejaba en 100px) y pegado a la hamburguesa (gap ~5px como el
+     Home; la hamburguesa traía 8px de margen). */
+  #header-container.dashboard #logo img { max-width: 120px !important; }
+  #header-container.dashboard .mmenu-trigger { margin: 0 5px 0 0 !important; }
+  /* La CAJA #logo también: la regla de ≤480px la capa a 100px y dejaba la
+     imagen en ~95px aunque el img permita 120px. */
+  #header-container.dashboard #logo { margin: 0 !important; max-width: none !important; }
+}
+
+/* Hueco fantasma de 32px SOBRE el header del Panel en móvil/tablet (y bajo él,
+   el desplegable de búsqueda despegado otros 32px): en ≤991px el tema vuelve
+   este header position:relative (entra al flujo), pero la regla de escritorio
+   ".admin-bar #header-container.fixed { top:32px }" —pensada para la barra de
+   admin en position:fixed— le sigue aplicando y lo empuja 32px hacia abajo.
+   Solo afecta a usuarios con barra de admin (los clientes no la tienen), pero
+   igualamos para que el admin vea lo mismo que el cliente. */
+@media (max-width: 991px) {
+  body.admin-bar #header-container.dashboard.fixed { top: 0 !important; }
 }
 
 /* ============================================================
@@ -5091,6 +5264,22 @@ body.single-listing #listing-nav {
    Iconos: Material Symbols (idénticos al prototipo).
    Escritorio: beneficios 3/fila, servicios 3/fila.  Móvil: 2/fila.
    ============================================================ */
+
+/* H1 accesible pero INVISIBLE (patrón screen-reader-text) — lo usa el widget
+   de encabezado oculto de Home Servicios: la página no tenía H1 (SEO) y no
+   queríamos alterar el diseño. Sale del flujo (absolute) → cero impacto visual. */
+.elementor .pps-sr-only,
+.pps-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
 
 /* Helper de ícono Material (usado en widgets HTML) */
 .pps-mi {
@@ -9953,3 +10142,29 @@ a.listeo_core-unbookmark-it:focus i {
   color: var(--teal-ink, #24606A) !important;
 }
 #dashboard .notification.notice a { text-decoration: underline; }
+
+/* =========================================================================
+   PPV2 TIENDA — Badge "¡Oferta!" en la tarjeta de producto (PLP)
+   El sale flash de WooCommerce (reinsertado vía hooks en content-product.php
+   2026-07-10) se posiciona como pill sobre la esquina de la imagen. Scoped a
+   .pp-product-card para no tocar el .onsale de otras vistas del tema.
+   ========================================================================= */
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-media .onsale {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: auto;
+  z-index: 3;
+  background: var(--teal-ink, #24606A);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  margin: 0;
+  min-height: 0;
+  min-width: 0;
+}
