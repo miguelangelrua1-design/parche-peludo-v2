@@ -1255,6 +1255,65 @@ function ppv2_checkout_ciudad_scripts() {
 }
 
 /* =========================================================================
+ * LANDINGS ELEMENTOR — SEO y H1 por CÓDIGO (revisión par 2026-07-11)
+ * =========================================================================
+ * Se resuelve por filtros —y no editando Rank Math/Elementor en cada entorno—
+ * porque: (a) los IDs de página DIFIEREN entre local y producción (portada
+ * 1555/1568, tienda 1610/1575, servicios 1618/1584): aquí se identifica por
+ * SLUG / is_front_page, robusto; (b) evita editar el editor de Elementor en
+ * producción. Los títulos/descripciones actúan como DEFAULT: si un día se pone
+ * un título propio en la UI de Rank Math (meta rank_math_title/description), ese
+ * gana — el filtro solo rellena cuando el meta está vacío. Así sigue siendo
+ * administrable.
+ * ========================================================================= */
+function ppv2_landing_key() {
+	if ( is_admin() ) { return ''; }
+	if ( is_front_page() ) { return 'home'; }
+	if ( is_page( 'home-tienda' ) ) { return 'tienda'; }
+	if ( is_page( 'home-servicios' ) ) { return 'servicios'; }
+	return '';
+}
+add_filter( 'rank_math/frontend/title', 'ppv2_landing_seo_title', 20 );
+function ppv2_landing_seo_title( $title ) {
+	$k = ppv2_landing_key();
+	if ( ! $k ) { return $title; }
+	// Respeta un título propio puesto en Rank Math (administrable).
+	if ( '' !== (string) get_post_meta( get_queried_object_id(), 'rank_math_title', true ) ) { return $title; }
+	$map = array(
+		'home'      => 'Parche Peludo | Cuidado profesional para tu mascota a domicilio',
+		'tienda'    => 'Tienda para mascotas: juguetes, snacks y accesorios | Parche Peludo',
+		'servicios' => 'Servicios para mascotas a domicilio | Parche Peludo',
+	);
+	return $map[ $k ];
+}
+add_filter( 'rank_math/frontend/description', 'ppv2_landing_seo_desc', 20 );
+function ppv2_landing_seo_desc( $desc ) {
+	$k = ppv2_landing_key();
+	if ( ! $k ) { return $desc; }
+	if ( '' !== (string) get_post_meta( get_queried_object_id(), 'rank_math_description', true ) ) { return $desc; }
+	$map = array(
+		'home'      => 'Peluquería, adiestramiento, paseos y cuidadores a domicilio, más tienda para tu peludo. Profesionales verificados y pago seguro en Colombia.',
+		'tienda'    => 'Todo lo que tu peludo ama: juguetes, snacks, higiene, ropa y accesorios para perros y gatos, con ofertas semanales y envío a domicilio.',
+		'servicios' => 'Peluquería y baño, adiestramiento, paseos, cuidadores, fotografía y repostería canina. Profesionales verificados cerca de ti, con reserva en línea.',
+	);
+	return $map[ $k ];
+}
+
+/**
+ * Home Servicios no tenía H1 (SEO). Añadimos uno invisible (patrón screen-reader,
+ * clase .pps-sr-only en style.css) SOLO si el contenido renderizado no trae ya un
+ * H1 — así donde ya exista (p. ej. como widget de Elementor) NO se duplica.
+ */
+add_filter( 'the_content', 'ppv2_servicios_h1_seo', 20 );
+function ppv2_servicios_h1_seo( $content ) {
+	if ( is_admin() || ! in_the_loop() || ! is_main_query() || ! is_page( 'home-servicios' ) ) {
+		return $content;
+	}
+	if ( false !== stripos( $content, '<h1' ) ) { return $content; }
+	return '<h1 class="pps-sr-only">Servicios para mascotas a domicilio</h1>' . $content;
+}
+
+/* =========================================================================
    PPV2 — JS MIGRADO A ARCHIVOS ESTÁTICOS (2026-07-10)
    Antes: ~2.500 líneas de <script> inline impresas en wp_footer en CADA
    carga (no cacheables, no minificables). Ahora: archivos en js/migrados/
