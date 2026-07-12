@@ -14,6 +14,7 @@
  *  - Puntos/carrusel de galería en la tarjeta.
  *
  * @package listeo-child
+ * @version 9.6.0
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -96,17 +97,60 @@ if ( $product->get_type() == 'listing_package' ) { ?>
 	</li>
 
 	<?php
-} elseif ( is_shop() || is_product_taxonomy() ) {
-	// -------- TIENDA (PLP): tarjeta rediseñada (alta fidelidad al diseño) --------
+} elseif ( is_shop() || is_product_taxonomy() || is_product() ) {
+	// -------- TIENDA (PLP) y PDP (sugeridos/upsells): tarjeta rediseñada --------
+	// is_product() añadido 2026-07-11: los "Productos sugeridos" y upsells de la
+	// ficha de producto usan la MISMA tarjeta que la tienda (el PDP también vive
+	// dentro de .listeo-shop-grid, así que el CSS existente aplica sin cambios).
+	//
+	// HOOKS DEL LOOP (reinsertados 2026-07-10): la tarjeta dispara los 5 hooks
+	// estándar de WooCommerce para que el badge "¡Oferta!" (sale flash) y los
+	// plugins de terceros (wishlist, quick-view, badges) funcionen. Los
+	// handlers del CORE que duplicarían lo que la tarjeta ya pinta a su manera
+	// (enlace, imagen, título, precio, rating, botón) se quitan SOLO durante
+	// el disparo y se restauran después — así el diseño no cambia: lo único
+	// nuevo visible es el badge de oferta.
+	if ( ! function_exists( 'pp_card_do_action' ) ) {
+		/**
+		 * Dispara $hook sin los callbacks de core listados en $quitar.
+		 * $quitar = array de nombres de función; se detecta su prioridad real
+		 * (por si el tema los re-registró) y se restauran tras el do_action.
+		 */
+		function pp_card_do_action( $hook, $quitar = array() ) {
+			$restaurar = array();
+			foreach ( $quitar as $cb ) {
+				$prio = has_action( $hook, $cb );
+				if ( false !== $prio ) {
+					remove_action( $hook, $cb, $prio );
+					$restaurar[] = array( $cb, $prio );
+				}
+			}
+			do_action( $hook );
+			foreach ( $restaurar as $r ) {
+				add_action( $hook, $r[0], $r[1] );
+			}
+		}
+	}
 	$classes[] = 'regular-product';
 	$classes[] = 'pp-product-card';
 	?>
 	<li <?php post_class( $classes ); ?>>
 
+		<?php pp_card_do_action( 'woocommerce_before_shop_loop_item', array( 'woocommerce_template_loop_product_link_open' ) ); ?>
+
 		<div class="pp-card-media">
 			<a class="pp-card-thumb" href="<?php the_permalink(); ?>">
 				<?php echo $product->get_image( 'woocommerce_thumbnail' ); // phpcs:ignore ?>
 			</a>
+			<?php
+			// Sale flash del core (badge "¡Oferta!") + badges de terceros.
+			// Se quita el thumbnail del core (la tarjeta ya pinta el suyo) Y el
+			// add-to-cart que LISTEO reubica aquí (inc/woocommerce.php:138 lo mueve
+			// a woocommerce_before_shop_loop_item_title, prio 10): sin quitarlo salía
+			// un 2º botón NEGRO sobre la imagen ("Seleccionar opciones"/"Agregar")
+			// además del botón teal del cuerpo. Ahora solo queda el del cuerpo.
+			pp_card_do_action( 'woocommerce_before_shop_loop_item_title', array( 'woocommerce_template_loop_product_thumbnail', 'woocommerce_template_loop_add_to_cart' ) );
+			?>
 			<?php // Favoritos: sin lógica (wishlist) — no se renderiza ningún corazón. ?>
 		</div>
 
@@ -114,10 +158,16 @@ if ( $product->get_type() == 'listing_package' ) { ?>
 
 		<div class="pp-card-body">
 			<h3 class="pp-card-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+			<?php pp_card_do_action( 'woocommerce_shop_loop_item_title', array( 'woocommerce_template_loop_product_title' ) ); ?>
 
 			<?php if ( $price_html = $product->get_price_html() ) : ?>
 				<div class="pp-card-price"><?php echo $price_html; // phpcs:ignore ?></div>
 			<?php endif; ?>
+			<?php
+			// Rating y precio del core fuera (la tarjeta pinta su propio precio
+			// y añadir estrellas cambiaría el diseño); terceros sí pasan.
+			pp_card_do_action( 'woocommerce_after_shop_loop_item_title', array( 'woocommerce_template_loop_rating', 'woocommerce_template_loop_price' ) );
+			?>
 
 			<?php
 			// Botón "Agregar" (WooCommerce, con AJAX). Texto e ícono se ajustan con
@@ -125,6 +175,12 @@ if ( $product->get_type() == 'listing_package' ) { ?>
 			woocommerce_template_loop_add_to_cart();
 			?>
 		</div>
+
+		<?php
+		// link_close y add_to_cart del core fuera (la tarjeta no abre ese <a>
+		// y el botón ya se pintó arriba); terceros sí pasan.
+		pp_card_do_action( 'woocommerce_after_shop_loop_item', array( 'woocommerce_template_loop_product_link_close', 'woocommerce_template_loop_add_to_cart' ) );
+		?>
 
 	</li>
 	<?php

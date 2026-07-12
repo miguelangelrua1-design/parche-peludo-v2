@@ -1386,3 +1386,240 @@ function ppv2_enqueue_js_migrados() {
 		);
 	}
 }
+
+/* =========================================================================
+ * PPV2 — PDP DE PRODUCTO (WooCommerce)
+ * =========================================================================
+ * Alta fidelidad al diseño Diseño/Stitch/tienda_pdp_desktop.html (escritorio)
+ * y tienda_pdp_mobile.html (móvil), usando SOLO componentes nativos de
+ * WooCommerce: hooks del summary, filtros y el override de plantilla
+ * woocommerce/single-product/related.php (copiada de la nativa del plugin).
+ * El CSS vive en style.css, bloque "PPV2 — PDP PRODUCTO".
+ *
+ * Contexto Listeo (inc/woocommerce.php del padre):
+ *  - :276 QUITA los relacionados de la PDP → aquí se reactivan como
+ *    "Productos sugeridos". El re-add va en 'init' porque el functions.php
+ *    del HIJO carga ANTES que el del padre: si se registrara al cargar este
+ *    archivo, el remove_action del padre lo anularía después.
+ *  - :158-164 fuerza 3 relacionados → nuestro filtro corre con prioridad 20
+ *    (después del suyo, que es 10) y los deja en 4, como el diseño.
+ * ========================================================================= */
+
+// 1) Reactivar los relacionados ("Productos sugeridos") en su posición nativa.
+add_action( 'init', 'ppv2_pdp_reactivar_sugeridos', 20 );
+function ppv2_pdp_reactivar_sugeridos() {
+	add_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
+}
+
+// 2) 4 sugeridos en 4 columnas (el diseño muestra una fila de 4).
+add_filter( 'woocommerce_output_related_products_args', 'ppv2_pdp_sugeridos_args', 20 );
+function ppv2_pdp_sugeridos_args( $args ) {
+	$args['posts_per_page'] = 4;
+	$args['columns']        = 4;
+	return $args;
+}
+
+// 3) Título de la sección. El filtro es nativo de WooCommerce y funciona
+//    porque el hijo sobrescribe related.php con la plantilla NATIVA (la del
+//    padre Listeo tenía "Related Products" en duro, sin pasar por el filtro).
+add_filter( 'woocommerce_product_related_products_heading', 'ppv2_pdp_sugeridos_titulo' );
+function ppv2_pdp_sugeridos_titulo() {
+	return 'Productos sugeridos';
+}
+
+// 4) Marca del producto (atributo global pa_marca, lo asigna el publicador
+//    del catálogo Laika) como cinta sobre el título — "ROYAL CANIN" en el
+//    diseño. Si el producto no tiene marca, no imprime nada.
+add_action( 'woocommerce_single_product_summary', 'ppv2_pdp_marca', 4 );
+function ppv2_pdp_marca() {
+	global $product;
+	if ( ! $product instanceof WC_Product ) {
+		return;
+	}
+	$marca = $product->get_attribute( 'pa_marca' );
+	if ( $marca ) {
+		echo '<span class="pp-pdp-marca">' . esc_html( $marca ) . '</span>';
+	}
+}
+
+// 5) Insignias de confianza. Prioridad 45: DESPUÉS del meta SKU/categoría (40),
+//    como en el diseño de escritorio (tienda_pdp_desktop.html: bloque Meta y luego
+//    las insignias al final). SVG inline para no cargar fuentes de iconos.
+add_action( 'woocommerce_single_product_summary', 'ppv2_pdp_confianza', 45 );
+function ppv2_pdp_confianza() {
+	?>
+	<div class="pp-pdp-confianza">
+		<div class="pp-pdp-conf-item">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4h14v12H1z"/><path d="M15 9h4l3 3v4h-7V9z"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="18" cy="18.5" r="2"/></svg>
+			<span>Envío en 24h</span>
+		</div>
+		<div class="pp-pdp-conf-item">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+			<span>Pago seguro</span>
+		</div>
+		<div class="pp-pdp-conf-item">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg>
+			<span>Devolución fácil</span>
+		</div>
+	</div>
+	<?php
+}
+
+// 6) Precio "Desde" para productos VARIABLES: en vez del rango "$min - $max",
+//    muestra solo el precio MENOR con la etiqueta "Desde" (arriba-izquierda por
+//    CSS). Aplica en TODAS partes (tarjetas de tienda/sugeridos y el precio del
+//    PDP) porque woocommerce_get_price_html es el filtro maestro del precio.
+//    - Solo toca productos variable con precios distintos entre variaciones; si
+//      todas valen igual (o hay una sola presentación) deja el precio normal.
+//    - No toca el carrito/mini-cart: ahí los ítems son variaciones concretas
+//      (no 'variable'), así que el filtro los ignora. Se protege is_admin().
+add_filter( 'woocommerce_get_price_html', 'ppv2_precio_desde', 20, 2 );
+function ppv2_precio_desde( $price_html, $product ) {
+	if ( ( is_admin() && ! wp_doing_ajax() ) || ! $product instanceof WC_Product ) {
+		return $price_html;
+	}
+	if ( ! $product->is_type( 'variable' ) ) {
+		return $price_html;
+	}
+	$min = $product->get_variation_price( 'min', true );
+	$max = $product->get_variation_price( 'max', true );
+	if ( '' === $min || $min === $max ) {
+		return $price_html; // una sola presentación o mismo precio: precio normal.
+	}
+	return '<span class="pp-desde">Desde</span> ' . wc_price( $min );
+}
+
+// 7) Assets del PDP: js/pp-pdp.js (editor de cantidad EN VIVO conectado al
+//    carrito + auto-selección de presentación única). Solo en la ficha de
+//    producto, en el footer, con cache-bust por filemtime(). Se le pasa la
+//    config PP_PDP (nonce, url del carrito y qué variaciones de este producto
+//    están ya en el carrito) para que el JS pinte el estado correcto al cargar.
+add_action( 'wp_enqueue_scripts', 'ppv2_pdp_assets' );
+function ppv2_pdp_assets() {
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+		return;
+	}
+	$dir = get_stylesheet_directory();
+	$uri = get_stylesheet_directory_uri();
+	if ( ! file_exists( $dir . '/js/pp-pdp.js' ) ) {
+		return;
+	}
+	wp_enqueue_script( 'pp-pdp', $uri . '/js/pp-pdp.js', array( 'jquery' ), filemtime( $dir . '/js/pp-pdp.js' ), true );
+
+	$product = wc_get_product( get_queried_object_id() );
+	if ( ! $product instanceof WC_Product ) {
+		return;
+	}
+	wp_localize_script(
+		'pp-pdp',
+		'PP_PDP',
+		array(
+			'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+			'nonce'      => wp_create_nonce( 'pp_pdp_cart' ),
+			'cartUrl'    => function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/carrito/' ),
+			'productId'  => $product->get_id(),
+			'isVariable' => $product->is_type( 'variable' ),
+			'cart'       => ppv2_pdp_cart_map( $product ),
+			'i18n'       => array(
+				'add'  => __( 'Añadir al carrito', 'listeo-child' ),
+				'view' => __( 'Ver carrito', 'listeo-child' ),
+			),
+		)
+	);
+}
+
+/**
+ * Mapa del carrito para ESTE producto: clave = variation_id (o 'simple' para
+ * productos simples) → { key: <cart_item_key>, qty: <cantidad> }. Le dice al JS
+ * qué presentación ya está agregada (y cuántas) para pintar caneca/−/+ y el
+ * botón "Ver carrito" desde el primer render.
+ */
+function ppv2_pdp_cart_map( $product ) {
+	$map = array();
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		return $map;
+	}
+	$pid = (int) $product->get_id();
+	foreach ( WC()->cart->get_cart() as $key => $item ) {
+		if ( (int) $item['product_id'] !== $pid ) {
+			continue;
+		}
+		$vid           = ! empty( $item['variation_id'] ) ? (int) $item['variation_id'] : 0;
+		$slot          = $vid ? (string) $vid : 'simple';
+		$map[ $slot ]  = array(
+			'key' => $key,
+			'qty' => (int) $item['quantity'],
+		);
+	}
+	return $map;
+}
+
+/**
+ * Endpoint AJAX del editor de carrito del PDP (ops: add / set / remove).
+ * Opera directamente sobre WC()->cart (API nativa) y devuelve la nueva
+ * cantidad/clave. El mini-cart del header se refresca aparte desde el JS con
+ * el evento wc_fragment_refresh (reutiliza los fragmentos ya registrados).
+ */
+add_action( 'wp_ajax_pp_pdp_cart', 'ppv2_pdp_cart_ajax' );
+add_action( 'wp_ajax_nopriv_pp_pdp_cart', 'ppv2_pdp_cart_ajax' );
+function ppv2_pdp_cart_ajax() {
+	check_ajax_referer( 'pp_pdp_cart', 'nonce' );
+
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		wp_send_json_error( array( 'msg' => 'no-cart' ) );
+	}
+
+	$op = isset( $_POST['op'] ) ? sanitize_text_field( wp_unslash( $_POST['op'] ) ) : '';
+
+	if ( 'add' === $op ) {
+		$product_id   = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
+		$variation_id = isset( $_POST['variation_id'] ) ? absint( $_POST['variation_id'] ) : 0;
+		$qty          = isset( $_POST['qty'] ) ? max( 1, absint( $_POST['qty'] ) ) : 1;
+		$variation    = array();
+		if ( ! empty( $_POST['variation'] ) && is_array( $_POST['variation'] ) ) {
+			foreach ( wp_unslash( $_POST['variation'] ) as $k => $v ) {
+				$variation[ sanitize_text_field( $k ) ] = sanitize_text_field( $v );
+			}
+		}
+		if ( ! $product_id ) {
+			wp_send_json_error( array( 'msg' => 'no-product' ) );
+		}
+		$key = WC()->cart->add_to_cart( $product_id, $qty, $variation_id, $variation );
+		if ( ! $key ) {
+			wp_send_json_error( array( 'msg' => 'add-failed' ) );
+		}
+		$item = WC()->cart->get_cart_item( $key );
+		wp_send_json_success( array(
+			'key' => $key,
+			'qty' => (int) $item['quantity'],
+		) );
+	}
+
+	if ( 'set' === $op ) {
+		$key = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
+		$qty = isset( $_POST['qty'] ) ? absint( $_POST['qty'] ) : 0;
+		if ( ! $key || ! WC()->cart->get_cart_item( $key ) ) {
+			wp_send_json_error( array( 'msg' => 'no-item' ) );
+		}
+		if ( $qty < 1 ) {
+			$qty = 1;
+		}
+		WC()->cart->set_quantity( $key, $qty, true );
+		$item = WC()->cart->get_cart_item( $key );
+		wp_send_json_success( array(
+			'key' => $key,
+			'qty' => $item ? (int) $item['quantity'] : 0,
+		) );
+	}
+
+	if ( 'remove' === $op ) {
+		$key = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
+		if ( ! $key || ! WC()->cart->get_cart_item( $key ) ) {
+			wp_send_json_error( array( 'msg' => 'no-item' ) );
+		}
+		WC()->cart->remove_cart_item( $key );
+		wp_send_json_success( array( 'removed' => true ) );
+	}
+
+	wp_send_json_error( array( 'msg' => 'bad-op' ) );
+}
