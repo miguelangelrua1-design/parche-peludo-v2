@@ -1623,3 +1623,14 @@ function ppv2_pdp_cart_ajax() {
 
 	wp_send_json_error( array( 'msg' => 'bad-op' ) );
 }
+
+// 9) Galería del producto: activar las FLECHAS de navegación (directionNav) del
+//    slider nativo (FlexSlider). Woo las trae desactivadas por defecto
+//    (directionNav=false, controlNav='thumbnails'); solo cambiamos las flechas.
+//    Los puntos en móvil se logran por CSS reestilizando el mismo control de
+//    miniaturas (no hace falta un segundo control). Ver bloque "AJUSTES v7".
+add_filter( 'woocommerce_single_product_carousel_options', 'ppv2_pdp_gallery_arrows' );
+function ppv2_pdp_gallery_arrows( $options ) {
+	$options['directionNav'] = true;
+	return $options;
+}

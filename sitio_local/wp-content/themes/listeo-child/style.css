@@ -5,7 +5,7 @@ Description:  Tema Hijo personalizado para la optimizacion visual de Parche Pelu
 Author:       AntiGravity & Claude Code (Advanced Agentic Coding)
 Author URI:   https://google.com
 Template:     listeo
-Version:      2.0.24
+Version:      2.0.25
 License:      GNU General Public License v2 or later
 License URI:  http://www.gnu.org/licenses/gpl-2.0.html
 Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
@@ -10278,26 +10278,9 @@ body.single-product div.product .woocommerce-product-gallery__image img {
   object-fit: contain;
   width: 100%;
 }
-/* Insignia "Producto verificado" (como en el diseño). Va como ::after del
-   visor del slider (o de la figura si solo hay 1 imagen, sin flexslider). */
+/* (Insignia "Producto verificado" retirada 2026-07-11 a pedido del PO.)
+   Se conserva position:relative en el visor: lo usan las flechas de la galería. */
 body.single-product div.product .woocommerce-product-gallery .flex-viewport { position: relative; }
-body.single-product div.product .woocommerce-product-gallery .flex-viewport::after,
-body.single-product div.product .woocommerce-product-gallery:not(:has(.flex-viewport)) > .woocommerce-product-gallery__wrapper::after {
-  content: '✓ Producto verificado';
-  position: absolute;
-  left: 14px;
-  bottom: 14px;
-  z-index: 4;
-  background: #fff;
-  color: var(--teal-ink);
-  font: 800 11px/1 var(--font-sans);
-  letter-spacing: .5px;
-  text-transform: uppercase;
-  padding: 9px 13px;
-  border-radius: 999px;
-  box-shadow: var(--shadow-sm);
-  pointer-events: none;
-}
 /* Miniaturas: cuadrícula de 4 (escritorio) / fila deslizable (móvil);
    la activa lleva borde teal, como el diseño */
 body.single-product .woocommerce-product-gallery ol.flex-control-thumbs {
@@ -10882,3 +10865,107 @@ body.single-product .single_variation {
   margin-bottom: 10px !important;
 }
 body.single-product .single_variation:empty { display: none !important; }
+
+
+/* ============================================================
+   PPV2 — PDP PRODUCTO · AJUSTES v7 (galería: flechas + puntos)
+   Flechas nativas de FlexSlider (activadas por filtro en functions.php)
+   estilizadas como el referente. En móvil, el MISMO control de miniaturas
+   se reestiliza como PUNTOS (pasadores) — sin control extra.
+   ============================================================ */
+
+body.single-product div.product .woocommerce-product-gallery,
+body.single-product div.product .woocommerce-product-gallery__wrapper { position: relative; }
+
+/* Contenedor de flechas: overlay cuadrado (= imagen 1:1) para centrarlas
+   verticalmente SOBRE la imagen, sin que las miniaturas de abajo las desvíen. */
+body.single-product .woocommerce-product-gallery .flex-direction-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  z-index: 6;
+}
+body.single-product .woocommerce-product-gallery .flex-direction-nav li { position: static; margin: 0; }
+
+/* Flechas: círculos blancos con chevron (SVG). Siempre visibles. */
+body.single-product .woocommerce-product-gallery .flex-direction-nav a {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  margin: 0;
+  border-radius: 999px;
+  border: 1px solid var(--ink-line-2);
+  background-color: rgba(255, 255, 255, .94);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
+  box-shadow: var(--shadow-md);
+  opacity: 1 !important;
+  font-size: 0;
+  color: transparent;
+  text-indent: -9999px;
+  pointer-events: auto;
+  transition: background-color var(--dur-fast) var(--ease-soft), transform var(--dur-fast) var(--ease-soft);
+}
+body.single-product .woocommerce-product-gallery .flex-direction-nav a::before { content: none !important; }
+body.single-product .woocommerce-product-gallery .flex-direction-nav a:hover { background-color: #fff; }
+body.single-product .woocommerce-product-gallery .flex-direction-nav a:active { transform: translateY(-50%) scale(.92); }
+body.single-product .woocommerce-product-gallery .flex-direction-nav .flex-prev {
+  left: 12px;
+  right: auto;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231E2E33' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'/%3E%3C/svg%3E");
+}
+body.single-product .woocommerce-product-gallery .flex-direction-nav .flex-next {
+  right: 12px;
+  left: auto;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231E2E33' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+}
+/* FlexSlider desactiva las flechas cuando no hay siguiente/anterior: las
+   atenuamos en vez de ocultarlas del todo. */
+body.single-product .woocommerce-product-gallery .flex-direction-nav a.flex-disabled { opacity: .35 !important; cursor: default; }
+
+/* --- MÓVIL: miniaturas → PUNTOS (pasadores). Reusa el control de miniaturas
+   (flex-control-thumbs); el punto activo se alarga en teal. Las flechas siguen. --- */
+@media (max-width: 767px) {
+  body.single-product .woocommerce-product-gallery ol.flex-control-thumbs {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    overflow: visible;
+    margin: 14px 0 0 !important;
+    padding: 0;
+  }
+  body.single-product .woocommerce-product-gallery ol.flex-control-thumbs li {
+    flex: 0 0 auto !important;
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 999px;
+    background: rgba(30, 46, 51, .18);
+    overflow: hidden;
+    transition: width var(--dur-base) var(--ease-soft), background var(--dur-base) var(--ease-soft);
+  }
+  body.single-product .woocommerce-product-gallery ol.flex-control-thumbs li img {
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+  body.single-product .woocommerce-product-gallery ol.flex-control-thumbs li:has(img.flex-active) {
+    width: 22px !important;
+    background: var(--teal-parche);
+  }
+  /* Flechas un poco más chicas en móvil */
+  body.single-product .woocommerce-product-gallery .flex-direction-nav a { width: 36px; height: 36px; background-size: 16px 16px; }
+  body.single-product .woocommerce-product-gallery .flex-direction-nav .flex-prev { left: 8px; }
+  body.single-product .woocommerce-product-gallery .flex-direction-nav .flex-next { right: 8px; }
+}
