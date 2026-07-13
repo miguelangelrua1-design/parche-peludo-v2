@@ -731,6 +731,90 @@ add_action( 'wp_footer', 'ppv2_listing_mobile_bottom_bar', 110 );
 // Encolado condicional en ppv2_enqueue_js_migrados() al final de este archivo.
 
 /* ==========================================================================
+ * TARJETA DE RESULTADOS — Etiquetas = TIPOS DE SERVICIO (2026-07-13)
+ * --------------------------------------------------------------------------
+ * En la tarjeta, las etiquetas dejan de ser las "características" (taxonomía
+ * listing_feature) y pasan a ser los TIPOS DE SERVICIO que el listado ofrece
+ * (índice _pp_tipo_servicio, mantenido por el plugin Filtros personalizados a
+ * partir de los Menús de Servicios / la matriz de Guardería). Mismo diseño:
+ * se emite el MISMO markup (.listing-amenities-nl > .amenity-icon-nl >
+ * .tooltip-nl), así las pills del CSS de arriba y el recorte a N líneas del
+ * JS ppv2-card-amenities-clamp aplican sin tocar nada.
+ *
+ * Cómo: sin copiar plantillas (a prueba de updates de listeo-core) —
+ *  1) filtro `listeo/listing-card/elements`: en listados DE SERVICIO
+ *     (cita/estadía) quita SIEMPRE 'features' — la tarjeta muestra tipos de
+ *     servicio, nunca características. Si el listado aún no tiene la tipología
+ *     asignada, no se muestra NADA (será obligatoria, así que el patrón queda
+ *     uniforme). Los listados que NO son de servicio (adopción, mascotas
+ *     perdidas…) no se tocan: conservan sus características.
+ *  2) acción `listeo/listing-card/after-title-inline` (existe en las
+ *     plantillas list y grid): pinta las etiquetas de tipos.
+ * Costo: 0 consultas extra (las metas del loop ya están en caché y el
+ * catálogo es una option autocargada).
+ * ========================================================================== */
+
+/**
+ * Tipos de servicio del listado como slug => nombre, en el orden del catálogo.
+ * Vacío si no hay índice, no hay catálogo o el listado no declara tipos.
+ */
+function ppv2_card_tipos_de_servicio( $listing_id ) {
+	if ( ! function_exists( 'pp_serv_tipos' ) ) {
+		return array(); // sin el módulo Tipos de Servicio no hay qué pintar
+	}
+	$indexados = get_post_meta( (int) $listing_id, '_pp_tipo_servicio' );
+	if ( empty( $indexados ) || ! is_array( $indexados ) ) {
+		return array();
+	}
+	$indexados = array_map( 'sanitize_key', $indexados );
+	$tipos     = array();
+	foreach ( pp_serv_tipos() as $slug => $t ) { // el catálogo manda el orden
+		if ( in_array( $slug, $indexados, true ) ) {
+			$tipos[ $slug ] = $t['nombre'];
+		}
+	}
+	return $tipos;
+}
+
+/**
+ * ¿Es un listado DE SERVICIO? (tipo con reserva de cita o de estadía). Solo
+ * estos deben mostrar tipos de servicio en la tarjeta; adopción / mascotas
+ * perdidas / clasificados no.
+ */
+function ppv2_card_es_listado_de_servicio( $listing_id ) {
+	if ( ! function_exists( 'listeo_core_get_listing_type_booking_type' ) ) {
+		return false;
+	}
+	$tipo = sanitize_key( (string) get_post_meta( (int) $listing_id, '_listing_type', true ) );
+	$bt   = listeo_core_get_listing_type_booking_type( $tipo );
+	return in_array( $bt, array( 'single_day', 'date_range' ), true );
+}
+
+/* (1) En un listado de servicio la tarjeta NUNCA pinta características: muestra
+   tipos de servicio (o nada, si aún no tiene tipología — será obligatoria). */
+add_filter( 'listeo/listing-card/elements', 'ppv2_card_elementos_sin_features', 10, 2 );
+function ppv2_card_elementos_sin_features( $elements, $listing_id ) {
+	if ( ppv2_card_es_listado_de_servicio( $listing_id ) ) {
+		$elements = array_values( array_diff( (array) $elements, array( 'features' ) ) );
+	}
+	return $elements;
+}
+
+/* (2) …y en su lugar se pintan los tipos de servicio (mismo diseño de pills). */
+add_action( 'listeo/listing-card/after-title-inline', 'ppv2_card_pintar_tipos_servicio', 10, 1 );
+function ppv2_card_pintar_tipos_servicio( $listing_id ) {
+	$tipos = ppv2_card_tipos_de_servicio( $listing_id );
+	if ( ! $tipos ) {
+		return;
+	}
+	echo '<div class="listing-amenities-nl ppv2-amenities-tipos">';
+	foreach ( $tipos as $nombre ) {
+		echo '<div class="amenity-icon-nl"><span class="tooltip-nl">' . esc_html( $nombre ) . '</span></div>';
+	}
+	echo '</div>';
+}
+
+/* ==========================================================================
  * MINICART V2 — Controles por producto (cantidad y eliminar), estilo Éxito
  * --------------------------------------------------------------------------
  * Todo vive en el tema hijo. Reutiliza las clases y hooks de WooCommerce/Listeo,
