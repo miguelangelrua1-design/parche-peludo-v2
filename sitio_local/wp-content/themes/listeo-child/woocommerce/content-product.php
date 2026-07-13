@@ -160,8 +160,28 @@ if ( $product->get_type() == 'listing_package' ) { ?>
 			<h3 class="pp-card-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
 			<?php pp_card_do_action( 'woocommerce_shop_loop_item_title', array( 'woocommerce_template_loop_product_title' ) ); ?>
 
-			<?php if ( $price_html = $product->get_price_html() ) : ?>
+			<?php
+			// Presentaciones como PASTILLAS (productos variables): el precio
+			// mostrado es el de la presentación ACTIVA (por defecto la más
+			// económica disponible; el orden lo da ppv2_card_presentaciones).
+			// El clic lo maneja js/pp-plp.js: cambia precio y data-product_id
+			// del botón "Agregar" — sin AJAX ni recarga.
+			$pp_pres    = function_exists( 'ppv2_card_presentaciones' ) ? ppv2_card_presentaciones( $product ) : array();
+			$price_html = $pp_pres ? $pp_pres[0]['price_html'] : $product->get_price_html();
+			?>
+			<?php if ( $price_html ) : ?>
 				<div class="pp-card-price"><?php echo $price_html; // phpcs:ignore ?></div>
+			<?php endif; ?>
+			<?php if ( $pp_pres ) : ?>
+				<div class="pp-card-pres" role="group" aria-label="<?php esc_attr_e( 'Presentaciones', 'listeo-child' ); ?>">
+					<?php foreach ( $pp_pres as $pp_i => $pp_p ) : ?>
+						<button type="button"
+							class="pp-pres-pill<?php echo 0 === $pp_i ? ' is-active' : ''; ?>"
+							data-vid="<?php echo esc_attr( $pp_p['id'] ); ?>"
+							data-price="<?php echo esc_attr( $pp_p['price_html'] ); ?>"
+							aria-pressed="<?php echo 0 === $pp_i ? 'true' : 'false'; ?>"><?php echo esc_html( $pp_p['label'] ); ?></button>
+					<?php endforeach; ?>
+				</div>
 			<?php endif; ?>
 			<?php
 			// Rating y precio del core fuera (la tarjeta pinta su propio precio

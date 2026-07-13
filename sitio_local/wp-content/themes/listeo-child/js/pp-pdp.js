@@ -196,6 +196,103 @@
 		} );
 	}
 
+	// --- Presentaciones como PASTILLAS (en vez del select nativo) --------------
+	// El select QUEDA en el DOM (oculto por CSS con la clase pp-pills-on): las
+	// pastillas solo escriben en él y disparan 'change', así toda la maquinaria
+	// nativa de variaciones (precio, stock, variation_id, carrito) sigue igual.
+	// Si este JS fallara, el select vuelve a verse y la ficha opera normal.
+
+	function variationsData() {
+		if ( ! $form.length ) { return []; }
+		var d = $form.data( 'product_variations' );
+		return ( d && d.length ) ? d : []; // false = modo AJAX (30+ variaciones)
+	}
+
+	function buildPills() {
+		if ( ! CFG.isVariable || ! $form.length || $form.hasClass( 'pp-pills-on' ) ) { return; }
+		var built = false;
+		$form.find( '.variations select' ).each( function () {
+			var $sel = $( this );
+			if ( $sel.next( '.pp-pres-pills' ).length ) { return; }
+			var html = '';
+			$sel.find( 'option' ).each( function () {
+				var v = $( this ).val();
+				if ( '' === v ) { return; }
+				html += '<button type="button" class="pp-pres-pill" data-value="' + v.replace( /"/g, '&quot;' ) + '" aria-pressed="false">' + $( this ).text() + '</button>';
+			} );
+			if ( html ) {
+				$sel.after( '<div class="pp-pres-pills" role="group">' + html + '</div>' );
+				built = true;
+			}
+		} );
+		if ( built ) { $form.addClass( 'pp-pills-on' ); }
+	}
+
+	function syncPills() {
+		if ( ! $form.hasClass( 'pp-pills-on' ) ) { return; }
+		var data = variationsData();
+		$form.find( '.variations select' ).each( function () {
+			var $sel  = $( this );
+			var name  = $sel.data( 'attribute_name' ) || $sel.attr( 'name' );
+			var cur   = $sel.val();
+			$sel.next( '.pp-pres-pills' ).find( '.pp-pres-pill' ).each( function () {
+				var $p  = $( this );
+				var val = $p.attr( 'data-value' );
+				$p.toggleClass( 'is-active', val === cur ).attr( 'aria-pressed', val === cur ? 'true' : 'false' );
+				// Sin stock → pastilla atenuada y sin clic (solo si hay datos).
+				if ( data.length ) {
+					var hay = data.some( function ( v ) {
+						var a = v.attributes[ name ];
+						return ( '' === a || a === val ) && v.is_in_stock && false !== v.is_purchasable;
+					} );
+					$p.toggleClass( 'is-off', ! hay );
+				}
+			} );
+		} );
+	}
+
+	// Presentación más ECONÓMICA disponible seleccionada por defecto.
+	function autoSelectCheapest() {
+		if ( ! CFG.isVariable || ! $form.length ) { return; }
+		// ¿Ya hay selección completa? No pisar lo que eligió el usuario.
+		var falta = false;
+		$form.find( '.variations select' ).each( function () { if ( ! $( this ).val() ) { falta = true; } } );
+		if ( ! falta ) { syncPills(); return; }
+
+		var data = variationsData().filter( function ( v ) {
+			return v.is_in_stock && false !== v.is_purchasable;
+		} );
+		if ( ! data.length ) { autoSelectSingle(); syncPills(); return; }
+
+		var best = data.reduce( function ( a, b ) {
+			return ( parseFloat( b.display_price ) < parseFloat( a.display_price ) ) ? b : a;
+		} );
+		$form.find( '.variations select' ).each( function () {
+			var $sel = $( this );
+			var name = $sel.data( 'attribute_name' ) || $sel.attr( 'name' );
+			var val  = best.attributes[ name ];
+			if ( '' === val || null == val ) {
+				// "Cualquiera": toma la primera opción real.
+				val = $sel.find( 'option' ).filter( function () { return $( this ).val() !== ''; } ).first().val();
+			}
+			if ( $sel.val() !== val ) { $sel.val( val ).trigger( 'change' ); }
+		} );
+		syncPills();
+	}
+
+	// Clic en pastilla → escribe en el select nativo y dispara su change.
+	$( document ).on( 'click', '.single-product form.cart .pp-pres-pill', function ( e ) {
+		e.preventDefault();
+		var $p = $( this );
+		if ( $p.hasClass( 'is-active' ) || $p.hasClass( 'is-off' ) ) { return; }
+		$p.closest( '.pp-pres-pills' ).prev( 'select' ).val( $p.attr( 'data-value' ) ).trigger( 'change' );
+	} );
+
+	// Precio ÚNICO que cambia con la presentación: al elegir variación se pinta
+	// su precio en el p.price principal (el bloque nativo de precio de variación
+	// queda oculto por CSS para no duplicar).
+	var precioOriginal = null;
+
 	$( function () {
 		$form = $( '.single-product form.cart' ).first();
 		$btn  = $( '.single-product .single_add_to_cart_button' ).first();
@@ -203,21 +300,38 @@
 		enhance();
 
 		if ( CFG.isVariable && $form.length ) {
+			var $price = $( '.single-product div.product p.price' ).first();
+			precioOriginal = $price.length ? $price.html() : null;
+
+			$form.on( 'found_variation', function ( e, variation ) {
+				if ( variation && variation.price_html && $price.length ) {
+					$price.html( variation.price_html );
+				}
+			} );
+			$form.on( 'reset_data', function () {
+				if ( null !== precioOriginal && $price.length ) { $price.html( precioOriginal ); }
+				syncPills();
+			} );
 			$form.on( 'show_variation', function () {
 				enhance();
 				$btn = $( '.single-product .single_add_to_cart_button' ).first();
 				render();
+				syncPills();
 			} );
-			$form.on( 'hide_variation', function () { render(); } );
-			autoSelectSingle();
+			$form.on( 'hide_variation', function () { render(); syncPills(); } );
+			$form.find( '.variations select' ).on( 'change', function () { syncPills(); } );
+
+			buildPills();
+			autoSelectCheapest();
 		}
 		render();
 	} );
 
 	// Reintento tras la carga completa (la variations_form inicializa en su
-	// propio ready; asegura la auto-selección y el primer render correcto).
+	// propio ready; asegura pastillas + selección económica + primer render).
 	$( window ).on( 'load', function () {
-		autoSelectSingle();
+		buildPills();
+		autoSelectCheapest();
 		render();
 	} );
 })( jQuery );

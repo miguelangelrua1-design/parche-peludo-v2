@@ -5,7 +5,7 @@ Description:  Tema Hijo personalizado para la optimizacion visual de Parche Pelu
 Author:       AntiGravity & Claude Code (Advanced Agentic Coding)
 Author URI:   https://google.com
 Template:     listeo
-Version:      2.0.25
+Version:      2.0.29
 License:      GNU General Public License v2 or later
 License URI:  http://www.gnu.org/licenses/gpl-2.0.html
 Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
@@ -8726,11 +8726,21 @@ body.single-product #titlebar #breadcrumbs a:hover { color: var(--teal-deep); }
 .listeo-shop-grid ul.products li.product.pp-product-card .pp-card-title a { color: inherit; text-decoration: none; }
 .listeo-shop-grid ul.products li.product.pp-product-card .pp-card-title a:hover { color: #4AA5AD; }
 .listeo-shop-grid ul.products li.product.pp-product-card .pp-card-price {
-  margin: 0 0 16px;                              /* espacio mínimo garantizado antes del botón */
+  position: relative;                            /* ancla la etiqueta "DESDE" (absoluta) */
+  margin: 16px 0 16px;                           /* margin-top reserva el hueco de "DESDE" en TODAS las tarjetas → el precio queda a la MISMA altura, con o sin etiqueta */
   font-family: var(--font-sans, 'Ubuntu', sans-serif);
   font-size: 16px;
   font-weight: 700;
   color: #79C8D0;                                /* primary */
+}
+/* "DESDE" (productos variables): fuera del flujo, encima del precio, para que
+   NO empuje el número hacia abajo → el precio se alinea entre todas las tarjetas. */
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-price .pp-desde {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  margin: 0 0 1px;
 }
 .listeo-shop-grid ul.products li.product.pp-product-card .pp-card-price del { color: #9CA3AF; font-weight: 400; font-size: 12px; margin-right: 4px; text-decoration: line-through; }
 .listeo-shop-grid ul.products li.product.pp-product-card .pp-card-price ins { text-decoration: none; }
@@ -10968,4 +10978,82 @@ body.single-product .woocommerce-product-gallery .flex-direction-nav a.flex-disa
   body.single-product .woocommerce-product-gallery .flex-direction-nav a { width: 36px; height: 36px; background-size: 16px 16px; }
   body.single-product .woocommerce-product-gallery .flex-direction-nav .flex-prev { left: 8px; }
   body.single-product .woocommerce-product-gallery .flex-direction-nav .flex-next { right: 8px; }
+}
+
+
+/* ============================================================
+   PPV2 — PRESENTACIONES COMO PASTILLAS · v8 (PLP + PDP)
+   Pastillas clicables de presentación (referente Laika). Activa =
+   teal de marca. En el PDP sustituyen visualmente al <select>
+   nativo (que queda oculto en el DOM y sigue siendo la fuente de
+   verdad para WooCommerce).
+   ============================================================ */
+
+/* ---- Base de pastilla (compartida tarjeta/ficha) ---- */
+.pp-pres-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ink-line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink-muted);
+  font: 700 11px/1 var(--font-sans);
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  padding: 7px 11px;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-soft),
+              background var(--dur-fast) var(--ease-soft),
+              color var(--dur-fast) var(--ease-soft);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.pp-pres-pill:hover { border-color: var(--teal-soft); color: var(--ink); }
+.pp-pres-pill.is-active {
+  border-color: var(--teal-deep);
+  background: var(--teal-mist);
+  color: var(--teal-ink);
+  box-shadow: inset 0 0 0 1px var(--teal-deep); /* borde “2px” sin mover el layout */
+}
+.pp-pres-pill.is-off { opacity: .4; pointer-events: none; text-decoration: line-through; }
+
+/* ---- PLP (tarjeta): fila centrada entre el precio y el botón ---- */
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-pres {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 0 14px;
+}
+/* Pastilla del PLP: fuente y padding reducidos + nowrap para que entren 2 por
+   fila incluso con etiquetas largas ("1.14 KG"/"4.54 KG"), en móvil y escritorio.
+   Las pastillas del PDP (más grandes) no se tocan. */
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-pres .pp-pres-pill {
+  font-size: 10px;
+  letter-spacing: .2px;
+  padding: 6px 8px;
+  white-space: nowrap;
+}
+
+/* ---- PDP: pastillas más grandes; el select nativo se oculta ---- */
+body.single-product form.cart.pp-pills-on .variations select { display: none !important; }
+body.single-product form.cart .pp-pres-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+body.single-product form.cart .pp-pres-pills .pp-pres-pill {
+  font-size: 13px;
+  padding: 12px 18px;
+  border-radius: 12px;
+}
+/* Precio en DOS lugares (pedido PO 2026-07-11): arriba en el p.price principal
+   (lo actualiza el JS con cada presentación) Y también debajo de las pastillas,
+   con el bloque nativo de precio de variación — un poco más pequeño para dar
+   jerarquía. (Antes se ocultaba; ya no.) */
+body.single-product div.product .woocommerce-variation-price { margin: 10px 0 2px; }
+body.single-product div.product .woocommerce-variation-price .price {
+  font-size: 22px !important;
+  color: var(--ink);
 }

@@ -265,8 +265,13 @@ function ppv2_shop_filters_button() {
 // Botón "Agregar" en las tarjetas de la TIENDA: texto corto (solo en tienda/categoría).
 add_filter( 'woocommerce_product_add_to_cart_text', 'ppv2_loop_add_to_cart_text', 10, 2 );
 function ppv2_loop_add_to_cart_text( $text, $product ) {
-	if ( is_admin() || ! ppv2_is_shop_context() ) { return $text; }
-	if ( $product && $product->is_purchasable() && $product->is_in_stock() && ! $product->is_type( 'variable' ) ) {
+	if ( is_admin() || ! ppv2_is_shop_context() || ! $product ) { return $text; }
+	// Variables con varias presentaciones: "Ver opciones" (las de UNA sola
+	// presentación las convierte ppv2_loop_single_variation en "Agregar").
+	if ( $product->is_type( 'variable' ) ) {
+		return esc_html__( 'Ver opciones', 'listeo-child' );
+	}
+	if ( $product->is_purchasable() && $product->is_in_stock() ) {
 		return esc_html__( 'Agregar', 'listeo-child' );
 	}
 	return $text;
@@ -278,6 +283,106 @@ function ppv2_loop_add_to_cart_icon( $html, $product, $args = array() ) {
 	if ( ! ppv2_is_shop_context() ) { return $html; }
 	$icon = '<svg class="pp-cart-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.2 11a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.2L21.5 7H6"/></svg>';
 	return preg_replace( '/(<a\b[^>]*>)/', '$1' . $icon, $html, 1 );
+}
+
+/**
+ * Presentaciones comprables de un producto variable, ORDENADAS de la más
+ * económica a la más cara. Cada una: id (variación), label ("1.5 kg"),
+ * price_html (con oferta tachada si aplica). Solo variaciones creadas,
+ * visibles, comprables y en stock. Vacío si no es variable o no hay ninguna.
+ *
+ * Performance: wc_get_product() usa la caché de objetos de WP y los precios
+ * de variaciones ya vienen cacheados por transient en WooCommerce; no hay
+ * consultas por clic (las pastillas se pintan una vez en el servidor).
+ */
+function ppv2_card_presentaciones( $product ) {
+	if ( ! $product instanceof WC_Product || ! $product->is_type( 'variable' ) ) {
+		return array();
+	}
+	$out = array();
+	foreach ( $product->get_children() as $child_id ) {
+		$v = wc_get_product( $child_id );
+		if ( ! $v || ! $v->exists() || ! $v->variation_is_visible() || ! $v->is_purchasable() || ! $v->is_in_stock() ) {
+			continue;
+		}
+		$label = trim( (string) wc_get_formatted_variation( $v, true, false, false ) );
+		if ( '' === $label ) {
+			// Datos corruptos (p. ej. atributo del padre con clave rota, incidente
+			// mojibake del importador 2026-07-11): sin nombre no hay pastilla útil
+			// y el alta directa fallaría la validación de WooCommerce.
+			continue;
+		}
+		$out[] = array(
+			'id'         => $child_id,
+			'label'      => $label,
+			'price_html' => $v->get_price_html(),
+			'raw'        => (float) $v->get_price(),
+		);
+	}
+	usort( $out, function ( $a, $b ) {
+		return $a['raw'] <=> $b['raw'];
+	} );
+	// Etiquetas repetidas (mismo nombre de presentación): se queda la más barata.
+	$vistas = array();
+	$final  = array();
+	foreach ( $out as $p ) {
+		$k = function_exists( 'mb_strtolower' ) ? mb_strtolower( $p['label'] ) : strtolower( $p['label'] );
+		if ( isset( $vistas[ $k ] ) ) {
+			continue;
+		}
+		$vistas[ $k ] = 1;
+		$final[]      = $p;
+	}
+	return $final;
+}
+
+// Productos VARIABLES en el PLP: el botón ya no dice "Ver opciones" — las
+// tarjetas muestran las presentaciones como PASTILLAS (content-product.php) y
+// el botón "Agregar" añade la presentación seleccionada directo, por el AJAX
+// NATIVO de WooCommerce: se pasa el ID de la variación como data-product_id y
+// Woo lo divide en padre+variación (class-wc-ajax.php::add_to_cart:525). Por
+// defecto apunta a la más ECONÓMICA (pastilla activa inicial); al hacer clic
+// en otra pastilla, js/pp-plp.js actualiza data-product_id y el precio.
+// Prioridad 5: corre ANTES del filtro del ícono (10), que le añade el carrito.
+// Si no hay NINGUNA presentación comprable (todo agotado) se deja el botón
+// nativo (texto "Ver opciones" vía ppv2_loop_add_to_cart_text).
+add_filter( 'woocommerce_loop_add_to_cart_link', 'ppv2_loop_variable_agregar', 5, 3 );
+function ppv2_loop_variable_agregar( $html, $product, $args = array() ) {
+	if ( ! ppv2_is_shop_context() && ! is_product() ) {
+		return $html;
+	}
+	if ( ! $product instanceof WC_Product || ! $product->is_type( 'variable' ) ) {
+		return $html;
+	}
+	$pres = ppv2_card_presentaciones( $product );
+	if ( empty( $pres ) ) {
+		return $html;
+	}
+	// href = ficha (fallback sin JS); data-product_id = variación seleccionada.
+	$class = 'button add_to_cart_button ajax_add_to_cart product_type_variation pp-add-single';
+	return sprintf(
+		'<a href="%s" data-quantity="1" data-product_id="%d" class="%s" rel="nofollow">%s</a>',
+		esc_url( get_permalink( $product->get_id() ) ),
+		esc_attr( $pres[0]['id'] ),
+		esc_attr( $class ),
+		esc_html__( 'Agregar', 'listeo-child' )
+	);
+}
+
+// JS de las pastillas del PLP (clic = cambia precio + variación del botón).
+// Se carga en tienda/categorías Y en la ficha (los "sugeridos" usan la misma
+// tarjeta). Archivo mínimo, en footer, cache-bust por filemtime.
+add_action( 'wp_enqueue_scripts', 'ppv2_plp_assets' );
+function ppv2_plp_assets() {
+	$es_plp = ppv2_is_shop_context() || ( function_exists( 'is_product' ) && is_product() );
+	if ( ! $es_plp ) {
+		return;
+	}
+	$dir = get_stylesheet_directory();
+	if ( ! file_exists( $dir . '/js/pp-plp.js' ) ) {
+		return;
+	}
+	wp_enqueue_script( 'pp-plp', get_stylesheet_directory_uri() . '/js/pp-plp.js', array( 'jquery' ), filemtime( $dir . '/js/pp-plp.js' ), true );
 }
 
 // 2) Cabecera del panel (título + cerrar) dentro de la barra lateral de la tienda.
