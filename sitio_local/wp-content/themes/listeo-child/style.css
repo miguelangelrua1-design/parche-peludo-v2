@@ -5,7 +5,7 @@ Description:  Tema Hijo personalizado para la optimizacion visual de Parche Pelu
 Author:       AntiGravity & Claude Code (Advanced Agentic Coding)
 Author URI:   https://google.com
 Template:     listeo
-Version:      2.0.29
+Version:      2.0.31
 License:      GNU General Public License v2 or later
 License URI:  http://www.gnu.org/licenses/gpl-2.0.html
 Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
@@ -10629,23 +10629,34 @@ body.single-product div.product .up-sells > h2 {
   margin: 0 0 22px;
 }
 @media (max-width: 767px) {
-  /* Carrusel horizontal deslizable, como tienda_pdp_mobile.html. Gana a la
-     grilla de 2 columnas del bloque PLP por especificidad (3 clases). */
-  body.single-product div.product .related ul.products,
-  body.single-product div.product .up-sells ul.products {
+  /* Carrusel horizontal deslizable, como tienda_pdp_mobile.html.
+     OJO: la sección .related/.up-sells va FUERA de div.product (Listeo cierra
+     ese div antes de los sugeridos), por eso el selector NO lleva div.product
+     — con eso NUNCA hacía match y en móvil se veía como la grilla del PLP.
+     Con `.related.products` (4 clases con body/single-product) gana a
+     `.listeo-shop-grid ul.products` (grilla PLP, 2 clases). */
+  body.single-product .related.products ul.products,
+  body.single-product .up-sells ul.products {
     display: flex !important;
+    flex-wrap: nowrap !important;        /* CLAVE: Woo pone wrap por defecto y con
+                                            tarjetas al 78% se envolvían 1 por fila
+                                            (parecía lista vertical). nowrap = 1 fila. */
+    grid-template-columns: none !important;
     overflow-x: auto;
-    gap: 14px;
+    gap: 12px;
     padding: 2px 2px 10px;
+    margin: 0 !important;
     scroll-snap-type: x proximity;
     scrollbar-width: none;
   }
-  body.single-product div.product .related ul.products::-webkit-scrollbar,
-  body.single-product div.product .up-sells ul.products::-webkit-scrollbar { display: none; }
-  body.single-product div.product .related ul.products li.product,
-  body.single-product div.product .up-sells ul.products li.product {
-    flex: 0 0 200px;
-    min-width: 200px;
+  body.single-product .related.products ul.products::-webkit-scrollbar,
+  body.single-product .up-sells ul.products::-webkit-scrollbar { display: none; }
+  body.single-product .related.products ul.products li.product.pp-product-card,
+  body.single-product .up-sells ul.products li.product.pp-product-card {
+    flex: 0 0 78% !important;
+    max-width: 240px;
+    min-width: 0 !important;
+    width: auto !important;
     scroll-snap-align: start;
   }
 }
