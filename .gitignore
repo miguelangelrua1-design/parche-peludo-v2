@@ -27,3 +27,4 @@ _parchepeludo.com/
 /sitio_local/wp-content/plugins/*
 !/sitio_local/wp-content/plugins/pp-chat-listados/
 !/sitio_local/wp-content/plugins/pp-personalizacion/
+!/sitio_local/wp-content/plugins/pp-busqueda-franjas/

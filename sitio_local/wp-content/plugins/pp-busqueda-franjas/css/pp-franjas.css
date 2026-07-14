@@ -1,0 +1,868 @@
+/**
+ * Búsqueda por franjas — estilos del panel.
+ * Look consistente con las píldoras/filtros de Listeo en Parche Peludo.
+ */
+
+.pp-franjas {
+	display: flex;
+	flex-direction: column; /* título arriba, fila de controles abajo */
+	align-items: stretch;
+	gap: 8px;
+	margin: 0 0 18px;
+	padding: 10px 12px;
+	background: #fff;
+	border: 1px solid #e4e4e4;
+	border-radius: 12px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+	transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Fila funcional: en línea cuando hay ancho; si el espacio aprieta (columna
+   angosta junto al botón "Mostrar Filtros") envuelve en vez de forzar al
+   panel entero a bajar. */
+.pp-franjas__fila {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.pp-franjas__titulo {
+	font-weight: 700;
+	font-size: 15px;
+	color: #333;
+	white-space: nowrap;
+	flex: 0 0 auto;
+}
+
+.pp-franjas__titulo .fa {
+	color: #79c8d0; /* teal de la marca */
+	margin-right: 4px;
+}
+
+.pp-franjas__fecha,
+.pp-franjas__hora,
+.pp-franjas__entrada,
+.pp-franjas__salida {
+	height: 42px;
+	padding: 0 10px;
+	margin: 0;
+	border: 1px solid #dbdbdb;
+	border-radius: 8px;
+	background: #fbfbfb;
+	font-size: 14px;
+	line-height: 40px;
+	color: #444;
+}
+
+.pp-franjas__hora {
+	min-width: 92px;
+}
+
+/* Los grupos de campos (franja / rango) fluyen como sus hermanos. */
+.pp-franjas__grupo {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	flex: 0 0 auto;
+}
+
+/* !important: reglas de layout más específicas (p. ej. las de móvil, que
+   ponen display:flex a los grupos) NUNCA deben revivir al modo oculto. */
+.pp-franjas__grupo[hidden] {
+	display: none !important;
+}
+
+.pp-franjas__flecha {
+	color: #9aa0a6;
+	font-weight: 600;
+}
+
+/* ---------------- Selector de servicio (desplegable propio) ---------------- */
+
+.pp-franjas__servicio.ppfs {
+	position: relative;
+	flex: 0 1 220px;
+	min-width: 170px;
+}
+
+.ppfs__toggle {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	height: 42px;
+	padding: 0 12px;
+	margin: 0;
+	border: 1px solid #dbdbdb;
+	border-radius: 8px;
+	background: #fbfbfb;
+	font-size: 14px;
+	font-weight: 600;
+	color: #333;
+	cursor: pointer;
+	text-align: left;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ppfs__toggle:hover {
+	border-color: #c7c7c7;
+}
+
+.ppfs--open .ppfs__toggle {
+	border-color: #79c8d0;
+	box-shadow: 0 0 0 3px rgba(121, 200, 208, 0.25);
+}
+
+.ppfs__icon {
+	color: #79c8d0;
+	font-size: 16px;
+	width: 18px;
+	text-align: center;
+	flex: 0 0 auto;
+}
+
+.ppfs__label {
+	flex: 1 1 auto;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ppfs__caret {
+	color: #9aa0a6;
+	font-size: 14px;
+	flex: 0 0 auto;
+	transition: transform 0.15s ease;
+}
+
+.ppfs--open .ppfs__caret {
+	transform: rotate(180deg);
+}
+
+.ppfs__list {
+	position: absolute;
+	top: calc(100% + 6px);
+	left: 0;
+	z-index: 40;
+	min-width: 260px;
+	margin: 0;
+	padding: 6px;
+	list-style: none;
+	background: #fff;
+	border: 1px solid #e4e4e4;
+	border-radius: 10px;
+	box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+	max-height: 340px;
+	overflow-y: auto;
+}
+
+.ppfs__list[hidden] {
+	display: none;
+}
+
+.ppfs__opt {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 9px 10px;
+	border-radius: 8px;
+	font-size: 14px;
+	color: #333;
+	cursor: pointer;
+	transition: background 0.12s ease;
+}
+
+.ppfs__opt:hover {
+	background: #f2faf8;
+}
+
+.ppfs__opt--sel {
+	background: #e6f6f2;
+}
+
+.ppfs__optico {
+	color: #79c8d0;
+	font-size: 16px;
+	width: 20px;
+	text-align: center;
+	flex: 0 0 auto;
+}
+
+.ppfs__optnom {
+	flex: 1 1 auto;
+}
+
+/* Sin oferta en el contexto: deshabilitado y "(sin resultados)". */
+.ppfs__opt--off {
+	cursor: default;
+	color: #b3b3b3;
+}
+
+.ppfs__opt--off:hover {
+	background: transparent;
+}
+
+.ppfs__opt--off .ppfs__optico {
+	color: #cfcfcf;
+}
+
+.ppfs__off {
+	font-size: 12px;
+	color: #b3b3b3;
+	flex: 0 0 auto;
+}
+
+.pp-franjas__buscar.button {
+	height: 42px;
+	margin: 0; /* la clase .button del tema trae margin-right:6px */
+	padding: 0 18px;
+	border-radius: 8px;
+	background: #6c757d; /* gris de marca (pastilla "Tienda") */
+	border: none;
+	color: #fff;
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 42px;
+	white-space: nowrap;
+	cursor: pointer;
+	flex: 0 0 auto;
+	transition: background 0.2s ease;
+}
+
+.pp-franjas__buscar.button:hover {
+	background: #5a6b70; /* --ink-muted de la marca */
+	color: #fff;
+}
+
+.pp-franjas__buscar.button .fa {
+	margin-right: 6px;
+}
+
+/* En la tarjeta de la barra, el botón va más redondeado (mockup). */
+body.pp-barra-superior .pp-franjas__buscar.button {
+	border-radius: 12px;
+}
+
+.pp-franjas__quitar {
+	height: 42px;
+	padding: 0 12px;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	background: #f6f6f6;
+	color: #666;
+	font-size: 13px;
+	white-space: nowrap;
+	cursor: pointer;
+	flex: 0 0 auto;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.pp-franjas__quitar:hover {
+	background: #fdeeee;
+	color: #c0392b;
+	border-color: #f3d1d1;
+}
+
+/* Pie: fila propia bajo la fila funcional, con el estado (texto verde) y
+   el botón Quitar. Solo visible cuando el filtro está aplicado. */
+.pp-franjas__pie {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.pp-franjas__pie[hidden] {
+	display: none;
+}
+
+.pp-franjas__estado {
+	font-size: 13px;
+	color: #4aa5ad;
+	font-weight: 600;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Filtro aplicado: borde teal sutil para que se note el estado. */
+.pp-franjas--activa {
+	border-color: #79c8d0;
+}
+
+/* Falta fecha u hora al pulsar Buscar: sacudida + borde rojo momentáneo. */
+.pp-franjas--error {
+	border-color: #e74c3c;
+	animation: pp-franjas-shake 0.35s ease;
+}
+
+@keyframes pp-franjas-shake {
+	0%, 100% { transform: translateX(0); }
+	25% { transform: translateX(-4px); }
+	75% { transform: translateX(4px); }
+}
+
+/* (El estilo móvil del panel vive más abajo, en el bloque
+   @media (max-width: 992px) del layout de la barra.) */
+
+/* ============================================================
+   BARRA SUPERIOR (layout Rover — solo con body.pp-barra-superior,
+   es decir Directorio/Guardería): la fila Mostrar Filtros +
+   Disponibilidad cruza todo el ancho entre el header y las columnas
+   resultados|mapa. La página no hace scroll (la columna sí), así que
+   la barra queda fija por sí sola y el mapa arranca debajo de ella.
+   ============================================================ */
+
+body.pp-barra-superior .pp-franjas-topbar {
+	position: relative;
+	z-index: 60; /* por encima de las columnas y el mapa */
+	background: #f8fafb;
+	padding: 14px 30px;
+	display: flex;
+	justify-content: center; /* centra el grupo (botón + Disponibilidad) */
+}
+
+/* ---- Anti-salto (FOUC) ----
+   Con la barra activa, la fila de botones nace INVISIBLE (reserva su
+   espacio) y el JS la revela ya montada (botón "Buscar disponibilidad",
+   panel y reubicaciones incluidos) — así el primer pintado no muestra la
+   versión "a medias". Red de seguridad: si el JS no llegara a correr, una
+   animación CSS la revela sola a los 0.9s (nunca queda oculta). */
+body.pp-barra-superior .filters-container .filter-button-container {
+	visibility: hidden;
+	animation: pp-franjas-revelar 0s 0.9s forwards;
+}
+
+body.pp-barra-superior .filters-container .filter-button-container.pp-franjas-listo,
+body.pp-barra-superior .pp-franjas-topbar .filter-button-container {
+	visibility: visible;
+	animation: none;
+}
+
+@keyframes pp-franjas-revelar {
+	to { visibility: visible; }
+}
+
+/* El grupo (Mostrar Filtros + Disponibilidad) abraza su contenido; la barra
+   lo centra. align-items:flex-start alinea el botón con la LÍNEA PRINCIPAL
+   (no con el bloque completo cuando el pie aparece debajo). */
+body.pp-barra-superior .pp-franjas-topbar .filter-button-container {
+	display: flex;
+	align-items: flex-start;
+	flex-wrap: wrap;
+	gap: 12px;
+	width: auto;
+}
+
+/* Diseño de la barra (mockup 2026-07-12, iterado): contenedor TRANSPARENTE
+   (sin fondo blanco ni sombra), en COLUMNA — la línea principal
+   (.pp-franjas__principal) arriba y el pie (estado + Quitar) centrado
+   debajo. Ambos centrados. */
+body.pp-barra-superior .pp-franjas {
+	flex-direction: column;
+	align-items: flex-start; /* el pie arranca donde empieza el módulo (izquierda) */
+	gap: 8px;
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	padding: 0;
+	margin: 0;
+	flex: 0 1 auto; /* abraza su contenido para que el conjunto quede centrado */
+}
+
+/* Línea principal: insignia + "Disponibilidad" + selector + fecha/hora +
+   "Buscar disponibles", TODO en una sola fila. position:relative para anclar
+   el separador punteado a su izquierda. */
+body.pp-barra-superior .pp-franjas__principal {
+	display: flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	gap: 12px;
+	position: relative;
+	min-height: 46px; /* igual al botón "Mostrar Filtros": quedan alineados */
+}
+
+body.pp-barra-superior .pp-franjas__titulo {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 15px;
+	color: #1e2e33; /* navy de la marca */
+}
+
+/* El calendario como INSIGNIA: caja teal clara redondeada. */
+body.pp-barra-superior .pp-franjas__titulo .fa {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 9px;
+	background: #e8f4f6;
+	color: #4aa5ad;
+	font-size: 16px;
+	margin-right: 0;
+}
+
+/* La fila funcional es un BLOQUE RÍGIDO de una sola línea, hermano del
+   título: selector, fecha, hora y "Buscar disponibles" (al final) NUNCA
+   se parten a otra fila. */
+body.pp-barra-superior .pp-franjas__fila {
+	flex: 0 0 auto;
+	flex-wrap: nowrap;
+}
+
+/* El pie (texto verde + Quitar) va DEBAJO de la línea principal y ARRANCA
+   donde empieza el módulo (alineado a la izquierda, no centrado). */
+body.pp-barra-superior .pp-franjas__pie {
+	justify-content: flex-start;
+}
+
+/* ---- Ajustes SOLO desktop de la barra (no tocan móvil) ---- */
+@media (min-width: 993px) {
+	/* (1) Quitar la "X": al abrir el panel de filtros el tema cambia el
+	   ícono de filtros por una X (close.svg en i:before). Aquí el botón
+	   CONSERVA el ícono de filtros — la señal de "abierto" la da el color. */
+	body.pp-barra-superior .enable-filters-button.active i:before {
+		opacity: 0 !important; /* sin X */
+	}
+	body.pp-barra-superior .enable-filters-button.active i:after {
+		opacity: 1 !important; /* mantiene el ícono de filtros */
+	}
+
+	/* (2) Estado ABIERTO ("Ocultar Filtros") en teal PROFUNDO de marca
+	   (#1e5d64), claramente distinto del teal claro de "Mostrar Filtros"
+	   (#79c8d0, cerrado): el cambio de color avisa que el panel se desplegó.
+	   El hover del estado cerrado sigue siendo el teal medio del tema hijo. */
+	body.pp-barra-superior .enable-filters-button.active span,
+	body.pp-barra-superior .enable-filters-button.active i {
+		background-color: #1e5d64 !important;
+	}
+
+	/* (3) Separador vertical CORTO y PUNTEADO entre "Mostrar Filtros" y la
+	   sección de Disponibilidad. ABSOLUTO (fuera del flujo) para que NO
+	   desplace el badge: así el módulo —y el pie de abajo— arrancan en la
+	   misma x. Se ubica en el espacio entre el botón y el badge. */
+	body.pp-barra-superior .pp-franjas__principal::before {
+		content: "";
+		position: absolute;
+		left: -8px;
+		top: 10px;
+		height: 26px;
+		border-left: 2px dotted #b9c4c6;
+	}
+}
+
+/* El tema desplaza el botón (left:48px, top:4px) para su layout viejo:
+   dentro de la barra va alineado normal. */
+body.pp-barra-superior .pp-franjas-topbar .enable-filters-button {
+	left: 0;
+	top: 0;
+	margin: 0;
+}
+
+/* Scroll tipo Rover (SOLO desktop): la PÁGINA scrollea normal — header y
+   barra se van con el scroll — y el que queda anclado es el MAPA (sticky),
+   mientras la lista de resultados fluye con el documento. Para eso se
+   desbloquea el candado de scroll del template (body overflow:hidden +
+   columna con scroll interno). En MÓVIL no se toca nada: el template
+   conserva su layout nativo (mapa arriba con "Mostrar Mapa", etc.). */
+@media (min-width: 993px) {
+	body.pp-barra-superior.page-template-template-split-map-sidebar,
+	body.pp-barra-superior.halfsidebar-archive-listings-layout {
+		max-height: none;
+		overflow: visible;
+	}
+
+	body.pp-barra-superior .full-page-container.full-page-jobs {
+		height: auto !important;
+	}
+
+	body.pp-barra-superior .full-page-content-container {
+		overflow-y: visible;
+		max-height: none;
+		height: auto;
+	}
+
+	/* El MAPA queda fijo ocupando la pantalla mientras la lista scrollea. */
+	body.pp-barra-superior .full-page-map-container {
+		position: sticky;
+		top: 0;
+		height: 100vh;
+		align-self: flex-start;
+	}
+
+	/* El sidebar de "Mostrar Filtros" también queda anclado al abrirse. */
+	body.pp-barra-superior .full-page-container.full-page-jobs .full-page-sidebar {
+		position: sticky;
+		top: 0;
+		max-height: 100vh;
+		align-self: flex-start;
+	}
+}
+
+/* ============================================================
+   MÓVIL (≤992px): el módulo se abre bajo demanda con el botón
+   "Buscar disponibilidad", junto a "Mostrar Filtros".
+   ============================================================ */
+@media (max-width: 992px) {
+	/* --- Los dos botones (Mostrar Filtros + Buscar disponibilidad),
+	   centrados en una fila. --- */
+	body.pp-barra-superior .filters-container .filter-button-container {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: 6px;
+		/* Contenedor a todo el ancho; los dos botones se centran en su fila y
+		   el panel (flex:1 1 100%) baja a la suya. Así el centrado se mantiene
+		   IGUAL esté cerrado o abierto (antes con width:fit-content el panel
+		   descuadraba la fila de botones al desplegarse). */
+		width: 100%;
+	}
+	/* Padding lateral mínimo: los dos botones deben caber juntos también en
+	   Androids de 360px (el par mide ~335px). !important: el tema fija su
+	   propio padding con más peso en las páginas de categoría. */
+	body.pp-barra-superior .filters-container {
+		padding-left: 4px !important;
+		padding-right: 4px !important;
+	}
+	/* El icono de "Mostrar Filtros" es absoluto en left:-46px (diseño del
+	   tema, con corrimiento left:48px): lo neutralizamos y reservamos su
+	   ancho para que la pastilla completa entre en el flujo y la pareja
+	   quede realmente centrada, sin salirse por la izquierda. */
+	body.pp-barra-superior .filters-container .enable-filters-button {
+		left: 0;
+		top: 0;
+		margin-left: 46px;
+	}
+
+	/* Botón "Buscar disponibilidad": GRIS de marca (distinto del teal de
+	   "Mostrar Filtros"). */
+	.pp-franjas__abrir {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		height: 46px;
+		padding: 0 10px;
+		border: none;
+		border-radius: 100px;
+		background: #6c757d;
+		color: #fff;
+		font-weight: 600;
+		font-size: 13px;
+		white-space: nowrap;
+		cursor: pointer;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		transition: background 0.2s ease;
+	}
+	.pp-franjas__abrir--activo {
+		background: #5a6b70; /* gris oscuro al abrir */
+	}
+	/* La "✕" de cerrar solo se ve cuando el panel está abierto. */
+	.pp-franjas__abrir-x {
+		display: none;
+		font-size: 18px;
+		line-height: 1;
+	}
+	.pp-franjas__abrir--activo .pp-franjas__abrir-x {
+		display: inline;
+	}
+
+	/* MÓVIL: el título "Disponibilidad" (insignia + texto) NO se muestra —
+	   el botón "Buscar disponibilidad/Cerrar" ya da el contexto. En desktop
+	   sí se conserva (esta regla vive dentro del @media móvil). */
+	body.pp-barra-superior .pp-franjas__titulo {
+		display: none;
+	}
+
+	/* CENTRADO (cerrado Y abierto): en móvil los botones viven dentro de
+	   .pp-franjas-row junto al panel. Centramos AHÍ los dos botones; el panel
+	   (flex:1 1 100%) baja a su propia fila. Así el par queda centrado esté
+	   el panel oculto o desplegado. */
+	body.pp-barra-superior .pp-franjas-row {
+		justify-content: center;
+		align-items: center;
+		gap: 6px;
+	}
+
+	/* --- Panel: cerrado por defecto; al abrir baja a su propia fila, a todo
+	   el ancho, APILADO y contenido en el viewport (sin cortes). --- */
+	.pp-franjas--movil {
+		display: none;
+	}
+	body.pp-barra-superior .pp-franjas--movil.pp-franjas--abierta {
+		display: flex;
+		flex: 1 1 100%;
+		width: 100%;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 12px;
+		padding: 0;
+		margin-top: 4px;
+	}
+	body.pp-barra-superior .pp-franjas__principal {
+		display: flex;
+		flex-direction: column;   /* título arriba, controles apilados */
+		align-items: stretch;
+		gap: 10px;
+		min-height: 0;
+		width: 100%;
+	}
+	body.pp-barra-superior .pp-franjas__principal::before {
+		display: none;            /* sin separador punteado en móvil */
+	}
+	body.pp-barra-superior .pp-franjas__fila {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		width: 100%;
+		gap: 10px;
+	}
+	/* Cada control a todo el ancho, con box-sizing para no desbordar.
+	   flex:0 0 auto es CLAVE: el flex-basis de desktop (p. ej. 220px del
+	   selector) es ANCHO en fila, pero dentro de la columna móvil se
+	   volvería ALTURA (220px de aire blanco). */
+	body.pp-barra-superior .pp-franjas__servicio.ppfs,
+	body.pp-barra-superior .ppfs__toggle,
+	body.pp-barra-superior .pp-franjas__grupo,
+	body.pp-barra-superior .pp-franjas__buscar.button {
+		width: 100%;
+		min-width: 0;
+		box-sizing: border-box;
+		flex: 0 0 auto;
+	}
+	/* Fecha + hora (y entrada/salida en modo rango) lado a lado en su grupo. */
+	body.pp-barra-superior .pp-franjas__grupo {
+		display: flex;
+		flex-direction: row;
+		gap: 8px;
+	}
+	body.pp-barra-superior .pp-franjas__grupo .pp-franjas__fecha,
+	body.pp-barra-superior .pp-franjas__grupo .pp-franjas__entrada,
+	body.pp-barra-superior .pp-franjas__grupo .pp-franjas__salida {
+		flex: 1 1 0;
+		min-width: 0;
+		box-sizing: border-box;
+	}
+	body.pp-barra-superior .pp-franjas__grupo .pp-franjas__hora {
+		flex: 0 0 108px;
+		box-sizing: border-box;
+	}
+	/* Desplegable de servicios a todo el ancho. */
+	body.pp-barra-superior .pp-franjas__servicio.ppfs .ppfs__list {
+		width: 100%;
+		min-width: 0;
+	}
+	/* Pie: estado + Quitar a la izquierda, con salto si hace falta. */
+	body.pp-barra-superior .pp-franjas__pie {
+		flex-wrap: wrap;
+		justify-content: flex-start;
+	}
+	body.pp-barra-superior .pp-franjas__estado {
+		white-space: normal;
+	}
+}
+
+/* El botón móvil jamás aparece en desktop. */
+@media (min-width: 993px) {
+	.pp-franjas__abrir {
+		display: none;
+	}
+}
+
+/* El contenedor de filtros de la columna conserva solo el título de la
+   página: sin el aire enorme que tenía para la fila de filtros. */
+body.pp-barra-superior .full-page-jobs .filters-container {
+	padding-top: 20px;
+	padding-bottom: 0;
+}
+
+/* ============================================================
+   Variante CABEZOTE: el panel vive en la fila del botón
+   "Mostrar Filtros" (donde estaba el carrusel de categorías).
+   ============================================================ */
+
+/* Fila propia (la crea el JS) que junta, como componentes HERMANOS, el botón
+   "Mostrar Filtros" del tema a la izquierda y el panel de Disponibilidad a la
+   derecha. Si el ancho aprieta, el panel baja bajo el botón (flex-wrap). */
+.pp-franjas-row {
+	display: flex;
+	align-items: flex-start; /* el botón se alinea al tope del panel */
+	flex-wrap: wrap;
+	gap: 12px;
+	width: 100%;
+}
+
+.pp-franjas-row .enable-filters-button {
+	flex: 0 0 auto; /* el botón conserva su ancho natural, a la izquierda */
+	/* El tema desplaza este botón con left:48px (para su layout con la barra
+	   lateral); dentro de nuestra fila eso lo solaparía con el panel. Lo
+	   dejamos en su posición de flujo. */
+	left: 0;
+	right: auto;
+}
+
+.pp-franjas--cabezote {
+	flex: 1 1 0%; /* toma el espacio restante junto al botón */
+	min-width: 280px;
+	margin: 0;
+}
+
+/* ============================================================
+   CALENDARIO (jQuery UI Datepicker) — solo desktop, estilizado con la
+   marca. Todo va acotado a .pp-franjas-dp (clase que el JS añade al popup
+   compartido SOLO cuando abre uno de nuestros campos) para no tocar otros
+   datepickers del tema. Sin coloreado de disponibilidad (Nivel A).
+   ============================================================ */
+.ui-datepicker.pp-franjas-dp {
+	width: 264px;
+	padding: 10px;
+	background: #fff;
+	border: 1px solid #e4e4e4;
+	border-radius: 12px;
+	box-shadow: 0 8px 28px rgba(30, 46, 51, 0.14);
+	font-size: 13px;
+	z-index: 100 !important; /* por encima de la barra (z-index 60) */
+}
+
+.pp-franjas-dp .ui-datepicker-header {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 30px;
+	margin-bottom: 6px;
+}
+
+.pp-franjas-dp .ui-datepicker-title {
+	font-weight: 700;
+	color: #1e2e33; /* navy de marca */
+	text-transform: capitalize;
+}
+
+.pp-franjas-dp .ui-datepicker-prev,
+.pp-franjas-dp .ui-datepicker-next {
+	position: absolute;
+	top: 1px;
+	width: 28px;
+	height: 28px;
+	border-radius: 8px;
+	cursor: pointer;
+	text-indent: -9999px; /* oculta el texto por defecto de jQuery UI */
+	overflow: hidden;
+}
+
+.pp-franjas-dp .ui-datepicker-prev { left: 0; }
+.pp-franjas-dp .ui-datepicker-next { right: 0; }
+
+.pp-franjas-dp .ui-datepicker-prev:hover,
+.pp-franjas-dp .ui-datepicker-next:hover { background: #eef6f7; }
+
+/* Flechas dibujadas con bordes (sin imágenes). */
+.pp-franjas-dp .ui-datepicker-prev::after,
+.pp-franjas-dp .ui-datepicker-next::after {
+	content: "";
+	position: absolute;
+	top: 9px;
+	width: 8px;
+	height: 8px;
+	border-top: 2px solid #4aa5ad;
+	border-right: 2px solid #4aa5ad;
+}
+.pp-franjas-dp .ui-datepicker-prev::after { left: 11px; transform: rotate(-135deg); }
+.pp-franjas-dp .ui-datepicker-next::after { left: 7px; transform: rotate(45deg); }
+
+/* Meses fuera de rango: la flecha se atenúa (jQuery UI marca el estado). */
+.pp-franjas-dp .ui-datepicker-prev.ui-state-disabled,
+.pp-franjas-dp .ui-datepicker-next.ui-state-disabled { opacity: 0.35; cursor: default; }
+
+.pp-franjas-dp .ui-datepicker-calendar {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.pp-franjas-dp .ui-datepicker-calendar th {
+	font-weight: 600;
+	color: #8a9aa0;
+	font-size: 11px;
+	padding: 6px 0;
+	text-transform: capitalize;
+}
+
+.pp-franjas-dp .ui-datepicker-calendar td {
+	padding: 2px;
+	text-align: center;
+}
+
+.pp-franjas-dp .ui-datepicker-calendar td a,
+.pp-franjas-dp .ui-datepicker-calendar td span {
+	display: block;
+	padding: 7px 0;
+	border-radius: 8px;
+	text-decoration: none;
+	color: #333;
+	font-weight: 500;
+}
+
+.pp-franjas-dp .ui-datepicker-calendar td a:hover {
+	background: #eef6f7;
+	color: #1e2e33;
+}
+
+/* Día seleccionado: teal de marca. */
+.pp-franjas-dp .ui-datepicker-calendar td a.ui-state-active {
+	background: #4aa5ad;
+	color: #fff;
+}
+
+/* Hoy: anillo teal claro. */
+.pp-franjas-dp .ui-datepicker-calendar td.ui-datepicker-today a {
+	box-shadow: inset 0 0 0 1px #79c8d0;
+}
+
+/* Días no seleccionables (pasados / fuera de rango): atenuados. */
+.pp-franjas-dp .ui-datepicker-calendar td.ui-datepicker-unselectable span,
+.pp-franjas-dp .ui-datepicker-calendar td.ui-state-disabled span {
+	color: #cfcfcf;
+	background: transparent;
+}
+
+/* Los campos de fecha con datepicker (readonly): cursor de mano E igualar
+   altura/fuente a los demás controles. Al pasar de type=date a type=text el
+   input hereda el estilo global de inputs de texto del tema (51px / 15px):
+   lo forzamos a la medida del panel (42px / 14px). !important porque la regla
+   del tema para input[type=text] gana en especificidad. */
+.pp-franjas__dp {
+	cursor: pointer;
+	background: #fbfbfb;
+	height: 42px !important;
+	box-sizing: border-box !important;
+	padding: 0 10px !important;
+	margin: 0 !important;
+	font-size: 14px !important;
+	line-height: 40px !important;
+	color: #444 !important;
+}
+
+.pp-franjas__dp::placeholder {
+	font-size: 14px;
+	font-weight: 500;  /* igual que el texto de "Hora" (select) */
+	color: #444;
+	opacity: 1;
+}
+
+/* MÓVIL: cuando el <input type=date> nativo está vacío se muestra como texto
+   con su placeholder ("Fecha"/"Entrada"/"Salida") — que luzca como título,
+   igual que "Hora". (En desktop estos campos son el datepicker .pp-franjas__dp;
+   la regla de arriba ya los cubre.) */
+.pp-franjas__fecha::placeholder,
+.pp-franjas__entrada::placeholder,
+.pp-franjas__salida::placeholder {
+	font-size: 14px;
+	font-weight: 500;
+	color: #444;
+	opacity: 1;
+}
