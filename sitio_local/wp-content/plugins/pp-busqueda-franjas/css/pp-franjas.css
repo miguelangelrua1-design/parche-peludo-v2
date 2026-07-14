@@ -656,13 +656,14 @@ body.pp-barra-superior .pp-franjas-topbar .enable-filters-button {
 		width: 100%;
 		min-width: 0;
 	}
-	/* Pie: estado + Quitar a la izquierda, con salto si hace falta. */
+	/* Pie: estado + Quitar CENTRADOS en móvil, con salto si hace falta. */
 	body.pp-barra-superior .pp-franjas__pie {
 		flex-wrap: wrap;
-		justify-content: flex-start;
+		justify-content: center;
 	}
 	body.pp-barra-superior .pp-franjas__estado {
 		white-space: normal;
+		text-align: center;
 	}
 }
 
