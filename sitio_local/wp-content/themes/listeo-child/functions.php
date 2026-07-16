@@ -435,6 +435,18 @@ function ppv2_plp_assets() {
 	}
 }
 
+// Paginación de la tienda en UNA sola fila: menos números (Woo trae end_size 3
+// y mid_size 3 → hasta 13 pastillas, que se partían en 2-3 filas). Con 1 y 1
+// queda "← 1 … 5 6 7 … 22 →" (máx. 9 ítems), que cabe en una fila incluso en
+// móvil (con las pastillas compactas del CSS v13). Filtro nativo de Woo; aplica
+// también a la paginación que trae la carga progresiva (se renderiza igual).
+add_filter( 'woocommerce_pagination_args', 'ppv2_paginacion_compacta' );
+function ppv2_paginacion_compacta( $args ) {
+	$args['mid_size'] = 1;
+	$args['end_size'] = 1;
+	return $args;
+}
+
 // 2) Cabecera del panel (título + cerrar) dentro de la barra lateral de la tienda.
 add_action( 'dynamic_sidebar_before', 'ppv2_shop_filters_head', 10, 2 );
 function ppv2_shop_filters_head( $index, $has_widgets ) {

@@ -5,7 +5,7 @@ Description:  Tema Hijo personalizado para la optimizacion visual de Parche Pelu
 Author:       AntiGravity & Claude Code (Advanced Agentic Coding)
 Author URI:   https://google.com
 Template:     listeo
-Version:      2.0.35
+Version:      2.0.36
 License:      GNU General Public License v2 or later
 License URI:  http://www.gnu.org/licenses/gpl-2.0.html
 Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
@@ -11168,3 +11168,24 @@ body.single-product .pp-pdp-agotado-btn {
   animation: pp-spin .7s linear infinite;
 }
 @keyframes pp-spin { to { transform: rotate(360deg); } }
+
+
+/* ============================================================
+   PPV2 — TIENDA · v13: paginación SIEMPRE en una fila
+   Acompaña al filtro ppv2_paginacion_compacta (mid/end_size 1 →
+   máx. 9 pastillas). En móvil se compactan para que la fila
+   completa quepa en 375px. El flex-wrap:wrap del v11 queda como
+   red de seguridad (con 9 ítems ya no se activa).
+   ============================================================ */
+@media (max-width: 767px) {
+  .listeo-shop-grid .woocommerce-pagination ul.page-numbers { gap: 5px; }
+  .listeo-shop-grid .woocommerce-pagination ul.page-numbers li .page-numbers {
+    /* width:auto ES la clave: listeo-core (frontend.css) fija width:52px en
+       cada pastilla y con 9 ítems eso desborda los 375px → segunda fila. */
+    width: auto !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    padding: 0 6px !important;
+    font-size: 12px !important;
+  }
+}
