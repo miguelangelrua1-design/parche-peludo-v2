@@ -262,25 +262,40 @@ function ppv2_shop_filters_button() {
 		. '<span>Filtros</span></button>';
 }
 
-// Botón "Agregar" en las tarjetas de la TIENDA: texto corto (solo en tienda/categoría).
+// Contexto donde vive la tarjeta rediseñada (pp-product-card): tienda,
+// categorías Y la ficha de producto (sugeridos/upsells usan la misma tarjeta).
+// Los tres filtros del botón deben usar ESTE helper — antes el texto y el
+// ícono solo cubrían la tienda y en los sugeridos el botón salía con el
+// "Añadir al carrito" nativo y sin ícono.
+function ppv2_es_contexto_tarjeta() {
+	return ppv2_is_shop_context() || ( function_exists( 'is_product' ) && is_product() );
+}
+
+// Texto del botón en las tarjetas: "Agregar" / "Ver opciones" / "Agotado".
 add_filter( 'woocommerce_product_add_to_cart_text', 'ppv2_loop_add_to_cart_text', 10, 2 );
 function ppv2_loop_add_to_cart_text( $text, $product ) {
-	if ( is_admin() || ! ppv2_is_shop_context() || ! $product ) { return $text; }
-	// Variables con varias presentaciones: "Ver opciones" (las de UNA sola
-	// presentación las convierte ppv2_loop_single_variation en "Agregar").
+	if ( is_admin() || ! ppv2_es_contexto_tarjeta() || ! $product ) { return $text; }
+	// Sin stock / no comprable: el nativo dice "Leer más" (confuso). "Agotado"
+	// es honesto: no se puede agregar; el clic sigue llevando a la ficha.
+	if ( ! $product->is_purchasable() || ! $product->is_in_stock() ) {
+		return esc_html__( 'Agotado', 'listeo-child' );
+	}
+	// Variables: fallback "Ver opciones" (solo llega aquí si no hay presentación
+	// comprable con etiqueta — p. ej. datos corruptos; las sanas las reescribe
+	// ppv2_loop_variable_agregar como "Agregar" con su variación).
 	if ( $product->is_type( 'variable' ) ) {
 		return esc_html__( 'Ver opciones', 'listeo-child' );
 	}
-	if ( $product->is_purchasable() && $product->is_in_stock() ) {
-		return esc_html__( 'Agregar', 'listeo-child' );
-	}
-	return $text;
+	return esc_html__( 'Agregar', 'listeo-child' );
 }
 
-// Ícono de carrito dentro del botón "Agregar" (solo en tienda/categoría).
+// Ícono de carrito dentro del botón de las tarjetas (no en "Agotado").
 add_filter( 'woocommerce_loop_add_to_cart_link', 'ppv2_loop_add_to_cart_icon', 10, 3 );
 function ppv2_loop_add_to_cart_icon( $html, $product, $args = array() ) {
-	if ( ! ppv2_is_shop_context() ) { return $html; }
+	if ( ! ppv2_es_contexto_tarjeta() ) { return $html; }
+	if ( $product instanceof WC_Product && ( ! $product->is_purchasable() || ! $product->is_in_stock() ) ) {
+		return $html; // "Agotado": sin ícono de carrito (no hay nada que agregar)
+	}
 	$icon = '<svg class="pp-cart-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.2 11a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.2L21.5 7H6"/></svg>';
 	return preg_replace( '/(<a\b[^>]*>)/', '$1' . $icon, $html, 1 );
 }
