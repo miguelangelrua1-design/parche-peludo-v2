@@ -687,6 +687,11 @@ function ppv2_rename_no_results( $translation, $text, $domain ) {
 	return $translation;
 }
 add_filter( 'gettext_listeo_core', 'ppv2_rename_no_results', 20, 3 );
+// También en el hook genérico: en producción (listeo-core 2.0.52) el botón
+// "Login to Book" no pasaba por gettext_listeo_core (dominio distinto en esa
+// versión); el hook genérico cubre cualquier dominio. Los textos comparados
+// son exactos, así que no hay riesgo de tocar otras cadenas.
+add_filter( 'gettext', 'ppv2_rename_no_results', 20, 3 );
 
 // ppv2_account_drawer(): JS migrado a js/migrados/ppv2-account-drawer.js (2026-07-10).
 // Encolado condicional en ppv2_enqueue_js_migrados() al final de este archivo.
