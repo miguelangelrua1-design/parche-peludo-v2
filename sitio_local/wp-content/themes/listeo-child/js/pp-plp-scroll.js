@@ -2,10 +2,14 @@
  * Carga progresiva del listado de productos (PLP) — Parche Peludo V2.
  *
  * Al acercarse al final de la grilla se cargan hasta MAX_CARGAS páginas más
- * (las "siguientes" según la paginación NATIVA de WooCommerce) y después
- * vuelve a mostrarse la paginación — pero la de la ÚLTIMA página cargada,
- * cuyo "Siguiente" apunta a lo aún no visto: al paginar no se repiten
- * productos.
+ * (las "siguientes" según la paginación NATIVA de WooCommerce) de forma
+ * automática. Después, en vez de paginación, aparece el botón
+ * "Ver más productos": cada clic carga la siguiente tanda y el botón
+ * desaparece cuando ya no queda nada por mostrar (así el footer siempre es
+ * alcanzable). El botón es un ENLACE REAL a la página siguiente: los
+ * buscadores siguen recorriendo el catálogo profundo y, sin JS, el clic
+ * navega a la paginación clásica (que también queda como respaldo si una
+ * carga falla).
  *
  * - Filtros/buscador intactos: se usa el href real del enlace "siguiente"
  *   (conserva ?filter_*, orderby, s=… y cualquier parámetro).
@@ -94,26 +98,86 @@
 		} catch (e) { /* cosmético: nunca romper por esto */ }
 	}
 
-	function terminar(docFinal) {
+	// --- Botón "Ver más productos" (fase manual, tras las cargas automáticas) --
+	var botonWrap = null;
+	var boton     = null;
+	var botonInfo = null;
+
+	function desactivarScroll() {
 		window.removeEventListener('scroll', alScroll);
 		window.removeEventListener('resize', alScroll);
-		sentinel.parentNode && sentinel.parentNode.removeChild(sentinel);
-		if (docFinal) {
-			// La paginación de la ÚLTIMA página cargada: su página "actual" y su
-			// "Siguiente" ya quedan más allá de lo visto (sin repetidos).
-			var nueva = docFinal.querySelector('.woocommerce-pagination');
-			if (nueva) {
-				pag.parentNode.replaceChild(document.importNode(nueva, true), pag);
-				pag = document.querySelector('.listeo-shop-grid .woocommerce-pagination');
-			}
+		if (sentinel.parentNode) { sentinel.parentNode.removeChild(sentinel); }
+	}
+
+	function textoContador() {
+		var rc = document.querySelector('.woocommerce-result-count');
+		if (!rc) { return ''; }
+		// Primera línea con contenido ("Mostrando 1–72 de 512 resultados").
+		var linea = rc.textContent.split('\n').filter(function (s) { return s.trim(); })[0];
+		return linea ? linea.trim() : '';
+	}
+
+	function crearBoton() {
+		if (botonWrap || !nextUrl) { return; }
+		botonWrap = document.createElement('div');
+		botonWrap.className = 'pp-vermas-wrap';
+
+		botonInfo = document.createElement('div');
+		botonInfo.className = 'pp-vermas-info';
+		botonInfo.textContent = textoContador();
+
+		// Enlace REAL a la página siguiente: SEO y sin-JS siguen funcionando.
+		boton = document.createElement('a');
+		boton.className = 'pp-vermas';
+		boton.href = nextUrl;
+		boton.rel = 'nofollow';
+		boton.textContent = 'Ver más productos';
+		boton.addEventListener('click', function (e) {
+			e.preventDefault();
+			cargar();
+		});
+
+		botonWrap.appendChild(botonInfo);
+		botonWrap.appendChild(boton);
+		pag.parentNode.insertBefore(botonWrap, pag);
+	}
+
+	function actualizarBoton() {
+		if (!botonWrap) { return; }
+		if (botonInfo) { botonInfo.textContent = textoContador(); }
+		if (boton && nextUrl) { boton.href = nextUrl; }
+		if (boton) {
+			boton.classList.remove('is-loading');
+			boton.textContent = 'Ver más productos';
 		}
-		if (pag) { pag.style.display = ''; }
+	}
+
+	// Se mostró todo el catálogo: sin botón y sin paginación (fin natural).
+	function finalizar() {
+		desactivarScroll();
+		if (botonWrap) {
+			botonInfo.textContent = textoContador();
+			botonWrap.removeChild(boton);
+			boton = null;
+		}
+	}
+
+	// Error de red: restaurar la paginación clásica (respaldo seguro).
+	function fallback() {
+		desactivarScroll();
+		if (botonWrap && botonWrap.parentNode) { botonWrap.parentNode.removeChild(botonWrap); }
+		botonWrap = null;
+		pag.style.display = '';
 	}
 
 	function cargar() {
 		if (cargando || !nextUrl) { return; }
 		cargando = true;
 		sentinel.classList.add('is-loading');
+		if (boton) {
+			boton.classList.add('is-loading');
+			boton.textContent = 'Cargando…';
+		}
 
 		fetch(nextUrl, { credentials: 'same-origin' })
 			.then(function (r) {
@@ -137,13 +201,21 @@
 
 				cargando = false;
 				sentinel.classList.remove('is-loading');
-				if (cargas >= MAX_CARGAS || !nextUrl) { terminar(doc); }
+
+				if (!nextUrl) {
+					finalizar();
+					return;
+				}
+				if (cargas >= MAX_CARGAS) {
+					desactivarScroll();
+					crearBoton();
+				}
+				actualizarBoton();
 			})
 			.catch(function () {
-				// Falló la red: vuelve la paginación normal (nada queda roto).
 				cargando = false;
 				sentinel.classList.remove('is-loading');
-				terminar(null);
+				fallback();
 			});
 	}
 })();

@@ -5,7 +5,7 @@ Description:  Tema Hijo personalizado para la optimizacion visual de Parche Pelu
 Author:       AntiGravity & Claude Code (Advanced Agentic Coding)
 Author URI:   https://google.com
 Template:     listeo
-Version:      2.0.36
+Version:      2.0.37
 License:      GNU General Public License v2 or later
 License URI:  http://www.gnu.org/licenses/gpl-2.0.html
 Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
@@ -11188,4 +11188,46 @@ body.single-product .pp-pdp-agotado-btn {
     padding: 0 6px !important;
     font-size: 12px !important;
   }
+}
+
+
+/* ============================================================
+   PPV2 — TIENDA · v14: botón "Ver más productos"
+   Sustituye a la paginación tras las 2 cargas automáticas
+   (js/pp-plp-scroll.js). Píldora teal de marca + contador de
+   orientación ("Mostrando 1–72 de 512"). La paginación clásica
+   queda como respaldo de error/sin-JS (el botón es un <a> real).
+   ============================================================ */
+.pp-vermas-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 28px 0 10px;
+}
+.pp-vermas-info {
+  font: 600 12px/1.2 var(--font-sans);
+  color: var(--ink-faint);
+}
+.pp-vermas {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 250px;
+  height: 50px;
+  padding: 0 30px;
+  border-radius: 999px;
+  background: var(--teal-parche);
+  color: #fff !important;
+  font: 800 15px var(--font-sans);
+  letter-spacing: .2px;
+  text-decoration: none !important;
+  box-shadow: var(--shadow-teal);
+  transition: background var(--dur-base) var(--ease-soft), transform var(--dur-fast) var(--ease-soft);
+}
+.pp-vermas:hover { background: var(--teal-deep); color: #fff; }
+.pp-vermas:active { transform: translateY(1px); }
+.pp-vermas.is-loading { opacity: .55; pointer-events: none; }
+@media (max-width: 767px) {
+  .pp-vermas { width: 100%; min-width: 0; }
 }
