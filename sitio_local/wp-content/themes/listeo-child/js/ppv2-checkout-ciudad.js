@@ -188,9 +188,29 @@
 		if ( ! wrap || wrap.hidden ) { return; }
 		var select = wrap.querySelector( 'select' );
 		if ( input.value !== select.value ) {
-			var hay = [].some.call( select.options, function ( o ) { return o.value === input.value; } );
-			if ( hay ) {
-				select.value = input.value;
+			// Match exacto y, si no, NORMALIZADO: el autofill del navegador
+			// puede escribir "BELLO"/"bello" y sin esto el usuario veía una
+			// ciudad en el select mientras al servidor viajaba otra.
+			var exacta = null;
+			var normalizada = null;
+			var meta = normalizar( input.value );
+			[].forEach.call( select.options, function ( o ) {
+				if ( ! o.value ) { return; }
+				if ( o.value === input.value ) { exacta = o.value; }
+				if ( ! normalizada && normalizar( o.value ) === meta ) { normalizada = o.value; }
+			} );
+			if ( exacta ) {
+				select.value = exacta;
+			} else if ( normalizada ) {
+				select.value = normalizada;
+				// Devolver al input la forma canónica ("Bello"): es lo que
+				// viaja al servidor y lo que el usuario ve, ahora idénticos.
+				escribirEnInput( input, normalizada );
+			} else if ( input.value ) {
+				// Ciudad que no está en el catálogo del departamento: mostrar
+				// el input nativo para no ocultarle al usuario lo que se envía.
+				wrap.hidden = true;
+				return;
 			}
 			wrap.classList.toggle( 'ppv2-ciudad-vacia', ! select.value );
 		}

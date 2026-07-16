@@ -120,6 +120,12 @@
 
 	var PP_DEBOUNCE = 350;   // ms de espera para agrupar clics rápidos
 	var ppQtyTimers = {};    // temporizadores por producto
+	// Nº de secuencia GLOBAL de envíos. El debounce es por producto, así que
+	// editar dos productos casi a la vez genera dos AJAX en vuelo; cada
+	// respuesta trae los fragmentos COMPLETOS del minicart, y sin esta guarda
+	// la que llegara última (aunque fuera la más vieja) re-pintaba el panel
+	// con un estado obsoleto.
+	var ppReqSeq = 0;
 
 	function setCartLoading(on) {
 		var h = document.querySelector('.pp-cart-host .listeo-mini-cart');
@@ -135,9 +141,34 @@
 		}
 	}
 
+	// Re-lee la página actual (GET) y re-pinta el minicart y el badge con el
+	// estado REAL del servidor: se usa cuando un envío falla (red caída,
+	// nonce caducado, ítem inexistente) para que la cantidad optimista no
+	// quede en pantalla desincronizada del carrito real.
+	function resyncMini(mySeq) {
+		fetch(window.location.href, { credentials: 'same-origin' }).then(function (r) {
+			if (!r.ok) { throw new Error('HTTP ' + r.status); }
+			return r.text();
+		}).then(function (html) {
+			if (mySeq !== ppReqSeq) { return; } // ya hay un envío más nuevo
+			var doc = new DOMParser().parseFromString(html, 'text/html');
+			var fresh = doc.querySelector('.listeo-mini-cart');
+			var cur = document.querySelector('.pp-cart-host .listeo-mini-cart');
+			if (fresh && cur) { cur.innerHTML = fresh.innerHTML; }
+			var freshBadge = doc.querySelector('.mini-cart-button .badge');
+			if (freshBadge) {
+				var badges = document.querySelectorAll('.mini-cart-button .badge');
+				for (var i = 0; i < badges.length; i++) { badges[i].textContent = freshBadge.textContent; }
+			}
+		}).catch(function () {
+			/* sin conexión: no rompemos la página */
+		});
+	}
+
 	// Envío real al servidor (redibuja lista, subtotal y badge con los fragmentos).
 	function sendQty(key, qty) {
 		if (!key || !window.PP_MINICART || !window.jQuery) { return; }
+		var mySeq = ++ppReqSeq;
 		setCartLoading(true);
 		// .then() (Promises/A+) en lugar de .done() para máxima fiabilidad.
 		jQuery.post(PP_MINICART.ajax_url, {
@@ -145,7 +176,19 @@
 			cart_item_key: key,
 			quantity: qty,
 			nonce: PP_MINICART.nonce
-		}).then(applyFragments).then(function () { setCartLoading(false); }, function () { setCartLoading(false); });
+		}).then(function (resp) {
+			if (mySeq !== ppReqSeq) { return; } // respuesta vieja: la ignora
+			if (resp && resp.success) {
+				applyFragments(resp);
+			} else {
+				resyncMini(mySeq); // success:false (bad-key, nonce caducado): estado real
+			}
+		}, function () {
+			if (mySeq !== ppReqSeq) { return; }
+			resyncMini(mySeq); // fallo de red: estado real
+		}).then(function () {
+			if (mySeq === ppReqSeq) { setCartLoading(false); } // el loader lo apaga solo el envío más reciente
+		});
 	}
 
 	// Cambios de cantidad (+/−/input): agrupa clics rápidos y envía solo el valor final.

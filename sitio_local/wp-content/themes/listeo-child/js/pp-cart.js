@@ -14,6 +14,13 @@
 
 	var DEBOUNCE = 400;
 	var refreshTimer = null;
+	// Nº de secuencia de peticiones. Si el usuario encadena cambios rápidos
+	// (p. ej. "+" y enseguida la papelera) puede haber dos POST en vuelo y
+	// el que responda ÚLTIMO no es necesariamente el más NUEVO: sin esta
+	// guarda, una respuesta vieja re-pintaba un estado obsoleto (el producto
+	// eliminado "reaparecía"). Cada respuesta solo aplica si sigue siendo la
+	// más reciente.
+	var reqSeq = 0;
 
 	function cartForm() {
 		return document.querySelector('.woocommerce-cart-form');
@@ -28,12 +35,61 @@
 		if (w) { w.classList[on ? 'add' : 'remove']('pp-cart-busy'); }
 	}
 
+	// Aplica al DOM el HTML del carrito que devolvió el servidor.
+	function applyCartHtml(html) {
+		var wrap = cartWrap();
+		if (!wrap) { return; }
+		var doc = new DOMParser().parseFromString(html, 'text/html');
+		var fresh = doc.querySelector('div.woocommerce');
+		if (fresh) {
+			// Evita el aviso "Carrito actualizado" en cada cambio de cantidad.
+			var notices = fresh.querySelector('.woocommerce-notices-wrapper');
+			if (notices) { notices.innerHTML = ''; }
+			wrap.innerHTML = fresh.innerHTML;
+		}
+
+		// Sincroniza el contador (badge) del ícono del carrito en el header.
+		// (Este sitio no carga cart-fragments.js, así que lo hacemos a mano
+		// tomando el valor ya renderizado por el servidor en la respuesta.)
+		var freshBadge = doc.querySelector('.mini-cart-button .badge');
+		if (freshBadge) {
+			var badges = document.querySelectorAll('.mini-cart-button .badge');
+			for (var i = 0; i < badges.length; i++) { badges[i].textContent = freshBadge.textContent; }
+		}
+		// Sincroniza el contenido del panel del minicart (reubicado en <html>).
+		var freshMini = doc.querySelector('.listeo-mini-cart');
+		var curMini = document.querySelector('.pp-cart-host .listeo-mini-cart');
+		if (freshMini && curMini) { curMini.innerHTML = freshMini.innerHTML; }
+
+		if (window.jQuery) { jQuery(document.body).trigger('wc_fragment_refresh'); }
+		document.body.dispatchEvent(new CustomEvent('pp_cart_refreshed'));
+	}
+
+	// Re-lee el carrito del servidor (GET, sin cambios) y lo re-pinta: se usa
+	// cuando un POST falló, para que la UI optimista no quede mostrando una
+	// cantidad que el servidor no tiene.
+	function resyncCart(mySeq) {
+		fetch(window.location.href, {
+			credentials: 'same-origin',
+			headers: { 'X-Requested-With': 'XMLHttpRequest' }
+		}).then(function (r) {
+			if (!r.ok) { throw new Error('HTTP ' + r.status); }
+			return r.text();
+		}).then(function (html) {
+			if (mySeq !== reqSeq) { return; } // ya hay una petición más nueva
+			applyCartHtml(html);
+		}).catch(function () {
+			/* sin conexión: no rompemos la página */
+		});
+	}
+
 	// Reenvía el formulario del carrito (update_cart) y reemplaza el contenido.
 	function refreshCart() {
 		var form = cartForm();
 		var wrap = cartWrap();
 		if (!form || !wrap) { setLoading(false); return; }
 
+		var mySeq = ++reqSeq;
 		setLoading(true);
 		var fd = new FormData(form);
 		fd.append('update_cart', 'Actualizar carrito');
@@ -44,36 +100,16 @@
 			credentials: 'same-origin',
 			headers: { 'X-Requested-With': 'XMLHttpRequest' }
 		}).then(function (r) {
+			if (!r.ok) { throw new Error('HTTP ' + r.status); } // 403/500: al catch, no pintar la página de error
 			return r.text();
 		}).then(function (html) {
-			var doc = new DOMParser().parseFromString(html, 'text/html');
-			var fresh = doc.querySelector('div.woocommerce');
-			if (fresh) {
-				// Evita el aviso "Carrito actualizado" en cada cambio de cantidad.
-				var notices = fresh.querySelector('.woocommerce-notices-wrapper');
-				if (notices) { notices.innerHTML = ''; }
-				wrap.innerHTML = fresh.innerHTML;
-			}
-
-			// Sincroniza el contador (badge) del ícono del carrito en el header.
-			// (Este sitio no carga cart-fragments.js, así que lo hacemos a mano
-			// tomando el valor ya renderizado por el servidor en la respuesta.)
-			var freshBadge = doc.querySelector('.mini-cart-button .badge');
-			if (freshBadge) {
-				var badges = document.querySelectorAll('.mini-cart-button .badge');
-				for (var i = 0; i < badges.length; i++) { badges[i].textContent = freshBadge.textContent; }
-			}
-			// Sincroniza el contenido del panel del minicart (reubicado en <html>).
-			var freshMini = doc.querySelector('.listeo-mini-cart');
-			var curMini = document.querySelector('.pp-cart-host .listeo-mini-cart');
-			if (freshMini && curMini) { curMini.innerHTML = freshMini.innerHTML; }
-
-			if (window.jQuery) { jQuery(document.body).trigger('wc_fragment_refresh'); }
-			document.body.dispatchEvent(new CustomEvent('pp_cart_refreshed'));
+			if (mySeq !== reqSeq) { return; } // respuesta vieja: la ignora
+			applyCartHtml(html);
 		}).catch(function () {
-			/* si algo falla, no rompemos la página */
+			if (mySeq !== reqSeq) { return; }
+			resyncCart(mySeq); // re-lee el estado real para no dejar la UI desincronizada
 		}).then(function () {
-			setLoading(false);
+			if (mySeq === reqSeq) { setLoading(false); }
 		});
 	}
 
