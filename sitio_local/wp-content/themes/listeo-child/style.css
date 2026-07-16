@@ -5,7 +5,7 @@ Description:  Tema Hijo personalizado para la optimizacion visual de Parche Pelu
 Author:       AntiGravity & Claude Code (Advanced Agentic Coding)
 Author URI:   https://google.com
 Template:     listeo
-Version:      2.0.33
+Version:      2.0.34
 License:      GNU General Public License v2 or later
 License URI:  http://www.gnu.org/licenses/gpl-2.0.html
 Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
@@ -11110,3 +11110,32 @@ body.single-product .pp-pdp-agotado-btn {
   -webkit-appearance: none;
   appearance: none;
 }
+
+
+/* ============================================================
+   PPV2 — TIENDA · v11: paginación que rompía la maquetación
+   ============================================================
+   Síntoma: en /shop/page/N/ (páginas "profundas") la columna de
+   productos se caía DEBAJO del sidebar y salía a ancho completo,
+   dejando un hueco enorme. En las primeras páginas no pasaba.
+
+   Causa: la lista de la paginación es inline-flex con
+   flex-wrap:nowrap. En la página 1 hay 9 elementos (1 2 3 4 … 61
+   62 63) pero al avanzar Woo muestra más (13: 1 2 3 4 5 6 7 … 61
+   62 63). Al no poder envolverse, su min-content pasa de ~540px a
+   778px; como el <article> tiene min-width:auto, no puede encoger
+   por debajo de eso → el .row (flex) ya no puede acomodar
+   artículo + sidebar y lo envuelve a la línea siguiente.
+   Medido: a 1280px el artículo caía a top 641 (sidebar en 197).
+
+   Fix: dejar que la paginación se envuelva (min-content pasa de
+   778px → 52px) y permitir que la columna encoja (min-width:0).
+   Es la misma lección del overflow móvil: todo contenedor flex/grid
+   con contenido "ancho" necesita min-width:0 para poder encogerse.
+   ============================================================ */
+.listeo-shop-grid .woocommerce-pagination ul {
+  flex-wrap: wrap !important;
+  justify-content: center;
+  row-gap: 8px;
+}
+.listeo-shop-grid > .row > article { min-width: 0 !important; }
