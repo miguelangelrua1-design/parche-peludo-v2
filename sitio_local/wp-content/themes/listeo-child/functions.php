@@ -262,6 +262,35 @@ function ppv2_shop_filters_button() {
 		. '<span>Filtros</span></button>';
 }
 
+/* =========================================================================
+ * TIENDA — Devolver al Personalizador el control de "productos por página"
+ * =========================================================================
+ * Listeo engancha `loop_shop_columns` (listeo/inc/woocommerce.php:32) con una
+ * función que devuelve 3 o 2 columnas según su opción `pp_shop_layout`. Eso
+ * causaba DOS problemas:
+ *
+ *  1. WooCommerce, al detectar ese filtro, hace un `return` temprano en su
+ *     Personalizador (class-wc-shop-customizer.php:511) y NO registra NI
+ *     "Productos por fila" NI "Filas por página" → no había forma de cambiar
+ *     los productos por página desde el admin.
+ *  2. wc_get_default_products_per_row() aplica ese filtro por encima de la
+ *     opción guardada, así que el ajuste de columnas quedaba ANULADO.
+ *     Resultado: por página = 2 (Listeo) × 4 (filas por defecto) = 8, fijo.
+ *
+ * Quitamos su filtro por completo: el nº de columnas VISIBLES ya lo decide
+ * nuestro CSS (4 escritorio / 3 tablet / 2 móvil, bloque "TIENDA (PLP)"), así
+ * que el de Listeo no aporta nada y solo estorbaba. Con esto los dos campos
+ * vuelven al Personalizador y el total por página pasa a ser, como manda
+ * WooCommerce, "Productos por fila" × "Filas por página" — administrable.
+ *
+ * Va en after_setup_theme (prio 20) porque el functions.php del HIJO se carga
+ * ANTES que el del padre: al cargar este archivo el filtro aún no existe.
+ * ========================================================================= */
+add_action( 'after_setup_theme', 'ppv2_liberar_ajustes_catalogo', 20 );
+function ppv2_liberar_ajustes_catalogo() {
+	remove_filter( 'loop_shop_columns', 'loop_columns', 999 );
+}
+
 // Contexto donde vive la tarjeta rediseñada (pp-product-card): tienda,
 // categorías Y la ficha de producto (sugeridos/upsells usan la misma tarjeta).
 // Los tres filtros del botón deben usar ESTE helper — antes el texto y el
