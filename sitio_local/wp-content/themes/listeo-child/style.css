@@ -5,7 +5,7 @@ Description:  Tema Hijo personalizado para la optimizacion visual de Parche Pelu
 Author:       AntiGravity & Claude Code (Advanced Agentic Coding)
 Author URI:   https://google.com
 Template:     listeo
-Version:      2.0.32
+Version:      2.0.33
 License:      GNU General Public License v2 or later
 License URI:  http://www.gnu.org/licenses/gpl-2.0.html
 Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
@@ -11086,4 +11086,27 @@ body.single-product div.product .woocommerce-variation-price .price {
 .listeo-shop-grid ul.products li.product.outofstock .pp-card-body .button:hover {
   background: #DFE4E5 !important;
   background-color: #DFE4E5 !important;
+}
+
+
+/* ============================================================
+   PPV2 — PDP · v10: botón "Agotado" (producto sin stock)
+   Woo no pinta el formulario de compra sin stock y el aviso
+   nativo está oculto por diseño → este botón (hook
+   ppv2_pdp_boton_agotado, prio 30) informa el estado con la
+   misma silueta del CTA, en gris y deshabilitado.
+   ============================================================ */
+body.single-product .pp-pdp-agotado { margin: 6px 0 4px; }
+body.single-product .pp-pdp-agotado-btn {
+  width: 100%;
+  height: 56px;
+  border: none;
+  border-radius: 999px;
+  background: #E8ECED;
+  color: var(--ink-faint);
+  font: 800 16px var(--font-sans);
+  letter-spacing: .2px;
+  cursor: not-allowed;
+  -webkit-appearance: none;
+  appearance: none;
 }

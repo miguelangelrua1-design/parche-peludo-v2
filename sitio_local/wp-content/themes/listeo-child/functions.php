@@ -1725,7 +1725,7 @@ function ppv2_pdp_assets() {
 			'isVariable' => $product->is_type( 'variable' ),
 			'cart'       => ppv2_pdp_cart_map( $product ),
 			'i18n'       => array(
-				'add'  => __( 'Añadir al carrito', 'listeo-child' ),
+				'add'  => __( 'Agregar al carrito', 'listeo-child' ),
 				'view' => __( 'Ver carrito', 'listeo-child' ),
 			),
 		)
@@ -1826,6 +1826,32 @@ function ppv2_pdp_cart_ajax() {
 	}
 
 	wp_send_json_error( array( 'msg' => 'bad-op' ) );
+}
+
+// 8b) Texto del botón de compra del PDP: "Añadir al carrito" → "Agregar al
+//     carrito" (consistente con el "Agregar" de las tarjetas). Filtro nativo.
+add_filter( 'woocommerce_product_single_add_to_cart_text', 'ppv2_pdp_texto_boton' );
+function ppv2_pdp_texto_boton( $text ) {
+	return esc_html__( 'Agregar al carrito', 'listeo-child' );
+}
+
+// 8c) PDP de producto AGOTADO: WooCommerce no pinta el formulario de compra
+//     cuando no hay stock, y el aviso nativo de stock está oculto por diseño
+//     (bloque v6) → la ficha no informaba NADA. Botón "Agotado" con la misma
+//     silueta del CTA (píldora), gris y deshabilitado, en la posición del
+//     add-to-cart nativo (prioridad 30). Para variables con solo ALGUNAS
+//     presentaciones agotadas no aplica (is_in_stock=true): eso ya lo comunican
+//     las pastillas tachadas (is-off).
+add_action( 'woocommerce_single_product_summary', 'ppv2_pdp_boton_agotado', 30 );
+function ppv2_pdp_boton_agotado() {
+	global $product;
+	if ( ! $product instanceof WC_Product ) {
+		return;
+	}
+	if ( $product->is_purchasable() && $product->is_in_stock() ) {
+		return;
+	}
+	echo '<div class="pp-pdp-agotado"><button type="button" class="pp-pdp-agotado-btn" disabled aria-disabled="true">' . esc_html__( 'Agotado', 'listeo-child' ) . '</button></div>';
 }
 
 // 9) Galería del producto: activar las FLECHAS de navegación (directionNav) del

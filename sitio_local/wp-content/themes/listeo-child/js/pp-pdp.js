@@ -296,7 +296,7 @@
 	$( function () {
 		$form = $( '.single-product form.cart' ).first();
 		$btn  = $( '.single-product .single_add_to_cart_button' ).first();
-		if ( $btn.length ) { btnAddText = $.trim( $btn.text() ) || ( CFG.i18n ? CFG.i18n.add : 'Añadir al carrito' ); }
+		if ( $btn.length ) { btnAddText = $.trim( $btn.text() ) || ( CFG.i18n ? CFG.i18n.add : 'Agregar al carrito' ); }
 		enhance();
 
 		if ( CFG.isVariable && $form.length ) {
