@@ -1,15 +1,16 @@
 /**
  * Carga progresiva del listado de productos (PLP) — Parche Peludo V2.
  *
- * Al acercarse al final de la grilla se cargan hasta MAX_CARGAS páginas más
- * (las "siguientes" según la paginación NATIVA de WooCommerce) de forma
- * automática. Después, en vez de paginación, aparece el botón
- * "Ver más productos": cada clic carga la siguiente tanda y el botón
- * desaparece cuando ya no queda nada por mostrar (así el footer siempre es
- * alcanzable). El botón es un ENLACE REAL a la página siguiente: los
- * buscadores siguen recorriendo el catálogo profundo y, sin JS, el clic
- * navega a la paginación clásica (que también queda como respaldo si una
- * carga falla).
+ * Funciona por CICLOS: al acercarse al final de la grilla se cargan hasta
+ * MAX_CARGAS páginas más (las "siguientes" según la paginación NATIVA de
+ * WooCommerce) de forma automática y aparece el botón "Ver más productos"
+ * (con el contador "Mostrando 1–N de M" debajo). Cada clic carga una tanda y
+ * REINICIA el ciclo: otras MAX_CARGAS cargas automáticas al scrollear y el
+ * botón de nuevo. Cuando ya no queda nada, el botón desaparece (fin natural
+ * de la lista; el footer siempre es alcanzable). El botón es un ENLACE REAL
+ * a la página siguiente: los buscadores recorren el catálogo profundo y, sin
+ * JS, el clic navega a la paginación clásica (que también queda como
+ * respaldo si una carga falla).
  *
  * - Filtros/buscador intactos: se usa el href real del enlace "siguiente"
  *   (conserva ?filter_*, orderby, s=… y cualquier parámetro).
@@ -76,9 +77,14 @@
 			if (cerca()) { cargar(); }
 		}, 120);
 	}
-	window.addEventListener('scroll', alScroll, { passive: true });
-	window.addEventListener('resize', alScroll, { passive: true });
-	alScroll(); // por si la primera página no llena la pantalla
+	function activarScroll() {
+		// El centinela vuelve justo después de la grilla (que creció).
+		if (!sentinel.parentNode) { grid.parentNode.insertBefore(sentinel, grid.nextSibling); }
+		window.addEventListener('scroll', alScroll, { passive: true });
+		window.addEventListener('resize', alScroll, { passive: true });
+		alScroll(); // por si lo visible no llena la pantalla
+	}
+	activarScroll();
 
 	// "Mostrando 1–24 de 512" → al anexar, el fin crece pero el inicio se
 	// conserva (usa el texto de la página recibida cambiándole el inicio).
@@ -98,10 +104,11 @@
 		} catch (e) { /* cosmético: nunca romper por esto */ }
 	}
 
-	// --- Botón "Ver más productos" (fase manual, tras las cargas automáticas) --
-	var botonWrap = null;
-	var boton     = null;
-	var botonInfo = null;
+	// --- Botón "Ver más productos" (cierra cada ciclo de cargas automáticas) --
+	var botonWrap    = null;
+	var boton        = null;
+	var botonInfo    = null;
+	var clicPendiente = false;
 
 	function desactivarScroll() {
 		window.removeEventListener('scroll', alScroll);
@@ -122,10 +129,6 @@
 		botonWrap = document.createElement('div');
 		botonWrap.className = 'pp-vermas-wrap';
 
-		botonInfo = document.createElement('div');
-		botonInfo.className = 'pp-vermas-info';
-		botonInfo.textContent = textoContador();
-
 		// Enlace REAL a la página siguiente: SEO y sin-JS siguen funcionando.
 		boton = document.createElement('a');
 		boton.className = 'pp-vermas';
@@ -134,15 +137,22 @@
 		boton.textContent = 'Ver más productos';
 		boton.addEventListener('click', function (e) {
 			e.preventDefault();
+			clicPendiente = true; // al completar, se REINICIA el ciclo automático
 			cargar();
 		});
 
-		botonWrap.appendChild(botonInfo);
+		// Contador DEBAJO del botón.
+		botonInfo = document.createElement('div');
+		botonInfo.className = 'pp-vermas-info';
+		botonInfo.textContent = textoContador();
+
 		botonWrap.appendChild(boton);
+		botonWrap.appendChild(botonInfo);
 		pag.parentNode.insertBefore(botonWrap, pag);
 	}
 
-	function actualizarBoton() {
+	function mostrarBoton() {
+		crearBoton();
 		if (!botonWrap) { return; }
 		if (botonInfo) { botonInfo.textContent = textoContador(); }
 		if (boton && nextUrl) { boton.href = nextUrl; }
@@ -150,15 +160,29 @@
 			boton.classList.remove('is-loading');
 			boton.textContent = 'Ver más productos';
 		}
+		botonWrap.style.display = '';
+	}
+
+	function ocultarBoton() {
+		if (!botonWrap) { return; }
+		if (boton) {
+			boton.classList.remove('is-loading');
+			boton.textContent = 'Ver más productos';
+		}
+		botonWrap.style.display = 'none';
 	}
 
 	// Se mostró todo el catálogo: sin botón y sin paginación (fin natural).
 	function finalizar() {
 		desactivarScroll();
+		clicPendiente = false;
 		if (botonWrap) {
+			botonWrap.style.display = '';
 			botonInfo.textContent = textoContador();
-			botonWrap.removeChild(boton);
-			boton = null;
+			if (boton) {
+				botonWrap.removeChild(boton);
+				boton = null;
+			}
 		}
 	}
 
@@ -206,11 +230,20 @@
 					finalizar();
 					return;
 				}
-				if (cargas >= MAX_CARGAS) {
-					desactivarScroll();
-					crearBoton();
+				if (clicPendiente) {
+					// El clic del botón abre un CICLO nuevo: contador de cargas
+					// automáticas a cero, botón oculto y scroll re-armado.
+					clicPendiente = false;
+					cargas = 0;
+					ocultarBoton();
+					activarScroll();
+					return;
 				}
-				actualizarBoton();
+				if (cargas >= MAX_CARGAS) {
+					// Ciclo automático agotado: scroll fuera, turno del botón.
+					desactivarScroll();
+					mostrarBoton();
+				}
 			})
 			.catch(function () {
 				cargando = false;
