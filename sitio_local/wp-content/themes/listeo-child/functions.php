@@ -423,10 +423,16 @@ function ppv2_plp_assets() {
 		return;
 	}
 	$dir = get_stylesheet_directory();
-	if ( ! file_exists( $dir . '/js/pp-plp.js' ) ) {
-		return;
+	$uri = get_stylesheet_directory_uri();
+	if ( file_exists( $dir . '/js/pp-plp.js' ) ) {
+		wp_enqueue_script( 'pp-plp', $uri . '/js/pp-plp.js', array( 'jquery' ), filemtime( $dir . '/js/pp-plp.js' ), true );
 	}
-	wp_enqueue_script( 'pp-plp', get_stylesheet_directory_uri() . '/js/pp-plp.js', array( 'jquery' ), filemtime( $dir . '/js/pp-plp.js' ), true );
+	// Carga progresiva del listado (scroll infinito acotado a 2 cargas y luego
+	// paginación sin repetidos). SOLO en tienda/categorías: en la ficha no hay
+	// paginación de grilla. Vanilla JS (sin jQuery), en footer.
+	if ( ppv2_is_shop_context() && file_exists( $dir . '/js/pp-plp-scroll.js' ) ) {
+		wp_enqueue_script( 'pp-plp-scroll', $uri . '/js/pp-plp-scroll.js', array(), filemtime( $dir . '/js/pp-plp-scroll.js' ), true );
+	}
 }
 
 // 2) Cabecera del panel (título + cerrar) dentro de la barra lateral de la tienda.
