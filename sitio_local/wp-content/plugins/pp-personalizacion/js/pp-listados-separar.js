@@ -35,8 +35,18 @@
 		var esArchivo = !!parseInt(D.esArchivo, 10);
 		var esTaxTipo = !!parseInt(D.esTaxTipo, 10);
 		var activo    = '';
+		// Bandera de reentrada: cuando NOSOTROS forzamos el cambio de ámbito a
+		// "Directorio" (trigger de clic), el handler de .ppv2-scope-tab corre
+		// SÍNCRONO y no debe limpiar la selección que acabamos de hacer.
+		var cambiandoAmbito = false;
 
-		function esc(s) { return $('<span>').text(s || '').html(); }
+		// Escapa también comillas: esc() se interpola dentro de atributos
+		// (data-slug="…", data-tipo="…") y $('<span>').text().html() no las cubría.
+		function esc(s) {
+			return String(s || '').replace(/[&<>"']/g, function (c) {
+				return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+			});
+		}
 
 		/* ---------------- Carrusel contextual ---------------- */
 		var originalHTML = null;
@@ -143,7 +153,10 @@
 				var $tiendaActiva = $('.ppv2-scope-tab-active[data-scope="tienda"]').first();
 				if ($tiendaActiva.length) {
 					var $dir = $('.ppv2-scope-tab[data-scope="directorio"]').first();
-					if ($dir.length) { $dir.trigger('click'); }
+					if ($dir.length) {
+						cambiandoAmbito = true;
+						try { $dir.trigger('click'); } finally { cambiandoAmbito = false; }
+					}
 				}
 			}
 
@@ -225,8 +238,10 @@
 			var tipo = $(this).attr('data-tipo');
 			aplicar(tipo === activo ? '' : tipo, true);
 		});
-		// Elegir un ámbito principal (Directorio / Tienda) limpia la selección.
+		// Elegir un ámbito principal (Directorio / Tienda) limpia la selección —
+		// salvo cuando el cambio de ámbito lo disparamos nosotros desde aplicar().
 		$(document).on('click', '.ppv2-scope-tab', function () {
+			if (cambiandoAmbito) { return; }
 			if (activo) { aplicar('', true); }
 		});
 		// Cerrar la lista al hacer clic fuera o con Escape.

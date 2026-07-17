@@ -28,7 +28,13 @@
 		var elegida = null;          // mascota seleccionada {id,nombre,especie,raza,foto}
 		var gateResuelto = false;    // ya se continuó en esta apertura del modal
 
-		function esc(s) { return $('<span>').text(s || '').html(); }
+		// Escapa también comillas: esc() se interpola dentro de atributos
+		// (src="…", value="…") y $('<span>').text().html() no las cubría.
+		function esc(s) {
+			return String(s || '').replace(/[&<>"']/g, function (c) {
+				return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+			});
+		}
 
 		function detalle(m) {
 			return (m.especie === 'gato' ? 'Gato' : 'Perro') + (m.raza ? ' · ' + esc(m.raza) : '');

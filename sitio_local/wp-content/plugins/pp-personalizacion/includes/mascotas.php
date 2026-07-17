@@ -73,7 +73,12 @@ function pp_mascotas_register_cpt() {
  * 2. Página "Mis Mascotas" del dashboard (se crea sola si no existe)
  * ---------------------------------------------------------------------- */
 
-add_action( 'init', 'pp_mascotas_ensure_page', 20 );
+// FIX PERF 2026-07-10: antes corría en 'init' (CADA petición del sitio,
+// incluidos AJAX y cron) y su get_post_status() era una consulta por request
+// solo para comprobar que la página sigue publicada. Ahora corre solo en el
+// admin: si la página se borra por accidente, se recrea en la siguiente
+// visita a wp-admin (auto-reparación con costo cero en el frontend).
+add_action( 'admin_init', 'pp_mascotas_ensure_page', 20 );
 function pp_mascotas_ensure_page() {
 	$page_id = (int) get_option( 'pp_mascotas_page_id' );
 	if ( $page_id && 'publish' === get_post_status( $page_id ) ) {
@@ -227,7 +232,14 @@ function pp_mascotas_shortcode() {
 
 	ob_start();
 	echo '<div class="pp-mascotas">';
-	pp_mascotas_render_avisos();
+	// Los errores de validación (transient) solo tienen sentido en el
+	// formulario (el guardado fallido SIEMPRE redirige ahí). En la vista de
+	// lista no se muestran y se descarta el residuo para que no reaparezca.
+	$es_form = in_array( $vista, array( 'nueva', 'editar' ), true );
+	pp_mascotas_render_avisos( $es_form );
+	if ( ! $es_form ) {
+		delete_transient( 'pp_mascota_form_' . get_current_user_id() );
+	}
 
 	if ( 'nueva' === $vista ) {
 		pp_mascotas_render_form( 0 );
@@ -260,7 +272,7 @@ function pp_mascotas_es_del_usuario( $mascota_id ) {
 }
 
 /** Avisos de éxito (?pp_ok=) y errores de validación (transient) */
-function pp_mascotas_render_avisos() {
+function pp_mascotas_render_avisos( $mostrar_errores = true ) {
 	$ok = isset( $_GET['pp_ok'] ) ? sanitize_key( $_GET['pp_ok'] ) : '';
 	$mensajes = array(
 		'creada'      => '¡Listo! Tu mascota fue registrada con éxito. 🐾',
@@ -271,6 +283,9 @@ function pp_mascotas_render_avisos() {
 		echo '<div class="pp-masc-aviso pp-masc-aviso--ok">' . esc_html( $mensajes[ $ok ] ) . '</div>';
 	}
 
+	if ( ! $mostrar_errores ) {
+		return;
+	}
 	$datos = get_transient( 'pp_mascota_form_' . get_current_user_id() );
 	if ( ! empty( $datos['errores'] ) ) {
 		echo '<div class="pp-masc-aviso pp-masc-aviso--error"><strong>Revisa estos campos:</strong><ul>';
@@ -710,7 +725,9 @@ function pp_mascotas_handle_post() {
 		$galeria = array_values( array_diff( $galeria, $eliminar ) );
 	}
 
-	if ( ! empty( $_FILES['pp_galeria']['name'][0] ) ) {
+	// is_array: si un form manipulado envía pp_galeria SIN [] llega como
+	// string y count()/[$i] fatalearían en PHP 8 con el post ya creado.
+	if ( isset( $_FILES['pp_galeria']['name'] ) && is_array( $_FILES['pp_galeria']['name'] ) && ! empty( $_FILES['pp_galeria']['name'][0] ) ) {
 		$archivos = $_FILES['pp_galeria'];
 		$total    = count( $archivos['name'] );
 		for ( $i = 0; $i < $total && count( $galeria ) < 10; $i++ ) {
@@ -1317,19 +1334,38 @@ function pp_mascotas_resumen( $mascota_id ) {
 /** Valida y adjunta la mascota a la reserva justo antes de guardarla. */
 add_filter( 'listeo_before_insert_booking_data', 'pp_mascotas_adjuntar_a_reserva' );
 function pp_mascotas_adjuntar_a_reserva( $args ) {
-	// Solo aplica al envío del popup de Booking Plus y solo si nuestro
-	// selector estaba presente en el formulario (pp_mascota_check).
-	if ( ( $_POST['action'] ?? '' ) !== 'lbp_submit_booking' || empty( $_POST['pp_mascota_check'] ) ) {
+	// Solo aplica al envío del popup de Booking Plus.
+	if ( ( $_POST['action'] ?? '' ) !== 'lbp_submit_booking' ) {
+		return $args;
+	}
+
+	$user_id = get_current_user_id();
+
+	// Invitados: por decisión de producto pueden reservar sin mascota (botón
+	// "Continuar sin mascota" del gate) y no tienen mascotas que validar.
+	if ( ! $user_id ) {
+		return $args;
+	}
+
+	// FIX 2026-07-10 (server-side): antes la obligatoriedad dependía de que
+	// llegara pp_mascota_check — un campo que inyecta NUESTRO JS — así que
+	// borrándolo (DevTools / POST directo) se reservaba sin mascota. Ahora,
+	// con el ajuste global activo, la mascota es obligatoria en el servidor
+	// para usuarios logueados, llegue o no el campo del cliente. Si el
+	// ajuste está apagado, se respeta el comportamiento anterior (solo
+	// valida si el selector estuvo presente).
+	if ( ! pp_mascotas_reserva_activa() && empty( $_POST['pp_mascota_check'] ) ) {
 		return $args;
 	}
 
 	$mascota_id = absint( $_POST['pp_mascota_reserva'] ?? 0 );
-	$autor      = absint( $args['bookings_author'] ?? 0 );
 
 	$valida = false;
 	if ( $mascota_id ) {
-		$p      = get_post( $mascota_id );
-		$valida = $p && 'pp_mascota' === $p->post_type && 'publish' === $p->post_status && (int) $p->post_author === $autor;
+		$p = get_post( $mascota_id );
+		// Propiedad contra el usuario REAL de la sesión (dato del servidor),
+		// no contra bookings_author (valor derivado de la petición).
+		$valida = $p && 'pp_mascota' === $p->post_type && 'publish' === $p->post_status && (int) $p->post_author === $user_id;
 	}
 	if ( ! $valida ) {
 		wp_send_json_error( array(
