@@ -11231,3 +11231,15 @@ body.single-product .pp-pdp-agotado-btn {
 @media (max-width: 767px) {
   .pp-vermas { width: 100%; min-width: 0; }
 }
+
+/* ============================================================
+   BOOKING PLUS — Gestor de Recursos (Profesionales) del owner.
+   El "for" del encabezado («Profesionales for "Naturalia"») está incrustado
+   en resource-list.php del plugin SIN función de traducción (descuido de
+   PureThemes): no puede traducirse vía Loco/gettext. Se oculta el texto y
+   se pinta "de" por CSS. Si una actualización del plugin corrige el bug y
+   el texto pasa a traducirse, esta regla deja de encontrar el span y no
+   afecta nada.
+   ============================================================ */
+.lbp-ops-title-for { font-size: 0; }
+.lbp-ops-title-for::after { content: 'de'; font-size: 19px; }
