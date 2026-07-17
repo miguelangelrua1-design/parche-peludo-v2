@@ -3,7 +3,7 @@
  * Plugin Name: Personalización Parche
  * Plugin URI:  https://parchepeludo.com
  * Description: Personalizaciones de Parche Peludo sobre Listeo, organizadas por módulos: Mascotas (perfiles e integración con reservas), Servicios (tipos de servicio, domicilio, antelación), Listados (por rol, separar resultados) y Reservas.
- * Version:     2.9.0
+ * Version:     3.0.0
  * Author:      Parche Peludo
  * Text Domain: pp-personalizacion
  *
@@ -203,6 +203,12 @@ function pp_pers_pagina_servicios() {
 				<li>Regla vigente: <strong>un solo servicio principal (individual) por reserva</strong>, sin importar el tipo; los extras se acumulan libremente.</li>
 			</ul>
 		</div>
+		<?php
+		// Flujo "Reserva por Servicios" (kill-switch + explicación).
+		if ( function_exists( 'pp_rs_admin_seccion' ) ) {
+			pp_rs_admin_seccion();
+		}
+		?>
 		<p style="margin-top:16px" class="description">Más personalizaciones de este módulo se definirán próximamente.</p>
 	</div>
 	<?php
@@ -251,3 +257,4 @@ require_once PP_PERS_DIR . 'includes/mascotas.php';
 require_once PP_PERS_DIR . 'includes/servicios.php';
 require_once PP_PERS_DIR . 'includes/listados.php';
 require_once PP_PERS_DIR . 'includes/reservas.php';
+require_once PP_PERS_DIR . 'includes/reserva-servicios.php';

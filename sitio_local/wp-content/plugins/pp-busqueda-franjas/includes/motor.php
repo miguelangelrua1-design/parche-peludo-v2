@@ -315,6 +315,10 @@ add_action( 'listeo_expire_booking', 'pp_franjas_invalidar_cache' );
 // Editar un listado puede cambiar sus slots/horarios.
 add_action( 'save_post_listing', 'pp_franjas_invalidar_cache' );
 
+// Editar un recurso (profesional/agenda de tipo) cambia horarios propios,
+// tipología, pausas o bloqueos → la disponibilidad calculada caduca (v1.9.0).
+add_action( 'save_post_lbp_resource', 'pp_franjas_invalidar_cache' );
+
 /* -------------------------------------------------------------------------
  * Motor
  * ---------------------------------------------------------------------- */
@@ -479,15 +483,56 @@ function pp_franjas_calcular_ids( $fecha, $hora, $incluir_dr, $servicio = '' ) {
 		   únicamente slots, su estado y los horarios de apertura). */
 		$metas = pp_franjas_metas_candidatos( $ids_candidatos );
 
-		/* ---- 3. Reservas del día de TODOS los candidatos en UNA consulta ---- */
-		$reservas_por_listado = pp_franjas_reservas_del_dia( $ids_candidatos, $fecha );
+		/* ---- 3. Agendas múltiples (v1.9.0): recursos de Booking Plus ----
+		   Profesionales y agendas por tipo de servicio (módulo Reserva por
+		   Servicios de Personalización Parche). Máximo 2 consultas en lote y
+		   SOLO si algún candidato tiene recursos; sin recursos = 0 extra. */
+		$agendas = pp_franjas_agendas_candidatos( $metas );
 
-		/* ---- 4. Evaluación en PHP (sin más consultas) ---- */
+		/* ---- 4. Reservas del día de TODOS los candidatos en UNA consulta,
+		   desglosadas: agenda compartida del listado vs. cada recurso ---- */
+		$reservas = pp_franjas_reservas_del_dia_desglosadas( $ids_candidatos, $fecha );
+
+		/* ---- 5. Evaluación en PHP (sin más consultas) ---- */
 		foreach ( $ids_candidatos as $id ) {
-			$m = isset( $metas[ $id ] ) ? $metas[ $id ] : array();
-			$r = isset( $reservas_por_listado[ $id ] ) ? $reservas_por_listado[ $id ] : array();
-			if ( pp_franjas_listado_disponible( $fecha, $hora, $m, $r ) ) {
-				$disponibles[] = $id;
+			$m          = isset( $metas[ $id ] ) ? $metas[ $id ] : array();
+			$r_listado  = isset( $reservas['listado'][ $id ] ) ? $reservas['listado'][ $id ] : array();
+			$r_recursos = isset( $reservas['recurso'][ $id ] ) ? $reservas['recurso'][ $id ] : array();
+
+			if ( empty( $agendas[ $id ] ) ) {
+				/* Sin recursos activos: lógica clásica. Las reservas viejas
+				   atadas a recursos (hoy pausados/borrados) siguen ocupando
+				   la agenda del negocio: se suman todas. */
+				$r_todas = $r_listado;
+				foreach ( $r_recursos as $filas_rec ) {
+					$r_todas = array_merge( $r_todas, $filas_rec );
+				}
+				if ( pp_franjas_listado_disponible( $fecha, $hora, $m, $r_todas ) ) {
+					$disponibles[] = $id;
+				}
+				continue;
+			}
+
+			/* Con recursos: disponible si ALGUNA de las rutas de agenda que
+			   el popup usaría para este servicio está libre. Las reservas de
+			   agendas propias NO bloquean la agenda compartida (y viceversa). */
+			foreach ( pp_franjas_rutas_agenda( $agendas[ $id ], $servicio ) as $ruta ) {
+				if ( null === $ruta ) {
+					// Agenda compartida del listado (tipos sin agenda propia).
+					if ( pp_franjas_listado_disponible( $fecha, $hora, $m, $r_listado ) ) {
+						$disponibles[] = $id;
+						break;
+					}
+					continue;
+				}
+				if ( pp_franjas_recurso_bloqueado( $ruta, $fecha ) ) {
+					continue; // vacaciones/bloqueo del profesional o agenda
+				}
+				$rr = isset( $r_recursos[ $ruta['id'] ] ) ? $r_recursos[ $ruta['id'] ] : array();
+				if ( pp_franjas_listado_disponible( $fecha, $hora, pp_franjas_metas_recurso( $m, $ruta ), $rr ) ) {
+					$disponibles[] = $id;
+					break;
+				}
 			}
 		}
 	}
@@ -537,7 +582,9 @@ function pp_franjas_metas_candidatos( $ids ) {
 		return array();
 	}
 
-	$claves = array( '_slots', '_slots_status', '_opening_hours_status' );
+	// _lbp_resources viaja en la MISMA consulta (v1.9.0, agendas múltiples):
+	// saber si un candidato tiene recursos no cuesta consultas extra.
+	$claves = array( '_slots', '_slots_status', '_opening_hours_status', '_lbp_resources' );
 	foreach ( array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ) as $dia ) {
 		$claves[] = '_' . $dia . '_opening_hour';
 		$claves[] = '_' . $dia . '_closing_hour';
@@ -603,6 +650,235 @@ function pp_franjas_reservas_ventana( $ids, $ini, $fin ) {
 /** Reservas que tocan el día pedido (ventana de día completo). */
 function pp_franjas_reservas_del_dia( $ids, $fecha ) {
 	return pp_franjas_reservas_ventana( $ids, $fecha . ' 00:00:00', $fecha . ' 23:59:59' );
+}
+
+/* -------------------------------------------------------------------------
+ * Agendas múltiples (v1.9.0) — integración con "Reserva por Servicios"
+ *
+ * Un listado puede tener agendas independientes: profesionales (recursos de
+ * Booking Plus con tipología `_pp_tipologia`) y/o agendas por tipo de
+ * servicio (recursos automáticos `_pp_auto_agenda` del checkbox "¿agenda
+ * diferente?"). El buscador refleja EXACTAMENTE las rutas del popup:
+ * profesionales del tipo > agenda propia del tipo > agenda compartida.
+ * Todo en lote: 2 consultas extra como máximo, solo si hay recursos.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Recursos ACTIVOS (publish, no pausados) de los candidatos, clasificados.
+ *
+ * @param array $metas_listados Salida de pp_franjas_metas_candidatos()
+ *                              (ya trae `_lbp_resources` de cada listado).
+ * @return array<int, array{prof: array, tipo: array}> lid => cubos de
+ *         entradas {id, tipologia, metas}. Vacío si nadie tiene recursos
+ *         o Booking Plus no está activo (degradación: lógica clásica).
+ */
+function pp_franjas_agendas_candidatos( $metas_listados ) {
+	global $wpdb;
+
+	// Sin Booking Plus (desactivado/licencia) los recursos no operan en el
+	// popup: el buscador tampoco debe considerarlos.
+	if ( ! function_exists( 'lbp_get_active_resources' ) ) {
+		return array();
+	}
+
+	$duenos = array(); // rid => lid
+	foreach ( (array) $metas_listados as $lid => $m ) {
+		$lista = isset( $m['_lbp_resources'] ) ? $m['_lbp_resources'] : null;
+		if ( ! is_array( $lista ) ) {
+			continue;
+		}
+		foreach ( $lista as $rid ) {
+			$rid = (int) $rid;
+			if ( $rid > 0 ) {
+				$duenos[ $rid ] = (int) $lid;
+			}
+		}
+	}
+	if ( ! $duenos ) {
+		return array();
+	}
+
+	$rids   = array_keys( $duenos );
+	$marcas = implode( ',', array_fill( 0, count( $rids ), '%d' ) );
+
+	// Publicados (borradores/pendientes no son reservables) — 1 consulta.
+	$publicados = $wpdb->get_col( $wpdb->prepare(
+		"SELECT ID FROM {$wpdb->posts}
+		 WHERE ID IN ({$marcas}) AND post_type = 'lbp_resource' AND post_status = 'publish'",
+		$rids
+	) );
+	$publicados = array_map( 'intval', (array) $publicados );
+	if ( ! $publicados ) {
+		return array();
+	}
+
+	// Metas de TODOS los recursos en 1 consulta (solo las claves del motor).
+	$claves = array(
+		'_pp_tipologia', '_pp_auto_agenda', '_lbp_resource_paused', '_lbp_blocked_dates',
+		'_slots', '_slots_status', '_lbp_override__slots', '_lbp_override__slots_status',
+	);
+	foreach ( array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ) as $dia ) {
+		$claves[] = '_lbp_' . $dia . '_opening_hour';
+		$claves[] = '_lbp_' . $dia . '_closing_hour';
+	}
+	$marcas_pub   = implode( ',', array_fill( 0, count( $publicados ), '%d' ) );
+	$marcas_clave = implode( ',', array_fill( 0, count( $claves ), '%s' ) );
+	$filas        = $wpdb->get_results( $wpdb->prepare(
+		"SELECT post_id, meta_key, meta_value
+		 FROM {$wpdb->postmeta}
+		 WHERE post_id IN ({$marcas_pub})
+		   AND meta_key IN ({$marcas_clave})",
+		array_merge( $publicados, $claves )
+	) );
+	$mr = array();
+	foreach ( (array) $filas as $f ) {
+		$mr[ (int) $f->post_id ][ (string) $f->meta_key ] = maybe_unserialize( $f->meta_value );
+	}
+
+	$out = array();
+	foreach ( $publicados as $rid ) {
+		$m = isset( $mr[ $rid ] ) ? $mr[ $rid ] : array();
+		if ( ! empty( $m['_lbp_resource_paused'] ) ) {
+			continue; // pausado = no reservable (mismo criterio que el popup)
+		}
+		$cubo = ! empty( $m['_pp_auto_agenda'] ) ? 'tipo' : 'prof';
+		$out[ $duenos[ $rid ] ][ $cubo ][] = array(
+			'id'        => $rid,
+			'tipologia' => isset( $m['_pp_tipologia'] ) ? sanitize_key( $m['_pp_tipologia'] ) : '',
+			'metas'     => $m,
+		);
+	}
+	return $out;
+}
+
+/**
+ * Rutas de agenda que el popup usaría para el servicio buscado, en orden.
+ * Misma prioridad que el paso Servicios: profesionales del tipo (o "atiende
+ * todos") > agenda propia del tipo > agenda compartida del listado (null).
+ * Con servicio '' (búsqueda "Todos"): cualquier camino cuenta.
+ *
+ * @return array Entradas de recurso {id,tipologia,metas}; null = compartida.
+ */
+function pp_franjas_rutas_agenda( $agendas_listado, $servicio ) {
+	$prof = isset( $agendas_listado['prof'] ) ? $agendas_listado['prof'] : array();
+	$tipo = isset( $agendas_listado['tipo'] ) ? $agendas_listado['tipo'] : array();
+
+	if ( '' === (string) $servicio ) {
+		// "Todos": el cliente podría elegir cualquier tipo en el popup →
+		// vale la agenda compartida o cualquier recurso libre.
+		return array_merge( array( null ), $prof, $tipo );
+	}
+
+	$compat = array();
+	foreach ( $prof as $p ) {
+		if ( '' === $p['tipologia'] || $servicio === $p['tipologia'] ) {
+			$compat[] = $p;
+		}
+	}
+	if ( $compat ) {
+		return $compat; // hay profesionales del tipo: el popup solo ofrece esos
+	}
+	foreach ( $tipo as $t ) {
+		if ( $servicio === $t['tipologia'] ) {
+			$compat[] = $t;
+		}
+	}
+	if ( $compat ) {
+		return $compat; // agenda propia del tipo
+	}
+	return array( null ); // tipo sin agenda propia → agenda compartida
+}
+
+/**
+ * Metas efectivas de una ruta de recurso: horarios propios POR DÍA con
+ * fallback al listado (misma semántica que get_effective_working_window de
+ * Booking Plus) y slots propios solo si el recurso los sobreescribe
+ * (flags `_lbp_override_*` del Settings Resolver).
+ */
+function pp_franjas_metas_recurso( $m_listado, $ruta ) {
+	$m  = $m_listado;
+	$mr = isset( $ruta['metas'] ) ? $ruta['metas'] : array();
+
+	foreach ( array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ) as $dia ) {
+		$abre = isset( $mr[ '_lbp_' . $dia . '_opening_hour' ] ) ? $mr[ '_lbp_' . $dia . '_opening_hour' ] : '';
+		if ( ! empty( $abre ) ) {
+			$m[ '_' . $dia . '_opening_hour' ] = $abre;
+			$m[ '_' . $dia . '_closing_hour' ] = isset( $mr[ '_lbp_' . $dia . '_closing_hour' ] )
+				? $mr[ '_lbp_' . $dia . '_closing_hour' ]
+				: array();
+			// El recurso define su propio horario: la puerta horaria aplica
+			// aunque el listado no la tenga activada.
+			$m['_opening_hours_status'] = 1;
+		}
+	}
+
+	if ( ! empty( $mr['_lbp_override__slots'] ) || ! empty( $mr['_lbp_override__slots_status'] ) ) {
+		$m['_slots']        = isset( $mr['_slots'] ) ? $mr['_slots'] : '';
+		$m['_slots_status'] = ! empty( $mr['_slots_status'] );
+	}
+
+	return $m;
+}
+
+/** ¿La fecha cae en un bloqueo/vacaciones del recurso (_lbp_blocked_dates)? */
+function pp_franjas_recurso_bloqueado( $ruta, $fecha ) {
+	$bloqueos = isset( $ruta['metas']['_lbp_blocked_dates'] ) ? $ruta['metas']['_lbp_blocked_dates'] : null;
+	if ( ! is_array( $bloqueos ) ) {
+		return false;
+	}
+	foreach ( $bloqueos as $r ) {
+		if ( ! isset( $r['start'], $r['end'] ) ) {
+			continue;
+		}
+		if ( $fecha >= substr( (string) $r['start'], 0, 10 ) && $fecha <= substr( (string) $r['end'], 0, 10 ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Reservas del día desglosadas: las de la agenda compartida del listado
+ * separadas de las de cada recurso (profesional/agenda de tipo). MISMA
+ * consulta única de siempre + un LEFT JOIN a bookings_meta (la tabla la
+ * crea Listeo Core, existe siempre que el motor opere).
+ *
+ * @return array{listado: array<int, array>, recurso: array<int, array<int, array>>}
+ *         'listado'[lid] = filas sin recurso · 'recurso'[lid][rid] = filas.
+ */
+function pp_franjas_reservas_del_dia_desglosadas( $ids, $fecha ) {
+	global $wpdb;
+
+	$out = array( 'listado' => array(), 'recurso' => array() );
+	if ( ! $ids ) {
+		return $out;
+	}
+
+	$marcas = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+	$sql    = "SELECT bc.listing_id, bc.date_start, bc.date_end, bm.meta_value AS recurso
+	        FROM {$wpdb->prefix}bookings_calendar bc
+	        LEFT JOIN {$wpdb->prefix}bookings_meta bm
+	               ON bc.id = bm.booking_id AND bm.meta_key = '_lbp_resource_id'
+	        WHERE bc.listing_id IN ({$marcas})
+	          AND bc.type = 'reservation'
+	          AND bc.status NOT IN ('cancelled', 'expired')
+	          AND bc.date_start < %s
+	          AND bc.date_end   > %s";
+
+	$params = array_merge( $ids, array( $fecha . ' 23:59:59', $fecha . ' 00:00:00' ) );
+	$filas  = $wpdb->get_results( $wpdb->prepare( $sql, $params ) );
+
+	foreach ( (array) $filas as $f ) {
+		$lid  = (int) $f->listing_id;
+		$rid  = (int) $f->recurso; // null/''/'0' → 0 = agenda compartida
+		$fila = array( 'start' => (string) $f->date_start, 'end' => (string) $f->date_end );
+		if ( $rid > 0 ) {
+			$out['recurso'][ $lid ][ $rid ][] = $fila;
+		} else {
+			$out['listado'][ $lid ][] = $fila;
+		}
+	}
+	return $out;
 }
 
 /**

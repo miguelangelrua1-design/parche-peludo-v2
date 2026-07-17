@@ -1,0 +1,106 @@
+/**
+ * Paso "Servicios" del popup de reserva (flujo servicio → agenda).
+ * Reutiliza las clases .pp-gate* (diseño homologado con el gate de
+ * Mascota); aquí solo viven los estilos propios del paso.
+ */
+
+/* ---- Filtro por tipo de servicio: gana a los .show()/.hide() inline
+ *      del filtrado nativo por recurso de Booking Plus. ---- */
+.lbp-single-service.pp-rs-oculta-tab {
+	display: none !important;
+}
+
+/* ---- Tabs de tipo de servicio (pills) ---- */
+.pp-rs__tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 4px 0 14px;
+}
+.pp-rs__tab {
+	border: 1px solid #d9dee3;
+	background: #fff;
+	border-radius: 999px;
+	padding: 8px 16px;
+	font-size: 14px;
+	cursor: pointer;
+	transition: border-color .15s, background .15s, color .15s;
+}
+.pp-rs__tab:hover {
+	border-color: var(--lbp-popup-sidebar, #79c8d0);
+}
+.pp-rs__tab.activo {
+	background: var(--lbp-popup-sidebar, #79c8d0);
+	border-color: var(--lbp-popup-sidebar, #79c8d0);
+	color: #fff;
+	font-weight: 600;
+}
+
+/* ---- Profesionales ---- */
+.pp-rs__subtitulo {
+	margin: 4px 0 10px;
+	font-size: 15px;
+}
+.pp-rs__profes-cards .pp-gate__avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 50%;
+}
+
+/* ---- Acordeón de servicios movido a este paso: siempre abierto ---- */
+.pp-rs__servicios {
+	margin-top: 4px;
+}
+.pp-rs__servicios .lbp-panel-dropdown.pp-rs__abierto .lbp-panel-content {
+	display: block !important;
+	position: static;
+	box-shadow: none;
+	border: 1px solid #e7ebee;
+	border-radius: 10px;
+	margin-top: 8px;
+	max-height: 320px;
+	overflow-y: auto;
+}
+.pp-rs__servicios .lbp-panel-dropdown.pp-rs__abierto > .lbp-panel-toggle {
+	pointer-events: none; /* abierto fijo dentro del paso */
+}
+
+/* ---- Fila de acciones (Atrás | elección | Siguiente) ---- */
+.pp-rs__acciones {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	margin-top: 18px;
+	border-top: 1px solid #eef1f3;
+	padding-top: 14px;
+}
+.pp-rs__eleccion {
+	flex: 1;
+	text-align: center;
+	font-size: 14px;
+	color: #4a5560;
+}
+.pp-rs__siguiente:disabled {
+	opacity: .5;
+	cursor: not-allowed;
+}
+
+/* Paso extra en el sidebar réplica y estado "completado" */
+.pp-gate__sb-paso.completado {
+	opacity: .85;
+}
+
+/* ---- Móvil ---- */
+@media (max-width: 767px) {
+	.pp-rs__servicios .lbp-panel-dropdown.pp-rs__abierto .lbp-panel-content {
+		max-height: 42vh;
+	}
+	.pp-rs__acciones {
+		flex-direction: row; /* Atrás izquierda, Siguiente derecha, misma fila */
+	}
+	.pp-rs__eleccion {
+		display: none; /* en pantallas chicas la elección se ve en las cards */
+	}
+}

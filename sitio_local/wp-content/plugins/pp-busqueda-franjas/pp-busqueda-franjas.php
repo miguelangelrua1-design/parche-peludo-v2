@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Filtros personalizados (v1.8.6)
+ * Plugin Name: Filtros personalizados (v1.9.0)
  * Plugin URI:  https://parchepeludo.com
  * Description: Filtros propios de Parche Peludo sobre los resultados de listados (Listeo). Hoy: panel de disponibilidad por servicio ("Búsqueda por franjas") que reemplaza el carrusel de categorías del cabezote — el usuario elige servicio y franja (fecha+hora) o estadía (entrada-salida) y, SOLO al pulsar "Buscar disponibilidad", se filtran los listados con disponibilidad. Motor por consultas agrupadas (sin N+1) y caché con invalidación al crear/cancelar reservas.
- * Version:     1.8.6
+ * Version:     1.9.0
  * Author:      Parche Peludo
  * Text Domain: pp-busqueda-franjas
  *

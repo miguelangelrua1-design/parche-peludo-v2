@@ -41,7 +41,12 @@
 			if (t.domicilio) { tieneDomicilio[t.slug] = 1; }
 		});
 
-		function esc(s) { return $('<span>').text(s || '').html(); }
+		// Escapa tambien comillas: esc() se usa dentro de atributos HTML.
+	function esc(s) {
+		return String(s || '').replace(/[&<>"']/g, function (c) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+		});
+	}
 
 		/* ============ Tipo de listado actual y tipologías permitidas ============ */
 
@@ -233,8 +238,31 @@
 			'</div>';
 		}
 
+		/* Checkbox "agenda diferente" POR MENÚ (flujo Reserva por Servicios).
+		   Solo aparece con el flujo activo Y cuando el listado tiene 2+ menús
+		   (con uno solo no hay agenda que separar). Viaja en
+		   _menu[i][pp_agenda_propia]; el server crea/pausa el recurso
+		   auto-agenda al guardar. */
+		function agendaHtml(i, on) {
+			return '<div class="fm-input pp-dom-wrap pp-agenda-wrap">' +
+				'<div class="checkboxes in-row">' +
+				'<input type="checkbox" class="input-checkbox pp-agenda-check" id="pp_agenda_' + i + '" ' +
+					'name="_menu[' + i + '][pp_agenda_propia]" value="on"' + (on ? ' checked' : '') + '>' +
+				'<label for="pp_agenda_' + i + '" title="Al activarlo, este tipo de servicio tendrá su propio calendario de disponibilidad, administrable en la página Gestionar recursos.">¿Este tipo de servicio tiene una agenda diferente?</label>' +
+				'</div>' +
+			'</div>';
+		}
+
+		function totalMenus() {
+			var n = $cont.find('tr.pricing-submenu').not('.pp-tipo-suelto').not('.pp-dom-suelto').length;
+			var $primera = $cont.find('tr.pricing-list-item').not('.pp-dom-suelto').first();
+			if ($primera.length && !$primera.hasClass('pricing-submenu')) { n++; }
+			return n;
+		}
+
 		function refrescarDomicilio() {
 			var unico = unicoActual();
+			var conAgenda = !!D.flujoServicios && totalMenus() >= 2;
 
 			// a) Menús con fila de categoría.
 			$cont.find('tr.pricing-submenu').not('.pp-tipo-suelto').not('.pp-dom-suelto').each(function () {
@@ -249,8 +277,20 @@
 				} else {
 					$row.find('input.pp-aviso-menu').attr('name', '_menu[' + i + '][pp_aviso]');
 				}
+				// Agenda propia por menú (solo flujo por servicios + 2+ menús).
+				var $ag = $row.find('.pp-agenda-wrap');
+				if (conAgenda) {
+					if (!$ag.length) {
+						var onA = !!(D.agendaValores && D.agendaValores[i]);
+						$row.find('td').first().append(agendaHtml(i, onA));
+					} else {
+						$ag.find('input.pp-agenda-check').attr('name', '_menu[' + i + '][pp_agenda_propia]');
+					}
+				} else {
+					$ag.remove();
+				}
 				// Valor domicilio: solo si la tipología del menú lo permite.
-				var $dom = $row.find('.pp-dom-wrap').not('.pp-aviso-wrap');
+				var $dom = $row.find('.pp-dom-wrap').not('.pp-aviso-wrap').not('.pp-agenda-wrap');
 				if (!tieneDomicilio[tipo]) { $dom.remove(); return; }
 				if (!$dom.length) {
 					var val = (D.domValores && D.domValores[i]) ? D.domValores[i] : '';
@@ -278,7 +318,18 @@
 					var valA0 = (D.avisoValores && D.avisoValores[i0]) ? D.avisoValores[i0] : '';
 					$td.append(avisoHtml(i0, valA0));
 				}
-				var $dom0 = $td.find('.pp-dom-wrap').not('.pp-aviso-wrap');
+				var $ag0 = $td.find('.pp-agenda-wrap');
+				if (conAgenda) {
+					if (!$ag0.length) {
+						var onA0 = !!(D.agendaValores && D.agendaValores[i0]);
+						$td.append(agendaHtml(i0, onA0));
+					} else {
+						$ag0.find('input.pp-agenda-check').attr('name', '_menu[' + i0 + '][pp_agenda_propia]');
+					}
+				} else {
+					$ag0.remove();
+				}
+				var $dom0 = $td.find('.pp-dom-wrap').not('.pp-aviso-wrap').not('.pp-agenda-wrap');
 				if (tieneDomicilio[tipo0]) {
 					if (!$dom0.length) {
 						var val0 = (D.domValores && D.domValores[i0]) ? D.domValores[i0] : '';

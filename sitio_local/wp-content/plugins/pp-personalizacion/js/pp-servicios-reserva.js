@@ -19,7 +19,12 @@
 (function ($) {
 	'use strict';
 
-	function esc(s) { return $('<span>').text(s || '').html(); }
+	// Escapa tambien comillas: esc() se usa dentro de atributos HTML.
+	function esc(s) {
+		return String(s || '').replace(/[&<>"']/g, function (c) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+		});
+	}
 
 	/* =====================================================================
 	   1) Etiqueta dinámica ("Elige tu servicio" → nombre del elegido)
@@ -271,7 +276,12 @@
 
 	$(function () {
 		iniciarEtiqueta();
-		iniciarTabs();
+		// Con el flujo "Reserva por Servicios" activo, el paso Servicios del
+		// popup reemplaza estos tabs (PP_RS los supersede); el filtrado por
+		// mascota y la etiqueta dinámica siguen siendo responsabilidad nuestra.
+		if (!window.PP_RS || !window.PP_RS.activo) {
+			iniciarTabs();
+		}
 		iniciarFiltroMascota();
 	});
 })(jQuery);

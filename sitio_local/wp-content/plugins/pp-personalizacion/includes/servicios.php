@@ -819,27 +819,42 @@ function pp_serv_assets_submit() {
 	// Tipos guardados por menú (para prellenar el select al EDITAR) + tipo
 	// de listado actual (en edición viene del meta; al crear lo pone el JS
 	// leyendo el hidden #listing_type que llena el selector de tipos).
-	$guardados     = array();
-	$dom_valores   = array();
-	$aviso_valores = array();
-	$tipo_listado  = '';
+	$guardados      = array();
+	$dom_valores    = array();
+	$aviso_valores  = array();
+	$agenda_valores = array();
+	$tipo_listado   = '';
 	if ( isset( $_GET['action'], $_GET['listing_id'] ) && 'edit' === $_GET['action'] ) {
-		$listing_id   = absint( $_GET['listing_id'] );
-		$tipo_listado = sanitize_key( (string) get_post_meta( $listing_id, '_listing_type', true ) );
-		$menu         = get_post_meta( $listing_id, '_menu', true );
-		if ( is_array( $menu ) ) {
-			$ix = 0;
-			foreach ( $menu as $g ) {
-				if ( is_array( $g ) && isset( $g['pp_tipo_servicio'] ) ) {
-					$guardados[ $ix ] = sanitize_key( $g['pp_tipo_servicio'] );
+		$listing_id = absint( $_GET['listing_id'] );
+		// FIX 2026-07-10: chequeo de PROPIEDAD antes de localizar datos.
+		// Antes cualquier usuario logueado que fabricara ?action=edit&listing_id=X
+		// recibía en el JS la configuración del _menu de un listado ajeno
+		// (divulgación menor). Mismo criterio que usa el form de Listeo.
+		$puede_editar = function_exists( 'listeo_core_if_can_edit_listing' )
+			? listeo_core_if_can_edit_listing( $listing_id )
+			: current_user_can( 'edit_post', $listing_id );
+		if ( $puede_editar ) {
+			$tipo_listado = sanitize_key( (string) get_post_meta( $listing_id, '_listing_type', true ) );
+			$menu         = get_post_meta( $listing_id, '_menu', true );
+			if ( is_array( $menu ) ) {
+				$ix = 0;
+				foreach ( $menu as $g ) {
+					if ( is_array( $g ) && isset( $g['pp_tipo_servicio'] ) ) {
+						$guardados[ $ix ] = sanitize_key( $g['pp_tipo_servicio'] );
+					}
+					// Solo valores numéricos: estos strings se interpolan en
+					// value="…" dentro del JS (defensa en profundidad).
+					if ( is_array( $g ) && isset( $g['pp_dom_valor'] ) && '' !== $g['pp_dom_valor'] && is_numeric( $g['pp_dom_valor'] ) ) {
+						$dom_valores[ $ix ] = (string) ( 0 + $g['pp_dom_valor'] );
+					}
+					if ( is_array( $g ) && isset( $g['pp_aviso'] ) && '' !== $g['pp_aviso'] && is_numeric( $g['pp_aviso'] ) ) {
+						$aviso_valores[ $ix ] = (string) intval( $g['pp_aviso'] );
+					}
+					if ( is_array( $g ) && ! empty( $g['pp_agenda_propia'] ) ) {
+						$agenda_valores[ $ix ] = 'on';
+					}
+					$ix++;
 				}
-				if ( is_array( $g ) && isset( $g['pp_dom_valor'] ) && '' !== $g['pp_dom_valor'] ) {
-					$dom_valores[ $ix ] = (string) $g['pp_dom_valor'];
-				}
-				if ( is_array( $g ) && isset( $g['pp_aviso'] ) && '' !== $g['pp_aviso'] ) {
-					$aviso_valores[ $ix ] = (string) $g['pp_aviso'];
-				}
-				$ix++;
 			}
 		}
 	}
@@ -863,6 +878,10 @@ function pp_serv_assets_submit() {
 		'guardados'   => $guardados ? $guardados : new stdClass(),
 		'domValores'  => $dom_valores ? $dom_valores : new stdClass(),
 		'avisoValores'=> $aviso_valores ? $aviso_valores : new stdClass(),
+		// Flujo "Reserva por Servicios": habilita el checkbox de agenda
+		// propia por menú (el guardado viaja dentro de _menu, como el resto).
+		'flujoServicios' => ( function_exists( 'pp_rs_habilitado' ) && pp_rs_habilitado() ) ? 1 : 0,
+		'agendaValores'  => $agenda_valores ? $agenda_valores : new stdClass(),
 		'porListado'  => $por_listado ? $por_listado : new stdClass(),
 		'tipoListado' => $tipo_listado,
 		'msgFalta'    => 'Selecciona el "Tipo de servicio" en cada menú de servicios.',
@@ -936,7 +955,8 @@ function pp_serv_restricciones_mascota( $listing_id ) {
  *
  * Resolución del contexto:
  *  1. Servicios elegidos en la petición ($_REQUEST['services'] /
- *     'lbp_services', índices planos de los checkboxes del popup) →
+ *     'lbp_services'; se aceptan índices planos del popup, filas
+ *     {service, value} del widget clásico y slugs string) →
  *     el aviso MÁS ESTRICTO (max) de sus tipos.
  *  2. Sin selección: si TODOS los menús reservables del listado son de un
  *     mismo tipo con aviso definido, aplica ese (cubre la vista de
@@ -966,6 +986,7 @@ function pp_serv_aviso_para_peticion( $listing_id ) {
 	$menu              = get_post_meta( $listing_id, '_menu', true );
 	$tipo_por_indice   = array();
 	$aviso_por_indice  = array(); // aviso RESUELTO por servicio: menú > tipología
+	$aviso_por_slug    = array(); // aviso por sanitize_title(nombre) — formatos b/c
 	$avisos_de_menus   = array(); // avisos resueltos distintos entre los menús
 	$tipos_del_listado = array();
 	if ( is_array( $menu ) ) {
@@ -988,6 +1009,18 @@ function pp_serv_aviso_para_peticion( $listing_id ) {
 				$tiene_reservables      = true;
 				$tipo_por_indice[ $ix ]  = $tipo_g;
 				$aviso_por_indice[ $ix ] = $aviso_menu;
+				// Slug del servicio: mismo criterio que Booking Plus
+				// (get_services_map: sanitize_title del nombre). Si dos
+				// servicios comparten nombre en menús distintos, gana el
+				// aviso MÁS ESTRICTO (no perder la restricción).
+				$slug_el = isset( $el['name'] ) ? sanitize_title( (string) $el['name'] ) : '';
+				if ( '' !== $slug_el ) {
+					if ( ! isset( $aviso_por_slug[ $slug_el ] ) || null === $aviso_por_slug[ $slug_el ] ) {
+						$aviso_por_slug[ $slug_el ] = $aviso_menu;
+					} elseif ( null !== $aviso_menu ) {
+						$aviso_por_slug[ $slug_el ] = max( $aviso_por_slug[ $slug_el ], $aviso_menu );
+					}
+				}
 				if ( $tipo_g ) {
 					$tipos_del_listado[ $tipo_g ] = 1;
 				}
@@ -1006,13 +1039,34 @@ function pp_serv_aviso_para_peticion( $listing_id ) {
 	} elseif ( isset( $_REQUEST['lbp_services'] ) ) {
 		$sel = (array) $_REQUEST['lbp_services'];
 	}
+	// FIX 2026-07-10: 'services' llega en VARIOS formatos según el endpoint:
+	//   a) índices planos de los checkboxes del popup multipaso → "0", "1"…
+	//   b) filas { service: slug, value: qty } (widget clásico /
+	//      ajax_check_avaliabity de Core, ver LBP get_posted_service_slugs)
+	//   c) slugs string ("peluqueria") en otras rutas de Core.
+	// Antes solo se entendía (a): las filas array se saltaban (la regla 1 no
+	// aplicaba) y un slug se casteaba (int)'peluqueria' = 0 → se aplicaba el
+	// aviso del servicio de índice 0 al servicio equivocado.
 	$avisos = array();
 	foreach ( $sel as $ix_sel ) {
-		if ( ! is_scalar( $ix_sel ) ) {
-			continue;
+		$aviso_sel = null;
+		if ( is_array( $ix_sel ) && isset( $ix_sel['service'] ) && is_scalar( $ix_sel['service'] ) ) {
+			// (b) fila {service, value}
+			$slug      = sanitize_title( (string) $ix_sel['service'] );
+			$aviso_sel = ( '' !== $slug ) ? ( $aviso_por_slug[ $slug ] ?? null ) : null;
+		} elseif ( is_scalar( $ix_sel ) ) {
+			$s = trim( (string) $ix_sel );
+			if ( '' === $s ) {
+				continue;
+			}
+			if ( ctype_digit( $s ) ) {
+				// (a) índice plano — precedencia: aviso del MENÚ > tipología.
+				$aviso_sel = $aviso_por_indice[ (int) $s ] ?? null;
+			} else {
+				// (c) slug string
+				$aviso_sel = $aviso_por_slug[ sanitize_title( $s ) ] ?? null;
+			}
 		}
-		// Precedencia por servicio: aviso del MENÚ > aviso de la tipología.
-		$aviso_sel = $aviso_por_indice[ (int) $ix_sel ] ?? null;
 		if ( null !== $aviso_sel ) {
 			$avisos[] = (int) $aviso_sel;
 		}
