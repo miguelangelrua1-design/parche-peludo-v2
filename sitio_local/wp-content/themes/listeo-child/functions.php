@@ -712,6 +712,12 @@ function ppv2_listados_a_publicaciones_texto( $texto ) {
 		return $texto;
 	}
 
+	// NUNCA tocar slugs/URLs: cadenas sin espacios con forma de slug
+	// (p. ej. "listado", "categoria-listado"). Cambiarlas rompe los permalinks.
+	if ( preg_match( '/^[a-z0-9_\-\/%\.]+$/', $texto ) ) {
+		return $texto;
+	}
+
 	// 1) Sustantivo (respetando mayúsculas).
 	$texto = preg_replace( '/\bLISTADOS\b/u', 'PUBLICACIONES', $texto );
 	$texto = preg_replace( '/\bListados\b/u', 'Publicaciones', $texto );
@@ -810,7 +816,16 @@ function ppv2_listados_a_publicaciones( $translation ) {
 	return ppv2_listados_a_publicaciones_texto( $translation );
 }
 add_filter( 'gettext', 'ppv2_listados_a_publicaciones', 30 );
-add_filter( 'gettext_with_context', 'ppv2_listados_a_publicaciones', 30 );
+// Con contexto: Listeo traduce las BASES DE URL vía _x() con contextos tipo
+// "Listing category slug - resave permalinks..." — esas cadenas son slugs y
+// no deben transformarse jamás (romperían los permalinks del sitio).
+function ppv2_listados_a_publicaciones_ctx( $translation, $text, $context, $domain ) {
+	if ( is_string( $context ) && ( false !== stripos( $context, 'slug' ) || false !== stripos( $context, 'permalink' ) ) ) {
+		return $translation;
+	}
+	return ppv2_listados_a_publicaciones( $translation );
+}
+add_filter( 'gettext_with_context', 'ppv2_listados_a_publicaciones_ctx', 30, 4 );
 function ppv2_listados_a_publicaciones_n( $translation, $single, $plural, $number ) {
 	return ppv2_listados_a_publicaciones( $translation );
 }
