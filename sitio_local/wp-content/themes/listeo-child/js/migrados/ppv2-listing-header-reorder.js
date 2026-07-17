@@ -523,7 +523,7 @@
 		if (vb) {
 			for (var i = 0; i < vb.childNodes.length; i++) {
 				var n = vb.childNodes[i];
-				if (n.nodeType === 3 && /verificado/i.test(n.nodeValue)) {
+				if (n.nodeType === 3 && /verificad[oa]/i.test(n.nodeValue)) {
 					n.nodeValue = ' Servicio Verificado ';
 					break;
 				}

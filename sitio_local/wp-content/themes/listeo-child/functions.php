@@ -553,7 +553,9 @@ function ppv2_listings_get_archive_title( $title ) {
 // "Directorio" solo en el archivo de listados.
 add_filter( 'rank_math/frontend/title', 'ppv2_listings_seo_title' );
 function ppv2_listings_seo_title( $title ) {
-	if ( is_post_type_archive( 'listing' ) ) { return str_replace( 'Listados', 'Directorio', $title ); }
+	// "Publicaciones" también: el renombrado global Listado(s)→Publicación(es)
+	// puede haber transformado la etiqueta antes de llegar aquí.
+	if ( is_post_type_archive( 'listing' ) ) { return str_replace( array( 'Listados', 'Publicaciones' ), 'Directorio', $title ); }
 	return $title;
 }
 
@@ -572,7 +574,7 @@ function ppv2_rename_bookmarks_to_favoritos( $translated, $text, $domain ) {
 	if ( 'listeo_core' === $domain ) {
 		switch ( $text ) {
 			case 'Bookmarks':                         return 'Favoritos'; // menú de usuario del header
-			case 'Bookmarked Listings':               return 'Listados Favoritos'; // título de la página
+			case 'Bookmarked Listings':               return 'Publicaciones Favoritas'; // título de la página
 			case 'No bookmarks!':                     return '¡No hay favoritos!';
 			case 'You don\'t have any bookmarks yet.': return 'Aún no tienes ningún favorito.';
 		}
@@ -692,6 +694,162 @@ add_filter( 'gettext_listeo_core', 'ppv2_rename_no_results', 20, 3 );
 // versión); el hook genérico cubre cualquier dominio. Los textos comparados
 // son exactos, así que no hay riesgo de tocar otras cadenas.
 add_filter( 'gettext', 'ppv2_rename_no_results', 20, 3 );
+
+/**
+ * "Listado(s)" → "Publicación(es)" en todo el front-end.
+ *
+ * Las traducciones es_ES del tema y de los plugins de Listeo usan "Listado";
+ * en vez de editar ~400 cadenas en los .po (frágil ante actualizaciones), se
+ * transforma el texto YA TRADUCIDO vía gettext, con reglas de concordancia de
+ * género (el listado→la publicación, nuevo→nueva, del→de la, expirado→expirada…).
+ * Probada contra el corpus completo (380 cadenas únicas de los .po de
+ * listeo_core, listeo_elementor, listeo y listeo-poi) sin residuos ni errores.
+ * Solo front-end (y AJAX): el escritorio de administración conserva "Listado",
+ * que coincide con la documentación de Listeo.
+ */
+function ppv2_listados_a_publicaciones_texto( $texto ) {
+	if ( ! is_string( $texto ) || false === stripos( $texto, 'listado' ) ) {
+		return $texto;
+	}
+
+	// 1) Sustantivo (respetando mayúsculas).
+	$texto = preg_replace( '/\bLISTADOS\b/u', 'PUBLICACIONES', $texto );
+	$texto = preg_replace( '/\bListados\b/u', 'Publicaciones', $texto );
+	$texto = preg_replace( '/\blistados\b/u', 'publicaciones', $texto );
+	$texto = preg_replace( '/\bLISTADO\b/u', 'PUBLICACIÓN', $texto );
+	$texto = preg_replace( '/\bListado\b/u', 'Publicación', $texto );
+	$texto = preg_replace( '/\blistado\b/u', 'publicación', $texto );
+
+	if ( false === stripos( $texto, 'publicaci' ) ) {
+		return $texto; // "listado" aparecía solo dentro de otra palabra; nada que concordar.
+	}
+
+	// 2) Adjetivo INMEDIATAMENTE ANTES del sustantivo → femenino.
+	$adj_antes = array(
+		'nuevo' => 'nueva', 'nuevos' => 'nuevas',
+		'otro' => 'otra', 'otros' => 'otras',
+		'primer' => 'primera', 'primeros' => 'primeras',
+		'mismo' => 'misma', 'mismos' => 'mismas',
+		'último' => 'última', 'últimos' => 'últimas',
+		'único' => 'única', 'únicos' => 'únicas',
+		'próximo' => 'próxima', 'próximos' => 'próximas',
+	);
+	$texto = preg_replace_callback(
+		'/\b(nuevos?|otros?|primer(?:os)?|mismos?|últimos?|únicos?|próximos?)(\s+)(publicación|publicaciones)/iu',
+		function ( $m ) use ( $adj_antes ) {
+			$low = mb_strtolower( $m[1], 'UTF-8' );
+			$fem = isset( $adj_antes[ $low ] ) ? $adj_antes[ $low ] : $m[1];
+			if ( preg_match( '/^\p{Lu}/u', $m[1] ) ) {
+				$fem = mb_strtoupper( mb_substr( $fem, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $fem, 1, null, 'UTF-8' );
+			}
+			return $fem . $m[2] . $m[3];
+		},
+		$texto
+	);
+
+	// 2b) Contracciones: "del listado"→"de la publicación", "al listado"→"a la publicación".
+	$texto = preg_replace_callback(
+		'/\b(del|al)(\s+)((?:nuevas?|otras?|primeras?|mismas?|últimas?|únicas?|próximas?)\s+)?(publicación|publicaciones)/iu',
+		function ( $m ) {
+			$mayus = preg_match( '/^\p{Lu}/u', $m[1] );
+			$pre   = ( 'd' === strtolower( $m[1][0] ) ) ? ( $mayus ? 'De la' : 'de la' ) : ( $mayus ? 'A la' : 'a la' );
+			return $pre . $m[2] . ( isset( $m[3] ) ? $m[3] : '' ) . $m[4];
+		},
+		$texto
+	);
+
+	// 3) Determinante antes de [adjetivo femenino opcional +] sustantivo → femenino.
+	//    Dos pasadas para cadenas tipo "todos los listados" → "todas las publicaciones".
+	$det = array(
+		'el' => 'la', 'los' => 'las',
+		'un' => 'una', 'unos' => 'unas',
+		'este' => 'esta', 'estos' => 'estas',
+		'ese' => 'esa', 'esos' => 'esas',
+		'aquel' => 'aquella', 'aquellos' => 'aquellas',
+		'todos' => 'todas', 'algunos' => 'algunas',
+		'ningún' => 'ninguna', 'algún' => 'alguna',
+		'varios' => 'varias', 'muchos' => 'muchas', 'pocos' => 'pocas',
+		'cuántos' => 'cuántas',
+	);
+	for ( $i = 0; $i < 2; $i++ ) {
+		$texto = preg_replace_callback(
+			'/\b(el|los|un|unos|este|estos|ese|esos|aquel|aquellos|todos|algunos|ningún|algún|varios|muchos|pocos|cuántos)(\s+)((?:las?|unas?|nuevas?|otras?|primeras?|mismas?|últimas?|únicas?|próximas?)\s+)?(publicación|publicaciones)/iu',
+			function ( $m ) use ( $det ) {
+				$low = mb_strtolower( $m[1], 'UTF-8' );
+				$fem = isset( $det[ $low ] ) ? $det[ $low ] : $m[1];
+				if ( preg_match( '/^\p{Lu}/u', $m[1] ) ) {
+					$fem = mb_strtoupper( mb_substr( $fem, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $fem, 1, null, 'UTF-8' );
+				}
+				return $fem . $m[2] . ( isset( $m[3] ) ? $m[3] : '' ) . $m[4];
+			},
+			$texto
+		);
+	}
+
+	// 4) Participio/adjetivo DESPUÉS del sustantivo → femenino (lista explícita;
+	//    nada genérico para no tocar palabras en -o que no son adjetivos).
+	$texto = preg_replace_callback(
+		'/(publicación|publicaciones)(\s+)((?:est(?:á|ará|aba|é|uvo)|es|será|era|fue|sea|ha sido|han sido|siguen?|quedar?á?n?)\s+)?(nuevo|expirado|destacado|publicado|guardado|relacionado|cercano|único|aprobado|activo|inactivo|caducado|eliminado|creado|enviado|verificado|actualizado|renovado|reservado|pagado|marcado|seleccionado|encontrado|solicitado|borrado|oculto|privado|reciente|pendiente|próximo|listo|agregado|específico|reclamado|editado|rechazado|suspendido|archivado|vencido|completado|importado|exportado|duplicado|compartido|comprado|inválido|reordenado|predeterminado|personalizado|asignado|permitido|favorito)(s?)\b/iu',
+		function ( $m ) {
+			$adj = $m[4];
+			if ( preg_match( '/[oO]$/u', $adj ) ) {
+				$adj = preg_replace( '/o$/u', 'a', $adj );
+				$adj = preg_replace( '/O$/u', 'A', $adj );
+			}
+			return $m[1] . $m[2] . ( isset( $m[3] ) ? $m[3] : '' ) . $adj . $m[5];
+		},
+		$texto
+	);
+
+	return $texto;
+}
+function ppv2_listados_a_publicaciones( $translation ) {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return $translation;
+	}
+	return ppv2_listados_a_publicaciones_texto( $translation );
+}
+add_filter( 'gettext', 'ppv2_listados_a_publicaciones', 30 );
+add_filter( 'gettext_with_context', 'ppv2_listados_a_publicaciones', 30 );
+function ppv2_listados_a_publicaciones_n( $translation, $single, $plural, $number ) {
+	return ppv2_listados_a_publicaciones( $translation );
+}
+add_filter( 'ngettext', 'ppv2_listados_a_publicaciones_n', 30, 4 );
+
+// Contenido guardado en la BD que NO pasa por gettext, transformado al vuelo
+// (así no hay que editar la BD ni replicar cambios de datos en producción):
+// 1) Labels/tooltips del formulario de publicar (Editor de formularios de Listeo).
+function ppv2_listados_a_publicaciones_profundo( $valor ) {
+	if ( is_string( $valor ) ) {
+		return ppv2_listados_a_publicaciones_texto( $valor );
+	}
+	if ( is_array( $valor ) ) {
+		foreach ( $valor as $k => $v ) {
+			$valor[ $k ] = ppv2_listados_a_publicaciones_profundo( $v );
+		}
+	}
+	return $valor;
+}
+foreach ( array( 'listeo_submit_adopcion_form_fields', 'listeo_submit_directorio_form_fields', 'listeo_submit_experiencia-categoria_form_fields', 'listeo_submit_resource_adopcion_form_fields', 'listeo_submit_servicio_form_fields', 'listeo_submit_mascotas-perdidas_form_fields' ) as $ppv2_opt_form ) {
+	add_filter( 'option_' . $ppv2_opt_form, 'ppv2_listados_a_publicaciones_profundo' );
+}
+// 2) Asunto del correo "listado publicado" (opción de Listeo → Emails).
+add_filter( 'option_listeo_listing_published_email_subject', 'ppv2_listados_a_publicaciones_texto' );
+// 3) Títulos de PÁGINAS mostrados en el front ("Mis Listados", "Agregar Listado",
+//    etc.). Solo post_type=page: los títulos que escriben los usuarios en sus
+//    listados/productos no se tocan.
+add_filter( 'the_title', 'ppv2_listados_a_publicaciones_titulo_pagina', 20, 2 );
+function ppv2_listados_a_publicaciones_titulo_pagina( $titulo, $post_id = 0 ) {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return $titulo;
+	}
+	if ( $post_id && 'page' === get_post_type( $post_id ) ) {
+		return ppv2_listados_a_publicaciones_texto( $titulo );
+	}
+	return $titulo;
+}
+// 4) <title> del navegador (Rank Math) en todo el front.
+add_filter( 'rank_math/frontend/title', 'ppv2_listados_a_publicaciones', 25 );
 
 // ppv2_account_drawer(): JS migrado a js/migrados/ppv2-account-drawer.js (2026-07-10).
 // Encolado condicional en ppv2_enqueue_js_migrados() al final de este archivo.
