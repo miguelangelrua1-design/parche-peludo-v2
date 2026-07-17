@@ -1,8 +1,10 @@
 <?php
 /**
  * Filtros personalizados — página de administración.
- * Ajustes → Filtros personalizados: activar/desactivar y configurar el
- * filtro de disponibilidad (búsqueda por franjas).
+ * Menú principal "Personalización Filtros" (antes vivía en Ajustes →
+ * Filtros personalizados y costaba encontrarlo — pedido de Miguel
+ * 2026-07-13): activar/desactivar y configurar el filtro de
+ * disponibilidad (búsqueda por franjas).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -11,12 +13,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 add_action( 'admin_menu', 'pp_franjas_menu_admin' );
 function pp_franjas_menu_admin() {
-	add_options_page(
-		'Filtros personalizados',
-		'Filtros personalizados',
+	// Menú PRINCIPAL, junto a "Personalización Parche" (dashicons-pets, 58).
+	// Mismo slug de siempre ('pp-busqueda-franjas'): los enlaces guardados a
+	// admin.php?page=pp-busqueda-franjas siguen funcionando.
+	add_menu_page(
+		'Personalización Filtros',
+		'Personalización Filtros',
 		'manage_options',
 		'pp-busqueda-franjas',
-		'pp_franjas_pagina_admin'
+		'pp_franjas_pagina_admin',
+		'dashicons-filter',
+		59
 	);
 }
 
