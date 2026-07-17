@@ -199,7 +199,12 @@ function pp_rs_agendas_del_listado( $listing_id ) {
 	return $mapa;
 }
 
-/** Mapa recurso profesional (NO auto-agenda) → tipología asignada ('' = todas). */
+/**
+ * Mapa profesional ACTIVO (NO auto-agenda) → tipología asignada ('' = todas).
+ * Mismo criterio de "reservable" que lbp_get_active_resources(): publicado y
+ * sin pausar — un profesional en borrador o pausado no atiende a nadie, así
+ * que su tipo debe quedar cubierto por otra ruta (agenda general).
+ */
 function pp_rs_profesionales_del_listado( $listing_id ) {
 	$mapa = array();
 	$ids  = get_post_meta( (int) $listing_id, '_lbp_resources', true );
@@ -211,9 +216,56 @@ function pp_rs_profesionales_del_listado( $listing_id ) {
 		if ( $rid <= 0 || get_post_meta( $rid, '_pp_auto_agenda', true ) ) {
 			continue;
 		}
+		if ( 'publish' !== get_post_status( $rid ) || get_post_meta( $rid, '_lbp_resource_paused', true ) ) {
+			continue;
+		}
 		$mapa[ $rid ] = sanitize_key( get_post_meta( $rid, '_pp_tipologia', true ) );
 	}
 	return $mapa;
+}
+
+/**
+ * ID de la "Agenda general" ACTIVA del listado (0 si no hay).
+ *
+ * Es el recurso que atiende a los tipos SIN agenda propia ni profesional,
+ * cuando el listado ya tiene alguna agenda separada. Existe por una razón
+ * de fondo: para Booking Plus, en cuanto un listado tiene recursos, la
+ * agenda del listado deja de ser reservable — pedir "recurso 0" significa
+ * "que CUALQUIER recurso esté libre" (class-lbp-availability.php, rama
+ * "Any resource"), lo que mezclaría la disponibilidad de agendas ajenas.
+ * Con la Agenda general cada tipo tiene SIEMPRE su propia ruta y no hay
+ * contaminación. Hereda horarios/slots del listado (sin overrides), así que
+ * se comporta igual que la agenda del negocio de toda la vida.
+ */
+function pp_rs_agenda_general_del_listado( $listing_id ) {
+	$ids = get_post_meta( (int) $listing_id, '_lbp_resources', true );
+	if ( ! is_array( $ids ) ) {
+		return 0;
+	}
+	foreach ( $ids as $rid ) {
+		$rid = (int) $rid;
+		if ( $rid <= 0 || ! get_post_meta( $rid, '_pp_auto_general', true ) ) {
+			continue;
+		}
+		if ( 'publish' !== get_post_status( $rid ) || get_post_meta( $rid, '_lbp_resource_paused', true ) ) {
+			continue;
+		}
+		return $rid;
+	}
+	return 0;
+}
+
+/** ¿Este tipo ya tiene ruta propia (profesional que lo atiende o agenda propia)? */
+function pp_rs_tipo_cubierto( $tipo, $profesionales, $agendas ) {
+	if ( isset( $agendas[ $tipo ] ) ) {
+		return true;
+	}
+	foreach ( $profesionales as $rid => $tipologia ) {
+		if ( '' === $tipologia || $tipo === $tipologia ) {
+			return true; // '' = atiende todos los tipos
+		}
+	}
+	return false;
 }
 
 /* =========================================================================
@@ -401,6 +453,103 @@ function pp_rs_sincronizar_agendas( $listing_id ) {
 	if ( $cambio ) {
 		update_post_meta( $listing_id, '_lbp_resources', array_values( $ids ) );
 	}
+
+	pp_rs_sincronizar_agenda_general( $listing_id );
+}
+
+/**
+ * Crea/pausa la "Agenda general" según la cobertura del listado.
+ *
+ * Necesaria SOLO cuando el listado tiene alguna agenda separada (profesional
+ * o agenda de tipo) Y queda algún tipo sin ruta propia: esos tipos necesitan
+ * un recurso propio porque, con recursos presentes, Booking Plus ya no puede
+ * reservar "la agenda del listado" (ver pp_rs_agenda_general_del_listado).
+ * Si el listado no tiene recursos, NO se crea nada: sigue el flujo clásico.
+ */
+function pp_rs_sincronizar_agenda_general( $listing_id ) {
+	if ( ! pp_rs_habilitado() ) {
+		return;
+	}
+
+	$profesionales = pp_rs_profesionales_del_listado( $listing_id );
+	$agendas       = pp_rs_agendas_del_listado( $listing_id );
+	$tiene_rutas   = ( $profesionales || $agendas );
+
+	// ¿Queda algún tipo del listado sin profesional ni agenda propia?
+	$huerfanos = false;
+	foreach ( pp_rs_tipologias_listado( $listing_id ) as $t ) {
+		if ( ! pp_rs_tipo_cubierto( $t['slug'], $profesionales, $agendas ) ) {
+			$huerfanos = true;
+			break;
+		}
+	}
+	$necesaria = ( $tiene_rutas && $huerfanos );
+
+	// Buscar la general existente (activa o pausada).
+	$ids     = get_post_meta( $listing_id, '_lbp_resources', true );
+	$ids     = is_array( $ids ) ? $ids : array();
+	$general = 0;
+	foreach ( $ids as $rid ) {
+		$rid = (int) $rid;
+		if ( $rid > 0 && get_post_meta( $rid, '_pp_auto_general', true ) && get_post_status( $rid ) ) {
+			$general = $rid;
+			break;
+		}
+	}
+
+	if ( ! $necesaria ) {
+		// Sobra: pausar (no borrar — puede tener reservas históricas).
+		if ( $general && ! get_post_meta( $general, '_lbp_resource_paused', true ) ) {
+			update_post_meta( $general, '_lbp_resource_paused', '1' );
+			update_post_meta( $general, '_pp_auto_pausado', '1' );
+		}
+		return;
+	}
+
+	if ( $general ) {
+		if ( get_post_meta( $general, '_lbp_resource_paused', true ) ) {
+			delete_post_meta( $general, '_lbp_resource_paused' );
+			delete_post_meta( $general, '_pp_auto_pausado' );
+		}
+		return;
+	}
+
+	$rid = wp_insert_post( array(
+		'post_type'   => 'lbp_resource',
+		'post_title'  => 'Agenda general',
+		'post_status' => 'publish',
+		'post_author' => (int) get_post_field( 'post_author', $listing_id ) ?: get_current_user_id(),
+	) );
+	if ( ! $rid || is_wp_error( $rid ) ) {
+		return;
+	}
+	// Sin overrides: hereda horarios y slots del listado → se comporta igual
+	// que la agenda del negocio de siempre.
+	update_post_meta( $rid, '_pp_auto_agenda', '1' );
+	update_post_meta( $rid, '_pp_auto_general', '1' );
+	update_post_meta( $rid, '_lbp_assigned_listing', $listing_id );
+	update_post_meta( $rid, '_lbp_subtitle', 'Agenda del negocio' );
+	$ids[] = $rid;
+	update_post_meta( $listing_id, '_lbp_resources', array_values( $ids ) );
+}
+
+/**
+ * Crear/editar un profesional cambia la cobertura de tipos del listado
+ * (p. ej. el último profesional de un tipo deja de atenderlo) → resincronizar
+ * su Agenda general. Prioridad 25: después de guardar `_pp_tipologia` (20).
+ */
+add_action( 'save_post_lbp_resource', 'pp_rs_resync_general_por_recurso', 25, 1 );
+function pp_rs_resync_general_por_recurso( $post_id ) {
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+	if ( get_post_meta( $post_id, '_pp_auto_agenda', true ) ) {
+		return; // evitar recursión: es una agenda creada por nosotros
+	}
+	$listing_id = (int) get_post_meta( $post_id, '_lbp_assigned_listing', true );
+	if ( $listing_id > 0 ) {
+		pp_rs_sincronizar_agenda_general( $listing_id );
+	}
 }
 
 /* =========================================================================
@@ -438,5 +587,8 @@ function pp_rs_assets() {
 		// { resource_id: tipologia } — SOLO profesionales (las auto-agendas
 		// viajan dentro de cada tipología como 'agenda').
 		'profesionales' => $profesionales ? $profesionales : new stdClass(),
+		// Recurso que atiende a los tipos sin ruta propia (0 = el listado no
+		// tiene agendas separadas y se reserva con su calendario de siempre).
+		'agendaGeneral' => pp_rs_agenda_general_del_listado( $listing_id ),
 	) );
 }

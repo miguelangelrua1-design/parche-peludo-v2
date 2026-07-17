@@ -714,7 +714,7 @@ function pp_franjas_agendas_candidatos( $metas_listados ) {
 
 	// Metas de TODOS los recursos en 1 consulta (solo las claves del motor).
 	$claves = array(
-		'_pp_tipologia', '_pp_auto_agenda', '_lbp_resource_paused', '_lbp_blocked_dates',
+		'_pp_tipologia', '_pp_auto_agenda', '_pp_auto_general', '_lbp_resource_paused', '_lbp_blocked_dates',
 		'_slots', '_slots_status', '_lbp_override__slots', '_lbp_override__slots_status',
 	);
 	foreach ( array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' ) as $dia ) {
@@ -741,7 +741,13 @@ function pp_franjas_agendas_candidatos( $metas_listados ) {
 		if ( ! empty( $m['_lbp_resource_paused'] ) ) {
 			continue; // pausado = no reservable (mismo criterio que el popup)
 		}
-		$cubo = ! empty( $m['_pp_auto_agenda'] ) ? 'tipo' : 'prof';
+		if ( ! empty( $m['_pp_auto_general'] ) ) {
+			$cubo = 'general'; // atiende a los tipos sin ruta propia
+		} elseif ( ! empty( $m['_pp_auto_agenda'] ) ) {
+			$cubo = 'tipo';
+		} else {
+			$cubo = 'prof';
+		}
 		$out[ $duenos[ $rid ] ][ $cubo ][] = array(
 			'id'        => $rid,
 			'tipologia' => isset( $m['_pp_tipologia'] ) ? sanitize_key( $m['_pp_tipologia'] ) : '',
@@ -760,13 +766,19 @@ function pp_franjas_agendas_candidatos( $metas_listados ) {
  * @return array Entradas de recurso {id,tipologia,metas}; null = compartida.
  */
 function pp_franjas_rutas_agenda( $agendas_listado, $servicio ) {
-	$prof = isset( $agendas_listado['prof'] ) ? $agendas_listado['prof'] : array();
-	$tipo = isset( $agendas_listado['tipo'] ) ? $agendas_listado['tipo'] : array();
+	$prof    = isset( $agendas_listado['prof'] ) ? $agendas_listado['prof'] : array();
+	$tipo    = isset( $agendas_listado['tipo'] ) ? $agendas_listado['tipo'] : array();
+	$general = isset( $agendas_listado['general'] ) ? $agendas_listado['general'] : array();
+
+	// Ruta de "los tipos sin agenda propia": la Agenda general si el listado
+	// la tiene (el popup reserva contra ella), o el calendario del listado
+	// (null) cuando no hay agendas separadas.
+	$compartida = $general ? $general : array( null );
 
 	if ( '' === (string) $servicio ) {
 		// "Todos": el cliente podría elegir cualquier tipo en el popup →
-		// vale la agenda compartida o cualquier recurso libre.
-		return array_merge( array( null ), $prof, $tipo );
+		// vale cualquier ruta libre.
+		return array_merge( $compartida, $prof, $tipo );
 	}
 
 	$compat = array();
@@ -786,7 +798,7 @@ function pp_franjas_rutas_agenda( $agendas_listado, $servicio ) {
 	if ( $compat ) {
 		return $compat; // agenda propia del tipo
 	}
-	return array( null ); // tipo sin agenda propia → agenda compartida
+	return $compartida;
 }
 
 /**

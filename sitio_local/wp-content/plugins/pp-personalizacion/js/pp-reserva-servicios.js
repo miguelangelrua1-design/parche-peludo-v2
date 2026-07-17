@@ -246,10 +246,16 @@
 
 		/* ================= Transición al calendario ================= */
 
-		// Recurso destino según la elección: profesional > agenda del tipo > 0.
+		// Recurso destino: profesional > agenda del tipo > agenda general > 0.
+		// La agenda general existe cuando el listado tiene agendas separadas y
+		// este tipo no tiene la suya: con recursos presentes, "recurso 0" para
+		// Booking Plus significa "que CUALQUIER recurso esté libre", lo que
+		// mostraría la disponibilidad de agendas ajenas. Solo se usa el 0
+		// cuando el listado no tiene recursos (calendario del negocio).
 		function recursoDestino() {
 			if (profElegido) { return profElegido.id; }
 			if (tipoElegido && tipoElegido.agenda) { return tipoElegido.agenda; }
+			if (D.agendaGeneral) { return parseInt(D.agendaGeneral, 10) || 0; }
 			return 0;
 		}
 
@@ -276,6 +282,7 @@
 			var $paso1 = $modal.find('.lbp-step[data-step="1"]');
 			if (!hayPasoRecursos() || !$paso1.length || $paso1.hasClass('active')) {
 				reaplicarFiltroTipo();
+				ajustarResumen();
 				ocultarOverlay();
 				return;
 			}
@@ -287,12 +294,38 @@
 			function terminar() {
 				if (listoEn) { clearTimeout(listoEn); listoEn = null; }
 				vigia.disconnect();
+				// Si Booking Plus aún no avanzó (su AJAX de ajustes del recurso
+				// va lento), forzarlo por su propia vía: el botón Siguiente del
+				// paso 0 ya está habilitado al haber recurso elegido. Sin esto
+				// el cliente aterrizaría en el paso 0 CRUDO (tarjetas de
+				// agendas internas), que es justo lo que este paso evita.
+				if (!$paso1.hasClass('active')) {
+					var $next0 = $modal.find('.lbp-step-0 .lbp-btn-next:not(:disabled)').first();
+					if ($next0.length) { $next0.trigger('click'); }
+				}
 				reaplicarFiltroTipo();
+				ajustarResumen();
 				ocultarOverlay();
 			}
 			vigia.observe($paso1[0], { attributes: true, attributeFilter: ['class'] });
-			listoEn = setTimeout(terminar, 5000);
+			// 12 s: margen amplio para el AJAX de ajustes del recurso incluso en
+			// servidores lentos (en local saturado tarda >10 s).
+			listoEn = setTimeout(terminar, 12000);
 			dispararRecurso(); // reintento por si el primer disparo no ocurrió
+		}
+
+		// Las agendas automáticas son un detalle interno: el resumen no debe
+		// decir "Profesional: Agenda general". Solo se muestra esa línea
+		// cuando el cliente eligió una persona de verdad.
+		function ajustarResumen() {
+			var $fila = $modal.find('.lbp-summary-resource');
+			if (!$fila.length) { return; }
+			if (profElegido) {
+				$fila.show();
+				$modal.find('#lbp-summary-resource-name').text(profElegido.nombre);
+			} else {
+				$fila.hide();
+			}
 		}
 
 		// El filtrado nativo por recurso re-muestra TODOS los servicios con
@@ -381,8 +414,30 @@
 			if ($x.length) { $x.trigger('click'); }
 		});
 
-		// El "Siguiente" del gate de Mascota abre NUESTRO paso (el gate ya se
-		// ocultó con su propio handler; el nuestro corre después por burbuja).
+		// Entrada a NUESTRO paso: cuando el gate de Mascota se resuelve.
+		// Es por ESTADO, no por evento: en vez de escuchar su botón Siguiente
+		// (frágil: depende de la propagación del click y del orden de scripts),
+		// se vigila que el gate quede oculto con el modal abierto. Así entra
+		// igual si el cliente pulsa Siguiente, "Continuar sin mascota", o si el
+		// gate se cierra por cualquier otro camino.
+		function vigilarGateMascota() {
+			var $gate = $('.pp-gate').not('.pp-rs').first();
+			if (!$gate.length || $gate.data('ppRsVigilado')) { return; }
+			$gate.data('ppRsVigilado', true);
+			var obs = new MutationObserver(function () {
+				if (!modalAbierto || resuelto) { return; }
+				// Gate oculto + modal abierto + paso sin resolver = nos toca.
+				if (!$gate.is(':visible') && $modal.is(':visible') && !$overlayVisible()) {
+					mostrarOverlay();
+				}
+			});
+			obs.observe($gate[0], { attributes: true, attributeFilter: ['style', 'class'] });
+		}
+		function $overlayVisible() {
+			return $overlay && $overlay.is(':visible');
+		}
+
+		// Respaldo por evento (si el gate se ocultara sin cambiar atributos).
 		$(document).on('click', '.pp-gate__continuar, .pp-gate__continuar-invitado', function () {
 			setTimeout(mostrarOverlay, 30);
 		});
@@ -433,6 +488,7 @@
 				modalAbierto = true;
 				parcharSidebarGate();
 				montar();
+				vigilarGateMascota();
 				// Sin gate de Mascota (módulo apagado o sin montar) este paso
 				// es la primera pantalla del flujo.
 				if (!resuelto && !$('.pp-gate').not('.pp-rs').length) {
