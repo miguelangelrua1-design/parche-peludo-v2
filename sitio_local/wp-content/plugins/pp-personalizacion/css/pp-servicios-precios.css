@@ -216,14 +216,49 @@ body.pp-sp-bloqueado {
 }
 
 /* ---------- Móvil ---------- */
-@media (max-width: 600px) {
+@media (max-width: 767px) {
+	/* Tabs: carrusel horizontal en UNA línea (sin saltar a dos niveles) */
+	.pp-sp__tabs {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;      /* Firefox */
+		margin-inline: -4px;
+		padding: 2px 4px 6px;
+	}
+	.pp-sp__tabs::-webkit-scrollbar {
+		display: none;              /* Chrome/Safari */
+	}
+	.pp-sp__tab {
+		flex: 0 0 auto;
+		white-space: nowrap;
+	}
+
+	/* Servicio compacto: TODO en una sola fila (nombre+precio | botones) */
 	.pp-sp__fila {
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
+		gap: 10px;
+		padding: 12px 2px;
+	}
+	.pp-sp__nombre {
+		font-size: 15px;
+		margin-bottom: 2px;
+	}
+	.pp-sp__precio {
+		font-size: 13px;
 	}
 	.pp-sp__acciones {
-		width: 100%;
-		justify-content: flex-end;
+		gap: 6px;
 	}
+	.pp-sp__detalles {
+		padding: 7px 12px;
+		font-size: 13px;
+	}
+	.pp-sp__reservar {
+		padding: 8px 14px;
+		font-size: 13px;
+	}
+
 	.pp-sp-sheet__panel {
 		max-width: 100%;
 		border-radius: 16px 16px 0 0;
