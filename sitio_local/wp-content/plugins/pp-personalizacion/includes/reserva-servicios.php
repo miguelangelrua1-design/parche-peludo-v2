@@ -595,3 +595,79 @@ function pp_rs_assets() {
 		'agendaGeneral' => pp_rs_agenda_general_del_listado( $listing_id ),
 	) );
 }
+
+/* =========================================================================
+ * Ocultar las AGENDAS internas de la sección pública "Profesionales"
+ *
+ * Booking Plus lista TODOS los recursos activos del listado en la ficha
+ * (sección #listing-resources, con botón Reservar por tarjeta). Nuestras
+ * agendas automáticas (por tipo y la general) son recursos por debajo, así
+ * que se colaban como si fueran profesionales elegibles. No hay filtro
+ * nativo para excluirlas → se ocultan con CSS por su data-resource-id
+ * (a prueba de updates; si el CSS no corriera, lo peor es que se vean, no
+ * se rompe nada). Si el listado SOLO tiene agendas internas (sin
+ * profesionales reales), se oculta la sección y su pestaña completas.
+ * ========================================================================= */
+
+/** IDs de recursos internos (auto-agenda / general) ACTIVOS del listado. */
+function pp_rs_agendas_internas_activas( $listing_id ) {
+	$out = array();
+	$ids = get_post_meta( (int) $listing_id, '_lbp_resources', true );
+	if ( ! is_array( $ids ) ) {
+		return $out;
+	}
+	foreach ( $ids as $rid ) {
+		$rid = (int) $rid;
+		if ( $rid <= 0 ) {
+			continue;
+		}
+		$es_interna = get_post_meta( $rid, '_pp_auto_agenda', true ) || get_post_meta( $rid, '_pp_auto_general', true );
+		if ( ! $es_interna ) {
+			continue;
+		}
+		if ( 'publish' !== get_post_status( $rid ) || get_post_meta( $rid, '_lbp_resource_paused', true ) ) {
+			continue;
+		}
+		$out[] = $rid;
+	}
+	return $out;
+}
+
+add_action( 'wp_head', 'pp_rs_ocultar_agendas_publicas', 99 );
+function pp_rs_ocultar_agendas_publicas() {
+	if ( is_admin() || ! is_singular( 'listing' ) || ! pp_rs_habilitado() ) {
+		return;
+	}
+	$listing_id = get_queried_object_id();
+	$internas   = pp_rs_agendas_internas_activas( $listing_id );
+	if ( ! $internas ) {
+		return; // no hay agendas internas → nada que ocultar
+	}
+
+	// ¿Quedan profesionales REALES para mostrar en la sección?
+	$hay_profesionales = ! empty( pp_rs_profesionales_del_listado( $listing_id ) );
+
+	echo "\n<style id=\"pp-rs-ocultar-agendas\">\n";
+	if ( $hay_profesionales ) {
+		// Ocultar solo las tarjetas de agendas internas. Los IDs son (int):
+		// seguros para interpolar en CSS. NO usar esc_html (convertiría las
+		// comillas del selector en &quot; y rompería la regla).
+		$sel = array();
+		foreach ( $internas as $rid ) {
+			$sel[] = '#listing-resources .lbp-resource-listing-card[data-resource-id="' . (int) $rid . '"]';
+		}
+		echo implode( ",\n", $sel ) . " { display: none !important; }\n";
+	} else {
+		// Solo hay agendas internas → ocultar la sección y su pestaña.
+		echo "#listing-resources { display: none !important; }\n";
+		echo ".pp-rs-nav-oculto { display: none !important; }\n";
+	}
+	echo "</style>\n";
+
+	// La pestaña del menú (<li><a href=\"#listing-resources\">) no tiene clase
+	// propia: se marca por JS para ocultarla sin depender de :has(). El nav se
+	// renderiza en el <body> (después de este <head>), así que se espera al DOM.
+	if ( ! $hay_profesionales ) {
+		echo "<script>(function(){function h(){var a=document.querySelector('a[href=\"#listing-resources\"]');if(a){var li=a.closest('li');if(li){li.className+=' pp-rs-nav-oculto';}}}if(document.readyState!=='loading'){h();}else{document.addEventListener('DOMContentLoaded',h);}})();</script>\n";
+	}
+}
