@@ -596,7 +596,13 @@ body.pp-barra-superior .pp-franjas-topbar .enable-filters-button {
 	body.pp-barra-superior .pp-franjas--movil.pp-franjas--abierta {
 		display: flex;
 		flex: 1 1 100%;
-		width: 100%;
+		/* 3px de aire a cada lado del panel desplegable (el width compensa
+		   los 6px de margen para no desbordar el viewport). */
+		width: calc(100% - 6px);
+		flex-basis: calc(100% - 6px);
+		margin-left: 3px;
+		margin-right: 3px;
+		box-sizing: border-box;
 		flex-direction: column;
 		align-items: stretch;
 		gap: 12px;
@@ -634,11 +640,15 @@ body.pp-barra-superior .pp-franjas-topbar .enable-filters-button {
 		box-sizing: border-box;
 		flex: 0 0 auto;
 	}
-	/* Fecha + hora (y entrada/salida en modo rango) lado a lado en su grupo. */
+	/* Fecha + hora (y entrada/salida en modo rango) lado a lado en su grupo.
+	   align-items:stretch = ambos campos toman la MISMA altura (la del input
+	   de fecha, 42px): sin esto el <select> nativo de la hora se renderiza más
+	   corto y, centrado, quedaba visualmente más bajo que el campo de fecha. */
 	body.pp-barra-superior .pp-franjas__grupo {
 		display: flex;
 		flex-direction: row;
 		gap: 8px;
+		align-items: stretch;
 	}
 	body.pp-barra-superior .pp-franjas__grupo .pp-franjas__fecha,
 	body.pp-barra-superior .pp-franjas__grupo .pp-franjas__entrada,
@@ -650,6 +660,23 @@ body.pp-barra-superior .pp-franjas-topbar .enable-filters-button {
 	body.pp-barra-superior .pp-franjas__grupo .pp-franjas__hora {
 		flex: 0 0 108px;
 		box-sizing: border-box;
+	}
+	/* Fecha y Hora EXACTAMENTE a la misma altura (42px) y alineadas. Los
+	   campos de fecha se inflan solos: el datepicker de jQuery UI (desktop,
+	   input convertido a text con line-height del tema) y el <input type=date>
+	   nativo (móvil) superan los 42px del resto de controles (selector de
+	   servicios, botón). Con el grupo en flex+stretch, la propiedad `height`
+	   se ignora, pero `max-height` sí recorta: por eso se fija el trío
+	   height/min-height/max-height para clavar los 42px en ambos. */
+	body.pp-barra-superior .pp-franjas__grupo .pp-franjas__fecha,
+	body.pp-barra-superior .pp-franjas__grupo .pp-franjas__hora,
+	body.pp-barra-superior .pp-franjas__grupo .pp-franjas__entrada,
+	body.pp-barra-superior .pp-franjas__grupo .pp-franjas__salida {
+		height: 42px !important;
+		min-height: 42px !important;
+		max-height: 42px !important;
+		box-sizing: border-box;
+		line-height: normal;
 	}
 	/* Desplegable de servicios a todo el ancho. */
 	body.pp-barra-superior .pp-franjas__servicio.ppfs .ppfs__list {
