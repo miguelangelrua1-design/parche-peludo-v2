@@ -9637,6 +9637,18 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
   color: #9AA4A8;
 }
 
+/* --- "Sin resultados" de la tienda (override woocommerce/loop/no-products-found.php):
+       mismo tono que el del directorio --- */
+.woocommerce-no-products-found .ppv2-no-results h2 {
+  margin: 10px 0 12px;
+  font-size: 24px;
+}
+.woocommerce-no-products-found .ppv2-no-results p {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: #666;
+}
+
 /* --- Puente entre mundos en "sin resultados" (Directorio ↔ Tienda) --- */
 .ppv2-cross-search {
   display: flex;
