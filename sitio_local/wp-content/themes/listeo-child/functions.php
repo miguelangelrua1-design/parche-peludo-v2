@@ -1524,6 +1524,80 @@ function ppv2_header_suggest() {
 	wp_send_json( $suggestions );
 }
 
+/**
+ * Cuenta cuántas coincidencias tiene un término en el "otro mundo"
+ * (productos o publicaciones del directorio). Con caché de 10 minutos.
+ * Lo usan los puentes de "sin resultados": no-found.php (directorio→tienda)
+ * y ppv2_cross_search_banner_tienda (tienda→directorio).
+ */
+function ppv2_cross_search_count( $term, $post_type ) {
+	$term = trim( (string) $term );
+	if ( '' === $term ) {
+		return 0;
+	}
+	$term_key  = function_exists( 'mb_strtolower' ) ? mb_strtolower( $term, 'UTF-8' ) : strtolower( $term );
+	$cache_key = 'ppv2_xcount_' . md5( $post_type . '|' . $term_key );
+	$cached    = get_transient( $cache_key );
+	if ( false !== $cached ) {
+		return (int) $cached;
+	}
+	$args = array(
+		's'              => $term,
+		'post_type'      => $post_type,
+		'post_status'    => 'publish',
+		'posts_per_page' => 1,
+		'fields'         => 'ids',
+	);
+	if ( 'product' === $post_type ) {
+		$args['tax_query'] = array(
+			array(
+				'taxonomy' => 'product_visibility',
+				'field'    => 'name',
+				'terms'    => array( 'exclude-from-search' ),
+				'operator' => 'NOT IN',
+			),
+		);
+	}
+	$query = new WP_Query( $args );
+	$count = (int) $query->found_posts;
+	set_transient( $cache_key, $count, 10 * MINUTE_IN_SECONDS );
+	return $count;
+}
+
+/**
+ * PUENTE Tienda → Directorio: en la búsqueda de la tienda sin resultados,
+ * si el término SÍ tiene publicaciones en el directorio, ofrece el enlace
+ * con el conteo real (sin mezclar resultados). El espejo directorio→tienda
+ * vive en el override listeo-core/archive/no-found.php del tema hijo.
+ */
+add_action( 'woocommerce_no_products_found', 'ppv2_cross_search_banner_tienda', 20 );
+function ppv2_cross_search_banner_tienda() {
+	if ( ! is_search() ) {
+		return;
+	}
+	$term = get_search_query();
+	if ( '' === trim( (string) $term ) ) {
+		return;
+	}
+	$count = ppv2_cross_search_count( $term, 'listing' );
+	if ( $count < 1 ) {
+		return;
+	}
+	$url = add_query_arg( 'keyword_search', rawurlencode( $term ), get_post_type_archive_link( 'listing' ) );
+	?>
+	<div class="ppv2-cross-search">
+		<span class="ppv2-cross-search-icon" aria-hidden="true">🐾</span>
+		<div class="ppv2-cross-search-text">
+			<strong>&ldquo;<?php echo esc_html( $term ); ?>&rdquo; sí está en el Directorio</strong>
+			<span><?php echo esc_html( 1 === $count
+				? 'Encontramos 1 publicación que coincide con tu búsqueda.'
+				: sprintf( 'Encontramos %s publicaciones que coinciden con tu búsqueda.', number_format_i18n( $count ) ) ); ?></span>
+		</div>
+		<a class="ppv2-cross-search-btn" href="<?php echo esc_url( $url ); ?>">Ver en el Directorio</a>
+	</div>
+	<?php
+}
+
 // Garantiza que la librería de autocompletado esté cargada aunque Listeo
 // tenga desactivada su opción de autocompletado.
 add_action( 'wp_enqueue_scripts', 'ppv2_header_suggest_assets' );
@@ -1808,9 +1882,20 @@ function ppv2_enqueue_js_migrados() {
 	// Config PHP → JS del buscador unificado (las únicas interpolaciones PHP
 	// que había en todos los bloques inline migrados).
 	if ( wp_script_is( 'ppv2-header-suggest', 'enqueued' ) ) {
+		// Tab por CONTEXTO: quien navega la tienda/un producto/el carrito está
+		// en "modo compra" → el buscador arranca en Tienda; en el resto,
+		// Directorio. La elección manual (sessionStorage) siempre gana.
+		$ppv2_default_scope = 'directorio';
+		if ( ( function_exists( 'is_woocommerce' ) && is_woocommerce() )
+			|| ( function_exists( 'is_cart' ) && is_cart() )
+			|| ( function_exists( 'is_checkout' ) && is_checkout() )
+			|| is_page( 'tienda' ) // landing "Tienda" (Elementor): también es modo compra
+			|| ( is_search() && 'product' === get_query_var( 'post_type' ) ) ) {
+			$ppv2_default_scope = 'tienda';
+		}
 		wp_add_inline_script(
 			'ppv2-header-suggest',
-			'window.PPV2_CFG = Object.assign({ajaxUrl:' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ',homeUrl:' . wp_json_encode( home_url( '/' ) ) . '}, window.PPV2_CFG || {});',
+			'window.PPV2_CFG = Object.assign({ajaxUrl:' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ',homeUrl:' . wp_json_encode( home_url( '/' ) ) . ',defaultScope:' . wp_json_encode( $ppv2_default_scope ) . '}, window.PPV2_CFG || {});',
 			'before'
 		);
 	}

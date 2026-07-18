@@ -9615,6 +9615,73 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
   to { transform: rotate(360deg); }
 }
 
+/* --- Conteo de coincidencias en las pestañas del buscador ("Tienda · 5") --- */
+.ppv2-scope-tab .ppv2-scope-count {
+  display: inline-block;
+  margin-left: 7px;
+  padding: 2px 7px;
+  border-radius: var(--r-pill);
+  background: var(--teal-mist);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--teal-ink);
+}
+.ppv2-scope-tab.ppv2-scope-tab-active .ppv2-scope-count {
+  background: rgba(255, 255, 255, .28);
+  color: #fff;
+}
+/* El "0" se atenúa: pista visual de que ahí no está lo que se busca */
+.ppv2-scope-tab.ppv2-scope-zero .ppv2-scope-count {
+  background: #EDEFF0;
+  color: #9AA4A8;
+}
+
+/* --- Puente entre mundos en "sin resultados" (Directorio ↔ Tienda) --- */
+.ppv2-cross-search {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 18px 22px;
+  background: var(--teal-mist);
+  border-radius: var(--r-md);
+}
+.ppv2-cross-search-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+.ppv2-cross-search-text {
+  flex: 1 1 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--teal-ink);
+  font-size: 15px;
+  line-height: 1.4;
+}
+.ppv2-cross-search-text strong {
+  font-size: 16px;
+}
+.ppv2-cross-search-btn {
+  flex: 0 0 auto;
+  padding: 12px 24px;
+  border-radius: var(--r-pill);
+  background: var(--teal-parche);
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1;
+  text-decoration: none;
+  transition: background .15s ease;
+}
+.ppv2-cross-search-btn:hover,
+.ppv2-cross-search-btn:focus {
+  background: var(--teal-deep);
+  color: #fff !important;
+}
+
 /* ============================================================
    CARRITO DEL HEADER: cliqueable en TODA su área (desktop y móvil).
    El desplegable (.listeo-cart-wrapper, 60x27) se posiciona encima de la

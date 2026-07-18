@@ -8,11 +8,16 @@
 		var SCOPE_KEY = 'ppv2SearchScope';
 		var cache = {}; // resultados por término: el cambio de tab no vuelve a consultar al servidor
 
-		// Tab activo ("directorio" | "tienda"). Se recuerda solo durante la sesión.
+		// Tab activo ("directorio" | "tienda"). La elección manual del usuario se
+		// recuerda durante la sesión; sin elección, manda el default del CONTEXTO
+		// (PPV2_CFG.defaultScope: "tienda" en tienda/producto/carrito, si no "directorio").
+		var defaultScope = (window.PPV2_CFG.defaultScope === 'tienda') ? 'tienda' : 'directorio';
 		function getScope() {
 			try {
-				return window.sessionStorage.getItem(SCOPE_KEY) === 'tienda' ? 'tienda' : 'directorio';
-			} catch (e) { return 'directorio'; }
+				var s = window.sessionStorage.getItem(SCOPE_KEY);
+				if (s === 'tienda' || s === 'directorio') { return s; }
+			} catch (e) {}
+			return defaultScope;
 		}
 		function setScope(scope) {
 			try { window.sessionStorage.setItem(SCOPE_KEY, scope); } catch (e) {}
@@ -44,6 +49,31 @@
 				.show();
 		}
 		function hideStatus() { $status.hide(); }
+
+		// --- Conteo de coincidencias en las pestañas ("Directorio · 0 | Tienda · 5"):
+		// con la respuesta de sugerencias (trae ambos grupos, máx. 5 c/u) se pinta
+		// cuántas hay en cada mundo; "5+" cuando llega al tope. Señal clave para
+		// quien busca con el tab equivocado. Se limpia al vaciar el campo.
+		function updateTabCounts(items) {
+			var listings = 0, products = 0;
+			$.each(items || [], function(index, item) {
+				if (item.group === 'Tienda') { products++; } else { listings++; }
+			});
+			var fmt = function(n) { return n >= 5 ? '5+' : String(n); };
+			$('.ppv2-scope-tab').each(function() {
+				var n = ($(this).attr('data-scope') === 'tienda') ? products : listings;
+				var $badge = $(this).find('.ppv2-scope-count');
+				if (!$badge.length) {
+					$badge = $('<span class="ppv2-scope-count"></span>').appendTo(this);
+				}
+				$badge.text(fmt(n));
+				$(this).toggleClass('ppv2-scope-zero', n === 0);
+			});
+		}
+		function clearTabCounts() {
+			$('.ppv2-scope-tab .ppv2-scope-count').remove();
+			$('.ppv2-scope-tab').removeClass('ppv2-scope-zero');
+		}
 
 		// --- Tabs Directorio | Tienda siempre visibles en el buscador del header ---
 		function updateTabsUI() {
@@ -150,6 +180,7 @@
 				showStatus($input, true);
 			});
 			$input.on('autocompleteresponse', function(event, ui) {
+				updateTabCounts(ui && ui.content ? ui.content : []);
 				if (ui && ui.content && ui.content.length) {
 					hideStatus();
 				} else {
@@ -158,7 +189,7 @@
 			});
 			$input.on('blur', function() { window.setTimeout(hideStatus, 150); });
 			$input.on('input', function() {
-				if ($input.val().trim().length < 2) { hideStatus(); }
+				if ($input.val().trim().length < 2) { hideStatus(); clearTabCounts(); }
 			});
 
 			var inst = $input.autocomplete('instance');
