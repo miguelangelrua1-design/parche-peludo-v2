@@ -8,20 +8,26 @@
 		var SCOPE_KEY = 'ppv2SearchScope';
 		var cache = {}; // resultados por término: el cambio de tab no vuelve a consultar al servidor
 
-		// Tab activo ("directorio" | "tienda"). La elección manual del usuario se
-		// recuerda durante la sesión; sin elección, manda el default del CONTEXTO
-		// (PPV2_CFG.defaultScope: "tienda" en tienda/producto/carrito, si no "directorio").
-		var defaultScope = (window.PPV2_CFG.defaultScope === 'tienda') ? 'tienda' : 'directorio';
+		// Tab activo ("tienda" | "directorio"). Reglas (2026-07-18):
+		// 1) La SECCIÓN manda al cargar (PPV2_CFG.pageScope): en zona de compra
+		//    → Tienda; en el directorio/Adopción/M. perdidas → Directorio,
+		//    aunque el usuario hubiera elegido otra cosa antes.
+		// 2) En páginas neutras aplica la elección guardada de la sesión.
+		// 3) Sin nada de lo anterior, el default global es TIENDA.
+		// Los clics manuales dentro de la página siguen funcionando normal.
 		function getScope() {
 			try {
 				var s = window.sessionStorage.getItem(SCOPE_KEY);
 				if (s === 'tienda' || s === 'directorio') { return s; }
 			} catch (e) {}
-			return defaultScope;
+			return 'tienda';
 		}
 		function setScope(scope) {
 			try { window.sessionStorage.setItem(SCOPE_KEY, scope); } catch (e) {}
 		}
+		var pageScope = (window.PPV2_CFG.pageScope === 'tienda' || window.PPV2_CFG.pageScope === 'directorio')
+			? window.PPV2_CFG.pageScope : '';
+		if (pageScope) { setScope(pageScope); }
 
 		// Reordena en el navegador: el grupo del tab activo va primero.
 		function orderByScope(items) {
@@ -112,9 +118,10 @@
 			}
 			$item.addClass('ppv2-has-scope-tabs');
 			var $tabs = $('<div class="ppv2-scope-tabs" role="tablist"></div>');
+			// Orden pedido por Miguel (2026-07-18): Tienda primero, Directorio después.
 			$.each([
-				{ id: 'directorio', label: 'Directorio' },
-				{ id: 'tienda', label: 'Tienda' }
+				{ id: 'tienda', label: 'Tienda' },
+				{ id: 'directorio', label: 'Directorio' }
 			], function(index, tab) {
 				$('<button type="button"></button>')
 					.addClass('ppv2-scope-tab')

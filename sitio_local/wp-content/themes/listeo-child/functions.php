@@ -1879,20 +1879,24 @@ function ppv2_enqueue_js_migrados() {
 	// Config PHP → JS del buscador unificado (las únicas interpolaciones PHP
 	// que había en todos los bloques inline migrados).
 	if ( wp_script_is( 'ppv2-header-suggest', 'enqueued' ) ) {
-		// Tab por CONTEXTO: quien navega la tienda/un producto/el carrito está
-		// en "modo compra" → el buscador arranca en Tienda; en el resto,
-		// Directorio. La elección manual (sessionStorage) siempre gana.
-		$ppv2_default_scope = 'directorio';
+		// Ámbito por SECCIÓN (2026-07-18, pedido de Miguel): al cargar la página,
+		// la sección MANDA sobre la elección guardada — en zona de compra el tab
+		// activo es Tienda; en el directorio (incl. Adopción/M. perdidas) es
+		// Directorio. En páginas neutras (Home, blog…) va '' y el JS aplica la
+		// elección guardada del usuario o el default global "Tienda".
+		$ppv2_page_scope = '';
 		if ( ( function_exists( 'is_woocommerce' ) && is_woocommerce() )
 			|| ( function_exists( 'is_cart' ) && is_cart() )
 			|| ( function_exists( 'is_checkout' ) && is_checkout() )
 			|| is_page( 'tienda' ) // landing "Tienda" (Elementor): también es modo compra
 			|| ( is_search() && 'product' === get_query_var( 'post_type' ) ) ) {
-			$ppv2_default_scope = 'tienda';
+			$ppv2_page_scope = 'tienda';
+		} elseif ( function_exists( 'ppv2_is_listings_archive' ) && ppv2_is_listings_archive() ) {
+			$ppv2_page_scope = 'directorio';
 		}
 		wp_add_inline_script(
 			'ppv2-header-suggest',
-			'window.PPV2_CFG = Object.assign({ajaxUrl:' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ',homeUrl:' . wp_json_encode( home_url( '/' ) ) . ',defaultScope:' . wp_json_encode( $ppv2_default_scope ) . '}, window.PPV2_CFG || {});',
+			'window.PPV2_CFG = Object.assign({ajaxUrl:' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ',homeUrl:' . wp_json_encode( home_url( '/' ) ) . ',pageScope:' . wp_json_encode( $ppv2_page_scope ) . '}, window.PPV2_CFG || {});',
 			'before'
 		);
 	}
