@@ -69,10 +69,32 @@
 				$badge.text(fmt(n));
 				$(this).toggleClass('ppv2-scope-zero', n === 0);
 			});
+			syncFieldPadding();
 		}
 		function clearTabCounts() {
 			$('.ppv2-scope-tab .ppv2-scope-count').remove();
 			$('.ppv2-scope-tab').removeClass('ppv2-scope-zero');
+			syncFieldPadding();
+		}
+
+		// --- Reserva dinámica de espacio en el campo (solo escritorio): el texto
+		// escrito nunca queda debajo de la fila de pills. El ancho de la fila
+		// VARÍA (conteos "· 5", chip "+" del módulo de tipos que se monta dentro
+		// de la misma fila), así que se mide el ancho real y se fija el
+		// padding-left. setProperty con 'important' porque la regla base del
+		// style.css (220px de fallback) también usa !important.
+		function syncFieldPadding() {
+			$('.ppv2-has-scope-tabs').each(function() {
+				var tabs = $(this).find('.ppv2-scope-tabs').get(0);
+				var field = $(this).find('input[name="keyword_search"]').get(0);
+				if (!tabs || !field) { return; }
+				if (window.matchMedia && window.matchMedia('(max-width: 767px)').matches) {
+					field.style.removeProperty('padding-left'); // móvil: tabs arriba del campo
+					return;
+				}
+				var w = Math.ceil(tabs.getBoundingClientRect().width) + 10 + 16; // offset izq + aire
+				field.style.setProperty('padding-left', w + 'px', 'important');
+			});
 		}
 
 		// --- Tabs Directorio | Tienda siempre visibles en el buscador del header ---
@@ -103,6 +125,16 @@
 			$item.append($tabs);
 		});
 		updateTabsUI();
+		syncFieldPadding();
+		// El chip "+" (módulo de tipos) se monta DESPUÉS dentro de la fila y los
+		// conteos cambian su texto: cualquier mutación re-mide la reserva.
+		if (window.MutationObserver) {
+			var ppv2PadObserver = new MutationObserver(syncFieldPadding);
+			$('.ppv2-scope-tabs').each(function() {
+				ppv2PadObserver.observe(this, { childList: true, subtree: true, characterData: true });
+			});
+		}
+		$(window).on('resize load', syncFieldPadding);
 
 		$(document).on('click', '.ppv2-scope-tab', function(event) {
 			event.preventDefault();
