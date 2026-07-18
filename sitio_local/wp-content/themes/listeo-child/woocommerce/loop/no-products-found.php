@@ -16,9 +16,15 @@ defined( 'ABSPATH' ) || exit;
 ?>
 <div class="woocommerce-no-products-found">
 	<?php if ( is_search() ) : ?>
-		<div class="ppv2-no-results">
+		<div class="ppv2-no-results ppv2-nores">
+			<span class="ppv2-nores-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/><path d="m8.8 8.8 4.4 4.4"/><path d="m13.2 8.8-4.4 4.4"/></svg></span>
 			<h2>Sin resultados</h2>
-			<p>Lo sentimos, no encontramos resultados que coincidan con tu búsqueda en la sección &ldquo;Tienda&rdquo;</p>
+			<?php $ppv2_q = get_search_query(); ?>
+			<?php if ( $ppv2_q ) : ?>
+				<p class="ppv2-nores-text">No encontramos resultados para <strong>&ldquo;<?php echo esc_html( $ppv2_q ); ?>&rdquo;</strong> en <strong>la Tienda</strong>.</p>
+			<?php else : ?>
+				<p class="ppv2-nores-text">No encontramos resultados que coincidan con tu búsqueda en <strong>la Tienda</strong>.</p>
+			<?php endif; ?>
 		</div>
 	<?php else : ?>
 		<?php wc_print_notice( esc_html__( 'No products were found matching your selection.', 'woocommerce' ), 'notice' ); ?>

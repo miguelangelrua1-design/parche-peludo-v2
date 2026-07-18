@@ -1586,14 +1586,11 @@ function ppv2_cross_search_banner_tienda() {
 	$url = add_query_arg( 'keyword_search', rawurlencode( $term ), get_post_type_archive_link( 'listing' ) );
 	?>
 	<div class="ppv2-cross-search">
-		<span class="ppv2-cross-search-icon" aria-hidden="true">🐾</span>
-		<div class="ppv2-cross-search-text">
-			<strong>&ldquo;<?php echo esc_html( $term ); ?>&rdquo; sí está en el Directorio</strong>
-			<span><?php echo esc_html( 1 === $count
-				? 'Encontramos 1 publicación que coincide con tu búsqueda.'
-				: sprintf( 'Encontramos %s publicaciones que coinciden con tu búsqueda.', number_format_i18n( $count ) ) ); ?></span>
-		</div>
-		<a class="ppv2-cross-search-btn" href="<?php echo esc_url( $url ); ?>">Ver en el Directorio</a>
+		<span class="ppv2-cross-paws" aria-hidden="true">🐾</span>
+		<span class="ppv2-cross-badge">🐾 En el Directorio</span>
+		<h3 class="ppv2-cross-title">&ldquo;<?php echo esc_html( $term ); ?>&rdquo; sí está en el Directorio</h3>
+		<p class="ppv2-cross-text">Encontramos <strong><?php echo esc_html( number_format_i18n( $count ) ); ?> <?php echo esc_html( 1 === $count ? 'publicación' : 'publicaciones' ); ?></strong> que <?php echo esc_html( 1 === $count ? 'coincide' : 'coinciden' ); ?> con tu búsqueda.</p>
+		<a class="ppv2-cross-search-btn" href="<?php echo esc_url( $url ); ?>">Ver en el Directorio <span class="ppv2-cross-arrow" aria-hidden="true">→</span></a>
 	</div>
 	<?php
 }

@@ -4,12 +4,12 @@
  * (Listeo Core carga listeo-child/listeo-core/archive/no-found.php antes que
  * la suya propia, vía Gamajo Template Loader → a prueba de actualizaciones.)
  *
- * Mantiene la estructura y los textos originales (los renombres via filtro
- * gettext del tema hijo siguen aplicando) y añade el PUENTE a la Tienda:
- * si la palabra buscada SÍ tiene productos, se ofrece el enlace con el conteo
- * real — sin mezclar resultados. Esta plantilla se usa tanto en la carga
- * normal como dentro de las respuestas AJAX de los filtros, así que el puente
- * funciona también al refinar filtros.
+ * Diseño según mock de Miguel (2026-07-18): icono lupa-x en badge redondeado,
+ * título "Sin resultados", texto con término y sección en negrita, y el PUENTE
+ * a la Tienda como tarjeta teal (badge "EN LA TIENDA", conteo real en negrita,
+ * botón blanco pill con flecha, huellas decorativas). Sin mezclar resultados.
+ * Se usa tanto en la carga normal como en las respuestas AJAX de los filtros.
+ * Estilos: style.css, bloques "ppv2-nores" y "ppv2-cross-search".
  */
 
 $ppv2_term = '';
@@ -35,22 +35,26 @@ if ( function_exists( 'pp_listados_contexto_tipo' ) && function_exists( 'pp_list
 		}
 	}
 }
+// Frase con artículo natural: "el Directorio" / "Adopción" / "Mascotas perdidas".
+$ppv2_seccion_frase = ( 'Directorio' === $ppv2_seccion ) ? 'el Directorio' : $ppv2_seccion;
 ?>
 <div id="listeo-listings-container">
 							<div class="loader-ajax-container" style=""> <div class="loader-ajax"></div> </div>
-<section id="listings-not-found" class="margin-bottom-50 col-md-12">
+<section id="listings-not-found" class="margin-bottom-50 col-md-12 ppv2-nores">
+	<span class="ppv2-nores-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/><path d="m8.8 8.8 4.4 4.4"/><path d="m13.2 8.8-4.4 4.4"/></svg></span>
 	<h2>Sin resultados</h2>
-	<p>Lo sentimos, no encontramos resultados que coincidan con tu búsqueda en la sección &ldquo;<?php echo esc_html( $ppv2_seccion ); ?>&rdquo;</p>
+	<?php if ( $ppv2_term ) : ?>
+		<p class="ppv2-nores-text">No encontramos resultados para <strong>&ldquo;<?php echo esc_html( $ppv2_term ); ?>&rdquo;</strong> en <strong><?php echo esc_html( $ppv2_seccion_frase ); ?></strong>.</p>
+	<?php else : ?>
+		<p class="ppv2-nores-text">No encontramos resultados que coincidan con tu búsqueda en <strong><?php echo esc_html( $ppv2_seccion_frase ); ?></strong>.</p>
+	<?php endif; ?>
 	<?php if ( $ppv2_count > 0 ) : ?>
 	<div class="ppv2-cross-search">
-		<span class="ppv2-cross-search-icon" aria-hidden="true">🐾</span>
-		<div class="ppv2-cross-search-text">
-			<strong>&ldquo;<?php echo esc_html( $ppv2_term ); ?>&rdquo; sí está en la Tienda</strong>
-			<span><?php echo esc_html( 1 === $ppv2_count
-				? 'Encontramos 1 producto que coincide con tu búsqueda.'
-				: sprintf( 'Encontramos %s productos que coinciden con tu búsqueda.', number_format_i18n( $ppv2_count ) ) ); ?></span>
-		</div>
-		<a class="ppv2-cross-search-btn" href="<?php echo esc_url( home_url( '/?s=' . rawurlencode( $ppv2_term ) . '&post_type=product' ) ); ?>">Ver en la Tienda</a>
+		<span class="ppv2-cross-paws" aria-hidden="true">🐾</span>
+		<span class="ppv2-cross-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1.2 13H4.8L6 7z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg>En la Tienda</span>
+		<h3 class="ppv2-cross-title">&ldquo;<?php echo esc_html( $ppv2_term ); ?>&rdquo; sí está en Tienda</h3>
+		<p class="ppv2-cross-text">Encontramos <strong><?php echo esc_html( number_format_i18n( $ppv2_count ) ); ?> <?php echo esc_html( 1 === $ppv2_count ? 'producto' : 'productos' ); ?></strong> que <?php echo esc_html( 1 === $ppv2_count ? 'coincide' : 'coinciden' ); ?> con tu búsqueda.</p>
+		<a class="ppv2-cross-search-btn" href="<?php echo esc_url( home_url( '/?s=' . rawurlencode( $ppv2_term ) . '&post_type=product' ) ); ?>">Ver en la Tienda <span class="ppv2-cross-arrow" aria-hidden="true">→</span></a>
 	</div>
 	<?php endif; ?>
 </section>
