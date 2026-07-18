@@ -36,38 +36,38 @@
 	margin: 0;
 	padding: 0;
 }
-.pp-sp__fila {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 14px;
-	padding: 16px 4px;
+/* Especificidad reforzada: el tema estila `.pricing-list-container ul li`
+ * como flex (nombre y precio en la misma línea) y ganaba a la clase sola —
+ * en "Prueba" el precio quedaba estrujado en 3 líneas. */
+.pp-sp .pp-sp__lista .pp-sp__fila {
+	display: block;
+	padding: 14px 4px;
 	border-bottom: 1px solid #eef1f3;
 }
-.pp-sp__fila:last-child {
+.pp-sp .pp-sp__lista .pp-sp__fila:last-child {
 	border-bottom: 0;
 }
-.pp-sp__info {
-	min-width: 0; /* el nombre largo se parte, no desborda */
-}
-.pp-sp__nombre {
-	margin: 0 0 4px;
+.pp-sp .pp-sp__lista .pp-sp__nombre {
+	display: block;
+	margin: 0 0 8px;
 	font-size: 16px;
 	line-height: 1.3;
 }
-.pp-sp__precio {
-	display: block;
-	color: #4a5560;
-	font-size: 14px;
-}
-.pp-sp__precio:not(.pp-sp__precio--gratis)::before {
-	content: "Desde ";
-}
-.pp-sp__acciones {
+/* Sub-fila: Precio | Detalles | Reservar — SIEMPRE en una línea */
+.pp-sp .pp-sp__lista .pp-sp__sub {
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	flex: 0 0 auto;
+	width: 100%;
+}
+.pp-sp .pp-sp__lista .pp-sp__precio {
+	color: #4a5560;
+	font-size: 14px;
+	margin-right: auto; /* precio a la izquierda, botones a la derecha */
+	white-space: nowrap; /* "Desde $ 100.000" jamás se parte */
+}
+.pp-sp__precio:not(.pp-sp__precio--gratis)::before {
+	content: "Desde ";
 }
 
 /* Botón "Detalles": tenue */
@@ -234,21 +234,19 @@ body.pp-sp-bloqueado {
 		white-space: nowrap;
 	}
 
-	/* Servicio compacto: TODO en una sola fila (nombre+precio | botones) */
-	.pp-sp__fila {
-		flex-wrap: nowrap;
-		gap: 10px;
+	/* Servicio compacto */
+	.pp-sp .pp-sp__lista .pp-sp__fila {
 		padding: 12px 2px;
 	}
-	.pp-sp__nombre {
+	.pp-sp .pp-sp__lista .pp-sp__nombre {
 		font-size: 15px;
-		margin-bottom: 2px;
+		margin-bottom: 6px;
 	}
-	.pp-sp__precio {
-		font-size: 13px;
-	}
-	.pp-sp__acciones {
+	.pp-sp .pp-sp__lista .pp-sp__sub {
 		gap: 6px;
+	}
+	.pp-sp .pp-sp__lista .pp-sp__precio {
+		font-size: 13px;
 	}
 	.pp-sp__detalles {
 		padding: 7px 12px;

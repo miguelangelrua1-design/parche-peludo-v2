@@ -89,17 +89,15 @@ $con_tabs = count( $grupos ) > 1;
 						}
 						?>
 						<li class="pp-sp__fila">
-							<div class="pp-sp__info">
-								<h5 class="pp-sp__nombre"><?php echo esc_html( $item['name'] ); ?></h5>
-								<?php
-								// Booking Plus pinta aquí la duración del servicio.
-								do_action( 'listeo_pricing_menu_item_meta', $item );
-								?>
+							<h5 class="pp-sp__nombre"><?php echo esc_html( $item['name'] ); ?></h5>
+							<?php
+							// Booking Plus pinta aquí la duración del servicio.
+							do_action( 'listeo_pricing_menu_item_meta', $item );
+							?>
+							<div class="pp-sp__sub">
 								<span class="pp-sp__precio<?php echo $es_gratis ? ' pp-sp__precio--gratis' : ''; ?>">
 									<?php echo wp_kses_post( $precio ); ?>
 								</span>
-							</div>
-							<div class="pp-sp__acciones">
 								<?php if ( $desc || $img_url ) : ?>
 									<button type="button" class="pp-sp__detalles">Detalles</button>
 								<?php endif; ?>
