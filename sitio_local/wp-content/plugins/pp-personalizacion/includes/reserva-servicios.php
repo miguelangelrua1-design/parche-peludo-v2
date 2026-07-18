@@ -147,16 +147,19 @@ function pp_rs_tipologias_listado( $listing_id ) {
 		if ( ! $indices ) {
 			continue; // menú sin servicios reservables → no es un "tipo" reservable
 		}
-		if ( '' === $slug ) {
-			// Menú sin tipología (dato viejo): agrúpalo bajo el título del menú.
-			$slug = sanitize_key( sanitize_title( $g['menu_title'] ?? '' ) ) ?: 'otros';
+		// SOLO tipologías del CATÁLOGO: las pestañas muestran el Tipo de
+		// Servicio, jamás el nombre del menú (regla de Miguel 2026-07-07;
+		// mismo criterio que el índice del buscador). Un menú sin tipología
+		// válida (dato viejo) NO genera pestaña: sus servicios quedan fuera
+		// del paso hasta que el listado se re-guarde con la tipología —
+		// que hoy es obligatoria en el formulario.
+		if ( '' === $slug || ! isset( $catalogo[ $slug ] ) ) {
+			continue;
 		}
 		if ( ! isset( $out[ $slug ] ) ) {
 			$out[ $slug ] = array(
 				'slug'    => $slug,
-				'nombre'  => isset( $catalogo[ $slug ]['nombre'] )
-					? $catalogo[ $slug ]['nombre']
-					: ( sanitize_text_field( $g['menu_title'] ?? '' ) ?: $slug ),
+				'nombre'  => $catalogo[ $slug ]['nombre'],
 				'indices' => array(),
 				'agenda'  => 0,
 			);

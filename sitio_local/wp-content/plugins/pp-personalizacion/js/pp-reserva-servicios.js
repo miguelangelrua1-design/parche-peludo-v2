@@ -193,6 +193,7 @@
 				dispararRecurso();
 			}
 
+			autoSeleccionarServicio();
 			refrescarEstado();
 		}
 
@@ -225,10 +226,45 @@
 				: tarjetaCero();
 			if (!$card.length) { return; } // degradación: paso nativo visible al cerrar
 			$card.trigger('click');
-			// El filtrado nativo corre tras un AJAX; reaplicar el filtro por
-			// tipo cuando termine (dos reintentos cubren el caso lento).
+			// El filtrado nativo corre tras un AJAX; el listener ajaxComplete
+			// de abajo re-aplica el filtro por tipo cuando ese AJAX termina DE
+			// VERDAD (los reintentos fijos perdían contra un servidor lento:
+			// el desmarcado nativo llegaba después y ganaba). Estos dos quedan
+			// como respaldo para el caso sin AJAX (recurso repetido).
 			setTimeout(reaplicarFiltroTipo, 400);
 			setTimeout(reaplicarFiltroTipo, 1500);
+		}
+
+		// Determinista: cuando termina el AJAX de ajustes del recurso de
+		// Booking Plus (su success desmarca TODOS los servicios sin disparar
+		// eventos), se re-aplica el filtro por tipo, la auto-selección de
+		// servicio único y el estado del botón. ajaxComplete corre DESPUÉS de
+		// los callbacks de éxito nativos → nuestra pasada siempre es la final.
+		$(document).ajaxComplete(function (ev, xhr, settings) {
+			if (settings && typeof settings.data === 'string' &&
+				settings.data.indexOf('lbp_get_resource_settings') !== -1) {
+				setTimeout(reaplicarFiltroTipo, 80);
+			}
+		});
+
+		// Servicios elegibles AHORA: los del tipo activo que además no estén
+		// ocultos por el filtro de mascota ni por el del recurso.
+		function serviciosCandidatos() {
+			return $('.lbp-single-service').not('.pp-rs-oculta-tab').filter(function () {
+				return $(this).css('display') !== 'none';
+			});
+		}
+		function serviciosMarcados() {
+			return serviciosCandidatos().find('.lbp-service-checkbox:checked').length;
+		}
+
+		// Un solo servicio elegible → se asume, sin preguntar (misma regla
+		// que la tipología única y el profesional único).
+		function autoSeleccionarServicio() {
+			var $c = serviciosCandidatos();
+			if ($c.length === 1 && !serviciosMarcados()) {
+				$c.first().find('.lbp-service-checkbox').prop('checked', true).trigger('change');
+			}
 		}
 
 		function refrescarEstado() {
@@ -239,10 +275,24 @@
 				if (profes.length && !profElegido) { listo = false; }
 				texto = '<strong>' + esc(tipoElegido.nombre) + '</strong>' +
 					(profElegido ? ' con <strong>' + esc(profElegido.nombre) + '</strong>' : '');
+				// Sin servicio concreto elegido no se avanza: la reserva es
+				// DE un servicio, no de un tipo.
+				if (listo && !serviciosMarcados()) {
+					listo = false;
+					texto += ' — <em>elige tu servicio</em>';
+				}
 			}
 			$overlay.find('.pp-rs__eleccion').html(texto);
 			$overlay.find('.pp-rs__siguiente').prop('disabled', !listo);
 		}
+
+		// El estado del botón sigue en vivo a los checkboxes (los maneja
+		// Booking Plus; el pequeño retraso deja correr sus constraints).
+		$(document).on('change', '.lbp-service-checkbox', function () {
+			if ($overlay && $overlay.is(':visible')) {
+				setTimeout(refrescarEstado, 60);
+			}
+		});
 
 		/* ================= Transición al calendario ================= */
 
@@ -273,7 +323,7 @@
 		}
 
 		function irAlCalendario() {
-			if (!tipoElegido) { return; }
+			if (!tipoElegido || !serviciosMarcados()) { return; }
 
 			// La agenda ya se disparó al elegir tipo/profesional. Si el paso 1
 			// aún no está activo (AJAX de ajustes del recurso en curso), se
@@ -339,6 +389,13 @@
 				var idx = parseInt($(this).attr('data-service-index'), 10);
 				$(this).toggleClass('pp-rs-oculta-tab', !(idx in permitidos));
 			});
+			// El filtrado nativo por recurso DESMARCA todo: si tras él queda
+			// un único servicio elegible, se re-asume; y el botón Siguiente
+			// se recalcula (pudo quedar habilitado con una marca ya borrada).
+			if ($overlay && $overlay.is(':visible')) {
+				autoSeleccionarServicio();
+				refrescarEstado();
+			}
 		}
 
 		/* ================= Mostrar / ocultar ================= */

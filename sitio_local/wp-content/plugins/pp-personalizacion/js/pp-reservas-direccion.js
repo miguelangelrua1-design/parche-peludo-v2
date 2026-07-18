@@ -59,7 +59,17 @@
 					inp.value = '';
 					if ( actual.required ) { inp.required = true; }
 					actual.parentNode.replaceChild( inp, actual );
+					actual = inp;
 				}
+				// La ciudad depende del departamento: sin departamento elegido
+				// el campo queda BLOQUEADO (antes quedaba como texto libre y se
+				// podía escribir cualquier cosa, también en móvil). Solo queda
+				// editable como texto cuando hay departamento pero el dataset
+				// no lo cubre (mejora progresiva).
+				var sinDepto = ! estado.value;
+				actual.disabled = sinDepto;
+				actual.placeholder = sinDepto ? 'Elige primero el departamento…' : '';
+				if ( sinDepto ) { actual.value = ''; }
 				return;
 			}
 
