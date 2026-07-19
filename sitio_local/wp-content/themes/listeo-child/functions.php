@@ -1814,6 +1814,218 @@ function ppv2_servicios_h1_seo( $content ) {
 }
 
 /* =========================================================================
+   SEO TÉCNICO (plan 2026-07-17, aprobado por Miguel) — Fases 1 a 4.
+   Todo por SLUG/condición (robusto entre local y producción: se despliega
+   subiendo este archivo). Decisiones del PO: regiones SE CONSERVAN,
+   títulos SIN geografía (alcance nacional).
+   ========================================================================= */
+
+/**
+ * F1.1 — Páginas de UTILIDAD (panel, cuenta, checkout, herramientas):
+ * noindex + fuera del sitemap. Rank Math construye el sitemap desde la meta
+ * rank_math_robots (SQL), así que además del filtro de robots se filtra
+ * rank_math/sitemap/entry (devolver vacío elimina la URL).
+ */
+function ppv2_seo_slugs_utilidad() {
+	return array(
+		'panel-control', 'mis-listados', 'agregar-listado', 'reservas',
+		'mensajes', 'resenas', 'favoritos', 'billetera', 'cupones',
+		'estadisticas', 'calendario', 'codigo-qr', 'mis-pedidos',
+		'datos-cuenta', 'mi-cuenta-2', 'mis-mascotas', 'manage-resources',
+		'administrador-anuncios', 'recuperar-contrasena',
+		'restablecer-contrasena', 'cart', 'checkout', 'finalizar-compra',
+		'mis-reservas', 'confirmacion-reserva', 'mi-cuenta', 'carrito',
+		'saved-searches',
+		// legado / herramientas en construcción
+		'audit-page', 'home-1', 'crear-listado-chat', 'crear-publicacion-chat',
+		// páginas DEMO del tema (importación inicial de Listeo; candidatas a
+		// borrarse — mientras existan, fuera del índice)
+		'pagina-ejemplo', 'sample-page', 'shop', 'home-shop',
+		'home-2', 'home-3', 'home-4', 'home-5', 'home-6-2', 'home-7',
+		'vendor-stores', 'store-dashboard', 'store-listing',
+		'typography', 'pricing-tables', 'ical', 'icons', 'coming-soon',
+		'half-list', 'half-map-with-sidebar', 'calendar-view-2',
+		'list-with-sidebar', 'list-full-width-map', 'list-full-width',
+		'half-grid-layout-1', 'half-grid-layout-2',
+		'grid-with-sidebar-1', 'grid-with-sidebar-2',
+		'grid-full-width', 'grid-full-width-map',
+	);
+}
+
+/**
+ * F1.1b — SITEMAP de páginas por LISTA BLANCA: la importación demo de Listeo
+ * dejó ~30 páginas de muestra publicadas y con lista negra es un juego del
+ * gato y el ratón. Al sitemap de "page" solo entran las públicas conocidas
+ * (+ la portada y la página de blog, por ID). Una página legítima nueva que
+ * falte aquí solo pierde el sitemap (sigue indexable por enlaces): fallo suave.
+ */
+function ppv2_seo_paginas_publicas() {
+	return array(
+		'home-servicios', 'home-tienda', 'nosotros', 'blog-mascotas',
+		'foro-mascotas', 'planes-y-suscripciones', 'directorio', 'contacto',
+		'terminos-y-condiciones', 'politica-tratamiento-datos', 'tienda',
+	);
+}
+add_filter( 'rank_math/frontend/robots', 'ppv2_seo_robots_noindex' );
+function ppv2_seo_robots_noindex( $robots ) {
+	// El archivo real de WooCommerce (/shop/, título "Shop") duplica a /tienda/
+	// (la página que usa el sitio); is_page() no lo cubre porque WP lo trata
+	// como archivo de productos, no como página.
+	$shop_duplicado = function_exists( 'is_shop' ) && is_shop();
+	if ( is_page( ppv2_seo_slugs_utilidad() ) || is_tax( 'listing_feature' ) || $shop_duplicado ) {
+		unset( $robots['index'] );
+		$robots['noindex'] = 'noindex';
+		$robots['follow']  = 'follow';
+	}
+	return $robots;
+}
+add_filter( 'rank_math/sitemap/entry', 'ppv2_seo_sitemap_excluir', 20, 3 );
+function ppv2_seo_sitemap_excluir( $url, $type, $object ) {
+	if ( 'post' === $type && ! empty( $object->post_name ) && in_array( $object->post_name, ppv2_seo_slugs_utilidad(), true ) ) {
+		return array();
+	}
+	// Lista blanca para el sitemap de PÁGINAS (ver ppv2_seo_paginas_publicas).
+	if ( 'post' === $type && isset( $object->post_type ) && 'page' === $object->post_type ) {
+		$es_portada_o_blog = in_array( (int) $object->ID, array( (int) get_option( 'page_on_front' ), (int) get_option( 'page_for_posts' ) ), true );
+		if ( ! $es_portada_o_blog && ! in_array( $object->post_name, ppv2_seo_paginas_publicas(), true ) ) {
+			return array();
+		}
+	}
+	// F1.3 — archivos de "características" (16 términos casi vacíos) fuera.
+	// Las REGIONES se conservan (decisión del PO: sí se usarán).
+	if ( 'term' === $type && ! empty( $object->taxonomy ) && 'listing_feature' === $object->taxonomy ) {
+		return array();
+	}
+	return $url;
+}
+
+/**
+ * F1.2 — Legado: la portada vieja (/home-1/) y la página de pruebas
+ * (/audit-page/) redirigen 301 a la portada real. La página del chat
+ * renombrada a /crear-publicacion-chat/ conserva el 301 del slug viejo
+ * (WordPress lo hace solo vía _wp_old_slug al renombrar).
+ */
+add_action( 'template_redirect', 'ppv2_seo_redirecciones_legado', 1 );
+function ppv2_seo_redirecciones_legado() {
+	if ( is_page( array( 'home-1', 'audit-page' ) ) ) {
+		wp_safe_redirect( home_url( '/' ), 301 );
+		exit;
+	}
+	// El redirect automático de slugs viejos de WP no cubre PÁGINAS: el slug
+	// viejo de la página del chat se redirige a mano.
+	$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '';
+	if ( is_404() && false !== strpos( $uri, 'crear-listado-chat' ) ) {
+		wp_safe_redirect( home_url( '/crear-publicacion-chat/' ), 301 );
+		exit;
+	}
+}
+
+/**
+ * F2 — Títulos y descripciones de las páginas de dinero. Defensivos: si el
+ * término/página tiene meta propia de Rank Math, se respeta (administrable).
+ */
+add_filter( 'rank_math/frontend/title', 'ppv2_seo_titulos_archivos', 22 );
+function ppv2_seo_titulos_archivos( $title ) {
+	if ( is_post_type_archive( 'listing' ) && ! is_search() ) {
+		return 'Directorio de servicios para mascotas a domicilio | Parche Peludo';
+	}
+	if ( is_tax( 'listing_category' ) ) {
+		$t = get_queried_object();
+		if ( $t && '' === (string) get_term_meta( $t->term_id, 'rank_math_title', true ) ) {
+			return 'Servicios de ' . $t->name . ' para mascotas a domicilio | Parche Peludo';
+		}
+	}
+	// La tienda del sitio es la PÁGINA /tienda/ (no el archivo /shop/ de Woo,
+	// que queda noindexado por duplicado).
+	if ( is_page( 'tienda' ) && '' === (string) get_post_meta( get_queried_object_id(), 'rank_math_title', true ) ) {
+		return 'Tienda online para mascotas: alimento, juguetes y accesorios | Parche Peludo';
+	}
+	if ( is_tax( 'product_cat' ) ) {
+		$t = get_queried_object();
+		if ( $t && '' === (string) get_term_meta( $t->term_id, 'rank_math_title', true ) ) {
+			return $t->name . ' | Tienda para mascotas Parche Peludo';
+		}
+	}
+	return $title;
+}
+add_filter( 'rank_math/frontend/description', 'ppv2_seo_desc_archivos', 22 );
+function ppv2_seo_desc_archivos( $desc ) {
+	if ( is_post_type_archive( 'listing' ) && ! is_search() ) {
+		return 'Encuentra peluquería, adiestramiento, paseos, cuidadores y más servicios para tu mascota a domicilio. Profesionales verificados y reserva en línea.';
+	}
+	if ( is_tax( 'listing_category' ) ) {
+		$t = get_queried_object();
+		if ( $t && '' === (string) get_term_meta( $t->term_id, 'rank_math_description', true ) ) {
+			return 'Servicios de ' . mb_strtolower( $t->name, 'UTF-8' ) . ' para tu mascota con profesionales verificados. Compara opciones y reserva en línea en Parche Peludo.';
+		}
+	}
+	if ( is_page( 'tienda' ) && '' === (string) get_post_meta( get_queried_object_id(), 'rank_math_description', true ) ) {
+		return 'Compra en línea todo para tu peludo: alimento, snacks, juguetes, higiene y accesorios para perros y gatos. Envío a toda Colombia.';
+	}
+	if ( is_tax( 'product_cat' ) ) {
+		$t = get_queried_object();
+		if ( $t && '' === (string) get_term_meta( $t->term_id, 'rank_math_description', true ) ) {
+			return 'Compra en línea en la categoría ' . $t->name . ' de nuestra tienda para mascotas. Envío a toda Colombia — Parche Peludo.';
+		}
+	}
+	return $desc;
+}
+
+/**
+ * F3.1 — Schema: Rank Math marcaba las PÁGINAS como Article con un nodo
+ * Person cuyo nombre era el CORREO del administrador. Fuera Article/Person
+ * de todo lo que no sea una entrada del blog (los Person anidados dentro de
+ * reseñas de LocalBusiness no se tocan: no son nodos de primer nivel).
+ */
+add_filter( 'rank_math/json_ld', 'ppv2_seo_limpiar_schema_paginas', 99, 2 );
+function ppv2_seo_limpiar_schema_paginas( $data, $jsonld ) {
+	if ( is_singular( 'post' ) || is_author() ) {
+		return $data;
+	}
+	foreach ( $data as $k => $nodo ) {
+		if ( empty( $nodo['@type'] ) ) {
+			continue;
+		}
+		$tipos = (array) $nodo['@type'];
+		if ( in_array( 'Article', $tipos, true ) || in_array( 'Person', $tipos, true ) ) {
+			unset( $data[ $k ] );
+		}
+	}
+	return $data;
+}
+
+/**
+ * F4.1 — Doble H1 en la ficha de producto: el tema imprime un <h1> en el
+ * titlebar (woocommerce.php del padre, sin hook) además del
+ * <h1 class="product_title"> real. Estaba oculto por CSS pero seguía en el
+ * DOM. Se retira del HTML con un recorte acotado a la ficha.
+ */
+add_action( 'template_redirect', 'ppv2_seo_pdp_un_solo_h1' );
+function ppv2_seo_pdp_un_solo_h1() {
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+		return;
+	}
+	ob_start( function ( $html ) {
+		return preg_replace( '#(<div id="titlebar"[^>]*>.{0,400}?)<h1>.*?</h1>#s', '$1', $html, 1 );
+	} );
+}
+
+/**
+ * F4.3 — Paginación con canonical PROPIO (la página 2 canonicalizaba a la 1;
+ * Google recomienda self-canonical en archivos paginados).
+ */
+add_filter( 'rank_math/frontend/canonical', 'ppv2_seo_canonical_paginacion' );
+function ppv2_seo_canonical_paginacion( $canonical ) {
+	$paged = (int) get_query_var( 'paged' );
+	if ( $paged > 1 && ( is_post_type_archive() || is_tax() || is_category() || is_tag() || is_home() || is_page() || ( function_exists( 'is_shop' ) && is_shop() ) ) ) {
+		// Sin query string: get_pagenum_link conserva los parámetros de la
+		// petición y un canonical jamás debe arrastrarlos.
+		return strtok( get_pagenum_link( $paged, false ), '?' );
+	}
+	return $canonical;
+}
+
+/* =========================================================================
    PPV2 — JS MIGRADO A ARCHIVOS ESTÁTICOS (2026-07-10)
    Antes: ~2.500 líneas de <script> inline impresas en wp_footer en CADA
    carga (no cacheables, no minificables). Ahora: archivos en js/migrados/
