@@ -64,7 +64,10 @@ $pp_sv_vitrina_pintada = true;
 <!-- Servicios y Precios (vitrina Personalización Parche) -->
 <div id="listing-pricing-list" class="listing-section pp-sp">
 	<?php if ( $show_title ) : ?>
-		<h2 class="listing-desc-headline margin-top-70 margin-bottom-30">Servicios y Precios</h2>
+		<div class="pp-sp__cabecera">
+			<h2 class="pp-sp__titulo">Servicios y Precios</h2>
+			<p class="pp-sp__subtitulo-seccion"><span class="pp-sp__sub-largo">Elige un servicio y </span>reserva en segundos.</p>
+		</div>
 	<?php endif; ?>
 
 	<?php if ( $con_tabs ) : ?>
@@ -72,8 +75,10 @@ $pp_sv_vitrina_pintada = true;
 			<?php foreach ( $grupos as $i => $menu ) :
 				$titulo = isset( $menu['menu_title'] ) && '' !== trim( (string) $menu['menu_title'] )
 					? $menu['menu_title']
-					: 'Servicios'; ?>
+					: 'Servicios';
+				$icono  = function_exists( 'pp_sv_icono_tab' ) ? pp_sv_icono_tab( $menu['pp_tipo_servicio'] ?? '' ) : 'fa-paw'; ?>
 				<button type="button" class="pp-sp__tab<?php echo 0 === $i ? ' activo' : ''; ?>" role="tab" data-i="<?php echo esc_attr( $i ); ?>">
+					<i class="fa <?php echo esc_attr( $icono ); ?>" aria-hidden="true"></i>
 					<?php echo esc_html( $titulo ); ?>
 				</button>
 			<?php endforeach; ?>
@@ -99,23 +104,23 @@ $pp_sv_vitrina_pintada = true;
 							}
 						}
 						?>
-						<li class="pp-sp__fila">
+						<li class="pp-sp__fila<?php echo ( $desc || $img_url ) ? '' : ' pp-sp__fila--sin-detalles'; ?>">
 							<h5 class="pp-sp__nombre"><?php echo esc_html( $item['name'] ); ?></h5>
-							<?php
-							// Booking Plus pinta aquí la duración del servicio.
-							do_action( 'listeo_pricing_menu_item_meta', $item );
-							?>
-							<div class="pp-sp__sub">
-								<span class="pp-sp__precio<?php echo $es_gratis ? ' pp-sp__precio--gratis' : ''; ?>">
-									<?php echo wp_kses_post( $precio ); ?>
-								</span>
-								<?php if ( $desc || $img_url ) : ?>
-									<button type="button" class="pp-sp__detalles">Detalles</button>
-								<?php endif; ?>
-								<button type="button" class="pp-sp__reservar">
-									<i class="fa fa-calendar-check-o" aria-hidden="true"></i> Reservar
-								</button>
+							<div class="pp-sp__dur">
+								<?php
+								// Booking Plus pinta aquí la duración del servicio.
+								do_action( 'listeo_pricing_menu_item_meta', $item );
+								?>
 							</div>
+							<span class="pp-sp__precio<?php echo $es_gratis ? ' pp-sp__precio--gratis' : ''; ?>">
+								<?php echo wp_kses_post( $precio ); ?>
+							</span>
+							<?php if ( $desc || $img_url ) : ?>
+								<button type="button" class="pp-sp__detalles">Detalles</button>
+							<?php endif; ?>
+							<button type="button" class="pp-sp__reservar">
+								<i class="fa fa-calendar-check-o" aria-hidden="true"></i> Reservar
+							</button>
 							<?php if ( $desc || $img_url ) : ?>
 								<div class="pp-sp__datos" hidden>
 									<?php if ( $img_url ) : ?>

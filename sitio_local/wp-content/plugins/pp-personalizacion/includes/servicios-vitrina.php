@@ -88,6 +88,24 @@ function pp_sv_assets() {
 	}
 }
 
+/**
+ * Icono del tab según la tipología del menú (catálogo pp_serv_tipos).
+ * El diseño de Miguel muestra un icono por categoría; como los tabs usan el
+ * nombre del menú, el icono sale de su tipología asignada (huella si no hay).
+ */
+function pp_sv_icono_tab( $tipologia ) {
+	$mapa = array(
+		'peluqueria-y-bano' => 'fa-scissors',
+		'adiestramiento'    => 'fa-graduation-cap',
+		'cuidador'          => 'fa-heart-o',
+		'fotografia-y-video'=> 'fa-camera',
+		'reposteria'        => 'fa-birthday-cake',
+		'fiestas-caninas'   => 'fa-star-o',
+	);
+	$tipologia = sanitize_key( $tipologia );
+	return isset( $mapa[ $tipologia ] ) ? $mapa[ $tipologia ] : 'fa-paw';
+}
+
 /** Precio formateado como el original de Core ('' si no hay dato). */
 function pp_sv_precio_html( $item ) {
 	if ( ! isset( $item['price'] ) || '' === $item['price'] || 0 == $item['price'] ) {

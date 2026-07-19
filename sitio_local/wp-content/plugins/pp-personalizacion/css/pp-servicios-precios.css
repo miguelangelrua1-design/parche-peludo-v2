@@ -1,24 +1,54 @@
 /**
- * Vitrina "Servicios y Precios" (estilo Doctoralia) + panel deslizante.
+ * Vitrina "Servicios y Precios" — diseño según mock de Miguel (2026-07-07).
+ * Sección en tarjeta con cabecera y subtítulo; tabs con icono; cada servicio
+ * como card (nombre+duración | precio grande | Detalles | Reservar).
  * Solo se encola en fichas de listado.
  */
 
-/* ---------- Tabs por menú ---------- */
+/* ---------- Sección: tarjeta contenedora ---------- */
+.pp-sp {
+	background: #eef7f6;
+	border-radius: 20px;
+	padding: 24px 24px 18px;
+}
+.pp-sp__cabecera {
+	margin: 0 0 16px;
+}
+.pp-sp .pp-sp__titulo {
+	margin: 0 0 4px;
+	font-size: 26px;
+	font-weight: 700;
+	color: #16323c;
+}
+.pp-sp__subtitulo-seccion {
+	margin: 0;
+	font-size: 14px;
+	color: #5a6a72;
+}
+
+/* ---------- Tabs por menú (pills con icono) ---------- */
 .pp-sp__tabs {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;
-	margin: 0 0 18px;
+	margin: 0 0 16px;
 }
 .pp-sp__tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
 	border: 1px solid #d9dee3;
 	background: #fff;
 	border-radius: 999px;
-	padding: 8px 16px;
+	padding: 9px 16px;
 	font-size: 14px;
-	color: #333;
+	color: #2a343c;
 	cursor: pointer;
 	transition: border-color .15s, background .15s, color .15s;
+}
+.pp-sp__tab .fa {
+	font-size: 13px;
+	opacity: .8;
 }
 .pp-sp__tab:hover {
 	border-color: var(--lbp-popup-sidebar, #79c8d0);
@@ -29,70 +59,97 @@
 	color: #fff;
 	font-weight: 600;
 }
+.pp-sp__tab.activo .fa {
+	opacity: 1;
+}
 
-/* ---------- Filas de servicios ---------- */
+/* ---------- Cards de servicios ---------- */
 .pp-sp__lista {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 }
-/* Especificidad reforzada: el tema estila `.pricing-list-container ul li`
- * como flex (nombre y precio en la misma línea) y ganaba a la clase sola —
- * en "Prueba" el precio quedaba estrujado en 3 líneas. */
+/* Especificidad reforzada: el tema estila `.pricing-list-container ul li`. */
 .pp-sp .pp-sp__lista .pp-sp__fila {
-	display: block;
-	padding: 14px 4px;
-	border-bottom: 1px solid #eef1f3;
+	background: #fff;
+	border: 1px solid #e3edee;
+	border-radius: 14px;
+	box-shadow: 0 1px 3px rgba(20, 50, 60, .05);
+	padding: 16px 18px;
+	margin: 0 0 12px;
+
+	/* Desktop: nombre/duración a la izquierda; precio, Detalles y Reservar
+	   a la derecha, centrados verticalmente. */
+	display: grid;
+	grid-template-columns: 1fr auto auto auto;
+	grid-template-areas:
+		"nombre precio detalles reservar"
+		"dur    precio detalles reservar";
+	align-items: center;
+	column-gap: 16px;
+	row-gap: 2px;
 }
 .pp-sp .pp-sp__lista .pp-sp__fila:last-child {
-	border-bottom: 0;
+	margin-bottom: 0;
 }
 .pp-sp .pp-sp__lista .pp-sp__nombre {
-	display: block;
-	margin: 0 0 8px;
+	grid-area: nombre;
+	align-self: end;
+	margin: 0;
 	font-size: 16px;
+	font-weight: 700;
 	line-height: 1.3;
+	color: #1d2b33;
 }
-/* Sub-fila: Precio | Detalles | Reservar — SIEMPRE en una línea */
-.pp-sp .pp-sp__lista .pp-sp__sub {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	width: 100%;
+.pp-sp .pp-sp__lista .pp-sp__dur {
+	grid-area: dur;
+	align-self: start;
+	font-size: 13px;
+	color: #6a7880;
+}
+.pp-sp .pp-sp__lista .pp-sp__dur:empty {
+	display: none;
 }
 .pp-sp .pp-sp__lista .pp-sp__precio {
-	color: #4a5560;
-	font-size: 14px;
-	margin-right: auto; /* precio a la izquierda, botones a la derecha */
-	white-space: nowrap; /* "Desde $ 100.000" jamás se parte */
+	grid-area: precio;
+	font-size: 19px;
+	font-weight: 800;
+	color: #16323c;
+	white-space: nowrap;
 }
-.pp-sp__precio:not(.pp-sp__precio--gratis)::before {
-	content: "Desde ";
+.pp-sp .pp-sp__lista .pp-sp__detalles {
+	grid-area: detalles;
 }
+.pp-sp .pp-sp__lista .pp-sp__reservar {
+	grid-area: reservar;
+}
+/* Sin botón Detalles: la columna queda vacía y el grid la colapsa solo. */
 
-/* Botón "Detalles": tenue */
+/* Botón "Detalles": contorno tenue */
 .pp-sp__detalles {
-	background: #f2f4f6;
-	border: 0;
-	border-radius: 999px;
-	padding: 9px 16px;
+	background: #fff;
+	border: 1px solid #dfe6ea;
+	border-radius: 10px;
+	padding: 10px 16px;
 	font-size: 14px;
-	color: #333;
+	font-weight: 600;
+	color: #2a343c;
 	cursor: pointer;
-	transition: background .15s;
+	transition: background .15s, border-color .15s;
 }
 .pp-sp__detalles:hover {
-	background: #e6eaee;
+	background: #f2f6f7;
+	border-color: #c9d4d8;
 }
 
-/* Botón "Reservar": protagonista (mismo lenguaje visual del sitio) */
+/* Botón "Reservar": protagonista */
 .pp-sp__reservar {
 	background: var(--lbp-popup-sidebar, #79c8d0);
 	border: 0;
-	border-radius: 999px;
-	padding: 10px 20px;
+	border-radius: 10px;
+	padding: 11px 20px;
 	font-size: 14px;
-	font-weight: 600;
+	font-weight: 700;
 	color: #fff;
 	cursor: pointer;
 	transition: filter .15s;
@@ -105,14 +162,12 @@
 	margin-right: 6px;
 }
 
-/* Datos ocultos de la fila (alimentan el panel) */
+/* Datos ocultos de la fila (alimentan el panel/pop-up de Detalles) */
 .pp-sp__datos {
 	display: none;
 }
 
-/* ---------- Detalles: panel deslizante (móvil) / pop-up (desktop) ----------
- * Misma estructura y contenido; solo cambia la presentación por viewport:
- * en móvil sube desde abajo (sheet), en desktop aparece centrado (modal). */
+/* ---------- Detalles: pop-up (desktop) / panel deslizante (móvil) ---------- */
 body.pp-sp-bloqueado {
 	overflow: hidden;
 }
@@ -149,25 +204,6 @@ body.pp-sp-bloqueado {
 .pp-sp-sheet.abierto .pp-sp-sheet__panel {
 	transform: translate(-50%, 0);
 }
-
-/* Desktop: POP-UP centrado (aparece con fundido + leve zoom, no desliza) */
-@media (min-width: 768px) {
-	.pp-sp-sheet__panel {
-		bottom: auto;
-		top: 50%;
-		transform: translate(-50%, -48%) scale(.96);
-		opacity: 0;
-		transition: transform .18s ease-out, opacity .18s ease-out;
-		max-width: 560px;
-		max-height: 80vh;
-		border-radius: 18px;
-		box-shadow: 0 18px 50px rgba(0, 0, 0, .25);
-	}
-	.pp-sp-sheet.abierto .pp-sp-sheet__panel {
-		transform: translate(-50%, -50%) scale(1);
-		opacity: 1;
-	}
-}
 .pp-sp-sheet__x {
 	position: absolute;
 	top: 10px;
@@ -195,14 +231,9 @@ body.pp-sp-bloqueado {
 	border-bottom: 1px solid #eef1f3;
 }
 .pp-sp-sheet__precio {
-	font-size: 16px;
-	font-weight: 600;
-	color: #2a343c;
-}
-.pp-sp-sheet__precio:not(.pp-sp__precio--gratis)::before {
-	content: "Desde ";
-	font-weight: 400;
-	color: #4a5560;
+	font-size: 18px;
+	font-weight: 800;
+	color: #16323c;
 }
 .pp-sp-sheet__cuerpo {
 	color: #4a5560;
@@ -215,46 +246,91 @@ body.pp-sp-bloqueado {
 	margin-bottom: 12px;
 }
 
+/* Desktop: POP-UP centrado (fundido + leve zoom) */
+@media (min-width: 768px) {
+	.pp-sp-sheet__panel {
+		bottom: auto;
+		top: 50%;
+		transform: translate(-50%, -48%) scale(.96);
+		opacity: 0;
+		transition: transform .18s ease-out, opacity .18s ease-out;
+		max-width: 560px;
+		max-height: 80vh;
+		border-radius: 18px;
+		box-shadow: 0 18px 50px rgba(0, 0, 0, .25);
+	}
+	.pp-sp-sheet.abierto .pp-sp-sheet__panel {
+		transform: translate(-50%, -50%) scale(1);
+		opacity: 1;
+	}
+}
+
 /* ---------- Móvil ---------- */
 @media (max-width: 767px) {
-	/* Tabs: carrusel horizontal en UNA línea (sin saltar a dos niveles) */
+	.pp-sp {
+		padding: 16px 14px 12px;
+		border-radius: 16px;
+	}
+	.pp-sp .pp-sp__titulo {
+		font-size: 22px;
+	}
+	/* Subtítulo corto: "Reserva en segundos." */
+	.pp-sp__sub-largo {
+		display: none;
+	}
+	.pp-sp__subtitulo-seccion {
+		text-transform: capitalize;
+	}
+
+	/* Tabs: carrusel horizontal en UNA línea */
 	.pp-sp__tabs {
 		flex-wrap: nowrap;
 		overflow-x: auto;
 		-webkit-overflow-scrolling: touch;
-		scrollbar-width: none;      /* Firefox */
-		margin-inline: -4px;
-		padding: 2px 4px 6px;
+		scrollbar-width: none;
+		margin-inline: -2px;
+		padding: 2px 2px 6px;
 	}
 	.pp-sp__tabs::-webkit-scrollbar {
-		display: none;              /* Chrome/Safari */
+		display: none;
 	}
 	.pp-sp__tab {
 		flex: 0 0 auto;
 		white-space: nowrap;
 	}
 
-	/* Servicio compacto */
+	/* Card móvil: nombre / duración|precio / Detalles|Reservar */
 	.pp-sp .pp-sp__lista .pp-sp__fila {
-		padding: 12px 2px;
+		grid-template-columns: 1fr 1.7fr;
+		grid-template-areas:
+			"nombre  nombre"
+			"dur     precio"
+			"detalles reservar";
+		row-gap: 10px;
+		column-gap: 10px;
+		padding: 14px;
+	}
+	.pp-sp .pp-sp__lista .pp-sp__fila--sin-detalles {
+		grid-template-areas:
+			"nombre  nombre"
+			"dur     precio"
+			"reservar reservar";
 	}
 	.pp-sp .pp-sp__lista .pp-sp__nombre {
 		font-size: 15px;
-		margin-bottom: 6px;
+		align-self: auto;
 	}
-	.pp-sp .pp-sp__lista .pp-sp__sub {
-		gap: 6px;
+	.pp-sp .pp-sp__lista .pp-sp__dur {
+		align-self: center;
 	}
 	.pp-sp .pp-sp__lista .pp-sp__precio {
-		font-size: 13px;
+		justify-self: end;
+		font-size: 18px;
 	}
-	.pp-sp__detalles {
-		padding: 7px 12px;
-		font-size: 13px;
-	}
-	.pp-sp__reservar {
-		padding: 8px 14px;
-		font-size: 13px;
+	.pp-sp .pp-sp__lista .pp-sp__detalles,
+	.pp-sp .pp-sp__lista .pp-sp__reservar {
+		width: 100%;
+		padding: 11px 10px;
 	}
 
 	.pp-sp-sheet__panel {
