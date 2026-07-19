@@ -276,7 +276,14 @@ body.pp-sp-bloqueado {
 @media (max-width: 767px) {
 	.pp-sp {
 		padding: 16px 14px 12px;
-		border-radius: 16px;
+		/* Full-bleed: el recuadro rompe el padding lateral de la columna del
+		   listado y ocupa el 100% del ancho de la pantalla. `calc(50% - 50vw)`
+		   = margen negativo hasta el borde del viewport (sin transform, no
+		   depende del valor exacto del padding del contenedor). Sin radios
+		   laterales al llegar a los bordes. */
+		margin-left: calc(50% - 50vw);
+		margin-right: calc(50% - 50vw);
+		border-radius: 0;
 	}
 	.pp-sp .pp-sp__titulo {
 		font-size: 22px;
