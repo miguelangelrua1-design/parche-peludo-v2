@@ -86,10 +86,23 @@ $pp_sv_vitrina_pintada = true;
 	<?php endif; ?>
 
 	<div class="pricing-list-container pp-sp__contenedor<?php if ( defined( 'LBP_VERSION' ) ) echo ' lbp-active'; ?>">
-		<?php foreach ( $grupos as $i => $menu ) : ?>
+		<?php
+		// Índice PLANO de servicios reservables — paridad EXACTA con
+		// listeo_get_bookable_services() (isset bookable, sobre todos los
+		// menús): es el value de los checkboxes del popup, y permite que
+		// "Reservar" de una tarjeta pre-seleccione ESE servicio en el paso.
+		$pp_sv_ix_plano = 0;
+		foreach ( $grupos as $i => $menu ) : ?>
 			<div class="pp-sp__grupo" data-i="<?php echo esc_attr( $i ); ?>"<?php echo ( $con_tabs && 0 !== $i ) ? ' hidden' : ''; ?>>
 				<ul class="pp-sp__lista">
 					<?php foreach ( $menu['menu_elements'] as $item ) :
+						// El índice avanza para TODO reservable (aunque el nombre
+						// vaya vacío y la tarjeta no se pinte): paridad con el popup.
+						$idx_plano = null;
+						if ( is_array( $item ) && isset( $item['bookable'] ) ) {
+							$idx_plano = $pp_sv_ix_plano;
+							$pp_sv_ix_plano++;
+						}
 						if ( ! isset( $item['name'] ) || '' === trim( (string) $item['name'] ) ) {
 							continue;
 						}
@@ -118,7 +131,7 @@ $pp_sv_vitrina_pintada = true;
 							<?php if ( $desc || $img_url ) : ?>
 								<button type="button" class="pp-sp__detalles">Detalles</button>
 							<?php endif; ?>
-							<button type="button" class="pp-sp__reservar">
+							<button type="button" class="pp-sp__reservar"<?php echo null !== $idx_plano ? ' data-servicio="' . esc_attr( $idx_plano ) . '"' : ''; ?>>
 								<i class="fa fa-calendar-check-o" aria-hidden="true"></i> Reservar
 							</button>
 							<?php if ( $desc || $img_url ) : ?>

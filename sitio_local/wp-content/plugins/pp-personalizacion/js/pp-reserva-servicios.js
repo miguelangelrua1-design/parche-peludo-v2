@@ -41,6 +41,15 @@
 		var tipoIdx = -1;           // índice de la tab elegida (identidad de tab)
 		var profElegido = null;     // { id, nombre } | null
 		var resuelto = false;       // el paso ya se completó en esta apertura
+		var servicioDeseado = null; // índice plano pedido desde la vitrina (1 uso)
+		var servicioPre = null;     // pre-selección vigente en el paso actual
+
+		// La vitrina "Servicios y Precios" avisa qué servicio quiere el
+		// cliente ANTES de abrir el popup (botón Reservar de una tarjeta).
+		$(document).on('pp:reservar-servicio', function (ev, idx) {
+			idx = parseInt(idx, 10);
+			servicioDeseado = isNaN(idx) ? null : idx;
+		});
 
 		/* ================= Datos derivados ================= */
 
@@ -156,6 +165,7 @@
 			tipoIdx = i;
 			tipoElegido = D.tipologias[i];
 			profElegido = null;
+			servicioPre = null; // cambiar de tab olvida la pre-selección
 			$overlay.find('.pp-rs__tab').removeClass('activo').filter('[data-i="' + i + '"]').addClass('activo');
 			$overlay.find('.pp-rs__servicios').show();
 
@@ -271,6 +281,38 @@
 			if ($c.length === 1 && !serviciosMarcados()) {
 				$c.first().find('.lbp-service-checkbox').prop('checked', true).trigger('change');
 			}
+		}
+
+		// Pre-selección pedida desde la vitrina: marcar ESE servicio si es
+		// elegible ahora (no oculto por tab/mascota/recurso) y no está ya
+		// marcado. Se re-asienta en cada pasada (el filtrado nativo por
+		// recurso desmarca todo sin avisar).
+		function marcarPreseleccion() {
+			if (null === servicioPre) { return; }
+			var $item = $('.lbp-single-service[data-service-index="' + servicioPre + '"]')
+				.not('.pp-rs-oculta-tab')
+				.filter(function () { return $(this).css('display') !== 'none'; });
+			if (!$item.length) { return; } // no elegible para esta mascota/agenda
+			var $cb = $item.find('.lbp-service-checkbox');
+			if ($cb.length && !$cb.prop('checked')) {
+				$cb.prop('checked', true).trigger('change');
+			}
+		}
+
+		// Aplica el deseo de la vitrina: activa la tab dueña del servicio y
+		// deja la pre-selección vigente (marcado inmediato + re-asiento tras
+		// el AJAX nativo). La ventana de selección se muestra IGUAL — solo
+		// llega ya resuelta.
+		function aplicarServicioDeseado(idx) {
+			var tab = -1;
+			for (var i = 0; i < D.tipologias.length; i++) {
+				if ((D.tipologias[i].indices || []).indexOf(idx) !== -1) { tab = i; break; }
+			}
+			if (tab === -1) { return; } // índice desconocido → paso genérico
+			elegirTipo(tab);            // no-op si ya es la activa
+			servicioPre = idx;          // (elegirTipo la limpia: fijar después)
+			marcarPreseleccion();
+			refrescarEstado();
 		}
 
 		function refrescarEstado() {
@@ -395,10 +437,11 @@
 				var idx = parseInt($(this).attr('data-service-index'), 10);
 				$(this).toggleClass('pp-rs-oculta-tab', !(idx in permitidos));
 			});
-			// El filtrado nativo por recurso DESMARCA todo: si tras él queda
-			// un único servicio elegible, se re-asume; y el botón Siguiente
-			// se recalcula (pudo quedar habilitado con una marca ya borrada).
+			// El filtrado nativo por recurso DESMARCA todo: re-asentar la
+			// pre-selección de la vitrina, luego la auto-selección de único
+			// servicio, y recalcular el botón Siguiente.
 			if ($overlay && $overlay.is(':visible')) {
+				marcarPreseleccion();
 				autoSeleccionarServicio();
 				refrescarEstado();
 			}
@@ -410,6 +453,13 @@
 			if (!montar()) { return; }
 			$overlay.show();
 			resuelto = false;
+			// Deseo de la vitrina ("Reservar" en un servicio concreto): la
+			// ventana sale igual pero con la pestaña y el servicio ya
+			// marcados. Un solo uso por clic.
+			if (null !== servicioDeseado) {
+				aplicarServicioDeseado(servicioDeseado);
+				servicioDeseado = null;
+			}
 		}
 		function ocultarOverlay() {
 			if ($overlay) { $overlay.hide(); }

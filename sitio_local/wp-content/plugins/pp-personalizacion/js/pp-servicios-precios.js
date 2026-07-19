@@ -68,6 +68,13 @@
 			$s.find('.pp-sp-sheet__precio')
 				.html($precioFila.html())
 				.toggleClass('pp-sp__precio--gratis', $precioFila.hasClass('pp-sp__precio--gratis'));
+			// El Reservar del panel hereda el servicio de la fila que lo abrió.
+			var servicio = $fila.find('.pp-sp__reservar').first().attr('data-servicio');
+			if (servicio !== undefined && servicio !== '') {
+				$s.find('.pp-sp-sheet__reservar').attr('data-servicio', servicio);
+			} else {
+				$s.find('.pp-sp-sheet__reservar').removeAttr('data-servicio');
+			}
 			$s.find('.pp-sp-sheet__cuerpo').html($fila.find('.pp-sp__datos').first().html() || '');
 			$s.find('.pp-sp-sheet__reservar').toggle(abridor().length > 0);
 			$s.prop('hidden', false);
@@ -92,6 +99,15 @@
 
 		/* ---------- Reservar ---------- */
 		$(document).on('click', '.pp-sp__reservar', function () {
+			// Avisar al paso Servicios del popup QUÉ servicio se quiere
+			// (índice plano, paridad con sus checkboxes): la ventana de
+			// selección sale igual, pero con la pestaña y el servicio ya
+			// marcados. Sin índice (servicio no reservable o flujo apagado)
+			// el popup abre genérico, como siempre.
+			var servicio = $(this).attr('data-servicio');
+			if (servicio !== undefined && servicio !== '') {
+				$(document).trigger('pp:reservar-servicio', [parseInt(servicio, 10)]);
+			}
 			cerrarSheet();
 			var $a = abridor();
 			if ($a.length) { $a.trigger('click'); }
