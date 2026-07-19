@@ -2,16 +2,19 @@
 /**
  * Plugin Name: PP Chat de Listados
  * Plugin URI:  https://parchepeludo.com
- * Description: Asistente conversacional (chat guiado, sin IA) para que los negocios creen su listado tipo "directorio". Shortcode [ppv2_chat_listado]. Crea el borrador en estado "preview" y envía al dueño al formulario nativo de Listeo prellenado para completar fotos/horarios y enviarlo a revisión.
- * Version:     1.1.0
+ * Description: Asistente conversacional (chat guiado, sin IA) para crear listados. Soporta todas las tipologías activas según los permisos por rol (módulo Listados de Personalización Parche), genera sus preguntas desde el Editor de Formularios de Listeo (se sincroniza solo al agregar/quitar campos), permite subir imágenes, y se integra embebido en la página "Agregar Listado" (sección "Agregar por chat").
+ * Version:     2.0.0
  * Author:      Parche Peludo
  * Text Domain: pp-chat-listados
  *
- * Migrado desde el tema hijo listeo-child el 2026-07-03. Requiere el tema
- * Listeo + plugin listeo-core (usa su página "agregar listado", su mecanismo
- * de reanudación por cookie y sus taxonomías listing_category/region).
- * Los estilos usan los tokens de marca definidos en el tema hijo
- * (--teal-parche, --ink, --r-*, --s-*…), con valores de respaldo.
+ * Crea el borrador en estado "preview" y envía al dueño al formulario nativo
+ * de Listeo prellenado (?step=submit&listing_id=X + cookies de reanudación)
+ * para revisar/completar y enviarlo a aprobación.
+ *
+ * Requiere: tema Listeo + listeo-core. Si está activo el módulo Listados de
+ * pp-personalizacion, usa sus permisos por rol (pp_tipo_listado_permitido_
+ * para_rol / pp_filtrar_tipos_listado_por_rol); si no, aplica el criterio
+ * nativo de Listeo (roles owner/seller/admin ven todo).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,148 +23,185 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'PP_CHAT_LISTADOS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PP_CHAT_LISTADOS_URL', plugin_dir_url( __FILE__ ) );
+define( 'PP_CHAT_LISTADOS_VER', '2.0.0' );
 
-/* -------------------------------------------------------------------------
- * 1. Assets (registrados siempre, encolados solo donde vive el shortcode)
- * ---------------------------------------------------------------------- */
+/* =========================================================================
+ * 1. PERMISOS Y TIPOS
+ * ======================================================================= */
 
-function ppcl_register_assets() {
-	$js  = PP_CHAT_LISTADOS_DIR . 'js/pp-chat-listados.js';
-	$css = PP_CHAT_LISTADOS_DIR . 'css/pp-chat-listados.css';
-
-	wp_register_script(
-		'pp-chat-listados',
-		PP_CHAT_LISTADOS_URL . 'js/pp-chat-listados.js',
-		array( 'jquery' ),
-		file_exists( $js ) ? filemtime( $js ) : '1.0.0',
-		true
-	);
-	wp_register_style(
-		'pp-chat-listados',
-		PP_CHAT_LISTADOS_URL . 'css/pp-chat-listados.css',
-		array(),
-		file_exists( $css ) ? filemtime( $css ) : '1.0.0'
-	);
-
-	// Si el contenido de la página trae el shortcode, encolar desde el <head>
-	// (evita el parpadeo de estilos que causaría encolarlos a mitad de página).
-	if ( is_singular() ) {
-		$post = get_queried_object();
-		if ( $post instanceof WP_Post && has_shortcode( (string) $post->post_content, 'ppv2_chat_listado' ) ) {
-			ppcl_enqueue_assets();
-		}
-	}
-
-	// Tarjeta "Crear con el chat" en la pantalla "Elige el tipo de listado"
-	// (página "Agregar listado" de Listeo). Solo para roles que pueden crear
-	// listados tipo directorio, y solo si la página del chat está publicada.
-	$submit_page = absint( get_option( 'listeo_submit_page' ) );
-	if ( $submit_page && is_page( $submit_page ) && ppcl_user_can_use_chat() ) {
-		$chat_url = ppcl_chat_page_url();
-		if ( $chat_url ) {
-			$card_js = PP_CHAT_LISTADOS_DIR . 'js/pp-chat-listados-card.js';
-			wp_enqueue_style( 'pp-chat-listados' );
-			wp_enqueue_script(
-				'pp-chat-listados-card',
-				PP_CHAT_LISTADOS_URL . 'js/pp-chat-listados-card.js',
-				array(),
-				file_exists( $card_js ) ? filemtime( $card_js ) : '1.1.0',
-				true
-			);
-			wp_localize_script( 'pp-chat-listados-card', 'ppclCard', array(
-				'chatUrl' => $chat_url,
-				'title'   => __( 'Crear con el chat', 'pp-chat-listados' ),
-				'badge'   => __( 'Nuevo', 'pp-chat-listados' ),
-				'sub'     => __( 'Te guiamos paso a paso', 'pp-chat-listados' ),
-			) );
-		}
-	}
-}
-add_action( 'wp_enqueue_scripts', 'ppcl_register_assets' );
-
-function ppcl_enqueue_assets() {
-	wp_enqueue_style( 'pp-chat-listados' );
-	wp_enqueue_script( 'pp-chat-listados' );
-	wp_localize_script( 'pp-chat-listados', 'ppv2ChatListado', array(
-		'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
-		'nonce'      => wp_create_nonce( 'ppv2_chat_listado' ),
-		'loggedIn'   => is_user_logged_in(),
-		'loginUrl'   => wp_login_url( get_permalink() ),
-		'backUrl'    => ( $submit = absint( get_option( 'listeo_submit_page' ) ) ) ? get_permalink( $submit ) : home_url( '/' ),
-		'categories' => ppcl_term_tree( 'listing_category' ),
-		'regions'    => ppcl_term_tree( 'region' ),
-	) );
-}
-
-/**
- * ¿Puede el usuario actual crear listados tipo "directorio" (y por tanto usar
- * el chat)? Reutiliza el candado por rol del tema hijo si está disponible;
- * si no, aplica el mismo criterio de Listeo (roles de dueño de negocio).
- */
-function ppcl_user_can_use_chat() {
+/** Rol principal del usuario actual ('' si no hay sesión). */
+function ppcl_user_role() {
 	if ( ! is_user_logged_in() ) {
-		return false;
+		return '';
 	}
 	$user  = wp_get_current_user();
 	$roles = (array) $user->roles;
-	$role  = array_shift( $roles );
-
-	if ( function_exists( 'pp_tipo_listado_permitido_para_rol' ) ) {
-		return pp_tipo_listado_permitido_para_rol( 'directorio', $role );
-	}
-	return in_array( $role, array( 'administrator', 'admin', 'owner', 'seller' ), true );
+	return (string) array_shift( $roles );
 }
 
 /**
- * URL de la página que contiene el shortcode del chat (cacheada 6 h).
+ * Tipos de listado que el usuario actual puede crear: los tipos ACTIVOS de
+ * Listeo filtrados por la matriz de permisos por rol del módulo Listados
+ * (si está disponible). Devuelve array de objetos {slug, name}.
  */
-function ppcl_chat_page_url() {
-	$cached = get_transient( 'ppcl_chat_page_url' );
-	if ( false !== $cached ) {
-		return $cached; // puede ser '' si no se encontró
+function ppcl_allowed_types_for_user() {
+	if ( ! is_user_logged_in() || ! function_exists( 'listeo_core_custom_listing_types' ) ) {
+		return array();
 	}
-	$url   = '';
-	$pages = get_posts( array(
-		'post_type'   => 'page',
-		'post_status' => 'publish',
-		'numberposts' => -1,
-		's'           => '[ppv2_chat_listado',
-		'fields'      => 'ids',
-	) );
-	foreach ( $pages as $page_id ) {
-		if ( has_shortcode( (string) get_post_field( 'post_content', $page_id ), 'ppv2_chat_listado' ) ) {
-			$url = get_permalink( $page_id );
-			break;
+	$types = listeo_core_custom_listing_types()->get_listing_types( true );
+	if ( ! is_array( $types ) ) {
+		return array();
+	}
+	$role = ppcl_user_role();
+	if ( function_exists( 'pp_filtrar_tipos_listado_por_rol' ) ) {
+		$types = pp_filtrar_tipos_listado_por_rol( $types, $role );
+	} elseif ( ! in_array( $role, array( 'administrator', 'admin', 'owner', 'seller' ), true ) ) {
+		$types = array();
+	}
+	return array_values( (array) $types );
+}
+
+/** ¿Puede el usuario actual crear ESTE tipo? (candado de servidor). */
+function ppcl_type_allowed( $slug ) {
+	foreach ( ppcl_allowed_types_for_user() as $t ) {
+		if ( isset( $t->slug ) && $t->slug === $slug ) {
+			return true;
 		}
 	}
-	set_transient( 'ppcl_chat_page_url', $url, 6 * HOUR_IN_SECONDS );
-	return $url;
+	return false;
 }
 
-// Refrescar la caché cuando se guarde cualquier página.
-add_action( 'save_post_page', function () {
-	delete_transient( 'ppcl_chat_page_url' );
-} );
+/** ¿El usuario puede usar el chat? (tiene al menos un tipo permitido). */
+function ppcl_user_can_use_chat() {
+	return (bool) ppcl_allowed_types_for_user();
+}
+
+/* =========================================================================
+ * 2. ESQUEMA DE CAMPOS POR TIPO (sincronizado con el Editor de Formularios)
+ * ======================================================================= */
 
 /**
- * Árbol de términos (2 niveles) para los botones del chat.
+ * Traduce la configuración de campos de Listeo (Forms Editor u origen por
+ * defecto) al "guion" del chat. Cada entrada:
+ *   { key, group, groupTitle, kind, label, required, options?, tree?, inputMode? }
+ * kind ∈ text | number | textarea | options | multioptions | boolean |
+ *        terms | image | images
  */
+function ppcl_field_schema( $type_slug ) {
+	if ( ! class_exists( 'Listeo_Core_Submit' ) ) {
+		return new WP_Error( 'no_listeo', 'listeo-core no está activo.' );
+	}
+	$groups = Listeo_Core_Submit::instance()->get_fields_for_listing_type( $type_slug );
+	if ( ! is_array( $groups ) ) {
+		return array();
+	}
+
+	// Campos técnicos que el chat no debe preguntar (el formulario nativo
+	// los completa después: mapa, horarios, tarifas repetibles…).
+	$blocklist = array( '_geolocation_lat', '_geolocation_long', '_place_id', '_opening_hours', '_menu', '_mandatory_fees' );
+
+	$schema = array();
+	foreach ( $groups as $group_key => $group ) {
+		if ( empty( $group['fields'] ) || ! is_array( $group['fields'] ) ) {
+			continue;
+		}
+		$group_title = isset( $group['title'] ) ? wp_strip_all_tags( stripslashes( $group['title'] ) ) : $group_key;
+
+		foreach ( $group['fields'] as $key => $field ) {
+			if ( ! is_array( $field ) || in_array( $key, $blocklist, true ) ) {
+				continue;
+			}
+			$type  = isset( $field['type'] ) ? $field['type'] : 'text';
+			$label = isset( $field['label'] ) ? wp_strip_all_tags( stripslashes( $field['label'] ) ) : $key;
+
+			$item = array(
+				'key'        => $key,
+				'group'      => $group_key,
+				'groupTitle' => $group_title,
+				'label'      => $label,
+				'required'   => ! empty( $field['required'] ),
+			);
+			if ( ! empty( $field['placeholder'] ) ) {
+				$item['placeholder'] = wp_strip_all_tags( stripslashes( $field['placeholder'] ) );
+			}
+
+			switch ( $type ) {
+				case 'text':
+				case 'email':
+				case 'url':
+				case 'tel':
+				case 'date':
+					$item['kind'] = 'text';
+					if ( in_array( $type, array( 'email', 'url', 'tel' ), true ) ) {
+						$item['inputMode'] = $type;
+					}
+					break;
+				case 'number':
+					$item['kind'] = 'number';
+					break;
+				case 'textarea':
+				case 'wp-editor':
+					$item['kind'] = 'textarea';
+					break;
+				case 'select':
+				case 'radio':
+					if ( empty( $field['options'] ) || ! is_array( $field['options'] ) ) {
+						continue 2;
+					}
+					$item['kind']    = 'options';
+					$item['options'] = array_map( 'strval', $field['options'] );
+					break;
+				case 'checkboxes':
+				case 'multiselect':
+				case 'multicheck':
+					if ( empty( $field['options'] ) || ! is_array( $field['options'] ) ) {
+						continue 2;
+					}
+					$item['kind']    = 'multioptions';
+					$item['options'] = array_map( 'strval', $field['options'] );
+					break;
+				case 'checkbox':
+					$item['kind'] = 'boolean';
+					break;
+				case 'term-select':
+				case 'term-checklist':
+				case 'term-multiselect':
+				case 'drilldown-taxonomy':
+					if ( empty( $field['taxonomy'] ) || ! taxonomy_exists( $field['taxonomy'] ) ) {
+						continue 2;
+					}
+					$item['kind']     = 'terms';
+					$item['taxonomy'] = $field['taxonomy'];
+					$item['tree']     = ppcl_term_tree( $field['taxonomy'] );
+					if ( empty( $item['tree'] ) ) {
+						continue 2; // taxonomía sin términos: nada que preguntar
+					}
+					break;
+				case 'file':
+					$item['kind'] = 'image';
+					break;
+				case 'files':
+					$item['kind'] = 'images';
+					break;
+				default:
+					continue 2; // tipo no soportado por el chat (header, repeatable…)
+			}
+
+			$schema[] = $item;
+		}
+	}
+	return $schema;
+}
+
+/** Árbol de términos (2 niveles) para los botones del chat. */
 function ppcl_term_tree( $taxonomy ) {
 	$tree    = array();
-	$parents = get_terms( array(
-		'taxonomy'   => $taxonomy,
-		'hide_empty' => false,
-		'parent'     => 0,
-	) );
+	$parents = get_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => false, 'parent' => 0 ) );
 	if ( is_wp_error( $parents ) ) {
 		return $tree;
 	}
 	foreach ( $parents as $parent ) {
-		$children = get_terms( array(
-			'taxonomy'   => $taxonomy,
-			'hide_empty' => false,
-			'parent'     => $parent->term_id,
-		) );
+		$children = get_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => false, 'parent' => $parent->term_id ) );
 		$kids = array();
 		if ( ! is_wp_error( $children ) ) {
 			foreach ( $children as $child ) {
@@ -173,39 +213,194 @@ function ppcl_term_tree( $taxonomy ) {
 	return $tree;
 }
 
-/* -------------------------------------------------------------------------
- * 2. Shortcode [ppv2_chat_listado]
- * ---------------------------------------------------------------------- */
+/* =========================================================================
+ * 3. ASSETS + SECCIÓN "AGREGAR POR CHAT" EN LA PÁGINA AGREGAR LISTADO
+ * ======================================================================= */
 
+/** ¿Estamos en la pantalla "Elige el tipo de listado" de Agregar Listado? */
+function ppcl_is_type_screen() {
+	$submit_page = absint( get_option( 'listeo_submit_page' ) );
+	return $submit_page
+		&& is_page( $submit_page )
+		&& empty( $_GET['step'] )
+		&& empty( $_GET['listing_id'] )
+		&& empty( $_GET['action'] );
+}
+
+function ppcl_register_assets() {
+	$js  = PP_CHAT_LISTADOS_DIR . 'js/pp-chat-listados.js';
+	$css = PP_CHAT_LISTADOS_DIR . 'css/pp-chat-listados.css';
+
+	wp_register_script( 'pp-chat-listados', PP_CHAT_LISTADOS_URL . 'js/pp-chat-listados.js', array( 'jquery' ), file_exists( $js ) ? filemtime( $js ) : PP_CHAT_LISTADOS_VER, true );
+	wp_register_style( 'pp-chat-listados', PP_CHAT_LISTADOS_URL . 'css/pp-chat-listados.css', array(), file_exists( $css ) ? filemtime( $css ) : PP_CHAT_LISTADOS_VER );
+
+	// (a) Página propia con el shortcode → modo "page".
+	if ( is_singular() ) {
+		$post = get_queried_object();
+		if ( $post instanceof WP_Post && has_shortcode( (string) $post->post_content, 'ppv2_chat_listado' ) ) {
+			ppcl_enqueue_assets( 'page' );
+			return;
+		}
+	}
+	// (b) Pantalla de tipos de Agregar Listado → modo "embedded".
+	if ( ppcl_is_type_screen() && ppcl_user_can_use_chat() ) {
+		ppcl_enqueue_assets( 'embedded' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'ppcl_register_assets' );
+
+function ppcl_enqueue_assets( $mode ) {
+	wp_enqueue_style( 'pp-chat-listados' );
+	wp_enqueue_script( 'pp-chat-listados' );
+
+	$submit_page = absint( get_option( 'listeo_submit_page' ) );
+	$max_mb      = (int) get_option( 'listeo_max_filesize', 10 );
+	$wp_max_mb   = (int) floor( wp_max_upload_size() / MB_IN_BYTES );
+	if ( $wp_max_mb > 0 ) {
+		$max_mb = min( $max_mb, $wp_max_mb );
+	}
+
+	wp_localize_script( 'pp-chat-listados', 'ppv2ChatListado', array(
+		'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+		'nonce'      => wp_create_nonce( 'ppv2_chat_listado' ),
+		'loggedIn'   => is_user_logged_in(),
+		'canUse'     => ppcl_user_can_use_chat(),
+		'mode'       => $mode,
+		'loginUrl'   => wp_login_url( get_permalink() ),
+		'backUrl'    => $submit_page ? get_permalink( $submit_page ) : home_url( '/' ),
+		'maxMb'      => max( 1, $max_mb ),
+		'maxGallery' => 10,
+	) );
+}
+
+/**
+ * Sección "Agregar por chat" bajo el componente "Elige el tipo de listado".
+ * Se añade por filtro the_content en la página Agregar Listado (solo en la
+ * pantalla de tipos): arriba queda el componente nativo y debajo, en otro
+ * contenedor, esta sección con el botón que abre el chat EMBEBIDO (misma
+ * página: menú lateral y header intactos).
+ */
+function ppcl_append_chat_section( $content ) {
+	if ( ! in_the_loop() || ! is_main_query() || ! ppcl_is_type_screen() || ! ppcl_user_can_use_chat() ) {
+		return $content;
+	}
+	$section  = '<div class="ppcl-chat-section" id="ppcl-chat-section">';
+	$section .= '<div class="ppcl-chat-section-head"><h3>' . esc_html__( 'Agregar por chat', 'pp-chat-listados' ) . '</h3>';
+	$section .= '<p>' . esc_html__( 'Prefieres que te guiemos? Crea tu listado conversando: te preguntamos todo paso a paso, incluidas las fotos.', 'pp-chat-listados' ) . '</p></div>';
+	$section .= '<button type="button" class="ppcl-open-chat" id="ppcl-open-chat">💬 ' . esc_html__( 'Crear con el chat', 'pp-chat-listados' ) . '</button>';
+	$section .= '</div>';
+	$section .= '<div id="ppv2-chat-listado" class="ppv2-chat ppcl-embedded" hidden aria-live="polite"></div>';
+	return $content . $section;
+}
+add_filter( 'the_content', 'ppcl_append_chat_section', 20 );
+
+/** Shortcode [ppv2_chat_listado] — página propia (modo "page"). */
 function ppcl_shortcode() {
-	// Respaldo para páginas donde el shortcode no está en post_content
-	// (p. ej. dentro de un widget de Elementor): encolar aquí mismo.
 	if ( ! wp_script_is( 'pp-chat-listados', 'enqueued' ) ) {
-		ppcl_enqueue_assets();
+		ppcl_enqueue_assets( 'page' );
 	}
 	return '<div id="ppv2-chat-listado" class="ppv2-chat" aria-live="polite"></div>';
 }
 add_shortcode( 'ppv2_chat_listado', 'ppcl_shortcode' );
 
-/* -------------------------------------------------------------------------
- * 3. AJAX: crear el listado borrador con los datos del chat
- * ---------------------------------------------------------------------- */
+/* =========================================================================
+ * 4. AJAX
+ * ======================================================================= */
 
-function ppcl_create_listing() {
+/** Guardas comunes de los endpoints. Devuelve el rol o corta con error. */
+function ppcl_ajax_guard() {
 	check_ajax_referer( 'ppv2_chat_listado', 'nonce' );
-
 	if ( ! is_user_logged_in() ) {
 		wp_send_json_error( array( 'code' => 'login' ) );
 	}
-
-	// Mismo candado por rol que el flujo nativo: los listados tipo
-	// "directorio" son solo para cuentas de prestador de servicios.
 	if ( ! ppcl_user_can_use_chat() ) {
 		wp_send_json_error( array(
 			'code'    => 'role',
-			'message' => __( 'Los listados de negocios son para cuentas de Prestador de servicios. Tu cuenta actual no puede publicar en el directorio; escríbenos si quieres convertirla.', 'pp-chat-listados' ),
+			'message' => __( 'Tu tipo de cuenta no puede publicar listados. Escríbenos si crees que es un error.', 'pp-chat-listados' ),
 		) );
 	}
+}
+
+/** 4a. Tipos permitidos para el usuario (arranque del chat). */
+function ppcl_ajax_bootstrap() {
+	ppcl_ajax_guard();
+	$types = array();
+	foreach ( ppcl_allowed_types_for_user() as $t ) {
+		$types[] = array( 'slug' => $t->slug, 'name' => $t->name );
+	}
+	wp_send_json_success( array( 'types' => $types ) );
+}
+add_action( 'wp_ajax_ppcl_bootstrap', 'ppcl_ajax_bootstrap' );
+
+/** 4b. Esquema de campos del tipo elegido (siempre fresco desde el admin). */
+function ppcl_ajax_fields() {
+	ppcl_ajax_guard();
+	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+	if ( ! $type || ! ppcl_type_allowed( $type ) ) {
+		wp_send_json_error( array( 'code' => 'type', 'message' => __( 'Ese tipo de listado no está disponible para tu cuenta.', 'pp-chat-listados' ) ) );
+	}
+	$schema = ppcl_field_schema( $type );
+	if ( is_wp_error( $schema ) ) {
+		wp_send_json_error( array( 'code' => 'error', 'message' => $schema->get_error_message() ) );
+	}
+	wp_send_json_success( array( 'schema' => $schema ) );
+}
+add_action( 'wp_ajax_ppcl_fields', 'ppcl_ajax_fields' );
+
+/** 4c. Subida de UNA imagen (el chat sube de a una, con vista previa). */
+function ppcl_ajax_upload() {
+	ppcl_ajax_guard();
+
+	if ( empty( $_FILES['file'] ) || ! is_array( $_FILES['file'] ) ) {
+		wp_send_json_error( array( 'code' => 'nofile', 'message' => __( 'No llegó ningún archivo.', 'pp-chat-listados' ) ) );
+	}
+
+	$max_mb = (int) get_option( 'listeo_max_filesize', 10 );
+	if ( ! empty( $_FILES['file']['size'] ) && $_FILES['file']['size'] > $max_mb * MB_IN_BYTES ) {
+		wp_send_json_error( array(
+			'code'    => 'size',
+			'message' => sprintf( __( 'La imagen pesa demasiado (máximo %d MB).', 'pp-chat-listados' ), $max_mb ),
+		) );
+	}
+
+	// Solo imágenes.
+	$check = wp_check_filetype_and_ext( $_FILES['file']['tmp_name'], $_FILES['file']['name'] );
+	$ok_types = array( 'image/jpeg', 'image/png', 'image/webp', 'image/gif' );
+	if ( empty( $check['type'] ) || ! in_array( $check['type'], $ok_types, true ) ) {
+		wp_send_json_error( array( 'code' => 'mime', 'message' => __( 'Solo se permiten imágenes (JPG, PNG, WebP o GIF).', 'pp-chat-listados' ) ) );
+	}
+
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+
+	$attachment_id = media_handle_upload( 'file', 0 );
+	if ( is_wp_error( $attachment_id ) ) {
+		wp_send_json_error( array( 'code' => 'upload', 'message' => $attachment_id->get_error_message() ) );
+	}
+	// La imagen queda a nombre del usuario (para poder validarla al crear).
+	wp_update_post( array( 'ID' => $attachment_id, 'post_author' => get_current_user_id() ) );
+
+	wp_send_json_success( array(
+		'id'    => $attachment_id,
+		'url'   => wp_get_attachment_url( $attachment_id ),
+		'thumb' => wp_get_attachment_image_url( $attachment_id, 'thumbnail' ),
+	) );
+}
+add_action( 'wp_ajax_ppcl_upload', 'ppcl_ajax_upload' );
+
+/** ¿Este adjunto es una imagen del usuario actual? (para _gallery/logo). */
+function ppcl_own_image( $attachment_id ) {
+	$att = get_post( $attachment_id );
+	return $att
+		&& 'attachment' === $att->post_type
+		&& (int) $att->post_author === get_current_user_id()
+		&& wp_attachment_is_image( $att );
+}
+
+/** 4d. Crear el listado borrador con las respuestas del chat. */
+function ppcl_ajax_create() {
+	ppcl_ajax_guard();
 
 	$user_id = get_current_user_id();
 
@@ -217,13 +412,117 @@ function ppcl_create_listing() {
 		) );
 	}
 
-	$title       = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
-	$description = isset( $_POST['description'] ) ? sanitize_textarea_field( wp_unslash( $_POST['description'] ) ) : '';
+	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+	if ( ! $type || ! ppcl_type_allowed( $type ) ) {
+		wp_send_json_error( array( 'code' => 'type', 'message' => __( 'Ese tipo de listado no está disponible para tu cuenta.', 'pp-chat-listados' ) ) );
+	}
 
-	if ( '' === $title || mb_strlen( $description ) < 40 ) {
+	$raw = isset( $_POST['fields'] ) ? json_decode( wp_unslash( $_POST['fields'] ), true ) : null;
+	if ( ! is_array( $raw ) ) {
+		wp_send_json_error( array( 'code' => 'invalid', 'message' => __( 'No llegaron las respuestas del chat.', 'pp-chat-listados' ) ) );
+	}
+
+	// El esquema se re-resuelve EN EL SERVIDOR: el cliente no dicta qué
+	// campos existen ni cuáles son obligatorios.
+	$schema = ppcl_field_schema( $type );
+	if ( is_wp_error( $schema ) ) {
+		wp_send_json_error( array( 'code' => 'error', 'message' => $schema->get_error_message() ) );
+	}
+
+	$title       = '';
+	$description = '';
+	$metas       = array();   // key => valor saneado
+	$taxonomies  = array();   // taxonomy => [term_ids]
+	$galleries   = array();   // key => [attachment_ids]
+	$images      = array();   // key => attachment_id
+	$faltantes   = array();
+
+	foreach ( $schema as $field ) {
+		$key   = $field['key'];
+		$value = array_key_exists( $key, $raw ) ? $raw[ $key ] : '';
+
+		// Requeridos (la galería/las imágenes también cuentan si el admin las marcó).
+		$empty = ( '' === $value || null === $value || array() === $value );
+		if ( ! empty( $field['required'] ) && $empty ) {
+			$faltantes[] = $field['label'];
+			continue;
+		}
+		if ( $empty ) {
+			continue;
+		}
+
+		switch ( $field['kind'] ) {
+			case 'text':
+				$metas[ $key ] = sanitize_text_field( (string) $value );
+				break;
+			case 'number':
+				if ( is_numeric( $value ) ) {
+					$metas[ $key ] = (string) ( 0 + $value );
+				}
+				break;
+			case 'textarea':
+				$metas[ $key ] = sanitize_textarea_field( (string) $value );
+				break;
+			case 'options':
+				if ( isset( $field['options'][ $value ] ) ) {
+					$metas[ $key ] = (string) $value;
+				}
+				break;
+			case 'multioptions':
+				$vals = array_values( array_intersect( array_keys( (array) $field['options'] ), (array) $value ) );
+				if ( $vals ) {
+					$metas[ $key ] = $vals;
+				}
+				break;
+			case 'boolean':
+				if ( $value ) {
+					$metas[ $key ] = 'on';
+				}
+				break;
+			case 'terms':
+				$term = get_term( absint( $value ) );
+				if ( $term instanceof WP_Term && ! empty( $field['taxonomy'] ) && $term->taxonomy === $field['taxonomy'] ) {
+					$taxonomies[ $term->taxonomy ][] = $term->term_id;
+				}
+				break;
+			case 'image':
+				$att = absint( $value );
+				if ( $att && ppcl_own_image( $att ) ) {
+					$images[ $key ] = $att;
+				} elseif ( ! empty( $field['required'] ) ) {
+					$faltantes[] = $field['label'];
+				}
+				break;
+			case 'images':
+				$ids = array_filter( array_map( 'absint', (array) $value ) );
+				$ids = array_values( array_filter( $ids, 'ppcl_own_image' ) );
+				$ids = array_slice( $ids, 0, 10 );
+				if ( $ids ) {
+					$galleries[ $key ] = $ids;
+				} elseif ( ! empty( $field['required'] ) ) {
+					$faltantes[] = $field['label'];
+				}
+				break;
+		}
+
+		// Título y descripción van al post, no a metas.
+		if ( 'listing_title' === $key && isset( $metas[ $key ] ) ) {
+			$title = $metas[ $key ];
+			unset( $metas[ $key ] );
+		}
+		if ( 'listing_description' === $key && isset( $metas[ $key ] ) ) {
+			$description = $metas[ $key ];
+			unset( $metas[ $key ] );
+		}
+	}
+
+	if ( '' === $title ) {
+		$faltantes[] = __( 'Título', 'pp-chat-listados' );
+	}
+	if ( $faltantes ) {
 		wp_send_json_error( array(
 			'code'    => 'invalid',
-			'message' => __( 'Falta el nombre del negocio o la descripción es muy corta.', 'pp-chat-listados' ),
+			'message' => sprintf( __( 'Faltan datos obligatorios: %s.', 'pp-chat-listados' ), implode( ', ', array_unique( $faltantes ) ) ),
 		) );
 	}
 
@@ -235,36 +534,42 @@ function ppcl_create_listing() {
 		'post_author'    => $user_id,
 		'comment_status' => 'open',
 	), true );
-
 	if ( is_wp_error( $listing_id ) ) {
 		wp_send_json_error( array( 'code' => 'error', 'message' => $listing_id->get_error_message() ) );
 	}
 
-	update_post_meta( $listing_id, '_listing_type', 'directorio' );
+	update_post_meta( $listing_id, '_listing_type', $type );
 
-	// Taxonomías (se validan contra su taxonomía real).
-	$category = isset( $_POST['category'] ) ? absint( $_POST['category'] ) : 0;
-	if ( $category && get_term( $category, 'listing_category' ) instanceof WP_Term ) {
-		wp_set_object_terms( $listing_id, array( $category ), 'listing_category' );
-	}
-	$region = isset( $_POST['region'] ) ? absint( $_POST['region'] ) : 0;
-	if ( $region && get_term( $region, 'region' ) instanceof WP_Term ) {
-		wp_set_object_terms( $listing_id, array( $region ), 'region' );
-	}
-
-	// Campos opcionales de contacto.
-	$metas = array(
-		'_address'   => isset( $_POST['address'] ) ? sanitize_text_field( wp_unslash( $_POST['address'] ) ) : '',
-		'_phone'     => isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '',
-		'_whatsapp'  => isset( $_POST['whatsapp'] ) ? sanitize_text_field( wp_unslash( $_POST['whatsapp'] ) ) : '',
-		'_email'     => isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '',
-		'_website'   => isset( $_POST['website'] ) ? esc_url_raw( wp_unslash( $_POST['website'] ) ) : '',
-		'_instagram' => isset( $_POST['instagram'] ) ? sanitize_text_field( wp_unslash( $_POST['instagram'] ) ) : '',
-	);
 	foreach ( $metas as $key => $value ) {
-		if ( '' !== $value ) {
-			update_post_meta( $listing_id, $key, $value );
+		update_post_meta( $listing_id, $key, $value );
+	}
+	foreach ( $taxonomies as $taxonomy => $term_ids ) {
+		wp_set_object_terms( $listing_id, array_map( 'intval', $term_ids ), $taxonomy );
+	}
+
+	// Imágenes sueltas (p. ej. _listing_logo): Listeo guarda la URL.
+	foreach ( $images as $key => $att ) {
+		update_post_meta( $listing_id, $key, wp_get_attachment_url( $att ) );
+		wp_update_post( array( 'ID' => $att, 'post_parent' => $listing_id ) );
+	}
+
+	// Galerías (p. ej. _gallery): formato nativo array(id => url) + parent.
+	$primera_foto = 0;
+	foreach ( $galleries as $key => $ids ) {
+		$valor = array();
+		foreach ( $ids as $att ) {
+			$valor[ $att ] = wp_get_attachment_url( $att );
+			wp_update_post( array( 'ID' => $att, 'post_parent' => $listing_id ) );
+			if ( ! $primera_foto ) {
+				$primera_foto = $att;
+			}
 		}
+		update_post_meta( $listing_id, $key, $valor );
+	}
+	// Imagen destacada: primera foto de la galería (para que las tarjetas
+	// del sitio muestren foto desde el principio).
+	if ( $primera_foto && ! has_post_thumbnail( $listing_id ) ) {
+		set_post_thumbnail( $listing_id, $primera_foto );
 	}
 
 	// Mecanismo nativo de Listeo para "reanudar" el envío: clave + cookies.
@@ -285,5 +590,15 @@ function ppcl_create_listing() {
 		'continue_url' => $continue_url,
 	) );
 }
-add_action( 'wp_ajax_ppv2_chat_listado_create', 'ppcl_create_listing' );
-add_action( 'wp_ajax_nopriv_ppv2_chat_listado_create', 'ppcl_create_listing' );
+add_action( 'wp_ajax_ppcl_create', 'ppcl_ajax_create' );
+
+// Compatibilidad con la acción de la v1 (por si hay HTML cacheado).
+add_action( 'wp_ajax_ppv2_chat_listado_create', 'ppcl_ajax_create' );
+
+// Sin sesión: todos los endpoints responden "login" (el chat muestra el CTA).
+function ppcl_ajax_needs_login() {
+	wp_send_json_error( array( 'code' => 'login' ) );
+}
+foreach ( array( 'ppcl_bootstrap', 'ppcl_fields', 'ppcl_upload', 'ppcl_create', 'ppv2_chat_listado_create' ) as $ppcl_action ) {
+	add_action( 'wp_ajax_nopriv_' . $ppcl_action, 'ppcl_ajax_needs_login' );
+}

@@ -295,53 +295,11 @@
 }
 
 /* --------------------------------------------------------------------------
-   Tarjeta "Crear con el chat" en "Elige el tipo de listado" (Agregar Listado)
+   Botón "← Atrás" (arriba a la izquierda del encabezado del chat)
    -------------------------------------------------------------------------- */
 
-.ppcl-type-chat {
-  position: relative;
-  border: 2px solid var(--ppc-teal-parche, #79C8D0) !important;
-  border-radius: var(--ppc-r-lg, 20px);
-  background: var(--ppc-teal-mist, #E8F4F6) !important;
-}
-
-.ppcl-type-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 3px 12px;
-  background: var(--ppc-teal-parche, #79C8D0);
-  color: #fff;
-  border-radius: var(--ppc-r-pill, 999px);
-  font-family: var(--ppc-font-sans, 'Ubuntu', sans-serif);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-/* Ícono: mismo círculo que las tarjetas nativas pero en teal */
-.ppcl-type-chat .listing-type-icon svg {
-  fill: #fff;
-}
-.ppcl-type-chat-icon {
-  background: var(--ppc-teal-deep, #4AA5AD) !important;
-}
-
-.ppcl-type-chat h3 {
-  color: var(--ppc-teal-ink, #1E5D64);
-}
-
-.ppcl-type-sub {
-  margin: 4px 0 0;
-  font-family: var(--ppc-font-sans, 'Ubuntu', sans-serif);
-  font-size: 13px;
-  color: var(--ppc-ink-muted, #5A6B70);
-  text-align: center;
-}
-
-/* Botón "Volver" del encabezado del chat */
 .ppv2-chat-back {
-  margin-left: auto;
+  order: -1;
   padding: 6px 14px;
   background: rgba(255,255,255,.22);
   border-radius: var(--ppc-r-pill);
@@ -357,3 +315,109 @@
   background: rgba(255,255,255,.35);
   color: #fff;
 }
+.ppv2-chat-header-titles { flex: 1; min-width: 0; }
+
+/* --------------------------------------------------------------------------
+   Sección "Agregar por chat" (bajo "Elige el tipo de listado")
+   -------------------------------------------------------------------------- */
+
+.ppcl-chat-section {
+  margin-top: 30px;
+  padding: 28px 32px;
+  background: var(--teal-mist, #E8F4F6);
+  border: 1.5px solid var(--teal-soft, #BEE3E7);
+  border-radius: var(--r-lg, 20px);
+  text-align: center;
+}
+.ppcl-chat-section-head h3 {
+  margin: 0 0 6px;
+  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  font-size: 20px;
+  color: var(--teal-ink, #1E5D64);
+}
+.ppcl-chat-section-head p {
+  margin: 0 auto 18px;
+  max-width: 520px;
+  font-size: 14.5px;
+  color: var(--ink-muted, #5A6B70);
+}
+.ppcl-open-chat {
+  padding: 13px 28px;
+  background: var(--teal-parche, #79C8D0);
+  color: #fff;
+  border: 0;
+  border-radius: var(--r-pill, 999px);
+  font-family: var(--font-sans, 'Ubuntu', sans-serif);
+  font-size: 15.5px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: var(--shadow-teal, 0 12px 32px rgba(121,200,208,.40));
+  transition: background .2s ease, transform .2s ease;
+}
+.ppcl-open-chat:hover {
+  background: var(--teal-deep, #4AA5AD);
+  transform: translateY(-1px);
+}
+
+/* Chat embebido en Agregar Listado */
+.ppv2-chat.ppcl-embedded {
+  margin-top: 20px;
+  max-width: none;
+  height: 72vh;
+  max-height: 760px;
+}
+
+/* --------------------------------------------------------------------------
+   Subida de imágenes en el chat
+   -------------------------------------------------------------------------- */
+
+.ppcl-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ppc-s-2);
+  justify-content: center;
+  margin-bottom: var(--ppc-s-2);
+}
+.ppcl-thumbs:empty { display: none; }
+.ppcl-thumb {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ppc-ink-line);
+  border-radius: var(--ppc-r-sm);
+  overflow: hidden;
+  background: var(--ppc-teal-mist);
+  font-size: 22px;
+}
+.ppcl-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ppcl-thumb-x {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ppc-r-pill);
+  background: rgba(30,46,51,.65);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+.ppcl-thumb-x:hover { background: var(--ppc-danger); }
+
+/* Opción seleccionada (campos de selección múltiple) */
+.ppv2-chat-option-selected {
+  background: var(--ppc-teal-deep) !important;
+  border-color: var(--ppc-teal-deep) !important;
+  color: #fff !important;
+}
+.ppv2-chat-options-actions { margin-top: var(--ppc-s-2); }
