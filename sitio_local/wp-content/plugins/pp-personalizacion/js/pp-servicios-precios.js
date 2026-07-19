@@ -15,6 +15,37 @@
 		var $vitrina = $('.pp-sp');
 		if (!$vitrina.length) { return; }
 
+		/* ---------- Ancho completo en MÓVIL (borde a borde) ----------
+		 * La columna del listado tiene padding lateral asimétrico (15px izq /
+		 * 30px der por .padding-right-30), así que un `calc(50% - 50vw)` fijo
+		 * no llega parejo a ambos bordes. Aquí se MIDE la posición real del
+		 * recuadro y se aplican los márgenes negativos exactos para pegarlo a
+		 * los dos bordes del viewport. Solo ≤767px; en desktop se limpian
+		 * (no se toca su diseño). */
+		var box = $vitrina[0];
+		function fullBleedMovil() {
+			// Limpiar para medir la posición natural.
+			box.style.width = '';
+			box.style.marginLeft = '';
+			box.style.marginRight = '';
+			if (!window.matchMedia('(max-width: 767px)').matches) { return; }
+			var natural = box.getBoundingClientRect();
+			var vw = document.documentElement.clientWidth;
+			// El recuadro tiene width:100% (del tema) → los márgenes negativos
+			// solo lo DESPLAZAN. Para ENSANCHARLO: fijar el ancho al viewport
+			// y tirar del margen izquierdo hasta el borde 0.
+			box.style.boxSizing = 'border-box';
+			box.style.width = vw + 'px';
+			box.style.marginLeft = (-natural.left) + 'px';
+			box.style.marginRight = '0px';
+		}
+		fullBleedMovil();
+		var reflow;
+		$(window).on('resize orientationchange', function () {
+			clearTimeout(reflow);
+			reflow = setTimeout(fullBleedMovil, 120);
+		});
+
 		/* ---------- Abridor del popup de reserva ---------- */
 		function abridor() {
 			var $a = $('a.lbp-book-now-btn').first();
