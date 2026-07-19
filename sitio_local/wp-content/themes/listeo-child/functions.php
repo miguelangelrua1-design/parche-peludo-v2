@@ -2030,6 +2030,55 @@ function ppv2_seo_canonical_paginacion( $canonical ) {
 	return $canonical;
 }
 
+/**
+ * F4.2 — Texto ALTERNATIVO de respaldo para imágenes SIN alt. En vez de
+ * rellenar la base de datos (que no viajaría a producción), se genera el alt
+ * en el render, SOLO cuando falta, derivándolo de una fuente FIABLE:
+ *   1) el título del contenido al que pertenece la imagen (producto, listado…),
+ *   2) en la ficha de producto, el nombre del producto (cubre la galería),
+ *   3) el título del propio archivo, si es descriptivo (no "IMG_1234").
+ * Nunca inventa texto genérico: si no hay fuente de calidad, deja el alt vacío
+ * (un alt vacío es correcto para imágenes decorativas; uno inventado engaña).
+ * Aplica a imágenes generadas por WP/WooCommerce (destacadas, galería): la
+ * mayoría de las que importan. Las incrustadas a mano en Elementor se ajustan
+ * en su editor. Idéntico en local y producción, reversible.
+ */
+add_filter( 'wp_get_attachment_image_attributes', 'ppv2_seo_alt_fallback', 20, 2 );
+function ppv2_seo_alt_fallback( $attr, $attachment ) {
+	if ( ! empty( $attr['alt'] ) || ! $attachment instanceof WP_Post ) {
+		return $attr;
+	}
+	$alt = '';
+	if ( $attachment->post_parent ) {
+		$padre = get_post( $attachment->post_parent );
+		if ( $padre && '' !== trim( (string) $padre->post_title ) ) {
+			$alt = $padre->post_title;
+		}
+	}
+	// Dentro de un loop (tienda, categoría, relacionados, directorio, ficha):
+	// el post actual es el dueño de la tarjeta que se está pintando, así que
+	// su título describe la imagen destacada aunque el adjunto no tenga padre
+	// (típico de productos importados con post_parent=0).
+	if ( '' === $alt && ! is_admin() && in_the_loop() ) {
+		$alt = get_the_title();
+	}
+	if ( '' === $alt ) {
+		$t = trim( (string) $attachment->post_title );
+		// Descartar nombres de archivo (IMG_1234, DSC0001, 20230101, hashes…).
+		if ( '' !== $t
+			&& ! preg_match( '/^(img|dsc|image|foto|photo|screenshot|captura)[\s_-]*\d+$/i', $t )
+			&& ! preg_match( '/^\d{5,}$/', $t )
+			&& ! preg_match( '/^[a-f0-9]{16,}$/i', $t )
+			&& preg_match( '/\p{L}{3,}/u', $t ) ) {
+			$alt = $t;
+		}
+	}
+	if ( '' !== $alt ) {
+		$attr['alt'] = esc_attr( $alt );
+	}
+	return $attr;
+}
+
 /* =========================================================================
    PPV2 — JS MIGRADO A ARCHIVOS ESTÁTICOS (2026-07-10)
    Antes: ~2.500 líneas de <script> inline impresas en wp_footer en CADA
