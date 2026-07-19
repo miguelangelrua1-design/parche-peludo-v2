@@ -180,6 +180,12 @@
 				if (fuera) {
 					// Desmarcar servicios de otros tipos (recalcula el precio nativo).
 					$(this).find('.lbp-service-checkbox:checked').prop('checked', false).trigger('change');
+				} else if (this.style.display === 'none') {
+					// AUDITORÍA: quitar el hide inline que dejó el filtrado por
+					// el RECURSO del tab anterior — si este tab tiene varios
+					// profesionales aún sin elegir, sus servicios quedaban
+					// invisibles hasta esa elección.
+					this.style.display = '';
 				}
 			});
 
@@ -613,9 +619,18 @@
 				tipoElegido = null;
 				tipoIdx = -1;
 				profElegido = null;
+				// AUDITORÍA: sin esto, la pre-selección de la vitrina de una
+				// apertura anterior re-marcaba su servicio al reabrir el popup
+				// por el botón genérico (estado fantasma entre sesiones).
+				servicioPre = null;
+				servicioDeseado = null;
 				if ($overlay) {
 					$overlay.find('.pp-rs__tab').removeClass('activo');
 					$overlay.find('.pp-rs__prof').removeClass('activa');
+					// El acordeón vuelve a ocultarse hasta elegir tipo (quedaba
+					// visible con el filtrado de la sesión anterior).
+					$overlay.find('.pp-rs__servicios').hide();
+					$overlay.find('.pp-rs__profes').hide();
 					$overlay.find('.pp-rs__eleccion').empty();
 					$overlay.find('.pp-rs__siguiente').prop('disabled', true);
 					$overlay.hide();

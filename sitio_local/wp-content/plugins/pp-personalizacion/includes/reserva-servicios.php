@@ -85,6 +85,14 @@ function pp_rs_toggle_handler() {
 /**
  * Pausa (o reanuda) TODOS los recursos auto-agenda creados por este módulo.
  * Solo toca recursos marcados con _pp_auto_agenda; jamás profesionales.
+ *
+ * AUDITORÍA: dos CAUSAS de pausa distintas que no deben mezclarse —
+ *  - `_pp_pausada_por_menu`: el owner DESMARCÓ el checkbox del menú.
+ *  - `_pp_auto_pausado`: el kill-switch del flujo se apagó.
+ * Antes ambas usaban la misma marca y al apagar/encender el kill-switch se
+ * REACTIVABAN agendas que el owner había desmarcado (hasta el siguiente
+ * guardado del listado). Ahora reanudar el kill-switch respeta la pausa
+ * elegida por el owner.
  */
 function pp_rs_pausar_agendas_auto( $pausar ) {
 	$agendas = get_posts( array(
@@ -97,8 +105,12 @@ function pp_rs_pausar_agendas_auto( $pausar ) {
 	) );
 	foreach ( $agendas as $rid ) {
 		if ( $pausar ) {
+			// Marcar la causa kill-switch SOLO si no estaba ya pausada por
+			// decisión del owner (esa pausa es suya y debe sobrevivir).
+			if ( ! get_post_meta( $rid, '_pp_pausada_por_menu', true ) ) {
+				update_post_meta( $rid, '_pp_auto_pausado', '1' );
+			}
 			update_post_meta( $rid, '_lbp_resource_paused', '1' );
-			update_post_meta( $rid, '_pp_auto_pausado', '1' );
 		} elseif ( get_post_meta( $rid, '_pp_auto_pausado', true ) ) {
 			delete_post_meta( $rid, '_lbp_resource_paused' );
 			delete_post_meta( $rid, '_pp_auto_pausado' );
@@ -488,6 +500,7 @@ function pp_rs_sincronizar_agendas( $listing_id ) {
 			$rid = $existentes[ $tipo ];
 			if ( get_post_meta( $rid, '_lbp_resource_paused', true ) ) {
 				delete_post_meta( $rid, '_lbp_resource_paused' );
+				delete_post_meta( $rid, '_pp_pausada_por_menu' );
 				delete_post_meta( $rid, '_pp_auto_pausado' );
 			}
 			continue;
@@ -511,11 +524,12 @@ function pp_rs_sincronizar_agendas( $listing_id ) {
 		}
 	}
 
-	// Pausar las que sobran (marcadas antes, desmarcadas ahora).
+	// Pausar las que sobran (marcadas antes, desmarcadas ahora): pausa POR
+	// DECISIÓN DEL OWNER — sobrevive a los ciclos del kill-switch.
 	foreach ( $existentes as $tipo => $rid ) {
 		if ( ! isset( $deseados[ $tipo ] ) && ! get_post_meta( $rid, '_lbp_resource_paused', true ) ) {
 			update_post_meta( $rid, '_lbp_resource_paused', '1' );
-			update_post_meta( $rid, '_pp_auto_pausado', '1' );
+			update_post_meta( $rid, '_pp_pausada_por_menu', '1' );
 		}
 	}
 
@@ -567,10 +581,12 @@ function pp_rs_sincronizar_agenda_general( $listing_id ) {
 	}
 
 	if ( ! $necesaria ) {
-		// Sobra: pausar (no borrar — puede tener reservas históricas).
+		// Sobra: pausar (no borrar — puede tener reservas históricas). Es una
+		// pausa por CONFIGURACIÓN (cobertura), no por kill-switch: no debe
+		// revivir al ciclar el flujo.
 		if ( $general && ! get_post_meta( $general, '_lbp_resource_paused', true ) ) {
 			update_post_meta( $general, '_lbp_resource_paused', '1' );
-			update_post_meta( $general, '_pp_auto_pausado', '1' );
+			update_post_meta( $general, '_pp_pausada_por_menu', '1' );
 		}
 		return;
 	}
@@ -578,6 +594,7 @@ function pp_rs_sincronizar_agenda_general( $listing_id ) {
 	if ( $general ) {
 		if ( get_post_meta( $general, '_lbp_resource_paused', true ) ) {
 			delete_post_meta( $general, '_lbp_resource_paused' );
+			delete_post_meta( $general, '_pp_pausada_por_menu' );
 			delete_post_meta( $general, '_pp_auto_pausado' );
 		}
 		return;

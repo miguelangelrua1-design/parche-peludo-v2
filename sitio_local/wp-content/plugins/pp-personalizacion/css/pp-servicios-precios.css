@@ -281,12 +281,13 @@ body.pp-sp-bloqueado {
 	.pp-sp .pp-sp__titulo {
 		font-size: 22px;
 	}
-	/* Subtítulo corto: "Reserva en segundos." */
+	/* Subtítulo corto: "Reserva en segundos." (solo la inicial en mayúscula;
+	   capitalize ponía en mayúscula CADA palabra: "Reserva En Segundos."). */
 	.pp-sp__sub-largo {
 		display: none;
 	}
-	.pp-sp__subtitulo-seccion {
-		text-transform: capitalize;
+	.pp-sp__subtitulo-seccion::first-letter {
+		text-transform: uppercase;
 	}
 
 	/* Tabs: carrusel horizontal en UNA línea */
