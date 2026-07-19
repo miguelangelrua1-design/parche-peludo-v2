@@ -14,11 +14,15 @@
 .pp-sp__cabecera {
 	margin: 0 0 16px;
 }
+/* Igual que el headline de las demás secciones ("Sobre el servicio" = 28/800).
+ * !important porque el tema pisa el h2 de la sección con un selector muy
+ * específico (dejaba el título en 21/500). */
 .pp-sp .pp-sp__titulo {
-	margin: 0 0 4px;
-	font-size: 26px;
-	font-weight: 700;
-	color: #16323c;
+	margin: 0 0 4px !important;
+	font-size: 28px !important;
+	font-weight: 800 !important;
+	line-height: 1.2 !important;
+	color: #16323c !important;
 }
 .pp-sp__subtitulo-seccion {
 	margin: 0;
@@ -96,7 +100,7 @@
 	grid-area: nombre;
 	align-self: end;
 	margin: 0;
-	font-size: 16px;
+	font-size: 18px;
 	font-weight: 700;
 	line-height: 1.3;
 	color: #1d2b33;
@@ -110,11 +114,12 @@
 .pp-sp .pp-sp__lista .pp-sp__dur:empty {
 	display: none;
 }
+/* Precio SECUNDARIO al nombre: más pequeño y menos peso (el nombre manda). */
 .pp-sp .pp-sp__lista .pp-sp__precio {
 	grid-area: precio;
-	font-size: 19px;
-	font-weight: 800;
-	color: #16323c;
+	font-size: 15px;
+	font-weight: 600;
+	color: #4a5560;
 	white-space: nowrap;
 }
 .pp-sp .pp-sp__lista .pp-sp__detalles {
@@ -218,8 +223,10 @@ body.pp-sp-bloqueado {
 }
 .pp-sp-sheet__titulo {
 	margin: 0 36px 8px 0;
-	font-size: 20px;
-	line-height: 1.3;
+	font-size: 24px;
+	font-weight: 800;
+	line-height: 1.25;
+	color: #16323c;
 }
 .pp-sp-sheet__fila {
 	display: flex;
@@ -231,9 +238,9 @@ body.pp-sp-bloqueado {
 	border-bottom: 1px solid #eef1f3;
 }
 .pp-sp-sheet__precio {
-	font-size: 18px;
-	font-weight: 800;
-	color: #16323c;
+	font-size: 15px;
+	font-weight: 600;
+	color: #4a5560;
 }
 .pp-sp-sheet__cuerpo {
 	color: #4a5560;
@@ -317,7 +324,7 @@ body.pp-sp-bloqueado {
 			"reservar reservar";
 	}
 	.pp-sp .pp-sp__lista .pp-sp__nombre {
-		font-size: 15px;
+		font-size: 17px;
 		align-self: auto;
 	}
 	.pp-sp .pp-sp__lista .pp-sp__dur {
@@ -325,7 +332,7 @@ body.pp-sp-bloqueado {
 	}
 	.pp-sp .pp-sp__lista .pp-sp__precio {
 		justify-self: end;
-		font-size: 18px;
+		font-size: 14px;
 	}
 	.pp-sp .pp-sp__lista .pp-sp__detalles,
 	.pp-sp .pp-sp__lista .pp-sp__reservar {
