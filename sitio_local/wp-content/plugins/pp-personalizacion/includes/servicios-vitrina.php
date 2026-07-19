@@ -52,6 +52,22 @@ function pp_sv_renombrar_pricing( $traduccion, $texto ) {
 	return $traduccion;
 }
 
+/* Reubicación (pedido de Miguel): "Servicios y Precios" va ANTES de los
+ * datos de contacto (Celular/Correo/redes), en desktop y móvil. El gancho
+ * `listeo/single-listing/after-content` dispara justo entre la descripción
+ * y el bloque de contacto (.listing-links-container, que el partial socials
+ * pinta después) → renderizamos la sección ahí, server-side (sin saltos).
+ * La invocación ORIGINAL de la plantilla (más abajo en la ficha) queda
+ * anulada por la guarda de una-sola-vez dentro del override. */
+add_action( 'listeo/single-listing/after-content', 'pp_sv_render_temprano', 5 );
+function pp_sv_render_temprano() {
+	if ( ! is_singular( 'listing' ) || ! class_exists( 'Listeo_Core_Template_Loader' ) ) {
+		return;
+	}
+	$loader = new Listeo_Core_Template_Loader();
+	$loader->get_template_part( 'single-partials/single-listing', 'pricing' );
+}
+
 /* Assets de la vitrina (tabs + panel deslizante), solo en fichas. */
 add_action( 'wp_enqueue_scripts', 'pp_sv_assets', 120 );
 function pp_sv_assets() {

@@ -15,6 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/* Una sola vez por página: el módulo la renderiza TEMPRANO (tras la
+ * descripción, antes del contacto) vía after-content; cuando la ficha llega
+ * a su invocación original más abajo, este guard la vuelve un no-op. */
+global $pp_sv_vitrina_pintada;
+if ( ! empty( $pp_sv_vitrina_pintada ) ) {
+	return;
+}
+
 if ( ! empty( $data ) && isset( $data->show_title ) ) {
 	$show_title = $data->show_title;
 } else {
@@ -48,6 +56,9 @@ if ( ! $grupos ) {
 	return;
 }
 $con_tabs = count( $grupos ) > 1;
+
+// A partir de aquí SÍ se imprime: marcar para que la 2ª invocación no duplique.
+$pp_sv_vitrina_pintada = true;
 ?>
 
 <!-- Servicios y Precios (vitrina Personalización Parche) -->
