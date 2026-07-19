@@ -30,6 +30,11 @@
 	   1) Etiqueta dinámica ("Elige tu servicio" → nombre del elegido)
 	   ================================================================== */
 	function iniciarEtiqueta() {
+		// Con el flujo "Reserva por Servicios" activo, la cabecera del acordeón
+		// la maneja pp-reserva-servicios.js (para CUALQUIER servicio elegido,
+		// no solo los "individuales"). Aquí cederíamos y pelearíamos por el
+		// mismo texto → no arrancar.
+		if (window.PP_RS && window.PP_RS.activo) { return; }
 		var data = window.lbpServiceConstraints || null;
 		if (!data || !data.services) { return; }
 

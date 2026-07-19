@@ -280,6 +280,38 @@
 			return serviciosCandidatos().find('.lbp-service-checkbox:checked').length;
 		}
 
+		// Cabecera del acordeón: "Elige tu servicio" → 'Escogiste "Nombre"'
+		// cuando hay un servicio marcado (cualquiera, no solo individuales);
+		// vuelve al texto base al retirarlo. El nombre sale de la fila (h5).
+		function actualizarCabeceraServicio() {
+			var $toggle = $modal.find('.lbp-panel-services .lbp-panel-toggle').first();
+			if (!$toggle.length) { return; }
+			var $counter = $toggle.find('.lbp-services-counter');
+			if (!$toggle.data('ppBase')) {
+				var base = $toggle.contents().filter(function () {
+					return this.nodeType === 3;
+				}).text().trim();
+				$toggle.data('ppBase', base || 'Elige tu servicio');
+			}
+			var nombre = '';
+			serviciosCandidatos().each(function () {
+				if ($(this).find('.lbp-service-checkbox').prop('checked')) {
+					nombre = $(this).find('h5').first().text().trim();
+					return false; // el primero marcado (la reserva es de UN servicio)
+				}
+			});
+			$toggle.contents().filter(function () {
+				return this.nodeType === 3;
+			}).remove();
+			if (nombre) {
+				$toggle.prepend(document.createTextNode('Escogiste "' + nombre + '" '));
+				$counter.hide();
+			} else {
+				$toggle.prepend(document.createTextNode($toggle.data('ppBase') + ' '));
+				$counter.show();
+			}
+		}
+
 		// Un solo servicio elegible → se asume, sin preguntar (misma regla
 		// que la tipología única y el profesional único).
 		function autoSeleccionarServicio() {
@@ -338,6 +370,7 @@
 			}
 			$overlay.find('.pp-rs__eleccion').html(texto);
 			$overlay.find('.pp-rs__siguiente').prop('disabled', !listo);
+			actualizarCabeceraServicio();
 		}
 
 		// El estado del botón sigue en vivo a los checkboxes (los maneja
