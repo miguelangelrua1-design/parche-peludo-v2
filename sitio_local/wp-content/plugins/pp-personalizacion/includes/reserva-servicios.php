@@ -431,9 +431,17 @@ function pp_rs_metabox_recurso() {
  * los tipos que dejan de estar marcados se PAUSAN (no se borran: pueden
  * tener reservas históricas).
  */
-add_action( 'save_post_listing', 'pp_rs_sincronizar_agendas', 99, 1 );
+// En `save_post` (no `save_post_listing`) a prioridad 99: el core dispara
+// save_post_{type} ANTES que save_post, y CMB2 guarda el metabox `_menu` en
+// save_post@10 → hay que leer DESPUÉS de eso, o el checkbox recién marcado en
+// wp-admin no se vería. En el frontend `_menu` ya está escrito para entonces,
+// así que también funciona. Guarda de tipo dentro de la función.
+add_action( 'save_post', 'pp_rs_sincronizar_agendas', 99, 1 );
 function pp_rs_sincronizar_agendas( $listing_id ) {
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+	if ( 'listing' !== get_post_type( $listing_id ) ) {
 		return;
 	}
 	if ( wp_is_post_revision( $listing_id ) || ! pp_rs_habilitado() ) {

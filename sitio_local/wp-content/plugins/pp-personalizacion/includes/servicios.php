@@ -560,6 +560,18 @@ function pp_serv_admin_metabox_tipo() {
 		'type'       => 'text_small',
 		'attributes' => array( 'type' => 'number', 'min' => '0', 'step' => '1' ),
 	), 3 );
+
+	// "Agenda independiente" — solo con el flujo "Reserva por servicios" activo
+	// (mismo criterio que el checkbox del formulario del frontend). Guarda en
+	// _menu[i][pp_agenda_propia]='on'; pp_rs_sincronizar_agendas lo procesa.
+	if ( function_exists( 'pp_rs_habilitado' ) && pp_rs_habilitado() ) {
+		$cmb->add_group_field( '_menu', array(
+			'name' => 'Agenda independiente',
+			'desc' => 'Marca esta casilla para que este tipo de servicio tenga su PROPIO calendario de disponibilidad (independiente de los demás menús). Los horarios se administran en la página "Gestionar recursos". Al desmarcar vuelve a la agenda compartida (no se borra: conserva horarios y reservas). Útil solo cuando el listado tiene 2+ menús.',
+			'id'   => 'pp_agenda_propia',
+			'type' => 'checkbox',
+		), 4 );
+	}
 }
 
 /** Opciones del select del metabox, limitadas a las tipologías permitidas
