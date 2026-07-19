@@ -38,6 +38,7 @@
 
 		/* ================= Estado ================= */
 		var tipoElegido = null;     // objeto de D.tipologias
+		var tipoIdx = -1;           // índice de la tab elegida (identidad de tab)
 		var profElegido = null;     // { id, nombre } | null
 		var resuelto = false;       // el paso ya se completó en esta apertura
 
@@ -145,9 +146,14 @@
 		}
 
 		function elegirTipo(i) {
-			if (tipoElegido && D.tipologias[i] && tipoElegido.slug === D.tipologias[i].slug) {
-				return; // mismo tipo: no re-disparar (desmarcaría servicios elegidos)
+			// Comparar por ÍNDICE de tab, no por slug: ahora hay una tab por
+			// menú y dos menús pueden compartir tipología (mismo slug). Con el
+			// slug se bloqueaba el cambio entre esas tabs (no refiltraba ni
+			// marcaba la activa).
+			if (tipoIdx === i) {
+				return; // misma tab: no re-disparar (desmarcaría lo elegido)
 			}
+			tipoIdx = i;
 			tipoElegido = D.tipologias[i];
 			profElegido = null;
 			$overlay.find('.pp-rs__tab').removeClass('activo').filter('[data-i="' + i + '"]').addClass('activo');
@@ -555,6 +561,7 @@
 				modalAbierto = false;
 				resuelto = false;
 				tipoElegido = null;
+				tipoIdx = -1;
 				profElegido = null;
 				if ($overlay) {
 					$overlay.find('.pp-rs__tab').removeClass('activo');

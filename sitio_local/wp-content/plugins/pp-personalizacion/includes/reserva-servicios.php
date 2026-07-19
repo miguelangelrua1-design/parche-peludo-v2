@@ -179,6 +179,64 @@ function pp_rs_tipologias_listado( $listing_id ) {
 	return array_values( $out );
 }
 
+/**
+ * Tabs para el PASO SERVICIOS del popup: UNA por menú, etiquetadas con el
+ * NOMBRE que el prestador puso al menú (no la tipología). Es solo para la
+ * ETIQUETA visible — el enrutamiento (profesional/agenda) sigue por la
+ * tipología (`slug`), idéntico a pp_rs_tipologias_listado(). Así el popup
+ * muestra "Peluquería", "Veterinario"… como la vitrina, sin cambiar la
+ * lógica de agendas ni el buscador.
+ *
+ *   slug     → tipología (catálogo) para enrutamiento — se REPITE si dos
+ *              menús comparten tipología (el JS distingue las tabs por índice)
+ *   nombre   → título del menú del prestador (fallback: nombre de tipología)
+ *   indices  → índices planos SOLO de ESE menú
+ *   agenda   → agenda automática de la tipología (0 = agenda del listado)
+ */
+function pp_rs_menus_para_popup( $listing_id ) {
+	$menu = get_post_meta( $listing_id, '_menu', true );
+	$out  = array();
+	if ( ! is_array( $menu ) ) {
+		return $out;
+	}
+	$catalogo = function_exists( 'pp_serv_tipos' ) ? pp_serv_tipos() : array();
+	$agendas  = pp_rs_agendas_del_listado( $listing_id ); // tipo => rid
+
+	$ix = 0;
+	foreach ( $menu as $g ) {
+		if ( ! is_array( $g ) || empty( $g['menu_elements'] ) || ! is_array( $g['menu_elements'] ) ) {
+			continue;
+		}
+		$slug    = sanitize_key( $g['pp_tipo_servicio'] ?? '' );
+		$indices = array();
+		foreach ( $g['menu_elements'] as $el ) {
+			if ( ! is_array( $el ) || ! isset( $el['bookable'] ) ) {
+				continue; // paridad con listeo_get_bookable_services()
+			}
+			$indices[] = $ix;
+			$ix++;
+		}
+		if ( ! $indices ) {
+			continue;
+		}
+		// Misma guarda que pp_rs_tipologias_listado: solo tipologías del
+		// catálogo (un menú sin tipología válida no genera tab).
+		if ( '' === $slug || ! isset( $catalogo[ $slug ] ) ) {
+			continue;
+		}
+		$titulo = ( isset( $g['menu_title'] ) && '' !== trim( (string) $g['menu_title'] ) )
+			? sanitize_text_field( $g['menu_title'] )
+			: $catalogo[ $slug ]['nombre'];
+		$out[] = array(
+			'slug'    => $slug,
+			'nombre'  => $titulo,
+			'indices' => $indices,
+			'agenda'  => isset( $agendas[ $slug ] ) ? (int) $agendas[ $slug ] : 0,
+		);
+	}
+	return $out;
+}
+
 /** Mapa tipología → ID de recurso auto-agenda ACTIVO del listado. */
 function pp_rs_agendas_del_listado( $listing_id ) {
 	$mapa = array();
@@ -566,7 +624,8 @@ function pp_rs_assets() {
 	}
 
 	$listing_id = get_queried_object_id();
-	$tipologias = pp_rs_tipologias_listado( $listing_id );
+	// Tabs del popup = UNA por menú, con el nombre del menú (no la tipología).
+	$tipologias = pp_rs_menus_para_popup( $listing_id );
 	if ( ! $tipologias ) {
 		return; // sin servicios reservables → nada que orquestar
 	}
