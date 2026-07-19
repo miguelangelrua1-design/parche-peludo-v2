@@ -1911,11 +1911,16 @@ function ppv2_seo_redirecciones_legado() {
 		wp_safe_redirect( home_url( '/' ), 301 );
 		exit;
 	}
-	// El redirect automático de slugs viejos de WP no cubre PÁGINAS: el slug
-	// viejo de la página del chat se redirige a mano.
-	$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '';
-	if ( is_404() && false !== strpos( $uri, 'crear-listado-chat' ) ) {
-		wp_safe_redirect( home_url( '/crear-publicacion-chat/' ), 301 );
+	// El redirect automático de slugs viejos de WP no cubre PÁGINAS: los slugs
+	// viejos renombrados a mano se redirigen aquí. Se compara el PATH exacto
+	// (no strpos: "/cart/" está contenido en "/carrito/" y no debe capturarlo).
+	$path = trim( (string) wp_parse_url( isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '', PHP_URL_PATH ), '/' );
+	$slugs_renombrados = array(
+		'crear-listado-chat' => '/crear-publicacion-chat/',
+		'cart'               => '/carrito/', // el PO renombró el slug del carrito
+	);
+	if ( is_404() && isset( $slugs_renombrados[ $path ] ) ) {
+		wp_safe_redirect( home_url( $slugs_renombrados[ $path ] ), 301 );
 		exit;
 	}
 }
