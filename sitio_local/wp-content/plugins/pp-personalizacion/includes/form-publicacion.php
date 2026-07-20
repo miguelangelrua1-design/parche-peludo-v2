@@ -42,6 +42,34 @@ function pp_fp_assets() {
 	}
 }
 
+/* ---- M3: dirección obligatoria por tipo (server, fuente de verdad) ----
+ * Un negocio físico sin dirección no aparece en el mapa ni le sirve al
+ * cliente. Se exige SOLO en los tipos donde tiene sentido; el resto
+ * (Adopción, Mascotas perdidas…) queda igual. El aviso amable del cliente
+ * vive en el JS; esta validación es la garantía real. */
+function pp_fp_tipos_con_direccion() {
+	return apply_filters( 'pp_fp_tipos_con_direccion', array( 'directorio', 'guarderia' ) );
+}
+
+add_filter( 'submit_listing_form_validate_fields', 'pp_fp_validar_direccion', 25, 3 );
+function pp_fp_validar_direccion( $valido, $fields, $values ) {
+	if ( is_wp_error( $valido ) ) {
+		return $valido;
+	}
+	$tipo = isset( $_POST['_listing_type'] ) ? sanitize_key( wp_unslash( $_POST['_listing_type'] ) ) : '';
+	if ( ! $tipo || ! in_array( $tipo, pp_fp_tipos_con_direccion(), true ) ) {
+		return $valido;
+	}
+	$direccion = isset( $_POST['_address'] ) ? trim( (string) wp_unslash( $_POST['_address'] ) ) : '';
+	if ( '' === $direccion ) {
+		return new WP_Error(
+			'pp_fp_direccion',
+			'Escribe la dirección de tu negocio (sección Ubicación): sin ella no apareces en el mapa ni te encuentran los clientes.'
+		);
+	}
+	return $valido;
+}
+
 /* ---- QW5: mensajes post-envío claros (solo frontend) ---- */
 add_filter( 'gettext_listeo_core', 'pp_fp_mensajes_envio', 20, 2 );
 function pp_fp_mensajes_envio( $traduccion, $texto ) {

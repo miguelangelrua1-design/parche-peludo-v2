@@ -370,5 +370,187 @@
 
 		montarPrimerServicio();
 		refrescarPrimerServicio();
+
+		/* =====================================================================
+		 * M3 — DIRECCIÓN OBLIGATORIA POR TIPO (aviso amable en cliente)
+		 * La garantía real vive en el server (submit_listing_form_validate_
+		 * fields). Aquí solo se intercepta el clic de envío para llevar al
+		 * usuario al campo con un mensaje claro en vez de un rechazo seco.
+		 * Mismo patrón de CAPTURA que la validación de tipología (probado).
+		 * ================================================================== */
+
+		var TIPOS_CON_DIRECCION = ['directorio', 'guarderia'];
+
+		function faltaDireccion() {
+			var tipo = String($('input[name="_listing_type"]').val() || '');
+			if (TIPOS_CON_DIRECCION.indexOf(tipo) === -1) { return false; }
+			var $dir = $('input[name="_address"]');
+			return $dir.length && !String($dir.val() || '').trim();
+		}
+
+		document.addEventListener('click', function (ev) {
+			var btn = ev.target && ev.target.closest ? ev.target.closest('button[name="submit_listing"]') : null;
+			if (!btn || !faltaDireccion()) { return; }
+			ev.preventDefault();
+			ev.stopPropagation(); // que el asistente no muestre su velo de carga
+			// Llevar al usuario al campo (vive en el primer paso).
+			if ($pasosNav.length) { $pasosNav.eq(0).trigger('click'); }
+			setTimeout(function () {
+				var $dir = $('input[name="_address"]');
+				var $cont = $dir.closest('[class*="form-field"], .fieldset, div');
+				$cont.addClass('pp-fp-campo-falta');
+				setTimeout(function () { $cont.removeClass('pp-fp-campo-falta'); }, 3200);
+				if ($dir.length) {
+					$('html,body').animate({ scrollTop: $dir.offset().top - 130 }, 250);
+					$dir.trigger('focus');
+				}
+				if (!$('#pp-fp-aviso-dir').length) {
+					$dir.closest('div').after('<p id="pp-fp-aviso-dir" class="pp-fp-primer__err">📍 Escribe la dirección de tu negocio: sin ella no apareces en el mapa.</p>');
+					setTimeout(function () { $('#pp-fp-aviso-dir').fadeOut(400, function () { $(this).remove(); }); }, 6000);
+				}
+			}, 300);
+		}, true);
+
+		/* =====================================================================
+		 * E2 — CHAT COMO CAMINO PARA NOVATOS
+		 * En la pantalla de selección de tipo ya existe la sección "Agregar
+		 * por chat": este banner arriba la hace visible para quien publica
+		 * por primera vez. Solo se monta si esa sección existe.
+		 * ================================================================== */
+
+		var $chatSecc = $('h2, h3, h4').filter(function () {
+			return /Agregar por chat/i.test($(this).text());
+		}).first();
+		var $tiposCont = $('.listing-type-container').first();
+		if ($chatSecc.length && $tiposCont.length && !$('#pp-fp-banner-chat').length) {
+			$tiposCont.before(
+				'<div id="pp-fp-banner-chat">🤖 <strong>¿Primera vez publicando?</strong> ' +
+				'Nuestro asistente te guía paso a paso, conversando. ' +
+				'<button type="button" class="pp-fp-banner-chat__ir">Crear conversando</button></div>'
+			);
+			$(document).on('click', '.pp-fp-banner-chat__ir', function () {
+				$('html,body').animate({ scrollTop: $chatSecc.offset().top - 90 }, 300);
+			});
+		}
+
+		/* =====================================================================
+		 * E1 (ligero) — BORRADOR LOCAL (autosave en el navegador)
+		 * Guarda los campos SIMPLES de texto en localStorage mientras se
+		 * escribe; si el navegador se cierra, al volver ofrece restaurarlos.
+		 * Límites deliberados (seguridad ante todo): NO restaura galería ni
+		 * menús de servicios (estructuras dinámicas del builder) — solo texto.
+		 * Nada viaja al servidor; se limpia al enviar o al descartar.
+		 * ================================================================== */
+
+		var LS_KEY = 'pp_fp_borrador_v1';
+		var CAMPOS_BORRADOR = [
+			'listing_title', 'listing_description', '_address', 'keywords',
+			'_phone', '_email', '_website', '_whatsapp', '_instagram',
+			'_facebook', '_tiktok', '_youtube'
+		];
+
+		function esEdicion() {
+			return /[?&](listing_id|action=edit)/.test(window.location.search);
+		}
+		function lsDisponible() {
+			try { localStorage.setItem('__pp_t', '1'); localStorage.removeItem('__pp_t'); return true; }
+			catch (e) { return false; }
+		}
+
+		if (!esEdicion() && lsDisponible() && $('input[name="listing_title"]').length) {
+
+			function leerCampo(name) {
+				if (name === 'listing_description') { return textoDescripcionRaw(); }
+				var $f = $('[name="' + name + '"]');
+				return $f.length ? String($f.val() || '') : '';
+			}
+			function textoDescripcionRaw() {
+				try {
+					if (window.tinyMCE && tinyMCE.get('listing_description') && !tinyMCE.get('listing_description').isHidden()) {
+						return tinyMCE.get('listing_description').getContent() || '';
+					}
+				} catch (e) { /* sin editor visual */ }
+				return String($('[name="listing_description"]').val() || '');
+			}
+
+			function guardarBorrador() {
+				var data = { t: Date.now(), tipo: String($('input[name="_listing_type"]').val() || ''), campos: {} };
+				var hayAlgo = false;
+				CAMPOS_BORRADOR.forEach(function (n) {
+					var v = leerCampo(n);
+					if (v && v.trim()) { data.campos[n] = v; hayAlgo = true; }
+				});
+				try {
+					if (hayAlgo) { localStorage.setItem(LS_KEY, JSON.stringify(data)); }
+				} catch (e) { /* cuota llena: sin drama */ }
+			}
+			function limpiarBorrador() {
+				try { localStorage.removeItem(LS_KEY); } catch (e) {}
+			}
+
+			// Guardado con debounce mientras escribe (solo campos del borrador).
+			var saveTimer = null;
+			$(document).on('input change', CAMPOS_BORRADOR.map(function (n) { return '[name="' + n + '"]'; }).join(','), function () {
+				clearTimeout(saveTimer);
+				saveTimer = setTimeout(guardarBorrador, 1200);
+			});
+			// TinyMCE no dispara input en el textarea: respaldo periódico suave.
+			setInterval(function () {
+				if (document.hidden) { return; }
+				guardarBorrador();
+			}, 30000);
+
+			// Al ENVIAR, el borrador ya cumplió su función. (Si la validación
+			// de dirección bloqueó el envío, se conserva: el usuario sigue
+			// escribiendo y su respaldo debe seguir vivo.)
+			$(document).on('click', 'button[name="submit_listing"]', function () {
+				if (faltaDireccion()) { return; }
+				setTimeout(limpiarBorrador, 800);
+			});
+
+			// Ofrecer restauración: solo si hay borrador reciente (<7 días),
+			// del MISMO tipo (o aún sin tipo elegido) y el form está vacío.
+			try {
+				var crudo = localStorage.getItem(LS_KEY);
+				if (crudo) {
+					var b = JSON.parse(crudo);
+					var reciente = b && b.t && (Date.now() - b.t) < 7 * 24 * 3600 * 1000;
+					var formVacio = !String($('input[name="listing_title"]').val() || '').trim();
+					if (reciente && formVacio && b.campos && b.campos.listing_title) {
+						var $barra = $(
+							'<div id="pp-fp-borrador">📝 Tienes una publicación sin terminar' +
+							' (<strong>' + $('<i>').text(b.campos.listing_title).html() + '</strong>). ' +
+							'<button type="button" class="pp-fp-borrador__si">Recuperar lo escrito</button> ' +
+							'<button type="button" class="pp-fp-borrador__no">Descartar</button></div>'
+						);
+						$('.submit-page').first().prepend($barra);
+						$(document).on('click', '.pp-fp-borrador__no', function () {
+							limpiarBorrador();
+							$('#pp-fp-borrador').slideUp(200, function () { $(this).remove(); });
+						});
+						$(document).on('click', '.pp-fp-borrador__si', function () {
+							Object.keys(b.campos).forEach(function (n) {
+								var v = b.campos[n];
+								if (n === 'listing_description') {
+									try {
+										if (window.tinyMCE && tinyMCE.get('listing_description')) {
+											tinyMCE.get('listing_description').setContent(v);
+										}
+									} catch (e) {}
+									$('[name="listing_description"]').val(v);
+									return;
+								}
+								var $f = $('[name="' + n + '"]');
+								if ($f.length && !String($f.val() || '').trim()) {
+									$f.val(v).trigger('change');
+								}
+							});
+							$('#pp-fp-borrador').slideUp(200, function () { $(this).remove(); });
+							pintarChecklist();
+						});
+					}
+				}
+			} catch (e) { /* JSON corrupto: ignorar */ }
+		}
 	});
 })(jQuery);
