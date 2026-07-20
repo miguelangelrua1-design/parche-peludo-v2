@@ -1,0 +1,48 @@
+/**
+ * Quick wins del formulario "Agregar Publicación" — estilos.
+ * Solo se encola en la página del formulario (crear/editar).
+ */
+
+/* Aviso bajo el título de "Precios y Servicios Reservables" (QW1) */
+.pp-fp-aviso {
+	margin: 6px 0 0;
+	padding: 10px 14px;
+	background: #fff8e6;
+	border: 1px solid #f2dfa8;
+	border-radius: 10px;
+	font-size: 13.5px;
+	line-height: 1.5;
+	color: #6b5b1e;
+}
+
+/* Guía de la Galería */
+.pp-fp-guia-gal {
+	margin: 6px 0 10px;
+	font-size: 13.5px;
+	color: #5a6a72;
+}
+
+/* Ocultar sin sacar del DOM (los inputs siguen funcionando por debajo) */
+.pp-fp-oculto {
+	display: none !important;
+}
+
+/* Plegable "Opciones avanzadas de ubicación" (QW3) */
+.pp-fp-avanzado {
+	margin: 4px 0 10px;
+}
+.pp-fp-avanzado__btn {
+	background: none;
+	border: 0;
+	padding: 4px 0;
+	font-size: 13.5px;
+	font-weight: 600;
+	color: #4a5560;
+	cursor: pointer;
+}
+.pp-fp-avanzado__btn:hover {
+	color: #2a343c;
+}
+.pp-fp-avanzado__btn .fa {
+	margin-right: 4px;
+}
