@@ -1828,7 +1828,8 @@ function ppv2_servicios_h1_seo( $content ) {
  */
 function ppv2_seo_slugs_utilidad() {
 	return array(
-		'panel-control', 'mis-listados', 'agregar-listado', 'reservas',
+		'panel-control', 'mis-listados', 'agregar-listado',
+		'mis-publicaciones', 'agregar-publicacion', 'reservas',
 		'mensajes', 'resenas', 'favoritos', 'billetera', 'cupones',
 		'estadisticas', 'calendario', 'codigo-qr', 'mis-pedidos',
 		'datos-cuenta', 'mi-cuenta-2', 'mis-mascotas', 'manage-resources',
@@ -1900,10 +1901,38 @@ function ppv2_seo_sitemap_excluir( $url, $type, $object ) {
 }
 
 /**
+ * F-URLs — Renombrado de las BASES de URL de "listado" a "publicación"
+ * (decisión del PO 2026-07-17, alcance: públicas + panel). Se fuerza el
+ * rewrite slug del CPT y la taxonomía por filtro (viaja con el tema). Tras
+ * subir esto hay que "Guardar" en Ajustes → Enlaces permanentes UNA vez para
+ * que WordPress reconstruya las reglas. Las redirecciones 301 de las URLs
+ * viejas viven en ppv2_seo_redirecciones_legado (abajo).
+ *   /listado/{x}/            → /publicacion/{x}/
+ *   /categoria-listado/{x}/  → /categoria-publicacion/{x}/
+ */
+add_filter( 'register_post_type_listing', 'ppv2_urls_slug_listing' );
+function ppv2_urls_slug_listing( $args ) {
+	if ( empty( $args['rewrite'] ) || ! is_array( $args['rewrite'] ) ) {
+		$args['rewrite'] = array();
+	}
+	$args['rewrite']['slug'] = 'publicacion';
+	return $args;
+}
+add_filter( 'register_taxonomy_listing_category_args', 'ppv2_urls_slug_listing_cat' );
+function ppv2_urls_slug_listing_cat( $args ) {
+	if ( empty( $args['rewrite'] ) || ! is_array( $args['rewrite'] ) ) {
+		$args['rewrite'] = array();
+	}
+	$args['rewrite']['slug'] = 'categoria-publicacion';
+	return $args;
+}
+
+/**
  * F1.2 — Legado: la portada vieja (/home-1/) y la página de pruebas
- * (/audit-page/) redirigen 301 a la portada real. La página del chat
- * renombrada a /crear-publicacion-chat/ conserva el 301 del slug viejo
- * (WordPress lo hace solo vía _wp_old_slug al renombrar).
+ * (/audit-page/) redirigen 301 a la portada real. Además, redirecciones 301
+ * de todos los slugs/bases renombrados a mano (WP no redirige slugs viejos de
+ * PÁGINAS ni bases de CPT/taxonomía cambiadas): imprescindibles para no
+ * romper el SEO ni los enlaces existentes.
  */
 add_action( 'template_redirect', 'ppv2_seo_redirecciones_legado', 1 );
 function ppv2_seo_redirecciones_legado() {
@@ -1911,16 +1940,40 @@ function ppv2_seo_redirecciones_legado() {
 		wp_safe_redirect( home_url( '/' ), 301 );
 		exit;
 	}
-	// El redirect automático de slugs viejos de WP no cubre PÁGINAS: los slugs
-	// viejos renombrados a mano se redirigen aquí. Se compara el PATH exacto
-	// (no strpos: "/cart/" está contenido en "/carrito/" y no debe capturarlo).
 	$path = trim( (string) wp_parse_url( isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '', PHP_URL_PATH ), '/' );
-	$slugs_renombrados = array(
-		'crear-listado-chat' => '/crear-publicacion-chat/',
-		'cart'               => '/carrito/', // el PO renombró el slug del carrito
+	if ( '' === $path ) {
+		return;
+	}
+	$segs = explode( '/', $path );
+
+	// (a) BASES de URL renombradas (CPT / taxonomía). Se redirige por RUTA, sin
+	//     esperar un 404: la regla de reescritura vieja de la taxonomía puede
+	//     seguir resolviendo a 200 (contenido duplicado) aunque el slug ya sea
+	//     otro. Se cambia solo el primer segmento y se conserva el resto.
+	//     No hay bucle: las bases nuevas (publicacion / categoria-publicacion)
+	//     no están en el mapa.
+	$bases = array(
+		'listado'           => 'publicacion',
+		'categoria-listado' => 'categoria-publicacion',
 	);
-	if ( is_404() && isset( $slugs_renombrados[ $path ] ) ) {
-		wp_safe_redirect( home_url( $slugs_renombrados[ $path ] ), 301 );
+	if ( isset( $bases[ $segs[0] ] ) && count( $segs ) > 1 ) {
+		$segs[0] = $bases[ $segs[0] ];
+		$resto   = array_map( 'rawurlencode', array_slice( $segs, 1 ) );
+		wp_safe_redirect( home_url( '/' . $segs[0] . '/' . implode( '/', $resto ) . '/' ), 301 );
+		exit;
+	}
+
+	// (b) Rutas de UN solo segmento renombradas (páginas + carrito): solo cuando
+	//     la URL vieja ya NO resuelve (404). Comparación EXACTA del path
+	//     (no strpos: "cart" está contenido en "carrito").
+	$exacto = array(
+		'crear-listado-chat' => 'crear-publicacion-chat',
+		'cart'               => 'carrito',
+		'mis-listados'       => 'mis-publicaciones',
+		'agregar-listado'    => 'agregar-publicacion',
+	);
+	if ( is_404() && isset( $exacto[ $path ] ) ) {
+		wp_safe_redirect( home_url( '/' . $exacto[ $path ] . '/' ), 301 );
 		exit;
 	}
 }
