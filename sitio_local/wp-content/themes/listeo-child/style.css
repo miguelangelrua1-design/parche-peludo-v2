@@ -11392,3 +11392,45 @@ body.single-product .pp-pdp-agotado-btn {
    ============================================================ */
 .lbp-ops-title-for { font-size: 0; }
 .lbp-ops-title-for::after { content: 'de'; font-size: 19px; }
+
+/* ============================================================
+   PANEL DE CONTROL — Scroll del menú lateral (barra fija).
+   Bug de Listeo: en escritorio la barra lateral del panel es
+   `position: fixed` con la altura completa de la ventana pero
+   anclada bajo el header (~top:112px), así que se DESBORDA por
+   debajo del borde inferior. El área interna (.dashboard-nav-inner)
+   recibe por JS un `max-height` inline calculado como
+   (alto de ventana − alto de header), que en pantallas cortas deja
+   los últimos ítems (Estadísticas, Cupones, Reseñas, Favoritos,
+   Mi Perfil, Cerrar Sesión) fuera de la vista. Además el scroll
+   nativo no tiene barra visible, así que el usuario intenta
+   desplazar la PÁGINA (que no mueve el menú fijo) y nunca los ve.
+
+   Arreglo: acotamos el alto del scroller a la ventana con `!important`
+   (gana al max-height inline del JS, incluso si se recalcula al
+   redimensionar) y mostramos una barra de desplazamiento discreta.
+   `100vh − 132px` = ~112px de header + ~20px de aire abajo; con o
+   sin barra de admin el gap varía un poco pero siempre entra y
+   scrollea. Solo escritorio (≥992px): en móvil el menú es un panel
+   desplegable y no se toca. */
+@media (min-width: 992px) {
+  .dashboard-nav-inner {
+    max-height: calc(100vh - 132px) !important;
+    overflow-y: auto !important;
+  }
+  .dashboard-nav-inner::-webkit-scrollbar {
+    width: 8px;
+  }
+  .dashboard-nav-inner::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, .22);
+    border-radius: 8px;
+  }
+  .dashboard-nav-inner::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  /* Firefox */
+  .dashboard-nav-inner {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, .22) transparent;
+  }
+}
