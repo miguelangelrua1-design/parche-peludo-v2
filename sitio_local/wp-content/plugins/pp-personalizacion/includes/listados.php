@@ -87,6 +87,92 @@ function pp_listados_slugs_de_rol( $role ) {
 }
 
 /* -------------------------------------------------------------------------
+ * 0b. TOPE de publicaciones por cuenta (2026-07-19)
+ *
+ * Cuántas publicaciones ACTIVAS de cada tipo puede tener una cuenta según su
+ * rol. 0 (o vacío) = sin tope. Solo aplica a los roles configurables
+ * (guest/owner); admins y demás roles quedan exentos. Lo consumen el
+ * formulario nativo (filtro de validación de abajo) y el chat de listados
+ * (plugin pp-chat-listados) — NO renombrar estas funciones.
+ * ---------------------------------------------------------------------- */
+
+/** Matriz de topes: array( rol => array( slug => entero ) ). */
+function pp_listados_topes() {
+	$guardado = get_option( 'pp_listados_topes' );
+	return is_array( $guardado ) ? $guardado : array();
+}
+
+/** Tope para un rol y tipo (0 = sin tope). */
+function pp_listados_tope( $role, $slug ) {
+	if ( ! array_key_exists( $role, pp_listados_roles_configurables() ) ) {
+		return 0; // roles no controlados: sin tope
+	}
+	$topes = pp_listados_topes();
+	return isset( $topes[ $role ][ $slug ] ) ? absint( $topes[ $role ][ $slug ] ) : 0;
+}
+
+/** Publicaciones ACTIVAS de un tipo que ya tiene un usuario (excluyendo,
+ *  si se pasa, un listado concreto — útil al editar/reanudar). */
+function pp_listados_conteo_usuario( $user_id, $slug, $excluir_id = 0 ) {
+	$q = new WP_Query( array(
+		'post_type'      => 'listing',
+		'post_status'    => array( 'publish', 'pending', 'preview', 'pending_payment' ),
+		'author'         => (int) $user_id,
+		'post__not_in'   => $excluir_id ? array( (int) $excluir_id ) : array(),
+		'meta_key'       => '_listing_type',
+		'meta_value'     => $slug,
+		'fields'         => 'ids',
+		'posts_per_page' => -1,
+		'no_found_rows'  => true,
+	) );
+	return count( $q->posts );
+}
+
+/** Cupo restante de un usuario para un tipo: null = sin tope, entero ≥ 0. */
+function pp_listados_restantes( $user_id, $slug, $excluir_id = 0 ) {
+	$user = get_user_by( 'id', $user_id );
+	if ( ! $user ) {
+		return null;
+	}
+	$roles = (array) $user->roles;
+	$role  = array_shift( $roles );
+	$tope  = pp_listados_tope( $role, $slug );
+	if ( ! $tope ) {
+		return null;
+	}
+	return max( 0, $tope - pp_listados_conteo_usuario( $user_id, $slug, $excluir_id ) );
+}
+
+/** Candado del formulario nativo: al guardar un listado NUEVO, verificar el
+ *  tope (los existentes que se editan no cuentan contra sí mismos). */
+add_filter( 'submit_listing_form_validate_fields', 'pp_listados_validar_tope', 11, 3 );
+function pp_listados_validar_tope( $valido, $fields, $values ) {
+	if ( is_wp_error( $valido ) || ! is_user_logged_in() ) {
+		return $valido;
+	}
+	$tipo = '';
+	if ( isset( $_POST['_listing_type'] ) ) {
+		$tipo = sanitize_text_field( wp_unslash( $_POST['_listing_type'] ) );
+	}
+	$listing_id = isset( $_POST['listing_id'] ) ? absint( $_POST['listing_id'] ) : 0;
+	if ( ! $tipo && $listing_id ) {
+		$tipo = get_post_meta( $listing_id, '_listing_type', true );
+	}
+	if ( ! $tipo ) {
+		return $valido;
+	}
+	// Editar un listado ya publicado/pendiente no debe bloquearse a sí mismo.
+	$restantes = pp_listados_restantes( get_current_user_id(), $tipo, $listing_id );
+	if ( null !== $restantes && $restantes <= 0 ) {
+		return new WP_Error(
+			'pp_tope_alcanzado',
+			'Ya alcanzaste el número máximo de publicaciones de este tipo para tu cuenta.'
+		);
+	}
+	return $valido;
+}
+
+/* -------------------------------------------------------------------------
  * 1 + 2. Funciones PÚBLICAS de permisos y candado del guardado.
  *
  * ⚠️ Estas mismas funciones existían antes en el tema hijo (functions.php).
@@ -234,6 +320,19 @@ function pp_listados_admin_handler() {
 
 	update_option( 'pp_listados_permisos', $nuevo );
 
+	// Topes por rol y tipo (0 = sin tope).
+	$topes_post = isset( $_POST['pp_topes'] ) && is_array( $_POST['pp_topes'] ) ? $_POST['pp_topes'] : array();
+	$topes      = array();
+	foreach ( array_keys( pp_listados_roles_configurables() ) as $role ) {
+		foreach ( $activos as $slug ) {
+			$valor = isset( $topes_post[ $role ][ $slug ] ) ? absint( $topes_post[ $role ][ $slug ] ) : 0;
+			if ( $valor > 0 ) {
+				$topes[ $role ][ $slug ] = $valor;
+			}
+		}
+	}
+	update_option( 'pp_listados_topes', $topes );
+
 	// Toggle "Separar resultados" por tipo (el Directorio nunca se separa).
 	$sep_marcados = isset( $_POST['pp_separar'] ) && is_array( $_POST['pp_separar'] )
 		? array_map( 'sanitize_text_field', $_POST['pp_separar'] )
@@ -304,6 +403,37 @@ function pp_listados_admin_page() {
 										</label>
 									<?php endif; ?>
 								</td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+
+				<h2 style="margin-top:28px">Tope de publicaciones por cuenta</h2>
+				<p style="max-width:760px">Máximo de publicaciones <strong>activas</strong> (publicadas, pendientes o borradores en curso) que puede tener cada cuenta por tipo. <strong>0 = sin tope.</strong> Aplica al formulario nativo y al chat de creación; los administradores no tienen tope.</p>
+				<?php $topes = pp_listados_topes(); ?>
+				<table class="widefat striped" style="max-width:640px">
+					<thead>
+						<tr>
+							<th>Tipo de listado</th>
+							<?php foreach ( $roles as $etiqueta ) : ?>
+								<th style="width:150px;text-align:center"><?php echo esc_html( $etiqueta ); ?></th>
+							<?php endforeach; ?>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ( $tipos as $tipo ) :
+							$slug   = $tipo->slug;
+							$nombre = isset( $tipo->name ) ? $tipo->name : $slug; ?>
+							<tr>
+								<td><strong><?php echo esc_html( $nombre ); ?></strong></td>
+								<?php foreach ( array_keys( $roles ) as $role ) :
+									$valor = isset( $topes[ $role ][ $slug ] ) ? absint( $topes[ $role ][ $slug ] ) : 0; ?>
+									<td style="text-align:center">
+										<input type="number" min="0" step="1" style="width:70px;text-align:center"
+											name="pp_topes[<?php echo esc_attr( $role ); ?>][<?php echo esc_attr( $slug ); ?>]"
+											value="<?php echo esc_attr( $valor ); ?>">
+									</td>
+								<?php endforeach; ?>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>

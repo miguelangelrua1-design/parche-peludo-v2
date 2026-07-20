@@ -3,7 +3,7 @@
  * Plugin Name: PP Chat de Listados
  * Plugin URI:  https://parchepeludo.com
  * Description: Asistente conversacional (chat guiado, sin IA) para crear listados. Soporta todas las tipologías activas según los permisos por rol (módulo Listados de Personalización Parche), genera sus preguntas desde el Editor de Formularios de Listeo (se sincroniza solo al agregar/quitar campos), permite subir imágenes, y se integra embebido en la página "Agregar Listado" (sección "Agregar por chat").
- * Version:     2.0.0
+ * Version:     2.1.0
  * Author:      Parche Peludo
  * Text Domain: pp-chat-listados
  *
@@ -23,7 +23,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'PP_CHAT_LISTADOS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PP_CHAT_LISTADOS_URL', plugin_dir_url( __FILE__ ) );
-define( 'PP_CHAT_LISTADOS_VER', '2.0.0' );
+define( 'PP_CHAT_LISTADOS_VER', '2.1.0' );
+
+/** Campos "esenciales" del modo exprés: los obligatorios siempre lo son;
+ *  estos otros también se preguntan de entrada por su valor de negocio. */
+function ppcl_essential_keys() {
+	return array( 'listing_title', 'listing_description', '_phone', '_whatsapp', '_email', '_address' );
+}
+
+/** ¿El tipo maneja horarios de atención? */
+function ppcl_type_supports_hours( $slug ) {
+	if ( ! function_exists( 'listeo_core_custom_listing_types' ) ) {
+		return false;
+	}
+	$mgr = listeo_core_custom_listing_types();
+	return method_exists( $mgr, 'type_supports_opening_hours' )
+		? (bool) $mgr->type_supports_opening_hours( $slug )
+		: false;
+}
 
 /* =========================================================================
  * 1. PERMISOS Y TIPOS
@@ -121,6 +138,11 @@ function ppcl_field_schema( $type_slug ) {
 				'label'      => $label,
 				'required'   => ! empty( $field['required'] ),
 			);
+			// Modo exprés: esencial = obligatorio, campo de negocio clave,
+			// taxonomías o fotos; el resto se ofrece como "afinar detalles".
+			$item['essential'] = $item['required']
+				|| in_array( $key, ppcl_essential_keys(), true )
+				|| in_array( $type, array( 'term-select', 'term-checklist', 'term-multiselect', 'drilldown-taxonomy', 'file', 'files' ), true );
 			if ( ! empty( $field['placeholder'] ) ) {
 				$item['placeholder'] = wp_strip_all_tags( stripslashes( $field['placeholder'] ) );
 			}
@@ -321,12 +343,21 @@ function ppcl_ajax_guard() {
 	}
 }
 
-/** 4a. Tipos permitidos para el usuario (arranque del chat). */
+/** 4a. Tipos permitidos para el usuario (arranque del chat), con su cupo
+ *  restante si el módulo Listados tiene topes configurados. */
 function ppcl_ajax_bootstrap() {
 	ppcl_ajax_guard();
-	$types = array();
+	$user_id = get_current_user_id();
+	$types   = array();
 	foreach ( ppcl_allowed_types_for_user() as $t ) {
-		$types[] = array( 'slug' => $t->slug, 'name' => $t->name );
+		$entry = array( 'slug' => $t->slug, 'name' => $t->name );
+		if ( function_exists( 'pp_listados_restantes' ) ) {
+			$restantes = pp_listados_restantes( $user_id, $t->slug );
+			if ( null !== $restantes ) {
+				$entry['remaining'] = $restantes;
+			}
+		}
+		$types[] = $entry;
 	}
 	wp_send_json_success( array( 'types' => $types ) );
 }
@@ -343,13 +374,24 @@ function ppcl_ajax_fields() {
 	if ( is_wp_error( $schema ) ) {
 		wp_send_json_error( array( 'code' => 'error', 'message' => $schema->get_error_message() ) );
 	}
-	wp_send_json_success( array( 'schema' => $schema ) );
+	wp_send_json_success( array(
+		'schema' => $schema,
+		'hours'  => ppcl_type_supports_hours( $type ),
+	) );
 }
 add_action( 'wp_ajax_ppcl_fields', 'ppcl_ajax_fields' );
 
 /** 4c. Subida de UNA imagen (el chat sube de a una, con vista previa). */
 function ppcl_ajax_upload() {
 	ppcl_ajax_guard();
+
+	// Anti-abuso: máximo 30 subidas por hora por usuario.
+	$user_id  = get_current_user_id();
+	$lock_key = 'ppcl_uploads_' . $user_id;
+	$subidas  = (int) get_transient( $lock_key );
+	if ( $subidas >= 30 ) {
+		wp_send_json_error( array( 'code' => 'rate', 'message' => __( 'Has subido muchas imágenes seguidas. Espera un rato e inténtalo de nuevo.', 'pp-chat-listados' ) ) );
+	}
 
 	if ( empty( $_FILES['file'] ) || ! is_array( $_FILES['file'] ) ) {
 		wp_send_json_error( array( 'code' => 'nofile', 'message' => __( 'No llegó ningún archivo.', 'pp-chat-listados' ) ) );
@@ -378,8 +420,11 @@ function ppcl_ajax_upload() {
 	if ( is_wp_error( $attachment_id ) ) {
 		wp_send_json_error( array( 'code' => 'upload', 'message' => $attachment_id->get_error_message() ) );
 	}
-	// La imagen queda a nombre del usuario (para poder validarla al crear).
+	// La imagen queda a nombre del usuario (para poder validarla al crear) y
+	// marcada como subida del chat (para la limpieza de huérfanas).
 	wp_update_post( array( 'ID' => $attachment_id, 'post_author' => get_current_user_id() ) );
+	update_post_meta( $attachment_id, '_ppcl_chat_upload', time() );
+	set_transient( $lock_key, $subidas + 1, HOUR_IN_SECONDS );
 
 	wp_send_json_success( array(
 		'id'    => $attachment_id,
@@ -415,6 +460,17 @@ function ppcl_ajax_create() {
 	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
 	if ( ! $type || ! ppcl_type_allowed( $type ) ) {
 		wp_send_json_error( array( 'code' => 'type', 'message' => __( 'Ese tipo de listado no está disponible para tu cuenta.', 'pp-chat-listados' ) ) );
+	}
+
+	// Tope de publicaciones por cuenta (módulo Listados), si está configurado.
+	if ( function_exists( 'pp_listados_restantes' ) ) {
+		$restantes = pp_listados_restantes( $user_id, $type );
+		if ( null !== $restantes && $restantes <= 0 ) {
+			wp_send_json_error( array(
+				'code'    => 'limit',
+				'message' => __( 'Ya alcanzaste el número máximo de publicaciones de este tipo para tu cuenta. Puedes gestionar las que ya tienes desde "Mis publicaciones".', 'pp-chat-listados' ),
+			) );
+		}
 	}
 
 	$raw = isset( $_POST['fields'] ) ? json_decode( wp_unslash( $_POST['fields'] ), true ) : null;
@@ -539,9 +595,30 @@ function ppcl_ajax_create() {
 	}
 
 	update_post_meta( $listing_id, '_listing_type', $type );
+	update_post_meta( $listing_id, '_ppcl_via_chat', time() ); // medición: creado por chat
 
 	foreach ( $metas as $key => $value ) {
 		update_post_meta( $listing_id, $key, $value );
+	}
+
+	// Horarios de atención (paso propio del chat, formato nativo por día:
+	// el formulario los prellena y reconstruye el resumen al enviarse).
+	$hours_raw = isset( $_POST['hours'] ) ? json_decode( wp_unslash( $_POST['hours'] ), true ) : null;
+	if ( is_array( $hours_raw ) && ppcl_type_supports_hours( $type ) ) {
+		ppcl_save_hours( $listing_id, $hours_raw );
+	}
+
+	// Geocodificación de la dirección (para que el listado salga con pin en
+	// el mapa sin que el dueño tenga que buscarla de nuevo en el formulario).
+	if ( isset( $metas['_address'] ) && '' !== $metas['_address'] ) {
+		$region_name = '';
+		if ( ! empty( $taxonomies['region'] ) ) {
+			$region_term = get_term( $taxonomies['region'][0], 'region' );
+			if ( $region_term instanceof WP_Term ) {
+				$region_name = $region_term->name;
+			}
+		}
+		ppcl_geocode_listing( $listing_id, $metas['_address'], $region_name );
 	}
 	foreach ( $taxonomies as $taxonomy => $term_ids ) {
 		wp_set_object_terms( $listing_id, array_map( 'intval', $term_ids ), $taxonomy );
@@ -594,6 +671,150 @@ add_action( 'wp_ajax_ppcl_create', 'ppcl_ajax_create' );
 
 // Compatibilidad con la acción de la v1 (por si hay HTML cacheado).
 add_action( 'wp_ajax_ppv2_chat_listado_create', 'ppcl_ajax_create' );
+
+/* =========================================================================
+ * 5. HORARIOS Y GEOCODIFICACIÓN
+ * ======================================================================= */
+
+/**
+ * Guarda los horarios del chat en el formato por-día del formulario nativo:
+ * meta `_{dia}_opening_hour` / `_{dia}_closing_hour` = array( 'hh:mm am' ).
+ * Entrada: { days: ['monday',...], open: 'HH:MM', close: 'HH:MM' } (24 h).
+ */
+function ppcl_save_hours( $listing_id, $hours ) {
+	$valid_days = array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' );
+	$days  = isset( $hours['days'] ) ? array_values( array_intersect( $valid_days, (array) $hours['days'] ) ) : array();
+	$open  = isset( $hours['open'] ) ? ppcl_format_hour( $hours['open'] ) : '';
+	$close = isset( $hours['close'] ) ? ppcl_format_hour( $hours['close'] ) : '';
+	if ( ! $days || ! $open || ! $close ) {
+		return;
+	}
+	foreach ( $days as $day ) {
+		update_post_meta( $listing_id, '_' . $day . '_opening_hour', array( $open ) );
+		update_post_meta( $listing_id, '_' . $day . '_closing_hour', array( $close ) );
+	}
+}
+
+/** 'HH:MM' (24 h) → formato del reloj del sitio ('8:00 am' o '08:00'). */
+function ppcl_format_hour( $value ) {
+	if ( ! preg_match( '/^([01]?\d|2[0-3]):([0-5]\d)$/', trim( (string) $value ) ) ) {
+		return '';
+	}
+	$ts = strtotime( '1970-01-01 ' . trim( $value ) );
+	return '24' === (string) get_option( 'listeo_clock_format', '12' )
+		? date( 'H:i', $ts )
+		: date( 'g:i a', $ts );
+}
+
+/**
+ * Geocodifica la dirección con la clave de SERVIDOR de Google Maps del sitio
+ * (opción listeo_maps_api_server) y guarda lat/long. Silencioso si falla:
+ * el dueño siempre puede ubicar el pin en el formulario nativo.
+ */
+function ppcl_geocode_listing( $listing_id, $address, $region_name = '' ) {
+	$key = get_option( 'listeo_maps_api_server' );
+	if ( ! $key || 'google' !== get_option( 'listeo_map_provider', 'google' ) ) {
+		return;
+	}
+	$full = $address . ( $region_name ? ', ' . $region_name : '' ) . ', Colombia';
+	$url  = add_query_arg( array(
+		'address' => rawurlencode( $full ),
+		'region'  => 'co',
+		'key'     => $key,
+	), 'https://maps.googleapis.com/maps/api/geocode/json' );
+
+	$res = wp_remote_get( $url, array( 'timeout' => 6 ) );
+	if ( is_wp_error( $res ) || 200 !== wp_remote_retrieve_response_code( $res ) ) {
+		return;
+	}
+	$data = json_decode( wp_remote_retrieve_body( $res ), true );
+	if ( empty( $data['status'] ) || 'OK' !== $data['status'] || empty( $data['results'][0]['geometry']['location'] ) ) {
+		return;
+	}
+	$loc = $data['results'][0]['geometry']['location'];
+	update_post_meta( $listing_id, '_geolocation_lat', (string) $loc['lat'] );
+	update_post_meta( $listing_id, '_geolocation_long', (string) $loc['lng'] );
+}
+
+/* =========================================================================
+ * 6. LIMPIEZA PROGRAMADA (fotos huérfanas y borradores abandonados)
+ * ======================================================================= */
+
+add_action( 'init', function () {
+	if ( ! wp_next_scheduled( 'ppcl_daily_cleanup' ) ) {
+		wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'ppcl_daily_cleanup' );
+	}
+} );
+register_deactivation_hook( __FILE__, function () {
+	wp_clear_scheduled_hook( 'ppcl_daily_cleanup' );
+} );
+
+add_action( 'ppcl_daily_cleanup', 'ppcl_run_cleanup' );
+function ppcl_run_cleanup() {
+	// (a) Fotos subidas por el chat que nunca quedaron en un listado (>7 días).
+	$huerfanas = get_posts( array(
+		'post_type'      => 'attachment',
+		'post_status'    => 'any',
+		'post_parent'    => 0,
+		'posts_per_page' => 50,
+		'fields'         => 'ids',
+		'meta_query'     => array( array(
+			'key'     => '_ppcl_chat_upload',
+			'value'   => time() - 7 * DAY_IN_SECONDS,
+			'compare' => '<',
+			'type'    => 'NUMERIC',
+		) ),
+	) );
+	foreach ( $huerfanas as $att ) {
+		wp_delete_attachment( $att, true );
+	}
+
+	// (b) Borradores del CHAT nunca enviados a revisión (>30 días en preview).
+	$abandonados = get_posts( array(
+		'post_type'      => 'listing',
+		'post_status'    => 'preview',
+		'posts_per_page' => 25,
+		'fields'         => 'ids',
+		'meta_query'     => array( array(
+			'key'     => '_ppcl_via_chat',
+			'value'   => time() - 30 * DAY_IN_SECONDS,
+			'compare' => '<',
+			'type'    => 'NUMERIC',
+		) ),
+	) );
+	foreach ( $abandonados as $listing ) {
+		// Sus fotos del chat (ya con parent) se van con él.
+		$fotos = get_posts( array(
+			'post_type'      => 'attachment',
+			'post_status'    => 'any',
+			'post_parent'    => $listing,
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'meta_key'       => '_ppcl_chat_upload',
+		) );
+		foreach ( $fotos as $att ) {
+			wp_delete_attachment( $att, true );
+		}
+		wp_delete_post( $listing, true );
+	}
+	return array( 'fotos' => count( $huerfanas ), 'borradores' => count( $abandonados ) );
+}
+
+/* =========================================================================
+ * 7. MEDICIÓN: columna "Origen" en wp-admin → Listings
+ * ======================================================================= */
+
+add_filter( 'manage_listing_posts_columns', function ( $columns ) {
+	$columns['ppcl_origen'] = __( 'Origen', 'pp-chat-listados' );
+	return $columns;
+} );
+add_action( 'manage_listing_posts_custom_column', function ( $column, $post_id ) {
+	if ( 'ppcl_origen' === $column ) {
+		echo get_post_meta( $post_id, '_ppcl_via_chat', true )
+			? '💬 <span title="Creado con el chat">Chat</span>'
+			: '<span style="opacity:.45">Formulario</span>';
+	}
+}, 10, 2 );
 
 // Sin sesión: todos los endpoints responden "login" (el chat muestra el CTA).
 function ppcl_ajax_needs_login() {

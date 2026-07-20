@@ -421,3 +421,60 @@
   color: #fff !important;
 }
 .ppv2-chat-options-actions { margin-top: var(--ppc-s-2); }
+
+/* --------------------------------------------------------------------------
+   v2.1 — Barra de progreso, deshacer y pulido móvil
+   -------------------------------------------------------------------------- */
+
+.ppv2-chat-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--ppc-s-3);
+  padding: 8px var(--ppc-s-5);
+  background: var(--ppc-paper);
+  border-bottom: 1px solid var(--ppc-ink-line-2);
+  font-family: var(--ppc-font-sans);
+  font-size: 12px;
+  color: var(--ppc-ink-muted);
+}
+.ppv2-chat-progress[hidden] { display: none; }
+.ppv2-chat-progress-track {
+  flex: 1;
+  display: block;
+  height: 6px;
+  background: var(--ppc-teal-mist);
+  border-radius: var(--ppc-r-pill);
+  overflow: hidden;
+}
+.ppv2-chat-progress-track i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--ppc-teal-parche);
+  border-radius: var(--ppc-r-pill);
+  transition: width .3s ease;
+}
+.ppv2-chat-progress span { white-space: nowrap; }
+
+.ppv2-chat-undo { margin-top: 6px; }
+
+/* Móvil: chat embebido cómodo con teclado en pantalla */
+@media (max-width: 767px) {
+  .ppv2-chat.ppcl-embedded {
+    height: 78dvh;
+    max-height: none;
+    margin-left: -5px;
+    margin-right: -5px;
+  }
+  .ppv2-chat-header { padding: var(--ppc-s-3) var(--ppc-s-4); gap: var(--ppc-s-2); }
+  .ppv2-chat-header strong { font-size: 15px; }
+  .ppv2-chat-header small { font-size: 12px; }
+  .ppv2-chat-back { padding: 5px 10px; font-size: 12px; }
+  .ppv2-chat-header-icon { width: 34px; height: 34px; font-size: 16px; }
+  .ppv2-chat-progress { padding: 6px var(--ppc-s-4); }
+  .ppv2-chat-options { max-height: 220px; overflow-y: auto; }
+  .ppv2-chat-option { padding: 9px 14px; font-size: 13.5px; }
+  .ppv2-chat-send { padding: 12px 16px; }
+  .ppcl-chat-section { padding: 20px 16px; }
+  .ppcl-thumb { width: 56px; height: 56px; }
+}

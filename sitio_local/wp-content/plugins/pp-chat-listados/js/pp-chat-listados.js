@@ -1,16 +1,17 @@
 /**
- * PP Chat de Listados v2 — asistente guiado para crear listados.
+ * PP Chat de Listados v2.1 — asistente guiado para crear listados.
  *
- * - Tipologías dinámicas: pregunta el tipo entre los PERMITIDOS para el rol
- *   (AJAX ppcl_bootstrap; matriz del módulo Listados).
- * - Guion dinámico: los pasos se generan desde el Editor de Formularios de
- *   Listeo (AJAX ppcl_fields) → agregar/quitar campos en el admin actualiza
- *   el chat sin tocar código.
- * - Imágenes: campos file/files suben fotos (AJAX ppcl_upload) con vista
- *   previa; se guardan en el formato nativo de Listeo.
- * - Modos: "embedded" (dentro de Agregar Listado, botón "Agregar por chat",
- *   Atrás arriba a la izquierda devuelve a la pantalla general) y "page"
- *   (página propia con el shortcode).
+ * - Tipologías dinámicas según el rol (AJAX ppcl_bootstrap) con tope de
+ *   publicaciones por cuenta (módulo Listados de Personalización Parche).
+ * - MODO EXPRÉS: primero solo lo esencial (obligatorios, contacto, fotos,
+ *   categorías); al final ofrece "afinar detalles" con el resto de campos
+ *   del Editor de Formularios (AJAX ppcl_fields, siempre sincronizado).
+ * - Horarios de atención simplificados (días + hora de apertura/cierre) en
+ *   los tipos que los manejan; se guardan en el formato nativo por día.
+ * - Imágenes con vista previa (AJAX ppcl_upload), barra de progreso de
+ *   preguntas y "↩ Corregir anterior" en cualquier momento.
+ * - Modos: "embedded" (dentro de Agregar Listado, con Atrás arriba a la
+ *   izquierda) y "page" (página propia con el shortcode).
  */
 (function ($) {
 	'use strict';
@@ -18,15 +19,25 @@
 	var cfg = window.ppv2ChatListado || {};
 	var STORAGE_KEY = 'ppv2ChatListado2';
 
-	var $root, $messages, $inputArea;
-	var built = false;         // UI construida
-	var started = false;       // conversación iniciada
-	var chatType = null;       // {slug, name}
-	var schema = [];           // guion de campos del tipo elegido
-	var queue = [];            // pasos (gates de grupo + campos)
+	var $root, $messages, $inputArea, $progressBar, $progressText, $progressWrap;
+	var built = false;
+	var started = false;
+	var chatType = null;        // {slug, name}
+	var schema = [];            // guion completo del tipo
+	var hoursSupported = false; // ¿el tipo maneja horarios?
+	var queue = [];             // pasos
 	var queueIndex = -1;
-	var answers = {};          // key -> {value, label}
+	var answers = {};           // key -> {value, label}
+	var history = [];           // índices de pasos respondidos (para deshacer)
 	var returnToSummary = false;
+
+	var DAY_LABELS = {
+		monday: 'Lun', tuesday: 'Mar', wednesday: 'Mié', thursday: 'Jue',
+		friday: 'Vie', saturday: 'Sáb', sunday: 'Dom'
+	};
+	var DAY_ORDER = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+	var HOURS_KEY = '_pp_hours';
+	var HOURS_LABEL = 'Horario de atención';
 
 	/* ------------------------------------------------------------------ */
 	/* Textos amigables por campo (fallback genérico si no está aquí)      */
@@ -94,7 +105,6 @@
 		return dfd.promise();
 	}
 
-	/** Burbuja "pensando" persistente; se cierra con el callback devuelto. */
 	function botBusy() {
 		var $bubble = $('<div>').addClass('ppv2-chat-msg ppv2-chat-bot');
 		$('<span>').addClass('ppv2-chat-avatar').text('🐾').appendTo($bubble);
@@ -118,7 +128,53 @@
 
 	function clearInputArea() { $inputArea.empty(); }
 
-	function showButtons(options, onPick) {
+	/* -------------------------- Progreso ------------------------------- */
+
+	function questionSteps() {
+		return queue.filter(function (s) { return s.field || s.hours; });
+	}
+
+	function updateProgress() {
+		var steps = questionSteps();
+		if (!steps.length) { $progressWrap.attr('hidden', true); return; }
+		var done = 0, current = 0, i, s;
+		for (i = 0; i < queue.length; i++) {
+			s = queue[i];
+			if (!s.field && !s.hours) { continue; }
+			current++;
+			if (i < queueIndex) { done = current; }
+			if (i === queueIndex) { break; }
+		}
+		var x = Math.min(current, steps.length);
+		$progressWrap.removeAttr('hidden');
+		$progressText.text('Pregunta ' + x + ' de ' + steps.length);
+		$progressBar.css('width', Math.round(100 * x / steps.length) + '%');
+	}
+
+	function hideProgress() { $progressWrap.attr('hidden', true); }
+
+	/* -------------------------- Deshacer ------------------------------- */
+
+	function addUndoLink() {
+		if (!history.length) { return; }
+		var $undo = $('<button>').attr('type', 'button').addClass('ppv2-chat-skip ppv2-chat-undo')
+			.text('↩ Corregir la anterior')
+			.on('click', function () {
+				var prevIdx = history[history.length - 1];
+				var step = queue[prevIdx];
+				userSay('↩ Corregir la anterior');
+				if (step.hours) {
+					runHoursStep(true, function () { presentCurrent(); });
+				} else {
+					runFieldStep(step.field, true, function () { presentCurrent(); });
+				}
+			});
+		$inputArea.append($undo);
+	}
+
+	/* -------------------------- Entradas ------------------------------- */
+
+	function showButtons(options, onPick, withUndo) {
 		clearInputArea();
 		var $wrap = $('<div>').addClass('ppv2-chat-options');
 		options.forEach(function (opt) {
@@ -130,10 +186,11 @@
 				.appendTo($wrap);
 		});
 		$inputArea.append($wrap);
+		if (withUndo) { addUndoLink(); }
 		scrollToBottom();
 	}
 
-	function showTextInput(field, onSubmit) {
+	function showTextInput(field, onSubmit, withUndo) {
 		clearInputArea();
 		var isArea = field.kind === 'textarea';
 		var $field = isArea ? $('<textarea>').attr('rows', 3) : $('<input>').attr('type', 'text');
@@ -149,6 +206,7 @@
 			$inputArea.append($skip);
 			$skip.on('click', function () { userSay('(omitido)'); onSubmit('', '—'); });
 		}
+		if (withUndo) { addUndoLink(); }
 
 		function submit() {
 			var value = $.trim($field.val());
@@ -197,7 +255,7 @@
 	function handleCommonErrors(res) {
 		var code = res && res.data && res.data.code;
 		if (code === 'login') { showLoginGate(); return true; }
-		if (code === 'role' || code === 'type') {
+		if (code === 'role' || code === 'type' || code === 'limit') {
 			botSay((res.data && res.data.message) || 'Tu cuenta no puede publicar este tipo de listado.', true);
 			clearInputArea();
 			return true;
@@ -206,7 +264,7 @@
 	}
 
 	/* ------------------------------------------------------------------ */
-	/* Persistencia (por si el usuario debe iniciar sesión o recarga)      */
+	/* Persistencia                                                        */
 	/* ------------------------------------------------------------------ */
 
 	function saveState() {
@@ -232,7 +290,7 @@
 	}
 
 	/* ------------------------------------------------------------------ */
-	/* Flujo: tipo → guion dinámico → resumen → crear                      */
+	/* Flujo: tipo → esenciales → horarios → extras opcionales → resumen   */
 	/* ------------------------------------------------------------------ */
 
 	function startConversation() {
@@ -250,8 +308,7 @@
 				botSay('Tu cuenta aún no tiene tipos de listado disponibles. Escríbenos si crees que es un error 🙏', true);
 				return;
 			}
-			// ¿Hay una conversación guardada de un tipo aún permitido?
-			if (saved && types.some(function (t) { return t.slug === saved.type.slug; })) {
+			if (saved && types.some(function (t) { return t.slug === saved.type.slug && t.remaining !== 0; })) {
 				chatType = saved.type;
 				answers = saved.answers || {};
 				botSay('¡Hola de nuevo! 👋 Guardé tus respuestas de "' + chatType.name + '". Sigamos donde íbamos.').then(function () {
@@ -265,17 +322,31 @@
 	}
 
 	function askType(types) {
-		if (types.length === 1) {
-			chatType = types[0];
+		var available = types.filter(function (t) { return t.remaining !== 0; });
+		if (!available.length) {
+			botSay('Ya alcanzaste el número máximo de publicaciones para tu cuenta 🙈 Puedes gestionar las que tienes desde "Mis publicaciones".', true);
+			return;
+		}
+		if (types.length === 1 && available.length === 1) {
+			chatType = { slug: available[0].slug, name: available[0].name };
 			saveState();
 			botSay('¡Hola! 🐾 Te ayudo a crear tu listado de "' + chatType.name + '" en un par de minutos.').then(beginSchema);
 			return;
 		}
 		botSay('¡Hola! 🐾 Te ayudo a crear tu listado en un par de minutos. Primero: ¿qué quieres publicar?').then(function () {
-			showButtons(types.map(function (t) { return { label: t.name, type: t }; }), function (opt) {
+			showButtons(types.map(function (t) {
+				return t.remaining === 0
+					? { label: t.name + ' (tope alcanzado)', blocked: true, cls: 'ppv2-chat-option-alt' }
+					: { label: t.name, type: t };
+			}), function (opt) {
+				if (opt.blocked) {
+					botSay('De ese tipo ya tienes el máximo permitido para tu cuenta 🙈 Elige otro, o gestiona tus publicaciones desde "Mis publicaciones".', true);
+					return;
+				}
 				userSay(opt.type.name);
 				chatType = { slug: opt.type.slug, name: opt.type.name };
 				answers = {};
+				history = [];
 				saveState();
 				beginSchema();
 			});
@@ -286,6 +357,7 @@
 		fetchSchema(function () {
 			buildQueue();
 			queueIndex = -1;
+			history = [];
 			nextStep();
 		});
 	}
@@ -296,6 +368,7 @@
 			done();
 			if (!res || !res.success) { if (!handleCommonErrors(res)) { failRetry(function () { fetchSchema(onReady); }); } return; }
 			schema = res.data.schema || [];
+			hoursSupported = !!res.data.hours;
 			if (!schema.length) {
 				botSay('Este tipo de listado no tiene campos configurados todavía. Avísale al administrador 🙏', true);
 				return;
@@ -304,30 +377,33 @@
 		}).fail(function () { done(); failRetry(function () { fetchSchema(onReady); }); });
 	}
 
-	/** Construye la cola de pasos: intro/puerta por grupo + un paso por campo. */
-	function buildQueue() {
-		queue = [];
+	/** Añade campos a la cola con sus intros/puertas de grupo. */
+	function pushFields(fields, withGates) {
 		var byGroup = {};
-		schema.forEach(function (f) {
-			(byGroup[f.group] = byGroup[f.group] || []).push(f);
-		});
+		fields.forEach(function (f) { (byGroup[f.group] = byGroup[f.group] || []).push(f); });
 		Object.keys(byGroup).forEach(function (g) {
-			var fields = byGroup[g];
-			var allOptional = fields.every(function (f) { return !f.required; });
-			// Sección totalmente opcional y con varios campos → puerta para omitirla completa.
-			if (allOptional && fields.length >= 3) {
-				queue.push({ gate: true, group: g, groupTitle: fields[0].groupTitle, count: fields.length });
-			} else if (fields.length >= 2) {
-				queue.push({ intro: true, group: g, groupTitle: fields[0].groupTitle });
+			var list = byGroup[g];
+			var allOptional = list.every(function (f) { return !f.required; });
+			if (withGates && allOptional && list.length >= 3) {
+				queue.push({ gate: true, group: g, groupTitle: list[0].groupTitle, count: list.length });
+			} else if (list.length >= 2) {
+				queue.push({ intro: true, group: g, groupTitle: list[0].groupTitle });
 			}
-			fields.forEach(function (f) { queue.push({ field: f, group: g }); });
+			list.forEach(function (f) { queue.push({ field: f, group: g }); });
 		});
 	}
 
-	function nextStep() {
-		if (returnToSummary) { returnToSummary = false; showSummary(); return; }
-		queueIndex++;
-		if (queueIndex >= queue.length) { showSummary(); return; }
+	/** Cola del MODO EXPRÉS: esenciales → horarios → puerta de extras. */
+	function buildQueue() {
+		queue = [];
+		pushFields(schema.filter(function (f) { return f.essential; }), false);
+		if (hoursSupported) { queue.push({ hours: true, group: '_hours' }); }
+		var extras = schema.filter(function (f) { return !f.essential; });
+		if (extras.length) { queue.push({ extrasGate: true, count: extras.length }); }
+	}
+
+	function presentCurrent() {
+		if (queueIndex >= queue.length) { hideProgress(); showSummary(); return; }
 		var step = queue[queueIndex];
 
 		if (step.intro) {
@@ -336,6 +412,7 @@
 			return;
 		}
 		if (step.gate) {
+			hideProgress();
 			botSay('La sección "' + step.groupTitle + '" tiene ' + step.count + ' datos opcionales. ¿La diligenciamos?').then(function () {
 				showButtons([
 					{ label: 'Sí, vamos', go: true, cls: 'ppv2-chat-option-primary' },
@@ -353,33 +430,71 @@
 			});
 			return;
 		}
-		runFieldStep(step.field, false);
+		if (step.extrasGate) {
+			hideProgress();
+			botSay('¡Lo esencial está listo! 🎉 ¿Quieres afinar detalles? (' + step.count + ' datos opcionales: precios, redes sociales, video…) Siempre podrás completarlos después en el formulario.').then(function () {
+				showButtons([
+					{ label: '✨ Afinar detalles', go: true },
+					{ label: 'No, ver el resumen', go: false, cls: 'ppv2-chat-option-primary' }
+				], function (opt) {
+					userSay(opt.label);
+					if (opt.go) {
+						var extras = schema.filter(function (f) { return !f.essential; });
+						var resto = queue.slice(queueIndex + 1);
+						queue = queue.slice(0, queueIndex + 1);
+						pushFields(extras, true);
+						queue = queue.concat(resto);
+					}
+					nextStep();
+				});
+			});
+			return;
+		}
+		updateProgress();
+		if (step.hours) {
+			runHoursStep(false, null);
+			return;
+		}
+		runFieldStep(step.field, false, null);
 	}
 
-	function runFieldStep(field, editing) {
+	function nextStep() {
+		if (returnToSummary) { returnToSummary = false; hideProgress(); showSummary(); return; }
+		queueIndex++;
+		presentCurrent();
+	}
+
+	/**
+	 * Presenta un campo. after: qué hacer al terminar (null = avanzar).
+	 * Cuando after es null, el índice actual se registra para "deshacer".
+	 */
+	function runFieldStep(field, editing, after) {
+		var stepIdx = queueIndex;
 		botSay(questionFor(field)).then(function () {
 			var onDone = function (value, label) {
 				setAnswer(field.key, value, label);
+				if (after) { after(); return; }
+				if (history[history.length - 1] !== stepIdx) { history.push(stepIdx); }
 				nextStep();
 			};
+			var withUndo = !after && !returnToSummary;
 			switch (field.kind) {
-				case 'terms':        return runTermsStep(field, onDone);
-				case 'options':      return runOptionsStep(field, onDone);
+				case 'terms':        return runTermsStep(field, onDone, withUndo);
+				case 'options':      return runOptionsStep(field, onDone, withUndo);
 				case 'multioptions': return runMultiOptionsStep(field, onDone);
-				case 'boolean':      return runBooleanStep(field, onDone);
-				case 'image':        return runImagesStep(field, onDone, false);
-				case 'images':       return runImagesStep(field, onDone, true);
+				case 'boolean':      return runBooleanStep(field, onDone, withUndo);
+				case 'image':        return runImagesStep(field, onDone, false, withUndo);
+				case 'images':       return runImagesStep(field, onDone, true, withUndo);
 				default:
-					// Conveniencia: WhatsApp puede reusar el teléfono ya dado.
 					if (field.key === '_whatsapp' && answers._phone && answers._phone.value) {
-						return runWhatsappStep(field, onDone);
+						return runWhatsappStep(field, onDone, withUndo);
 					}
-					return showTextInput(field, onDone);
+					return showTextInput(field, onDone, withUndo);
 			}
 		});
 	}
 
-	function runTermsStep(field, onDone) {
+	function runTermsStep(field, onDone, withUndo) {
 		var tree = field.tree || [];
 		if (!tree.length) { onDone('', '—'); return; }
 		var options = tree.map(function (t) { return { label: t.name, term: t }; });
@@ -398,10 +513,10 @@
 					onDone(sub.term.id, isParent ? opt.term.name : opt.term.name + ' › ' + sub.term.name);
 				});
 			});
-		});
+		}, withUndo);
 	}
 
-	function runOptionsStep(field, onDone) {
+	function runOptionsStep(field, onDone, withUndo) {
 		var options = Object.keys(field.options).map(function (k) {
 			return { label: field.options[k], val: k };
 		});
@@ -410,7 +525,7 @@
 			if (opt.skip) { userSay('(omitido)'); onDone('', '—'); return; }
 			userSay(opt.label);
 			onDone(opt.val, opt.label);
-		});
+		}, withUndo);
 	}
 
 	function runMultiOptionsStep(field, onDone) {
@@ -439,17 +554,17 @@
 		scrollToBottom();
 	}
 
-	function runBooleanStep(field, onDone) {
+	function runBooleanStep(field, onDone, withUndo) {
 		showButtons([
 			{ label: 'Sí', val: true, cls: 'ppv2-chat-option-primary' },
 			{ label: 'No', val: false }
 		], function (opt) {
 			userSay(opt.label);
 			onDone(opt.val ? true : '', opt.label);
-		});
+		}, withUndo);
 	}
 
-	function runWhatsappStep(field, onDone) {
+	function runWhatsappStep(field, onDone, withUndo) {
 		var phone = answers._phone.value;
 		showButtons([
 			{ label: 'Es el mismo teléfono', val: phone },
@@ -459,12 +574,118 @@
 			userSay(opt.label);
 			if (opt.other) { showTextInput(field, onDone); return; }
 			onDone(opt.val, opt.val || '—');
+		}, withUndo);
+	}
+
+	/* --------------------------- Horarios ------------------------------ */
+
+	/** '8', '8:30', '8 am', '6:30 pm', '18:00' → 'HH:MM' 24 h (o null). */
+	function parseTime(text, isClosing) {
+		var m = /^\s*(\d{1,2})(?:[:.](\d{2}))?\s*(a\.?\s*m\.?|p\.?\s*m\.?)?\s*$/i.exec(text);
+		if (!m) { return null; }
+		var h = parseInt(m[1], 10);
+		var min = m[2] ? parseInt(m[2], 10) : 0;
+		if (h > 23 || min > 59) { return null; }
+		var mer = m[3] ? m[3].toLowerCase().replace(/[^apm]/g, '') : '';
+		if (mer === 'pm' && h < 12) { h += 12; }
+		if (mer === 'am' && h === 12) { h = 0; }
+		// Sin am/pm: al abrir asumimos mañana; al cerrar, tarde/noche.
+		if (!mer && h >= 1 && h <= 11 && isClosing) { h += 12; }
+		return (h < 10 ? '0' : '') + h + ':' + (min < 10 ? '0' : '') + min;
+	}
+
+	function fmt12(hhmm) {
+		var p = hhmm.split(':');
+		var h = parseInt(p[0], 10);
+		var suf = h >= 12 ? 'pm' : 'am';
+		var h12 = h % 12; if (h12 === 0) { h12 = 12; }
+		return h12 + ':' + p[1] + ' ' + suf;
+	}
+
+	function runHoursStep(editing, after) {
+		var stepIdx = queueIndex;
+		var finish = function (value, label) {
+			setAnswer(HOURS_KEY, value, label);
+			if (after) { after(); return; }
+			if (history[history.length - 1] !== stepIdx) { history.push(stepIdx); }
+			nextStep();
+		};
+		botSay('¿Qué días atiendes? Marca los días y toca Listo 🗓️').then(function () {
+			clearInputArea();
+			var selected = {};
+			var $wrap = $('<div>').addClass('ppv2-chat-options');
+			DAY_ORDER.forEach(function (d) {
+				$('<button>').attr('type', 'button').addClass('ppv2-chat-option')
+					.text(DAY_LABELS[d])
+					.on('click', function () {
+						selected[d] = !selected[d];
+						$(this).toggleClass('ppv2-chat-option-selected', selected[d]);
+					})
+					.appendTo($wrap);
+			});
+			var $actions = $('<div>').addClass('ppv2-chat-options ppv2-chat-options-actions');
+			$('<button>').attr('type', 'button').addClass('ppv2-chat-option').text('Lun a Vie')
+				.on('click', function () {
+					['monday','tuesday','wednesday','thursday','friday'].forEach(function (d) { selected[d] = true; });
+					$wrap.children().each(function (i) {
+						$(this).toggleClass('ppv2-chat-option-selected', !!selected[DAY_ORDER[i]]);
+					});
+				}).appendTo($actions);
+			$('<button>').attr('type', 'button').addClass('ppv2-chat-option ppv2-chat-option-primary').text('✔ Listo')
+				.on('click', function () {
+					var days = DAY_ORDER.filter(function (d) { return selected[d]; });
+					if (!days.length) { botSay('Marca al menos un día 🙂', true); return; }
+					userSay(days.map(function (d) { return DAY_LABELS[d]; }).join(', '));
+					askOpenTime(days);
+				}).appendTo($actions);
+			$('<button>').attr('type', 'button').addClass('ppv2-chat-option ppv2-chat-option-alt').text('Omitir')
+				.on('click', function () {
+					userSay('(omitido)');
+					finish('', '—');
+				}).appendTo($actions);
+			$inputArea.append($wrap, $actions);
+			if (!after) { addUndoLink(); }
+			scrollToBottom();
 		});
+
+		function askOpenTime(days) {
+			botSay('¿A qué hora abres? (ej: 8:00 am)').then(function () {
+				timeInput(false, function (open) {
+					botSay('¿Y a qué hora cierras? (ej: 6:00 pm)').then(function () {
+						timeInput(true, function (close) {
+							var label = days.map(function (d) { return DAY_LABELS[d]; }).join(', ')
+								+ ' · ' + fmt12(open) + ' – ' + fmt12(close);
+							finish({ days: days, open: open, close: close }, label);
+						});
+					});
+				});
+			});
+		}
+
+		function timeInput(isClosing, cb) {
+			clearInputArea();
+			var $field = $('<input type="text">').addClass('ppv2-chat-field')
+				.attr({ placeholder: isClosing ? 'Ej: 6:00 pm' : 'Ej: 8:00 am', inputmode: 'text' });
+			var $send = $('<button>').attr('type', 'button').addClass('ppv2-chat-send').text('Enviar');
+			$inputArea.append($('<div>').addClass('ppv2-chat-inputrow').append($field, $send));
+			function submit() {
+				var t = parseTime($field.val(), isClosing);
+				if (!t) {
+					botSay('No entendí la hora 🙈 Escríbela como "8:00 am" o "18:00".', true);
+					return;
+				}
+				userSay(fmt12(t));
+				cb(t);
+			}
+			$send.on('click', submit);
+			$field.on('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); submit(); } });
+			$field.trigger('focus');
+		}
 	}
 
 	/* --------------------------- Imágenes ------------------------------ */
 
-	function runImagesStep(field, onDone, multiple) {
+	function runImagesStep(field, onDone, multiple, withUndo) {
 		clearInputArea();
 		var max = multiple ? (cfg.maxGallery || 10) : 1;
 		var items = [];
@@ -563,6 +784,7 @@
 		var $actions = $('<div>').addClass('ppv2-chat-options ppv2-chat-options-actions').append($add, $ok);
 		if ($skip) { $actions.append($skip); }
 		$inputArea.append($thumbs, $actions, $input);
+		if (withUndo) { addUndoLink(); }
 		refresh();
 		scrollToBottom();
 	}
@@ -571,6 +793,7 @@
 
 	function showSummary() {
 		clearInputArea();
+		hideProgress();
 		botSay('¡Esto va quedando muy bien! 🎉 Revisa el resumen de tu listado:').then(function () {
 			var $card = $('<div>').addClass('ppv2-chat-summary');
 			$('<div>').addClass('ppv2-chat-summary-row')
@@ -586,6 +809,13 @@
 						.appendTo($card);
 				}
 			});
+			var h = answers[HOURS_KEY];
+			if (h && h.value && String(h.label) !== '—') {
+				$('<div>').addClass('ppv2-chat-summary-row')
+					.append($('<strong>').text(HOURS_LABEL + ': '))
+					.append(document.createTextNode(h.label))
+					.appendTo($card);
+			}
 			$messages.append($card);
 			scrollToBottom();
 			showButtons([
@@ -602,18 +832,22 @@
 		botSay('Claro, ¿qué quieres corregir?').then(function () {
 			var options = [{ label: 'Tipo de listado', restart: true }];
 			schema.forEach(function (f, i) { options.push({ label: f.label, idx: i }); });
+			if (hoursSupported) { options.push({ label: HOURS_LABEL, hours: true }); }
 			options.push({ label: '↩ Volver al resumen', back: true, cls: 'ppv2-chat-option-alt' });
 			showButtons(options, function (opt) {
 				userSay(opt.label);
 				if (opt.back) { showSummary(); return; }
 				if (opt.restart) {
 					botSay('Listo, empecemos de nuevo con otro tipo (tus respuestas de este se descartan).', true);
-					chatType = null; answers = {}; schema = []; clearState();
+					chatType = null; answers = {}; schema = []; history = []; clearState();
 					startConversation();
 					return;
 				}
-				returnToSummary = true;
-				runFieldStep(schema[opt.idx], true);
+				if (opt.hours) {
+					runHoursStep(true, function () { showSummary(); });
+					return;
+				}
+				runFieldStep(schema[opt.idx], true, function () { showSummary(); });
 			});
 		});
 	}
@@ -641,8 +875,14 @@
 		if (!cfg.loggedIn) { showLoginGate(); return; }
 		var done = botBusy();
 		var plain = {};
-		Object.keys(answers).forEach(function (k) { plain[k] = answers[k].value; });
-		api('ppcl_create', { type: chatType.slug, fields: JSON.stringify(plain) })
+		Object.keys(answers).forEach(function (k) {
+			if (k !== HOURS_KEY) { plain[k] = answers[k].value; }
+		});
+		var payload = { type: chatType.slug, fields: JSON.stringify(plain) };
+		if (answers[HOURS_KEY] && answers[HOURS_KEY].value) {
+			payload.hours = JSON.stringify(answers[HOURS_KEY].value);
+		}
+		api('ppcl_create', payload)
 			.done(function (res) {
 				done();
 				if (res && res.success) {
@@ -669,8 +909,6 @@
 		if (built) { return; }
 		built = true;
 
-		// "Atrás" arriba a la IZQUIERDA: en modo embebido devuelve a la
-		// pantalla general de Agregar Listado; en página propia, atrás.
 		var $back = $('<a>')
 			.addClass('ppv2-chat-back')
 			.attr('href', cfg.backUrl || '#')
@@ -693,9 +931,16 @@
 			.append($('<div>').addClass('ppv2-chat-header-titles')
 				.append($('<strong>').text('Asistente Parche Peludo'))
 				.append($('<small>').text('Crea tu listado conversando')));
+
+		$progressText = $('<span>');
+		$progressBar = $('<i>');
+		$progressWrap = $('<div>').addClass('ppv2-chat-progress').attr('hidden', true)
+			.append($('<b>').addClass('ppv2-chat-progress-track').append($progressBar))
+			.append($progressText);
+
 		$messages = $('<div>').addClass('ppv2-chat-messages');
 		$inputArea = $('<div>').addClass('ppv2-chat-input');
-		$root.append($header, $messages, $inputArea);
+		$root.append($header, $progressWrap, $messages, $inputArea);
 	}
 
 	function openEmbedded() {
@@ -725,7 +970,6 @@
 
 		if (cfg.mode === 'embedded') {
 			$(document).on('click', '#ppcl-open-chat', openEmbedded);
-			// Si venía en medio de una conversación guardada, reabrir directo.
 			if (readState()) { openEmbedded(); }
 			return;
 		}
