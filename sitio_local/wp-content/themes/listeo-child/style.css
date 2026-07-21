@@ -8425,6 +8425,11 @@ body.woocommerce-cart .pp-cart-row { position: relative; }
 /* Ocultar la seccion de columnas del footer SOLO en Carrito y Checkout (todos los tamanos) */
 body.woocommerce-cart #footer,
 body.woocommerce-checkout #footer { display: none !important; }
+/* Al ocultar el footer quedaba flotando su separador (el <div class="margin-top-55">
+   que el tema pone entre el contenido y el footer): 55px de espacio MUERTO
+   scrolleable al final del carrito. Se anula en el mismo scope. */
+body.woocommerce-cart #wrapper > .margin-top-55,
+body.woocommerce-checkout #wrapper > .margin-top-55 { margin-top: 0 !important; }
 
 /* Reducir a la mitad la altura del titlebar en Carrito y Checkout (184px -> ~92px) */
 body.woocommerce-cart #titlebar,
