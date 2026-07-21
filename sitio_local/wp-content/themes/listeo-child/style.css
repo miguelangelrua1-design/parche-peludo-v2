@@ -9590,6 +9590,12 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
     font-size: 15px;      /* texto un poco más grande (base 13px) */
     line-height: 1.1;
   }
+  /* El tema hereda line-height:55px al campo de búsqueda, pero en móvil el
+     input mide ~36px → el cursor (caret) se dibuja con esos 55px y "cae" por
+     debajo del texto. line-height:normal lo centra sin alterar la altura. */
+  .header-search-container .ppv2-has-scope-tabs input[name="keyword_search"] {
+    line-height: normal !important;
+  }
 }
 
 /* --- Panel de estado de las sugerencias: "Buscando…" / "Sin resultados" --- */
