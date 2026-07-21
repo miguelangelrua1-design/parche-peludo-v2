@@ -4804,6 +4804,21 @@ body.single-listing #listing-nav {
   #header-container.hws-wrapper .header-widget .sign-in {
     flex: 0 0 auto;
   }
+  /* El avatar de "Iniciar Sesión" (invitado) queda a un tamaño cercano al del
+     carrito (un poco menor) y pegado a él (pedido del PO). El ícono es el
+     avatar dibujado con mask en el ::before; en móvil hay que forzar
+     inline-block para que tome width/height (por defecto el tema lo deja
+     inline y los ignora, quedando en ~27px). */
+  #header-container.hws-wrapper .sign-in i.sl-icon-login::before {
+    display: inline-block !important;
+    width: 31px !important;
+    height: 31px !important;
+    vertical-align: middle;
+  }
+  /* Sin sesión, el carrito se pega al avatar (por defecto lo separa 18px). */
+  .user_not_logged_in #header-container.hws-wrapper .listeo-cart-container {
+    margin-left: 6px;
+  }
   /* El tema oculta el carrito a los invitados; lo mostramos también sin sesión. */
   .user_not_logged_in #header-container.hws-wrapper .listeo-cart-container {
     display: inline-block;
