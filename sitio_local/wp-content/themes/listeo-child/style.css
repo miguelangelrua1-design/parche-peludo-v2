@@ -11445,3 +11445,25 @@ body.single-product .pp-pdp-agotado-btn {
     scrollbar-color: rgba(0, 0, 0, .22) transparent;
   }
 }
+
+/* ============================================================
+   TITLEBAR — Títulos y migas de pan largos en MÓVIL.
+   Los títulos de categoría largos ("Collares, arneses y correas") y las
+   migas de pan se salían de la pantalla (se recortaban en el borde, sin
+   generar scroll porque el body tiene overflow-x oculto). El H1 no envolvía
+   y las migas iban en nowrap. Se fuerza el envoltorio dentro del ancho.
+   ============================================================ */
+#titlebar h1,
+#titlebar .single-product-titlebar h1 {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  max-width: 100%;
+  white-space: normal;
+}
+@media (max-width: 767px) {
+  #titlebar #breadcrumbs,
+  #titlebar .breadcrumbs {
+    white-space: normal;      /* que las migas envuelvan en vez de cortarse */
+    overflow-wrap: break-word;
+  }
+}
