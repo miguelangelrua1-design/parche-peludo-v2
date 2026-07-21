@@ -4804,16 +4804,32 @@ body.single-listing #listing-nav {
   #header-container.hws-wrapper .header-widget .sign-in {
     flex: 0 0 auto;
   }
-  /* El avatar de "Iniciar Sesión" (invitado) queda a un tamaño cercano al del
-     carrito (un poco menor) y pegado a él (pedido del PO). El ícono es el
-     avatar dibujado con mask en el ::before; en móvil hay que forzar
-     inline-block para que tome width/height (por defecto el tema lo deja
-     inline y los ignora, quedando en ~27px). */
+  /* Avatar de "Iniciar Sesión" (invitado): tamaño cercano al del carrito (un
+     poco menor), CENTRADO verticalmente con los otros iconos y pegado al
+     carrito (pedido del PO). El ::before es el avatar dibujado con mask; se
+     centra con flex y se sube 3px (el <a> queda ~3px más abajo que lupa/
+     carrito por el layout del tema, y el margin no responde a !important). */
+  #header-container.hws-wrapper .header-widget .sign-in {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  #header-container.hws-wrapper .sign-in i.sl-icon-login {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    position: relative;
+    top: -3px;
+  }
   #header-container.hws-wrapper .sign-in i.sl-icon-login::before {
-    display: inline-block !important;
-    width: 31px !important;
-    height: 31px !important;
-    vertical-align: middle;
+    display: block;
+    width: 34px !important;
+    height: 34px !important;
+  }
+  /* Lupa del buscador (icono gg-search de css.gg): más grande en móvil.
+     Su tamaño lo fija transform:scale(1.2) del tema → lo subimos. */
+  #header-container.hws-wrapper .mobile-search-trigger .gg-search {
+    transform: scale(1.5) !important;
   }
   /* Sin sesión, el carrito se pega al avatar (por defecto lo separa 18px). */
   .user_not_logged_in #header-container.hws-wrapper .listeo-cart-container {
