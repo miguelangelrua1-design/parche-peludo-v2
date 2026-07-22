@@ -11535,3 +11535,38 @@ html body .select2-dropdown--above {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
+
+/* ============================================================
+   "Ordenar por" (Select2) de la TIENDA — homologar su DISEÑO al del Directorio
+   (botón transparente, desplegable con borde suave + esquinas 4px + sombra
+   flotante, opciones compactas con hover teal). Solo diseño; las opciones y la
+   funcionalidad no se tocan. Acotado a body.woocommerce para NO afectar el
+   Select2 del Directorio (que ya tiene este diseño).
+   ============================================================ */
+body.woocommerce .woocommerce-ordering .select2-selection {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body.woocommerce .select2-container--open .select2-dropdown,
+body.woocommerce .select2-dropdown {
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 0 8px rgba(0, 0, 0, .08) !important;
+  padding: 8px !important;
+}
+body.woocommerce .select2-results__options { padding: 0 !important; margin: 0 !important; }
+body.woocommerce .select2-results__option {
+  display: block !important;
+  min-height: 0 !important;
+  padding: 6px 10px !important;
+  line-height: 1.4 !important;
+  border-radius: 3px !important;
+  list-style: none !important;
+}
+/* FLASH: el <select> NATIVO (con otro estilo) se ve un instante antes de que
+   Select2 lo transforme. Se oculta hasta que Select2 lo procesa (le añade la
+   clase .select2-hidden-accessible). */
+.woocommerce-ordering select.orderby:not(.select2-hidden-accessible) {
+  visibility: hidden;
+}
