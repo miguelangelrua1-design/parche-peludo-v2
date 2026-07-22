@@ -11513,7 +11513,11 @@ body.single-product .pp-pdp-agotado-btn {
   width: 1.15em;
   height: 1.15em;
   vertical-align: -0.25em;
-  background-color: currentColor;
+  /* Color OSCURO fijo (no currentColor): el tema pone el texto del .sign-in en
+     gris #666, y con currentColor el avatar heredaba ese gris — bajo el overlay
+     oscuro del popup de login el gris se perdía ("desaparecía") mientras la lupa
+     (#222) y el carrito (#000) sí se veían. #1a1a1a lo iguala a esos iconos. */
+  background-color: #1a1a1a;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3Cpath d='M6.2 18c1-2.3 3.3-3.6 5.8-3.6S17 15.7 18 18'/%3E%3C/svg%3E") no-repeat center / contain;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3Cpath d='M6.2 18c1-2.3 3.3-3.6 5.8-3.6S17 15.7 18 18'/%3E%3C/svg%3E") no-repeat center / contain;
 }
