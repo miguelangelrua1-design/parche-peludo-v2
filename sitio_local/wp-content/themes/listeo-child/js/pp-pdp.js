@@ -214,11 +214,24 @@
 		$form.find( '.variations select' ).each( function () {
 			var $sel = $( this );
 			if ( $sel.next( '.pp-pres-pills' ).length ) { return; }
-			var html = '';
+			// Recolectar las opciones con su gramaje (número del texto: "4 LB"→4).
+			var opts = [];
 			$sel.find( 'option' ).each( function () {
 				var v = $( this ).val();
 				if ( '' === v ) { return; }
-				html += '<button type="button" class="pp-pres-pill" data-value="' + v.replace( /"/g, '&quot;' ) + '" aria-pressed="false">' + $( this ).text() + '</button>';
+				var txt = $( this ).text();
+				var m   = txt.replace( ',', '.' ).match( /[\d.]+/ );
+				opts.push( { value: v, text: txt, num: m ? parseFloat( m[0] ) : NaN } );
+			} );
+			// Ordenar de MENOR a MAYOR gramaje (decisión del PO) SOLO si todas las
+			// presentaciones son numéricas (por peso); si alguna no lo es (talla,
+			// color…), se conserva el orden original de WooCommerce.
+			if ( opts.length && opts.every( function ( o ) { return ! isNaN( o.num ); } ) ) {
+				opts.sort( function ( a, b ) { return a.num - b.num; } );
+			}
+			var html = '';
+			opts.forEach( function ( o ) {
+				html += '<button type="button" class="pp-pres-pill" data-value="' + o.value.replace( /"/g, '&quot;' ) + '" aria-pressed="false">' + o.text + '</button>';
 			} );
 			if ( html ) {
 				$sel.after( '<div class="pp-pres-pills" role="group">' + html + '</div>' );
