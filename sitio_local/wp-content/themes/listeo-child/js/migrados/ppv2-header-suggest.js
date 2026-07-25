@@ -38,6 +38,92 @@
 			return getScope() === 'tienda' ? products.concat(listings) : listings.concat(products);
 		}
 
+		// --- REGISTRO DE BÚSQUEDAS (módulo Buscador de pp-personalizacion) ---
+		// Se envía por beacon desde el navegador porque LiteSpeed cachea las
+		// páginas de resultados: un registro en PHP no correría en los hits de
+		// caché. No bloquea la navegación y sobrevive al cambio de página.
+		function logBusqueda(termino, ambito, resultados, origen) {
+			if (!termino) { return; }
+			try {
+				var datos = new FormData();
+				datos.append('action', 'pp_buscador_log');
+				datos.append('termino', termino);
+				datos.append('ambito', ambito || '');
+				datos.append('resultados', typeof resultados === 'number' ? resultados : 0);
+				datos.append('origen', origen || 'resultados');
+				if (navigator.sendBeacon) {
+					navigator.sendBeacon(ajaxUrl, datos);
+				} else {
+					$.post(ajaxUrl, {
+						action: 'pp_buscador_log', termino: termino, ambito: ambito || '',
+						resultados: resultados || 0, origen: origen || 'resultados'
+					});
+				}
+			} catch (e) {}
+		}
+
+		// Al cargar una página de resultados, reportar qué se buscó y cuántos
+		// resultados dio (el dato lo publica ppv2_publicar_contexto_busqueda).
+		if (window.PPV2_SEARCH_CTX && window.PPV2_SEARCH_CTX.termino) {
+			logBusqueda(
+				window.PPV2_SEARCH_CTX.termino,
+				window.PPV2_SEARCH_CTX.ambito,
+				window.PPV2_SEARCH_CTX.resultados,
+				'resultados'
+			);
+		}
+
+		// Clics de rescate: miden si los puentes y las correcciones funcionan.
+		$(document).on('click', '.ppv2-quisiste-decir a[data-ppv2-correccion]', function() {
+			var ctx = window.PPV2_SEARCH_CTX || {};
+			logBusqueda($(this).attr('data-ppv2-correccion'), ctx.ambito, 0, 'correccion-click');
+		});
+		$(document).on('click', '.ppv2-cross-search-btn', function() {
+			var ctx = window.PPV2_SEARCH_CTX || {};
+			if (ctx.termino) { logBusqueda(ctx.termino, ctx.ambito, 0, 'puente-click'); }
+		});
+
+		// --- Panel de búsquedas populares (al enfocar el campo vacío) ---
+		var $pop = null, popCargadas = null;
+		function mostrarPopulares($field) {
+			if (!window.PPV2_CFG.populares) { return; }
+			if (popCargadas === null) {
+				popCargadas = [];
+				$.getJSON(ajaxUrl, { action: 'pp_buscador_populares' })
+					.done(function(data) {
+						popCargadas = data || [];
+						if ($field.is(':focus') && !$field.val().trim()) { pintarPopulares($field); }
+					});
+				return;
+			}
+			pintarPopulares($field);
+		}
+		function pintarPopulares($field) {
+			if (!popCargadas || !popCargadas.length) { return; }
+			if (!$pop) { $pop = $('<div class="ppv2-populares"></div>').appendTo(document.body); }
+			var html = '<div class="ppv2-populares-titulo">Lo más buscado</div>';
+			$.each(popCargadas, function(i, t) {
+				html += '<button type="button" class="ppv2-popular">' + $('<i>').text(t).html() + '</button>';
+			});
+			var o = $field.offset();
+			$pop.html(html).css({
+				top: (o.top + $field.outerHeight() + 4) + 'px',
+				left: o.left + 'px',
+				minWidth: $field.outerWidth() + 'px'
+			}).show();
+		}
+		function ocultarPopulares() { if ($pop) { $pop.hide(); } }
+
+		$(document).on('mousedown', '.ppv2-popular', function(event) {
+			event.preventDefault();
+			var termino = $(this).text();
+			var $field = $('input[name="keyword_search"]:visible').first();
+			if (!$field.length) { $field = $('input[name="keyword_search"]').first(); }
+			$field.val(termino);
+			ocultarPopulares();
+			if ($field.data('ui-autocomplete')) { $field.autocomplete('search', termino); }
+		});
+
 		// --- Panel de estado bajo el campo: "Buscando…" apenas arranca la
 		// búsqueda (feedback inmediato) y "Sin resultados" cuando no hay nada.
 		var $status = $('<div class="ppv2-suggest-status" style="display:none"></div>').appendTo(document.body);
@@ -207,11 +293,26 @@
 						.fail(function() { response([]); });
 				},
 				select: function(event, ui) {
-					if (ui.item && ui.item.link) { window.location.href = ui.item.link; }
+					if (ui.item && ui.item.link) {
+						// Clic en sugerencia = intención fuerte: se registra aparte
+						// (no infla el conteo de "búsquedas", que usa origen 'resultados').
+						logBusqueda($input.val(), getScope(), 1, 'sugerencia-click');
+						window.location.href = ui.item.link;
+					}
 					return false;
 				},
 				focus: function() { return false; }
 			});
+
+			// Campo vacío + foco → "Lo más buscado"; al escribir, desaparece.
+			$input.on('focus click', function() {
+				if (!$input.val().trim()) { mostrarPopulares($input); }
+			});
+			$input.on('input', function() {
+				if ($input.val().trim()) { ocultarPopulares(); }
+				else { mostrarPopulares($input); }
+			});
+			$input.on('blur', function() { window.setTimeout(ocultarPopulares, 180); });
 
 			// Ciclo de estado: al iniciar la búsqueda → "Buscando…"; al llegar
 			// la respuesta → ocultar (hay menú) o "Sin resultados" (vacía).

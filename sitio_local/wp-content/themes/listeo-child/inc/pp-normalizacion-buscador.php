@@ -66,8 +66,14 @@ function ppv2_normalizar_termino_busqueda( $term ) {
 	foreach ( $palabras as $p ) {
 		$len = mb_strlen( $p, 'UTF-8' );
 		if ( $len > 3 ) {
-			// Palabras que terminan en -es antecedidas por consonante (ej. mordedores -> mordedor)
-			if ( preg_match( '/[bcdfghjklmnpqrstvwxyz]es$/iu', $p ) ) {
+			// Plural en -es: SOLO se recortan las dos letras cuando la consonante
+			// previa es de las que sí cierran palabra en español (l, r, n, d, s,
+			// z, j, x): "mordedores"→"mordedor", "flores"→"flor", "papeles"→"papel".
+			// FIX 2026-07-25: la regla anterior aceptaba cualquier consonante y
+			// convertía "juguetes" en "juguet" (el singular es "juguete"), lo que
+			// impedía que casara con el diccionario de sinónimos. Las palabras como
+			// "juguetes" caen ahora en la regla de vocal + s, que recorta una sola.
+			if ( preg_match( '/[lrndszjx]es$/iu', $p ) ) {
 				$p = mb_substr( $p, 0, $len - 2, 'UTF-8' );
 			}
 			// Palabras que terminan en -s antecedidas por vocal (ej. juguetes -> juguete, perros -> perro)
@@ -79,6 +85,31 @@ function ppv2_normalizar_termino_busqueda( $term ) {
 	}
 
 	return implode( ' ', array_filter( $palabras_norm ) );
+}
+
+/**
+ * Expresión SQL que normaliza una columna de la base de datos: reemplaza
+ * entidades HTML (&amp;), ampersands (&), apóstrofos (' y ’), guiones y
+ * paréntesis. Se conserva el punto decimal para no romper '2.5 kg'.
+ *
+ * Pública para que el módulo Buscador (pp-personalizacion) compare el título
+ * con el MISMO criterio al calcular el ranking de relevancia.
+ *
+ * @param string $col Columna SQL ya calificada (p. ej. wp_posts.post_title).
+ * @return string
+ */
+function ppv2_sql_columna_normalizada( $col ) {
+	return "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE({$col}, '&amp;', ''), '&', ''), '’', ''), '\'', ''), '-', ' '), '(', ''), ')', '')";
+}
+
+/**
+ * Título normalizado, listo para usar en ORDER BY (lo usa el ranking).
+ *
+ * @return string
+ */
+function ppv2_sql_titulo_normalizado() {
+	global $wpdb;
+	return ppv2_sql_columna_normalizada( "{$wpdb->posts}.post_title" );
 }
 
 /**
@@ -138,13 +169,7 @@ function ppv2_normalizar_posts_search( $search, $query ) {
 
 	global $wpdb;
 
-	// Expresión SQL que normaliza una columna guardada en la base de datos:
-	// reemplaza entidades HTML (&amp;), ampersands (&), apóstrofos (' y ’),
-	// guiones y paréntesis. NOTA: se conserva el punto decimal ('2.5 kg').
-	$ppv2_norm_col = function ( $col ) {
-		return "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE({$col}, '&amp;', ''), '&', ''), '’', ''), '\'', ''), '-', ' '), '(', ''), ')', '')";
-	};
-	$sql_title   = $ppv2_norm_col( "{$wpdb->posts}.post_title" );
+	$sql_title   = ppv2_sql_columna_normalizada( "{$wpdb->posts}.post_title" );
 	// FIX 2026-07-25 (diagnóstico): la primera versión buscaba SOLO en el
 	// título y recortó el alcance de la búsqueda nativa (título + contenido +
 	// extracto): "omega" pasó de ~155 coincidencias a 3. Se restaura el
@@ -154,8 +179,8 @@ function ppv2_normalizar_posts_search( $search, $query ) {
 	// nativo, asumible con el catálogo actual (~1.000 ítems); si el catálogo
 	// crece a decenas de miles, migrar a columna normalizada indexada
 	// (previsto en PLAN-EVOLUCION-BUSCADOR.md, Fase 4).
-	$sql_content = $ppv2_norm_col( "{$wpdb->posts}.post_content" );
-	$sql_excerpt = $ppv2_norm_col( "{$wpdb->posts}.post_excerpt" );
+	$sql_content = ppv2_sql_columna_normalizada( "{$wpdb->posts}.post_content" );
+	$sql_excerpt = ppv2_sql_columna_normalizada( "{$wpdb->posts}.post_excerpt" );
 
 	// Dividir el término normalizado en palabras clave
 	$words = explode( ' ', $norm_s );
@@ -166,13 +191,30 @@ function ppv2_normalizar_posts_search( $search, $query ) {
 		if ( '' === $word ) {
 			continue;
 		}
-		$like = '%' . $wpdb->esc_like( $word ) . '%';
-		$where_clauses[] = $wpdb->prepare(
-			"({$sql_title} LIKE %s OR {$sql_content} LIKE %s OR {$sql_excerpt} LIKE %s)",
-			$like,
-			$like,
-			$like
-		);
+
+		// PUNTO DE EXTENSIÓN: el módulo Buscador de pp-personalizacion añade
+		// aquí los SINÓNIMOS de la palabra. Así el diccionario se enchufa sin
+		// competir por el hook posts_search (dos filtros que reemplazan la
+		// cláusula chocarían). Sin el plugin, la lista queda con la palabra
+		// original y todo funciona igual que antes.
+		$variantes = apply_filters( 'ppv2_search_variantes_palabra', array( $word ), $word );
+		$variantes = array_values( array_unique( array_filter( (array) $variantes ) ) );
+
+		// Cada variante puede aparecer en título, contenido o extracto; el
+		// grupo entero va en OR y los grupos (palabras) se unen con AND.
+		$ors = array();
+		foreach ( $variantes as $variante ) {
+			$like  = '%' . $wpdb->esc_like( $variante ) . '%';
+			$ors[] = $wpdb->prepare(
+				"{$sql_title} LIKE %s OR {$sql_content} LIKE %s OR {$sql_excerpt} LIKE %s",
+				$like,
+				$like,
+				$like
+			);
+		}
+		if ( $ors ) {
+			$where_clauses[] = '(' . implode( ' OR ', $ors ) . ')';
+		}
 	}
 
 	if ( empty( $where_clauses ) ) {

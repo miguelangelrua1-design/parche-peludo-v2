@@ -25,6 +25,16 @@ defined( 'ABSPATH' ) || exit;
 			<?php else : ?>
 				<p class="ppv2-nores-text">No encontramos resultados que coincidan con tu búsqueda en <strong>la Tienda</strong>.</p>
 			<?php endif; ?>
+			<?php
+			// "¿Quisiste decir…?" del módulo Buscador (pp-personalizacion).
+			$ppv2_sug = ( $ppv2_q && function_exists( 'pp_buscador_quisiste_decir' ) )
+				? pp_buscador_quisiste_decir( $ppv2_q, 'tienda' )
+				: false;
+			if ( $ppv2_sug ) : ?>
+				<p class="ppv2-quisiste-decir">¿Quisiste decir
+					<a href="<?php echo esc_url( $ppv2_sug['url'] ); ?>" data-ppv2-correccion="<?php echo esc_attr( $ppv2_sug['sugerencia'] ); ?>"><strong><?php echo esc_html( $ppv2_sug['sugerencia'] ); ?></strong></a>?
+				</p>
+			<?php endif; ?>
 		</div>
 	<?php else : ?>
 		<?php wc_print_notice( esc_html__( 'No products were found matching your selection.', 'woocommerce' ), 'notice' ); ?>

@@ -9718,6 +9718,59 @@ ul.ppv2-suggest-menu .ppv2-suggest-price {
   }
 }
 
+/* --- "¿Quisiste decir…?" (corrección de tipeo del módulo Buscador) --- */
+.ppv2-quisiste-decir {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: #6b7478;
+}
+.ppv2-quisiste-decir a {
+  color: var(--teal-deep);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ppv2-quisiste-decir a:hover {
+  color: var(--teal-ink);
+}
+
+/* --- "Lo más buscado" (panel al enfocar el campo vacío) --- */
+.ppv2-populares {
+  position: absolute;
+  z-index: 9999;
+  display: none;
+  max-width: 460px;
+  padding: 12px 14px 14px;
+  background: #fff;
+  border: 1px solid var(--teal-mist);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-lg);
+}
+.ppv2-populares-titulo {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--teal-ink);
+  margin-bottom: 9px;
+}
+.ppv2-popular {
+  display: inline-block;
+  margin: 0 6px 6px 0;
+  padding: 7px 14px;
+  border: 1px solid var(--teal-mist);
+  border-radius: var(--r-pill);
+  background: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--teal-ink);
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+.ppv2-popular:hover {
+  background: var(--teal-mist);
+  border-color: var(--teal-parche);
+}
+
 /* --- Puente entre mundos: tarjeta teal (badge, conteo, botón blanco) --- */
 .ppv2-cross-search {
   position: relative;

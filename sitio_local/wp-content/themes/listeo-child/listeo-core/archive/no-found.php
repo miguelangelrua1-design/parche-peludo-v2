@@ -48,6 +48,17 @@ $ppv2_seccion_frase = ( 'Directorio' === $ppv2_seccion ) ? 'el Directorio' : $pp
 	<?php else : ?>
 		<p class="ppv2-nores-text">No encontramos resultados que coincidan con tu búsqueda en <strong><?php echo esc_html( $ppv2_seccion_frase ); ?></strong>.</p>
 	<?php endif; ?>
+	<?php
+	// "¿Quisiste decir…?" — corrección de tipeo que aporta el módulo Buscador
+	// (pp-personalizacion) a partir de un índice del propio catálogo.
+	$ppv2_sug = ( $ppv2_term && function_exists( 'pp_buscador_quisiste_decir' ) )
+		? pp_buscador_quisiste_decir( $ppv2_term, function_exists( 'pp_buscador_ambito_actual' ) ? pp_buscador_ambito_actual() : '' )
+		: false;
+	if ( $ppv2_sug ) : ?>
+		<p class="ppv2-quisiste-decir">¿Quisiste decir
+			<a href="<?php echo esc_url( $ppv2_sug['url'] ); ?>" data-ppv2-correccion="<?php echo esc_attr( $ppv2_sug['sugerencia'] ); ?>"><strong><?php echo esc_html( $ppv2_sug['sugerencia'] ); ?></strong></a>?
+		</p>
+	<?php endif; ?>
 	<?php if ( $ppv2_count > 0 ) : ?>
 	<div class="ppv2-cross-search">
 		<span class="ppv2-cross-paws" aria-hidden="true">🐾</span>

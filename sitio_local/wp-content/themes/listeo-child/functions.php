@@ -1400,7 +1400,12 @@ function ppv2_header_suggest() {
 	// con tráfico real— responden sin consultar la base de datos. Se invalida
 	// solo al expirar; 10 min de desfase máximo en sugerencias es aceptable.
 	$term_key  = function_exists( 'mb_strtolower' ) ? mb_strtolower( $term, 'UTF-8' ) : strtolower( $term );
-	$cache_key = 'ppv2_suggest_' . md5( $term_key . '|' . $tipo );
+	// La "sal" permite al módulo Buscador (pp-personalizacion) invalidar esta
+	// caché al vuelo cuando se editan sinónimos o redirecciones: la versión del
+	// diccionario forma parte de la clave, así los cambios del panel se ven al
+	// instante en vez de esperar los 10 minutos del transitorio.
+	$cache_salt = apply_filters( 'ppv2_suggest_cache_salt', '' );
+	$cache_key  = 'ppv2_suggest_' . md5( $term_key . '|' . $tipo . $cache_salt );
 	$cached    = get_transient( $cache_key );
 	if ( false !== $cached && is_array( $cached ) ) {
 		wp_send_json( $cached );
@@ -1528,9 +1533,66 @@ function ppv2_header_suggest() {
 		);
 	}
 
-	$suggestions = array_merge( $listing_items, $product_items );
+	// --- Categorías (las aporta el módulo Buscador de pp-personalizacion) ---
+	// Atajo para saltar a la sección completa con sus filtros en vez de ver
+	// solo 5 productos sueltos. Si el plugin no está, simplemente no aparecen.
+	$category_items = array();
+	if ( function_exists( 'pp_buscador_sugerir_categorias' ) ) {
+		foreach ( pp_buscador_sugerir_categorias( $term, 3 ) as $cat ) {
+			$category_items[] = array(
+				'label' => $cat['label'],
+				'value' => $cat['label'],
+				'link'  => $cat['link'],
+				'group' => 'Categorías',
+				'img'   => '',
+				'meta'  => sprintf( _n( '%s resultado', '%s resultados', $cat['count'], 'listeo' ), number_format_i18n( $cat['count'] ) ),
+			);
+		}
+	}
+
+	$suggestions = array_merge( $category_items, $listing_items, $product_items );
 	set_transient( $cache_key, $suggestions, 10 * MINUTE_IN_SECONDS );
 	wp_send_json( $suggestions );
+}
+
+/**
+ * CONTEXTO DE BÚSQUEDA para el registro (módulo Buscador).
+ *
+ * Publica en la página qué se buscó, en qué ámbito y cuántos resultados hubo,
+ * para que el JS lo reporte por beacon. Se hace así —y no registrando en PHP—
+ * porque LiteSpeed cachea las páginas de resultados: un registro en PHP no
+ * correría en los hits de caché y subcontaría justo las búsquedas más repetidas.
+ *
+ * Solo imprime el dato; el envío y su interruptor viven en el módulo/JS.
+ */
+add_action( 'wp_footer', 'ppv2_publicar_contexto_busqueda', 4 );
+function ppv2_publicar_contexto_busqueda() {
+	global $wp_query;
+
+	$termino = '';
+	$ambito  = '';
+
+	if ( is_search() && 'product' === get_query_var( 'post_type' ) ) {
+		$termino = get_search_query();
+		$ambito  = 'tienda';
+	} elseif ( function_exists( 'ppv2_is_listings_archive' ) && ppv2_is_listings_archive() && ! empty( $_GET['keyword_search'] ) ) {
+		$termino = class_exists( 'Listeo_Core_Search' )
+			? Listeo_Core_Search::sanitize_keyword_search( wp_unslash( $_GET['keyword_search'] ) )
+			: sanitize_text_field( wp_unslash( $_GET['keyword_search'] ) );
+		$ambito  = function_exists( 'pp_buscador_ambito_actual' ) ? pp_buscador_ambito_actual() : 'directorio';
+	}
+
+	if ( '' === trim( (string) $termino ) ) {
+		return;
+	}
+
+	$datos = array(
+		'termino'    => $termino,
+		'ambito'     => $ambito,
+		'resultados' => isset( $wp_query->found_posts ) ? (int) $wp_query->found_posts : 0,
+	);
+
+	echo '<script>window.PPV2_SEARCH_CTX = ' . wp_json_encode( $datos ) . ';</script>' . "\n";
 }
 
 /**
@@ -2222,9 +2284,11 @@ function ppv2_enqueue_js_migrados() {
 		} elseif ( function_exists( 'ppv2_is_listings_archive' ) && ppv2_is_listings_archive() ) {
 			$ppv2_page_scope = 'directorio';
 		}
+		// "populares" solo si el módulo Buscador existe y tiene esa función activa.
+		$ppv2_populares = function_exists( 'pp_buscador_activo' ) && pp_buscador_activo( 'pp_buscador_populares' );
 		wp_add_inline_script(
 			'ppv2-header-suggest',
-			'window.PPV2_CFG = Object.assign({ajaxUrl:' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ',homeUrl:' . wp_json_encode( home_url( '/' ) ) . ',pageScope:' . wp_json_encode( $ppv2_page_scope ) . '}, window.PPV2_CFG || {});',
+			'window.PPV2_CFG = Object.assign({ajaxUrl:' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ',homeUrl:' . wp_json_encode( home_url( '/' ) ) . ',pageScope:' . wp_json_encode( $ppv2_page_scope ) . ',populares:' . wp_json_encode( $ppv2_populares ) . '}, window.PPV2_CFG || {});',
 			'before'
 		);
 	}
