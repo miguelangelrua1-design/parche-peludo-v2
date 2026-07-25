@@ -680,8 +680,10 @@
 		// Enviar Mensaje: boton outline teal-parche con chevron para indicar
 		// claramente la affordance de toggle (abrir/cerrar el componente).
 		ppv2MakeWidgetCollapsible(msgWidget, { collapsed: 'Enviar Mensaje', expanded: 'Enviar mensaje', mobileSheet: true, sheetType: 'message', desktopDrawer: true, drawerTitle: 'Enviar Mensaje' });
-		// Ver horarios: pill outline gris, CON chevron a la derecha.
-		ppv2MakeWidgetCollapsible(hoursWidget, { collapsed: 'Horarios', expanded: 'Horarios', mobileSheet: true, sheetType: 'hours', desktopDrawer: true, drawerTitle: 'Horarios' });
+		// Ver horarios: pill outline gris, SIN chevron (la etiqueta "Ahora Abierto /
+		// Ahora Cerrado" ya comunica que el bloque es interactivo, y la flecha
+		// recargaba visualmente un botón que en móvil abre una hoja inferior).
+		ppv2MakeWidgetCollapsible(hoursWidget, { collapsed: 'Horarios', expanded: 'Horarios', noChevron: true, mobileSheet: true, sheetType: 'hours', desktopDrawer: true, drawerTitle: 'Horarios' });
 
 		// Poner "Enviar Mensaje" y "Ver horarios" en la MISMA fila (lado a lado en
 		// desktop; el CSS .ppv2-sidebar-actions los hace flex 50/50). En móvil el

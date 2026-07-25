@@ -1,0 +1,641 @@
+﻿URL_Id,URL_Tipo,URL_String,Strategy,Run,Metric_Type,Metric_Name,Value,Unit,Category_Status
+1,"Portada","https://parchepeludo.com/",mobile,1,Score,Performance,46,points,Malo
+1,"Portada","https://parchepeludo.com/",mobile,1,Score,Accessibility,89,points,
+1,"Portada","https://parchepeludo.com/",mobile,1,Score,BestPractices,100,points,
+1,"Portada","https://parchepeludo.com/",mobile,1,Score,SEO,100,points,
+1,"Portada","https://parchepeludo.com/",mobile,1,LabMetric,LCP,11851.0344593458,ms,Malo
+1,"Portada","https://parchepeludo.com/",mobile,1,LabMetric,CLS,0.0119718853205123,unitless,Bueno
+1,"Portada","https://parchepeludo.com/",mobile,1,LabMetric,TBT,407,ms,Mejorable
+1,"Portada","https://parchepeludo.com/",mobile,1,LabMetric,FCP,10351.0299841061,ms,Malo
+1,"Portada","https://parchepeludo.com/",mobile,1,LabMetric,SpeedIndex,10351.0299841061,ms,
+1,"Portada","https://parchepeludo.com/",mobile,1,LabMetric,TTFB,57,ms,
+1,"Portada","https://parchepeludo.com/",mobile,2,Score,Performance,48,points,Malo
+1,"Portada","https://parchepeludo.com/",mobile,2,Score,Accessibility,89,points,
+1,"Portada","https://parchepeludo.com/",mobile,2,Score,BestPractices,100,points,
+1,"Portada","https://parchepeludo.com/",mobile,2,Score,SEO,100,points,
+1,"Portada","https://parchepeludo.com/",mobile,2,LabMetric,LCP,12001.0597448713,ms,Malo
+1,"Portada","https://parchepeludo.com/",mobile,2,LabMetric,CLS,0.0119718853205123,unitless,Bueno
+1,"Portada","https://parchepeludo.com/",mobile,2,LabMetric,TBT,336,ms,Mejorable
+1,"Portada","https://parchepeludo.com/",mobile,2,LabMetric,FCP,10351.0513193125,ms,Malo
+1,"Portada","https://parchepeludo.com/",mobile,2,LabMetric,SpeedIndex,10351.0513193125,ms,
+1,"Portada","https://parchepeludo.com/",mobile,2,LabMetric,TTFB,23,ms,
+1,"Portada","https://parchepeludo.com/",mobile,3,Score,Performance,48,points,Malo
+1,"Portada","https://parchepeludo.com/",mobile,3,Score,Accessibility,89,points,
+1,"Portada","https://parchepeludo.com/",mobile,3,Score,BestPractices,100,points,
+1,"Portada","https://parchepeludo.com/",mobile,3,Score,SEO,100,points,
+1,"Portada","https://parchepeludo.com/",mobile,3,LabMetric,LCP,12001.0597448713,ms,Malo
+1,"Portada","https://parchepeludo.com/",mobile,3,LabMetric,CLS,0.0119718853205123,unitless,Bueno
+1,"Portada","https://parchepeludo.com/",mobile,3,LabMetric,TBT,336,ms,Mejorable
+1,"Portada","https://parchepeludo.com/",mobile,3,LabMetric,FCP,10351.0513193125,ms,Malo
+1,"Portada","https://parchepeludo.com/",mobile,3,LabMetric,SpeedIndex,10351.0513193125,ms,
+1,"Portada","https://parchepeludo.com/",mobile,3,LabMetric,TTFB,23,ms,
+1,"Portada","https://parchepeludo.com/",mobile,MEDIAN,Score,Performance,48,points,Malo
+1,"Portada","https://parchepeludo.com/",mobile,MEDIAN,Score,Accessibility,89,points,
+1,"Portada","https://parchepeludo.com/",mobile,MEDIAN,Score,BestPractices,100,points,
+1,"Portada","https://parchepeludo.com/",mobile,MEDIAN,Score,SEO,100,points,
+1,"Portada","https://parchepeludo.com/",mobile,MEDIAN,LabMetric,LCP,12001.0597448713,ms,Malo
+1,"Portada","https://parchepeludo.com/",mobile,MEDIAN,LabMetric,CLS,0.0119718853205123,unitless,Bueno
+1,"Portada","https://parchepeludo.com/",mobile,MEDIAN,LabMetric,TBT,336,ms,Mejorable
+1,"Portada","https://parchepeludo.com/",mobile,MEDIAN,LabMetric,FCP,10351.0513193125,ms,Malo
+1,"Portada","https://parchepeludo.com/",mobile,MEDIAN,LabMetric,SpeedIndex,10351.0513193125,ms,
+1,"Portada","https://parchepeludo.com/",mobile,MEDIAN,LabMetric,TTFB,23,ms,
+1,"Portada","https://parchepeludo.com/",desktop,1,Score,Performance,74,points,Mejorable
+1,"Portada","https://parchepeludo.com/",desktop,1,Score,Accessibility,89,points,
+1,"Portada","https://parchepeludo.com/",desktop,1,Score,BestPractices,100,points,
+1,"Portada","https://parchepeludo.com/",desktop,1,Score,SEO,100,points,
+1,"Portada","https://parchepeludo.com/",desktop,1,LabMetric,LCP,2101.03219229785,ms,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,1,LabMetric,CLS,0.00241293737922344,unitless,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,1,LabMetric,TBT,162.999999999999,ms,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,1,LabMetric,FCP,1881.028686206,ms,Mejorable
+1,"Portada","https://parchepeludo.com/",desktop,1,LabMetric,SpeedIndex,2269.28723886301,ms,
+1,"Portada","https://parchepeludo.com/",desktop,1,LabMetric,TTFB,85,ms,
+1,"Portada","https://parchepeludo.com/",desktop,2,Score,Performance,78,points,Mejorable
+1,"Portada","https://parchepeludo.com/",desktop,2,Score,Accessibility,89,points,
+1,"Portada","https://parchepeludo.com/",desktop,2,Score,BestPractices,100,points,
+1,"Portada","https://parchepeludo.com/",desktop,2,Score,SEO,100,points,
+1,"Portada","https://parchepeludo.com/",desktop,2,LabMetric,LCP,2121.04620973734,ms,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,2,LabMetric,CLS,0.00269211008973103,unitless,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,2,LabMetric,TBT,127,ms,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,2,LabMetric,FCP,1881.04077329765,ms,Mejorable
+1,"Portada","https://parchepeludo.com/",desktop,2,LabMetric,SpeedIndex,1881.04077329765,ms,
+1,"Portada","https://parchepeludo.com/",desktop,2,LabMetric,TTFB,58,ms,
+1,"Portada","https://parchepeludo.com/",desktop,3,Score,Performance,77,points,Mejorable
+1,"Portada","https://parchepeludo.com/",desktop,3,Score,Accessibility,89,points,
+1,"Portada","https://parchepeludo.com/",desktop,3,Score,BestPractices,100,points,
+1,"Portada","https://parchepeludo.com/",desktop,3,Score,SEO,100,points,
+1,"Portada","https://parchepeludo.com/",desktop,3,LabMetric,LCP,2101.02484858732,ms,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,3,LabMetric,CLS,0.00241295239963883,unitless,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,3,LabMetric,TBT,133,ms,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,3,LabMetric,FCP,1881.02214230553,ms,Mejorable
+1,"Portada","https://parchepeludo.com/",desktop,3,LabMetric,SpeedIndex,1980.08609518724,ms,
+1,"Portada","https://parchepeludo.com/",desktop,3,LabMetric,TTFB,57,ms,
+1,"Portada","https://parchepeludo.com/",desktop,MEDIAN,Score,Performance,77,points,Mejorable
+1,"Portada","https://parchepeludo.com/",desktop,MEDIAN,Score,Accessibility,89,points,
+1,"Portada","https://parchepeludo.com/",desktop,MEDIAN,Score,BestPractices,100,points,
+1,"Portada","https://parchepeludo.com/",desktop,MEDIAN,Score,SEO,100,points,
+1,"Portada","https://parchepeludo.com/",desktop,MEDIAN,LabMetric,LCP,2101.03219229785,ms,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,MEDIAN,LabMetric,CLS,0.00241295239963883,unitless,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,MEDIAN,LabMetric,TBT,133,ms,Bueno
+1,"Portada","https://parchepeludo.com/",desktop,MEDIAN,LabMetric,FCP,1881.028686206,ms,Mejorable
+1,"Portada","https://parchepeludo.com/",desktop,MEDIAN,LabMetric,SpeedIndex,1980.08609518724,ms,
+1,"Portada","https://parchepeludo.com/",desktop,MEDIAN,LabMetric,TTFB,58,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,1,Score,Performance,32,points,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,1,Score,Accessibility,85,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,1,Score,BestPractices,96,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,1,Score,SEO,100,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,1,LabMetric,LCP,17101.0409829837,ms,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,1,LabMetric,CLS,0.341784310225429,unitless,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,1,LabMetric,TBT,318,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,1,LabMetric,FCP,10201.0241506868,ms,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,1,LabMetric,SpeedIndex,10201.0241506868,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,1,LabMetric,TTFB,72,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,2,Score,Performance,32,points,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,2,Score,Accessibility,85,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,2,Score,BestPractices,96,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,2,Score,SEO,100,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,2,LabMetric,LCP,17101.0409829837,ms,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,2,LabMetric,CLS,0.341784310225429,unitless,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,2,LabMetric,TBT,318,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,2,LabMetric,FCP,10201.0241506868,ms,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,2,LabMetric,SpeedIndex,10201.0241506868,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,2,LabMetric,TTFB,72,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,3,Score,Performance,32,points,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,3,Score,Accessibility,85,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,3,Score,BestPractices,96,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,3,Score,SEO,100,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,3,LabMetric,LCP,17101.0409829837,ms,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,3,LabMetric,CLS,0.341784310225429,unitless,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,3,LabMetric,TBT,318,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,3,LabMetric,FCP,10201.0241506868,ms,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,3,LabMetric,SpeedIndex,10201.0241506868,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,3,LabMetric,TTFB,72,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,MEDIAN,Score,Performance,32,points,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,MEDIAN,Score,Accessibility,85,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,MEDIAN,Score,BestPractices,96,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,MEDIAN,Score,SEO,100,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,MEDIAN,LabMetric,LCP,17101.0409829837,ms,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,MEDIAN,LabMetric,CLS,0.341784310225429,unitless,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,MEDIAN,LabMetric,TBT,318,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,MEDIAN,LabMetric,FCP,10201.0241506868,ms,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,MEDIAN,LabMetric,SpeedIndex,10201.0241506868,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",mobile,MEDIAN,LabMetric,TTFB,72,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,1,Score,Performance,54,points,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,1,Score,Accessibility,74,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,1,Score,BestPractices,96,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,1,Score,SEO,100,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,1,LabMetric,LCP,2201.04482840792,ms,Bueno
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,1,LabMetric,CLS,0.222773364557647,unitless,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,1,LabMetric,TBT,296.499999999999,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,1,LabMetric,FCP,1841.03721603676,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,1,LabMetric,SpeedIndex,2439.96552224004,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,1,LabMetric,TTFB,8,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,2,Score,Performance,54,points,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,2,Score,Accessibility,74,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,2,Score,BestPractices,96,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,2,Score,SEO,100,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,2,LabMetric,LCP,2201.04482840792,ms,Bueno
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,2,LabMetric,CLS,0.222773364557647,unitless,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,2,LabMetric,TBT,296.499999999999,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,2,LabMetric,FCP,1841.03721603676,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,2,LabMetric,SpeedIndex,2439.96552224004,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,2,LabMetric,TTFB,8,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,3,Score,Performance,48,points,Malo
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,3,Score,Accessibility,74,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,3,Score,BestPractices,96,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,3,Score,SEO,100,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,3,LabMetric,LCP,2261.04455048061,ms,Bueno
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,3,LabMetric,CLS,0.237835033501492,unitless,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,3,LabMetric,TBT,373.000000000001,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,3,LabMetric,FCP,1873.02861040039,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,3,LabMetric,SpeedIndex,2594.49646371654,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,3,LabMetric,TTFB,19,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,MEDIAN,Score,Performance,54,points,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,MEDIAN,Score,Accessibility,74,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,MEDIAN,Score,BestPractices,96,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,MEDIAN,Score,SEO,100,points,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,MEDIAN,LabMetric,LCP,2201.04482840792,ms,Bueno
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,MEDIAN,LabMetric,CLS,0.222773364557647,unitless,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,MEDIAN,LabMetric,TBT,296.499999999999,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,MEDIAN,LabMetric,FCP,1841.03721603676,ms,Mejorable
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,MEDIAN,LabMetric,SpeedIndex,2439.96552224004,ms,
+2,"Directorio (busqueda de servicios)","https://parchepeludo.com/directorio/",desktop,MEDIAN,LabMetric,TTFB,8,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,1,Score,Performance,53,points,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,1,Score,Accessibility,88,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,1,Score,BestPractices,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,1,Score,SEO,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,1,LabMetric,LCP,10651.1101738168,ms,Malo
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,1,LabMetric,CLS,0.0102009102596626,unitless,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,1,LabMetric,TBT,195,ms,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,1,LabMetric,FCP,9901.10219020692,ms,Malo
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,1,LabMetric,SpeedIndex,9901.10219020692,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,1,LabMetric,TTFB,47,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,2,Score,Performance,53,points,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,2,Score,Accessibility,88,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,2,Score,BestPractices,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,2,Score,SEO,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,2,LabMetric,LCP,11028.0973718209,ms,Malo
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,2,LabMetric,CLS,0.0102009102596626,unitless,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,2,LabMetric,TBT,186.497276312695,ms,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,2,LabMetric,FCP,10203.0898816808,ms,Malo
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,2,LabMetric,SpeedIndex,10203.0898816808,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,2,LabMetric,TTFB,115,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,3,Score,Performance,50,points,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,3,Score,Accessibility,88,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,3,Score,BestPractices,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,3,Score,SEO,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,3,LabMetric,LCP,10726.0825521784,ms,Malo
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,3,LabMetric,CLS,0.0102009102596626,unitless,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,3,LabMetric,TBT,285,ms,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,3,LabMetric,FCP,9301.07126806772,ms,Malo
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,3,LabMetric,SpeedIndex,9301.07126806772,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,3,LabMetric,TTFB,48,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,MEDIAN,Score,Performance,53,points,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,MEDIAN,Score,Accessibility,88,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,MEDIAN,Score,BestPractices,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,MEDIAN,Score,SEO,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,MEDIAN,LabMetric,LCP,10726.0825521784,ms,Malo
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,MEDIAN,LabMetric,CLS,0.0102009102596626,unitless,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,MEDIAN,LabMetric,TBT,195,ms,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,MEDIAN,LabMetric,FCP,9901.10219020692,ms,Malo
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,MEDIAN,LabMetric,SpeedIndex,9901.10219020692,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",mobile,MEDIAN,LabMetric,TTFB,48,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,1,Score,Performance,75,points,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,1,Score,Accessibility,88,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,1,Score,BestPractices,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,1,Score,SEO,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,1,LabMetric,LCP,2081.04372833691,ms,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,1,LabMetric,CLS,0.0033807137870115,unitless,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,1,LabMetric,TBT,182.999125433262,ms,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,1,LabMetric,FCP,1841.03848093648,ms,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,1,LabMetric,SpeedIndex,1934.36042090709,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,1,LabMetric,TTFB,69,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,2,Score,Performance,81,points,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,2,Score,Accessibility,88,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,2,Score,BestPractices,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,2,Score,SEO,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,2,LabMetric,LCP,2081.02040232229,ms,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,2,LabMetric,CLS,0.00323091448495598,unitless,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,2,LabMetric,TBT,0,ms,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,2,LabMetric,FCP,1841.01795404362,ms,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,2,LabMetric,SpeedIndex,1841.01795404362,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,2,LabMetric,TTFB,5,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,3,Score,Performance,81,points,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,3,Score,Accessibility,88,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,3,Score,BestPractices,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,3,Score,SEO,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,3,LabMetric,LCP,2041.03422162466,ms,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,3,LabMetric,CLS,0.00322265213146744,unitless,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,3,LabMetric,TBT,9,ms,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,3,LabMetric,FCP,1841.03072962214,ms,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,3,LabMetric,SpeedIndex,1841.03072962214,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,3,LabMetric,TTFB,7,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,MEDIAN,Score,Performance,81,points,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,MEDIAN,Score,Accessibility,88,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,MEDIAN,Score,BestPractices,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,MEDIAN,Score,SEO,100,points,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,MEDIAN,LabMetric,LCP,2081.02040232229,ms,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,MEDIAN,LabMetric,CLS,0.00323091448495598,unitless,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,MEDIAN,LabMetric,TBT,9,ms,Bueno
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,MEDIAN,LabMetric,FCP,1841.03072962214,ms,Mejorable
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,MEDIAN,LabMetric,SpeedIndex,1841.03072962214,ms,
+3,"Tienda","https://parchepeludo.com/tienda/",desktop,MEDIAN,LabMetric,TTFB,7,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,1,Score,Performance,50,points,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,1,Score,Accessibility,89,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,1,Score,BestPractices,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,1,Score,SEO,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,1,LabMetric,LCP,13126.0450668061,ms,Malo
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,1,LabMetric,CLS,0.130096106875548,unitless,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,1,LabMetric,TBT,79.9994729028494,ms,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,1,LabMetric,FCP,11551.039532286,ms,Malo
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,1,LabMetric,SpeedIndex,11551.039532286,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,1,LabMetric,TTFB,31,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,2,Score,Performance,50,points,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,2,Score,Accessibility,89,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,2,Score,BestPractices,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,2,Score,SEO,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,2,LabMetric,LCP,12676.0539332891,ms,Malo
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,2,LabMetric,CLS,0.140643418447915,unitless,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,2,LabMetric,TBT,12,ms,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,2,LabMetric,FCP,11251.0477227891,ms,Malo
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,2,LabMetric,SpeedIndex,11251.0477227891,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,2,LabMetric,TTFB,5,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,3,Score,Performance,50,points,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,3,Score,Accessibility,89,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,3,Score,BestPractices,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,3,Score,SEO,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,3,LabMetric,LCP,13126.0450668061,ms,Malo
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,3,LabMetric,CLS,0.130096106875548,unitless,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,3,LabMetric,TBT,79.9994729028494,ms,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,3,LabMetric,FCP,11551.039532286,ms,Malo
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,3,LabMetric,SpeedIndex,11551.039532286,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,3,LabMetric,TTFB,31,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,MEDIAN,Score,Performance,50,points,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,MEDIAN,Score,Accessibility,89,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,MEDIAN,Score,BestPractices,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,MEDIAN,Score,SEO,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,MEDIAN,LabMetric,LCP,13126.0450668061,ms,Malo
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,MEDIAN,LabMetric,CLS,0.130096106875548,unitless,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,MEDIAN,LabMetric,TBT,79.9994729028494,ms,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,MEDIAN,LabMetric,FCP,11551.039532286,ms,Malo
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,MEDIAN,LabMetric,SpeedIndex,11551.039532286,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",mobile,MEDIAN,LabMetric,TTFB,31,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,1,Score,Performance,65,points,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,1,Score,Accessibility,89,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,1,Score,BestPractices,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,1,Score,SEO,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,1,LabMetric,LCP,2341.06608028723,ms,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,1,LabMetric,CLS,0.0755242212654787,unitless,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,1,LabMetric,TBT,258.999415218697,ms,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,1,LabMetric,FCP,2041.05730856768,ms,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,1,LabMetric,SpeedIndex,2180.62171466369,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,1,LabMetric,TTFB,48,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,2,Score,Performance,57,points,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,2,Score,Accessibility,89,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,2,Score,BestPractices,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,2,Score,SEO,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,2,LabMetric,LCP,2401.03407751124,ms,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,2,LabMetric,CLS,0.0755242212654787,unitless,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,2,LabMetric,TBT,378.999999999999,ms,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,2,LabMetric,FCP,2099.02350173189,ms,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,2,LabMetric,SpeedIndex,2378.15348293865,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,2,LabMetric,TTFB,71,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,3,Score,Performance,57,points,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,3,Score,Accessibility,89,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,3,Score,BestPractices,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,3,Score,SEO,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,3,LabMetric,LCP,2401.03407751124,ms,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,3,LabMetric,CLS,0.0755242212654787,unitless,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,3,LabMetric,TBT,378.999999999999,ms,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,3,LabMetric,FCP,2099.02350173189,ms,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,3,LabMetric,SpeedIndex,2378.15348293865,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,3,LabMetric,TTFB,71,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,MEDIAN,Score,Performance,57,points,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,MEDIAN,Score,Accessibility,89,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,MEDIAN,Score,BestPractices,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,MEDIAN,Score,SEO,100,points,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,MEDIAN,LabMetric,LCP,2401.03407751124,ms,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,MEDIAN,LabMetric,CLS,0.0755242212654787,unitless,Bueno
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,MEDIAN,LabMetric,TBT,378.999999999999,ms,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,MEDIAN,LabMetric,FCP,2099.02350173189,ms,Mejorable
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,MEDIAN,LabMetric,SpeedIndex,2378.15348293865,ms,
+4,"Landing de Servicios","https://parchepeludo.com/home-servicios/",desktop,MEDIAN,LabMetric,TTFB,71,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,1,Score,Performance,33,points,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,1,Score,Accessibility,89,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,1,Score,BestPractices,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,1,Score,SEO,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,1,LabMetric,LCP,11251.0431829535,ms,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,1,LabMetric,CLS,0.0284482579323894,unitless,Bueno
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,1,LabMetric,TBT,1125.5,ms,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,1,LabMetric,FCP,9901.03785902774,ms,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,1,LabMetric,SpeedIndex,9901.03785902774,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,1,LabMetric,TTFB,72,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,2,Score,Performance,54,points,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,2,Score,Accessibility,89,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,2,Score,BestPractices,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,2,Score,SEO,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,2,LabMetric,LCP,11433.060708908,ms,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,2,LabMetric,CLS,0.029508764447472,unitless,Bueno
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,2,LabMetric,TBT,175,ms,Bueno
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,2,LabMetric,FCP,9901.0525050015,ms,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,2,LabMetric,SpeedIndex,9901.0525050015,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,2,LabMetric,TTFB,50,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,3,Score,Performance,30,points,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,3,Score,Accessibility,89,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,3,Score,BestPractices,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,3,Score,SEO,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,3,LabMetric,LCP,9151.54803448773,ms,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,3,LabMetric,CLS,0.51045954681418,unitless,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,3,LabMetric,TBT,299,ms,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,3,LabMetric,FCP,8150.54070719299,ms,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,3,LabMetric,SpeedIndex,8150.54070719299,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,3,LabMetric,TTFB,120,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,MEDIAN,Score,Performance,33,points,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,MEDIAN,Score,Accessibility,89,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,MEDIAN,Score,BestPractices,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,MEDIAN,Score,SEO,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,MEDIAN,LabMetric,LCP,11251.0431829535,ms,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,MEDIAN,LabMetric,CLS,0.029508764447472,unitless,Bueno
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,MEDIAN,LabMetric,TBT,299,ms,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,MEDIAN,LabMetric,FCP,9901.03785902774,ms,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,MEDIAN,LabMetric,SpeedIndex,9901.03785902774,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",mobile,MEDIAN,LabMetric,TTFB,72,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,1,Score,Performance,77,points,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,1,Score,Accessibility,89,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,1,Score,BestPractices,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,1,Score,SEO,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,1,LabMetric,LCP,2068.04465123367,ms,Bueno
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,1,LabMetric,CLS,0.113748520043296,unitless,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,1,LabMetric,TBT,13,ms,Bueno
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,1,LabMetric,FCP,1841.04009498533,ms,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,1,LabMetric,SpeedIndex,1841.04009498533,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,1,LabMetric,TTFB,18,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,2,Score,Performance,41,points,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,2,Score,Accessibility,89,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,2,Score,BestPractices,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,2,Score,SEO,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,2,LabMetric,LCP,2335.02735069444,ms,Bueno
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,2,LabMetric,CLS,0.112904813146802,unitless,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,2,LabMetric,TBT,845.478990938151,ms,Malo
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,2,LabMetric,FCP,2295.02735069444,ms,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,2,LabMetric,SpeedIndex,3271.51733402027,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,2,LabMetric,TTFB,71,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,3,Score,Performance,77,points,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,3,Score,Accessibility,89,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,3,Score,BestPractices,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,3,Score,SEO,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,3,LabMetric,LCP,2068.04465123367,ms,Bueno
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,3,LabMetric,CLS,0.113748520043296,unitless,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,3,LabMetric,TBT,13,ms,Bueno
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,3,LabMetric,FCP,1841.04009498533,ms,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,3,LabMetric,SpeedIndex,1841.04009498533,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,3,LabMetric,TTFB,18,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,MEDIAN,Score,Performance,77,points,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,MEDIAN,Score,Accessibility,89,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,MEDIAN,Score,BestPractices,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,MEDIAN,Score,SEO,100,points,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,MEDIAN,LabMetric,LCP,2068.04465123367,ms,Bueno
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,MEDIAN,LabMetric,CLS,0.113748520043296,unitless,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,MEDIAN,LabMetric,TBT,13,ms,Bueno
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,MEDIAN,LabMetric,FCP,1841.04009498533,ms,Mejorable
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,MEDIAN,LabMetric,SpeedIndex,1841.04009498533,ms,
+5,"Categoria de producto","https://parchepeludo.com/categoria-producto/analgesicos/",desktop,MEDIAN,LabMetric,TTFB,18,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,1,Score,Performance,35,points,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,1,Score,Accessibility,91,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,1,Score,BestPractices,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,1,Score,SEO,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,1,LabMetric,LCP,15901.0969612731,ms,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,1,LabMetric,CLS,0.491502555408443,unitless,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,1,LabMetric,TBT,3,ms,Bueno
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,1,LabMetric,FCP,10351.0624654356,ms,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,1,LabMetric,SpeedIndex,10351.0624654356,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,1,LabMetric,TTFB,20,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,2,Score,Performance,35,points,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,2,Score,Accessibility,91,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,2,Score,BestPractices,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,2,Score,SEO,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,2,LabMetric,LCP,15901.0969612731,ms,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,2,LabMetric,CLS,0.491502555408443,unitless,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,2,LabMetric,TBT,3,ms,Bueno
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,2,LabMetric,FCP,10351.0624654356,ms,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,2,LabMetric,SpeedIndex,10351.0624654356,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,2,LabMetric,TTFB,20,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,3,Score,Performance,35,points,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,3,Score,Accessibility,91,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,3,Score,BestPractices,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,3,Score,SEO,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,3,LabMetric,LCP,15901.0969612731,ms,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,3,LabMetric,CLS,0.491502555408443,unitless,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,3,LabMetric,TBT,3,ms,Bueno
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,3,LabMetric,FCP,10351.0624654356,ms,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,3,LabMetric,SpeedIndex,10351.0624654356,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,3,LabMetric,TTFB,20,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,MEDIAN,Score,Performance,35,points,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,MEDIAN,Score,Accessibility,91,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,MEDIAN,Score,BestPractices,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,MEDIAN,Score,SEO,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,MEDIAN,LabMetric,LCP,15901.0969612731,ms,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,MEDIAN,LabMetric,CLS,0.491502555408443,unitless,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,MEDIAN,LabMetric,TBT,3,ms,Bueno
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,MEDIAN,LabMetric,FCP,10351.0624654356,ms,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,MEDIAN,LabMetric,SpeedIndex,10351.0624654356,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",mobile,MEDIAN,LabMetric,TTFB,20,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,1,Score,Performance,52,points,Mejorable
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,1,Score,Accessibility,91,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,1,Score,BestPractices,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,1,Score,SEO,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,1,LabMetric,LCP,2101.02789031094,ms,Bueno
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,1,LabMetric,CLS,0.433487440899511,unitless,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,1,LabMetric,TBT,207.999447716615,ms,Mejorable
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,1,LabMetric,FCP,1779.01932991847,ms,Bueno
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,1,LabMetric,SpeedIndex,2408.10550826563,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,1,LabMetric,TTFB,60,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,2,Score,Performance,46,points,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,2,Score,Accessibility,91,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,2,Score,BestPractices,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,2,Score,SEO,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,2,LabMetric,LCP,2122.02985911191,ms,Bueno
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,2,LabMetric,CLS,0.421451202974707,unitless,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,2,LabMetric,TBT,270.004683782259,ms,Mejorable
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,2,LabMetric,FCP,1883.02049154739,ms,Mejorable
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,2,LabMetric,SpeedIndex,3044.90274690908,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,2,LabMetric,TTFB,145,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,3,Score,Performance,46,points,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,3,Score,Accessibility,91,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,3,Score,BestPractices,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,3,Score,SEO,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,3,LabMetric,LCP,2122.02985911191,ms,Bueno
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,3,LabMetric,CLS,0.421451202974707,unitless,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,3,LabMetric,TBT,270.004683782259,ms,Mejorable
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,3,LabMetric,FCP,1883.02049154739,ms,Mejorable
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,3,LabMetric,SpeedIndex,3044.90274690908,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,3,LabMetric,TTFB,145,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,MEDIAN,Score,Performance,46,points,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,MEDIAN,Score,Accessibility,91,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,MEDIAN,Score,BestPractices,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,MEDIAN,Score,SEO,100,points,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,MEDIAN,LabMetric,LCP,2122.02985911191,ms,Bueno
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,MEDIAN,LabMetric,CLS,0.421451202974707,unitless,Malo
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,MEDIAN,LabMetric,TBT,270.004683782259,ms,Mejorable
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,MEDIAN,LabMetric,FCP,1883.02049154739,ms,Mejorable
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,MEDIAN,LabMetric,SpeedIndex,3044.90274690908,ms,
+6,"Ficha de producto (PDP)","https://parchepeludo.com/producto/royal-canin-mini-puppy/",desktop,MEDIAN,LabMetric,TTFB,145,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,1,Score,Performance,32,points,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,1,Score,Accessibility,82,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,1,Score,BestPractices,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,1,Score,SEO,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,1,LabMetric,LCP,14176.071007528,ms,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,1,LabMetric,CLS,0.632595085382099,unitless,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,1,LabMetric,TBT,112.5,ms,Bueno
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,1,LabMetric,FCP,10051.0498971818,ms,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,1,LabMetric,SpeedIndex,10051.0498971818,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,1,LabMetric,TTFB,54,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,2,Score,Performance,27,points,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,2,Score,Accessibility,82,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,2,Score,BestPractices,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,2,Score,SEO,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,2,LabMetric,LCP,14000.5285035569,ms,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,2,LabMetric,CLS,0.631601807797668,unitless,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,2,LabMetric,TBT,281,ms,Mejorable
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,2,LabMetric,FCP,10051.0203596835,ms,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,2,LabMetric,SpeedIndex,10051.0203596835,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,2,LabMetric,TTFB,52,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,3,Score,Performance,29,points,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,3,Score,Accessibility,82,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,3,Score,BestPractices,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,3,Score,SEO,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,3,LabMetric,LCP,14326.0517123716,ms,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,3,LabMetric,CLS,0.632595085382099,unitless,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,3,LabMetric,TBT,224,ms,Mejorable
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,3,LabMetric,FCP,10201.0365028505,ms,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,3,LabMetric,SpeedIndex,10201.0365028505,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,3,LabMetric,TTFB,76,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,MEDIAN,Score,Performance,29,points,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,MEDIAN,Score,Accessibility,82,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,MEDIAN,Score,BestPractices,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,MEDIAN,Score,SEO,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,MEDIAN,LabMetric,LCP,14176.071007528,ms,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,MEDIAN,LabMetric,CLS,0.632595085382099,unitless,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,MEDIAN,LabMetric,TBT,224,ms,Mejorable
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,MEDIAN,LabMetric,FCP,10051.0498971818,ms,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,MEDIAN,LabMetric,SpeedIndex,10051.0498971818,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",mobile,MEDIAN,LabMetric,TTFB,54,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,1,Score,Performance,47,points,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,1,Score,Accessibility,82,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,1,Score,BestPractices,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,1,Score,SEO,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,1,LabMetric,LCP,2101.08612038061,ms,Bueno
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,1,LabMetric,CLS,0.369705119569222,unitless,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,1,LabMetric,TBT,327.5,ms,Mejorable
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,1,LabMetric,FCP,1856.0596873925,ms,Mejorable
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,1,LabMetric,SpeedIndex,2248.5928802533,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,1,LabMetric,TTFB,8,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,2,Score,Performance,47,points,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,2,Score,Accessibility,82,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,2,Score,BestPractices,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,2,Score,SEO,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,2,LabMetric,LCP,2101.08612038061,ms,Bueno
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,2,LabMetric,CLS,0.369705119569222,unitless,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,2,LabMetric,TBT,327.5,ms,Mejorable
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,2,LabMetric,FCP,1856.0596873925,ms,Mejorable
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,2,LabMetric,SpeedIndex,2248.5928802533,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,2,LabMetric,TTFB,8,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,3,Score,Performance,54,points,Mejorable
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,3,Score,Accessibility,82,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,3,Score,BestPractices,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,3,Score,SEO,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,3,LabMetric,LCP,2161.0451761417,ms,Bueno
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,3,LabMetric,CLS,0.369705119569222,unitless,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,3,LabMetric,TBT,192.997828070111,ms,Bueno
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,3,LabMetric,FCP,1841.03822596605,ms,Mejorable
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,3,LabMetric,SpeedIndex,2355.37676317247,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,3,LabMetric,TTFB,54,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,MEDIAN,Score,Performance,47,points,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,MEDIAN,Score,Accessibility,82,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,MEDIAN,Score,BestPractices,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,MEDIAN,Score,SEO,100,points,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,MEDIAN,LabMetric,LCP,2101.08612038061,ms,Bueno
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,MEDIAN,LabMetric,CLS,0.369705119569222,unitless,Malo
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,MEDIAN,LabMetric,TBT,327.5,ms,Mejorable
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,MEDIAN,LabMetric,FCP,1856.0596873925,ms,Mejorable
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,MEDIAN,LabMetric,SpeedIndex,2248.5928802533,ms,
+7,"Ficha de publicacion","https://parchepeludo.com/publicacion/clinica-veterinaria-de-medellin/",desktop,MEDIAN,LabMetric,TTFB,8,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,1,Score,Performance,53,points,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,1,Score,Accessibility,88,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,1,Score,BestPractices,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,1,Score,SEO,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,1,LabMetric,LCP,10576.0379969548,ms,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,1,LabMetric,CLS,0.0217272193101954,unitless,Bueno
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,1,LabMetric,TBT,205,ms,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,1,LabMetric,FCP,9001.0321726041,ms,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,1,LabMetric,SpeedIndex,9001.0321726041,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,1,LabMetric,TTFB,75,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,2,Score,Performance,53,points,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,2,Score,Accessibility,88,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,2,Score,BestPractices,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,2,Score,SEO,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,2,LabMetric,LCP,10576.0379969548,ms,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,2,LabMetric,CLS,0.0217272193101954,unitless,Bueno
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,2,LabMetric,TBT,205,ms,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,2,LabMetric,FCP,9001.0321726041,ms,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,2,LabMetric,SpeedIndex,9001.0321726041,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,2,LabMetric,TTFB,75,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,3,Score,Performance,53,points,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,3,Score,Accessibility,88,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,3,Score,BestPractices,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,3,Score,SEO,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,3,LabMetric,LCP,10576.0379969548,ms,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,3,LabMetric,CLS,0.0217272193101954,unitless,Bueno
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,3,LabMetric,TBT,205,ms,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,3,LabMetric,FCP,9001.0321726041,ms,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,3,LabMetric,SpeedIndex,9001.0321726041,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,3,LabMetric,TTFB,75,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,MEDIAN,Score,Performance,53,points,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,MEDIAN,Score,Accessibility,88,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,MEDIAN,Score,BestPractices,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,MEDIAN,Score,SEO,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,MEDIAN,LabMetric,LCP,10576.0379969548,ms,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,MEDIAN,LabMetric,CLS,0.0217272193101954,unitless,Bueno
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,MEDIAN,LabMetric,TBT,205,ms,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,MEDIAN,LabMetric,FCP,9001.0321726041,ms,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,MEDIAN,LabMetric,SpeedIndex,9001.0321726041,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",mobile,MEDIAN,LabMetric,TTFB,75,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,1,Score,Performance,39,points,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,1,Score,Accessibility,88,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,1,Score,BestPractices,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,1,Score,SEO,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,1,LabMetric,LCP,2645.02397742881,ms,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,1,LabMetric,CLS,0.0108483687764189,unitless,Bueno
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,1,LabMetric,TBT,1050.47935276963,ms,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,1,LabMetric,FCP,2441.02397742881,ms,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,1,LabMetric,SpeedIndex,3846.12238524487,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,1,LabMetric,TTFB,132,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,2,Score,Performance,48,points,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,2,Score,Accessibility,88,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,2,Score,BestPractices,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,2,Score,SEO,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,2,LabMetric,LCP,2280.01116922704,ms,Bueno
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,2,LabMetric,CLS,0.0108483687764189,unitless,Bueno
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,2,LabMetric,TBT,725.990757322126,ms,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,2,LabMetric,FCP,2160.01116922704,ms,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,2,LabMetric,SpeedIndex,2634.85597610141,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,2,LabMetric,TTFB,17,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,3,Score,Performance,66,points,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,3,Score,Accessibility,88,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,3,Score,BestPractices,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,3,Score,SEO,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,3,LabMetric,LCP,2101.03057023613,ms,Bueno
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,3,LabMetric,CLS,0.0132394695334667,unitless,Bueno
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,3,LabMetric,TBT,310.505448160895,ms,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,3,LabMetric,FCP,1847.02058194116,ms,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,3,LabMetric,SpeedIndex,2069.77290740971,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,3,LabMetric,TTFB,9,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,MEDIAN,Score,Performance,48,points,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,MEDIAN,Score,Accessibility,88,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,MEDIAN,Score,BestPractices,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,MEDIAN,Score,SEO,100,points,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,MEDIAN,LabMetric,LCP,2280.01116922704,ms,Bueno
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,MEDIAN,LabMetric,CLS,0.0108483687764189,unitless,Bueno
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,MEDIAN,LabMetric,TBT,725.990757322126,ms,Malo
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,MEDIAN,LabMetric,FCP,2160.01116922704,ms,Mejorable
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,MEDIAN,LabMetric,SpeedIndex,2634.85597610141,ms,
+8,"Blog","https://parchepeludo.com/blog-mascotas/",desktop,MEDIAN,LabMetric,TTFB,17,ms,

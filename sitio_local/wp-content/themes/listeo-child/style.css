@@ -7421,7 +7421,13 @@ html.ppv2-rdrawer-lock, html.ppv2-rdrawer-lock body { overflow: hidden !importan
   .single-listing ul.listing-links:not(.contact-links) li {
     margin: 0;
     padding: 0;
-    flex: 1 1 0;
+    /* Ancho ESTABLE haya 1 o 4 redes. Antes era `flex: 1 1 0`, que repartía
+       todo el ancho disponible: con las 4 redes quedaba bien (209px cada una),
+       pero un listado con UNA sola —el caso de los importados, que solo traen
+       WhatsApp— la estiraba a los 862px del contenedor.
+       Con flex-grow:0 y base del 25% el botón mide siempre lo mismo.
+       El calc descuenta los gaps: 4 × (25% − 6px) + 3 × 8px = 100%. */
+    flex: 0 1 calc(25% - 6px);
     min-width: 0;
   }
   .single-listing ul.listing-links:not(.contact-links) li a {
@@ -8478,29 +8484,41 @@ body.post-type-archive-product #titlebar h1,
 body.tax-product_cat #titlebar h1,
 body.tax-product_tag #titlebar h1 { font-weight: 700 !important; }
 
-/* Móvil: título y miga de pan en la MISMA fila (no apilados) — tienda/categorías */
+/* Móvil: título arriba y miga de pan COMPLETA debajo (apilados, con salto de
+   línea natural). Antes iban en la misma fila con la miga recortada al 55% +
+   ellipsis, pero el ellipsis no funciona sobre <ul><li> y cortaba el texto en
+   seco (se "salía" de la pantalla en categorías profundas). */
 @media (max-width: 767px) {
   body.woocommerce-shop #titlebar .col-md-12,
   body.post-type-archive-product #titlebar .col-md-12,
   body.tax-product_cat #titlebar .col-md-12,
   body.tax-product_tag #titlebar .col-md-12,
   body.search.woocommerce #titlebar .col-md-12 {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    flex-wrap: nowrap !important;
-    gap: 12px;
+    display: block !important;
   }
   body.woocommerce-shop #titlebar h1,
   body.post-type-archive-product #titlebar h1,
   body.tax-product_cat #titlebar h1,
   body.tax-product_tag #titlebar h1,
-  body.search.woocommerce #titlebar h1 { margin: 0; flex: 0 0 auto; }
+  body.search.woocommerce #titlebar h1 { margin: 0 0 8px !important; flex: none; }
   body.woocommerce-shop #titlebar #breadcrumbs,
   body.post-type-archive-product #titlebar #breadcrumbs,
   body.tax-product_cat #titlebar #breadcrumbs,
   body.tax-product_tag #titlebar #breadcrumbs,
-  body.search.woocommerce #titlebar #breadcrumbs { margin: 0; flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; position: static !important; transform: none !important; top: auto !important; right: auto !important; max-width: 55%; }
+  body.search.woocommerce #titlebar #breadcrumbs {
+    margin: 0 !important;
+    display: block !important;
+    position: static !important;
+    transform: none !important;
+    top: auto !important;
+    right: auto !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    text-align: left !important;
+    line-height: 1.6;
+  }
 }
 
 /* Eliminar el espacio vacío entre el titlebar y el listado de productos (~55px). */
@@ -11622,4 +11640,131 @@ body.woocommerce .select2-results__option {
    clase .select2-hidden-accessible). */
 .woocommerce-ordering select.orderby:not(.select2-hidden-accessible) {
   visibility: hidden;
+}
+
+/* =============================================================================
+   GALERÍA DEL LISTADO — altura estable con fotos verticales
+   -----------------------------------------------------------------------------
+   Listeo maqueta la galería con una rejilla cuyos bloques (.slg-half) NO tienen
+   altura propia: la heredan de la imagen. Con fotos horizontales sale bien
+   (~500px), pero con una foto VERTICAL el bloque se dispara: una imagen de
+   1200x2469 producía un bloque de 1305px que desbordaba la rejilla (664px) y
+   dejaba la ficha descuadrada.
+
+   Ocurre con cualquier negocio cuya primera foto de Google sea vertical, así
+   que afecta a las importaciones en general, no solo a un listado.
+
+   ⚠️ min-height: 0 ES IMPRESCINDIBLE. Los bloques son *grid items*, y su
+   `min-height: auto` por defecto impide que bajen de la altura de su contenido:
+   sin esta línea, el `height: 500px` se ignora por completo aunque lleve
+   !important. Fue lo que despistó el diagnóstico.
+
+   Con object-fit: cover la foto se recorta y se centra, sin deformarse.
+   Verificado: deja la galería idéntica a la de un listado con fotos
+   horizontales (634x500 + 211x500, miniaturas de 242px, 0 desbordamientos).
+   ========================================================================== */
+@media (min-width: 768px) {
+  .single-listing .slg-half {
+    height: 500px !important;
+    max-height: 500px !important;
+    min-height: 0 !important;   /* ver nota arriba: sin esto no funciona nada */
+  }
+  .single-listing .slg-half .slg-gallery-img {
+    height: 100% !important;
+  }
+  .single-listing .slg-half .slg-gallery-img img {
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+}
+
+/* =============================================================================
+   CAJA RECLAMAR PUBLICACIÓN (.claim-badge)
+   -----------------------------------------------------------------------------
+   El aviso "No verificado ¿Eres el propietario de esta publicación?" lo pone un
+   filtro gettext en functions.php (ppv2_claim_texto). Aquí se añade el botón
+   "Solicítala aquí" con ::after.
+
+   POR QUÉ ::after Y NO MARCADO REAL: Listeo imprime ese texto con esc_html_e(),
+   que escapa el HTML, así que no se puede inyectar un <span> por traducción. La
+   alternativa sería forkear single-listing-claim.php (~90 líneas con 5 ramas de
+   lógica de login/registro) solo para envolver dos palabras. Con ::after el
+   botón hereda el click del <a> que lo contiene — toda la tarjeta ya es el
+   enlace que abre el diálogo — y no añade ni un nodo al DOM.
+
+   La tarjeta ES el <a>: borde 1px #e0e0e0, radio 4px, fondo blanco, centrado.
+   ========================================================================== */
+.claim-badge a {
+  line-height: 1.45;
+}
+
+/* :not([href="#"]) — IMPORTANTE. Cuando el usuario YA envió una solicitud,
+   Listeo reutiliza esta misma caja para informar del estado ("Solicitud
+   pendiente", "aprobada", "rechazada") con href="#" y sin acción asociada.
+   En ese caso el botón NO debe aparecer: sería un llamado a la acción sobre
+   algo que ya se hizo. Las variantes accionables usan href="#claim-dialog",
+   "#sign-in-dialog" o la URL de la página de acceso. */
+.claim-badge a:not([href="#"])::after {
+  content: "Solicítala aquí";
+  display: block;
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 100%;
+  margin: 12px auto 0;
+  padding: 9px 22px;
+  background: var(--teal-parche, #79C8D0);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  transition: filter .15s ease;
+}
+
+.claim-badge a:not([href="#"]):hover::after,
+.claim-badge a:not([href="#"]):focus::after {
+  filter: brightness(0.94);
+}
+
+/* Móvil: la barra lateral pasa a ancho completo. Se reduce un poco el texto y
+   se deja que el botón crezca a lo ancho disponible sin llegar a borde. */
+@media (max-width: 767px) {
+  .claim-badge a {
+    padding: 16px 16px;
+    font-size: 14px;
+  }
+  .claim-badge a:not([href="#"])::after {
+    padding: 10px 20px;
+  }
+}
+
+/* ============================================================
+   MENÚ — "Ver todo X" en los submenús de categorías de la Tienda
+   El <li> lo inyecta js/ppv2-menu-ver-todo.js al principio de cada
+   submenú de product_cat (justo debajo del botón "Atrás"). Se pinta
+   en el teal de marca para que se lea como acción y no como una
+   categoría más de la lista.
+   ============================================================ */
+#mobile-nav .ppv2-ver-todo > a {
+  color: #79C8D0;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  margin-bottom: 4px;
+  padding-bottom: 10px;
+}
+
+/* Flecha "→" reusando el iconset del tema (misma familia que usa el
+   propio menú para sus chevrons). */
+#mobile-nav .ppv2-ver-todo > a:after {
+  font-family: 'simple-line-icons';
+  content: "\e606";
+  font-size: 11px;
+  margin-left: 7px;
+  vertical-align: middle;
+}
+
+#mobile-nav .ppv2-ver-todo > a:hover,
+#mobile-nav .ppv2-ver-todo > a:focus {
+  color: #5aa8b0;
 }

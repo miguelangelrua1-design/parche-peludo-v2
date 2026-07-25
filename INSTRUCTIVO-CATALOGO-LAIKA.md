@@ -253,7 +253,7 @@ Producto **variable** por cada ficha de Laika con >1 presentación (o simple si 
 | Descripción / corta | `set_description` / `set_short_description` | §2.2, §2.3 |
 | Estado | `set_status('publish')` o `'draft'` para revisión | decisión |
 | Categoría | `set_category_ids([term])` por slug `product_cat` | `category`/`subcategory` |
-| Atributo de variación | `Presentación` (local, visible, `variation=true`) | `references[].name` |
+| Atributo de variación | `Presentación` (local, visible, `variation=true`) — ⚠️ ver §5.2, el nombre DEBE quedar en UTF-8 limpio | `references[].name` |
 | Atributos filtrables | globales `pa_marca`, `pa_especie`, `pa_etapa-de-vida`, `pa_tipo-de-alimento`, `pa_peso` (visible=false, variation=false) | marca/especie + inferidos |
 | Variaciones | `WC_Product_Variation` con `set_regular_price` (=`price.sale`), `set_sku`, `set_manage_stock(true)`, `set_stock_quantity`, `set_image_id` | `references[]` |
 | Imágenes | destacada + galería + por variación | §3 |
@@ -278,6 +278,45 @@ Producto **variable** por cada ficha de Laika con >1 presentación (o simple si 
 - **Peso:** normalizar `references[].name` a `{n} kg` / `{n} g` (ej. "2 KG" → "2 kg";
   slug de término: `2-kg`, `1-5-kg`).
 
+### 5.2 ⚠️ El atributo "Presentación" y la codificación (BUG REAL 2026-07-13 — leer sí o sí)
+
+El atributo de variación **"Presentación"** es un atributo LOCAL (no taxonomía). WooCommerce guarda
+su clave interna como `sanitize_title($nombre)`:
+
+- Nombre `Presentación` (UTF-8 limpio) → clave `presentacion` ✅ → casa con las variaciones (que se
+  crean con `set_attributes(['presentacion' => ...])`) → las pastillas de presentación salen en el
+  PLP y el "Agregar" por AJAX funciona.
+- Nombre `PresentaciÃ³n` (doble-codificado / mojibake) → clave `presentacia%c2%b3n` ❌ → **NO** casa
+  con las variaciones → `wc_get_product_variation_attributes()` devuelve vacío → en el PLP el
+  producto sale **sin pastillas** y con botón "Ver opciones", y el add-to-cart falla con
+  `{error:true}`. Este fue exactamente el bug del lote del 2026-07-13.
+
+**Causa raíz:** el mojibake NO viene del payload (el payload solo trae los valores tipo `"6 lb"`).
+Viene de **cómo se GUARDA el archivo publicador PHP**: si el `.php` se escribe con codificación
+equivocada (típico en Windows: `Get-Content | Set-Content` de PowerShell sin `-Encoding utf8`, o
+copiar/pegar que re-codifica), el literal `'Presentación'` del código fuente queda como
+`'PresentaciÃ³n'` (bytes `c3 83 c2 b3`) y de ahí en adelante todo hereda la clave rota.
+
+**REGLA OBLIGATORIA al escribir el publicador (a prueba de codificación):** NO poner el acento como
+literal en el código. Usar el escape Unicode de PHP, que produce los bytes UTF-8 correctos sin
+importar cómo se guarde el archivo:
+
+```php
+// ✅ CORRECTO — inmune a la codificación del archivo (el fuente es ASCII puro):
+$presentacion_attr->set_name("Presentaci\u{00F3}n");   // "Presentación"
+// y en la ruta REST de producción:
+$attr = array('name' => "Presentaci\u{00F3}n", 'variation' => true, /* ... */);
+
+// ❌ EVITAR — un guardado con codificación equivocada lo convierte en 'PresentaciÃ³n':
+$presentacion_attr->set_name('Presentación');
+```
+
+(La clave de la variación se sigue fijando literal en ASCII: `set_attributes(['presentacion' => $v['presentation']])`.)
+
+Si por algún motivo se deja el literal acentuado, **guardar el `.php` SIEMPRE como UTF-8 sin BOM**
+(en PowerShell: `Set-Content -Encoding utf8`; nunca leer+reescribir el archivo con métodos que
+re-codifican). Y verificar tras publicar (ver §7, chequeo nuevo).
+
 ---
 
 ## 6. Flujo de ejecución (publicador)
@@ -301,6 +340,11 @@ Producto **variable** por cada ficha de Laika con >1 presentación (o simple si 
   script en webroot. En producción (https) sí serviría la REST API.
 - Purga de caché tras publicar: `do_action('litespeed_purge_all')`.
 - Cache-bust de URLs en pruebas: usar `?nc=` (NO `?m=`, que es query var reservada de WP → 404).
+- **Codificación del publicador (crítico):** el atributo "Presentación" debe quedar en UTF-8 limpio
+  o los productos variables salen sin pastillas y el add-to-cart falla. Escribir el nombre con
+  `"Presentaci\u{00F3}n"` (escape Unicode, no literal acentuado) — ver §5.2. Al guardar el `.php`
+  usar UTF-8 sin BOM; en PowerShell `Set-Content -Encoding utf8` y nunca reescribirlo con métodos
+  que re-codifiquen.
 
 ---
 
@@ -314,6 +358,18 @@ Producto **variable** por cada ficha de Laika con >1 presentación (o simple si 
       composición/análisis, beneficios).
 
 **Comercial**
+- [ ] **Presentaciones OK (anti-mojibake):** en el PLP el producto variable muestra las **pastillas**
+      de presentación (ej. "6 lb / 18 lb") y el botón dice "Agregar", no "Ver opciones". Verificación
+      técnica: el meta `_product_attributes` del producto tiene la clave `presentacion` (NO
+      `presentacia%c2%b3n`) y `name` = `Presentación` (NO `PresentaciÃ³n`). Ver §5.2.
+      SQL rápido: `SELECT post_id FROM wp_postmeta WHERE meta_key='_product_attributes' AND meta_value LIKE BINARY '%presentacia%';` → debe devolver **0 filas**.
+- [ ] **Sin duplicados / variable no vacío:** el producto variable quedó con **>0 variaciones**
+      (un producto variable con 0 variaciones sale como "Ver opciones" sin pastillas). Si al publicar
+      el slug volvió con sufijo `-2`/`-3`, es que se creó un DUPLICADO en vez de actualizar el
+      existente → localizar y borrar la copia vacía, conservar la buena. Una corrida interrumpida
+      (timeout al subir imágenes, error a mitad) puede dejar ese "variable vacío"; reejecutar el
+      publicador POR EL MISMO SLUG debe ACTUALIZAR, no crear otro. SQL de auditoría: buscar productos
+      variable con 0 hijos `product_variation`, y títulos repetidos con slugs `-2`.
 - [ ] Variantes con precio (sin membresía), SKU y stock correctos.
 - [ ] Categoría correcta; atributos filtrables asignados (marca, especie, etapa, tipo, peso).
 - [ ] Imágenes: destacada + galería + por variación, sin duplicados en la biblioteca.

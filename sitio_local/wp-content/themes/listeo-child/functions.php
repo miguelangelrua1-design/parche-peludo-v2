@@ -435,6 +435,37 @@ function ppv2_plp_assets() {
 	}
 }
 
+// "Ver todo X" al principio de cada submenú de categorías de la Tienda.
+// El tema padre cancela el clic de toda opción con submenú (custom.js ~180), y
+// como aquí escritorio y móvil comparten el mismo <ul id="mobile-nav">, no hay
+// forma de llegar al listado completo de "Perro", "Gato", "Alimento"…
+// Se hace en JS (no como ítems de menú reales) para no meter ~135 filas en la
+// BD que se leerían en cada visita: así son 0 bytes de HTML y 0 consultas.
+// Apagar con: define( 'PP_MENU_VERTODO_OFF', true ); en wp-config.php
+// o con: add_filter( 'pp_menu_vertodo_activo', '__return_false' );
+add_action( 'wp_enqueue_scripts', 'ppv2_menu_ver_todo_assets', 100 );
+function ppv2_menu_ver_todo_assets() {
+	if ( defined( 'PP_MENU_VERTODO_OFF' ) && PP_MENU_VERTODO_OFF ) {
+		return;
+	}
+	if ( ! apply_filters( 'pp_menu_vertodo_activo', true ) ) {
+		return;
+	}
+	$dir = get_stylesheet_directory();
+	if ( ! file_exists( $dir . '/js/ppv2-menu-ver-todo.js' ) ) {
+		return;
+	}
+	// Depende de 'listeo-custom' para correr después de que el tema registre
+	// sus handlers de click sobre el menú (así no alcanzan al enlace nuevo).
+	wp_enqueue_script(
+		'ppv2-menu-ver-todo',
+		get_stylesheet_directory_uri() . '/js/ppv2-menu-ver-todo.js',
+		array( 'jquery', 'listeo-custom' ),
+		filemtime( $dir . '/js/ppv2-menu-ver-todo.js' ),
+		true
+	);
+}
+
 // Paginación de la tienda en UNA sola fila: menos números (Woo trae end_size 3
 // y mid_size 3 → hasta 13 pastillas, que se partían en 2-3 filas). Con 1 y 1
 // queda "← 1 … 5 6 7 … 22 →" (máx. 9 ítems), que cabe en una fila incluso en
@@ -2567,3 +2598,102 @@ function ppv2_pdp_gallery_arrows( $options ) {
 	$options['directionNav'] = true;
 	return $options;
 }
+
+/* =============================================================================
+ * CAJA "RECLAMAR PUBLICACIÓN" — texto del aviso de no verificado
+ * -----------------------------------------------------------------------------
+ * Listeo imprime "Not verified. Claim this listing!" en 5 variantes de
+ * `single-listing-claim.php`, todas con `esc_html_e()` — es decir, ESCAPA el
+ * HTML, así que por aquí solo se puede cambiar TEXTO PLANO. El botón
+ * "Solicítala aquí" se pinta con `::after` en style.css (ver el bloque
+ * "CAJA RECLAMAR PUBLICACIÓN"), lo que evita tener que forkear la plantilla.
+ *
+ * Prioridad 40: por encima del renombrado Listado→Publicación (prio 30), para
+ * que el texto final sea el nuestro. Se filtra por la cadena ORIGINAL en
+ * inglés, así que no depende de cómo esté traducida.
+ * ========================================================================== */
+add_filter( 'gettext', 'ppv2_claim_texto', 40, 3 );
+function ppv2_claim_texto( $traducido, $original, $dominio ) {
+	if ( 'listeo_core' !== $dominio ) {
+		return $traducido;
+	}
+	if ( 'Not verified. Claim this listing!' === $original ) {
+		return 'No verificado ¿Eres el propietario de esta publicación?';
+	}
+	return $traducido;
+}
+
+/* =============================================================================
+ * COMPATIBILIDAD GOOGLE PLACES (calificación y reseñas de los listados)
+ * -----------------------------------------------------------------------------
+ * Listeo pide las reseñas al endpoint legacy de Places, que Google ya no sirve
+ * en proyectos de Cloud recientes. La capa traduce esa petición a Places API
+ * (New) y devuelve el mismo formato, de modo que Listeo siga funcionando con su
+ * propia lógica y sus propias plantillas. Se desactiva sola cuando Listeo migre.
+ * ========================================================================== */
+$pp_places_compat = get_stylesheet_directory() . '/inc/pp-google-places-compat.php';
+if ( file_exists( $pp_places_compat ) ) {
+	require_once $pp_places_compat;
+}
+
+/* =============================================================================
+ * WHATSAPP DE LOS LISTADOS
+ * -----------------------------------------------------------------------------
+ * Google no entrega redes sociales, pero sí el teléfono. Si es un móvil
+ * colombiano se deduce el WhatsApp y se guarda con el indicativo (57…), que es
+ * lo que exige wa.me. El campo _phone se conserva intacto.
+ * ========================================================================== */
+$pp_whatsapp = get_stylesheet_directory() . '/inc/pp-whatsapp-listados.php';
+if ( file_exists( $pp_whatsapp ) ) {
+	require_once $pp_whatsapp;
+}
+
+/* =============================================================================
+ * RENDIMIENTO: MAPAS SOLO DONDE SE USAN
+ * -----------------------------------------------------------------------------
+ * Listeo encola 8 scripts de mapas (incluida una petición externa a
+ * maps.googleapis.com) en las 6 plantillas, aunque solo Directorio y
+ * Publicación muestren mapa. Se retiran en las plantillas verificadas sin mapa.
+ * Lista blanca conservadora: lo no contemplado se deja intacto.
+ * ========================================================================== */
+$pp_mapas = get_stylesheet_directory() . '/inc/pp-rendimiento-mapas.php';
+if ( file_exists( $pp_mapas ) ) {
+	require_once $pp_mapas;
+}
+
+/* ==========================================================================
+ * RENDIMIENTO — FUENTES DE GOOGLE NO USADAS
+ * El tema padre encola Open Sans y Raleway pero la tipografía del sitio es
+ * Ubuntu: cero elementos las pintan (verificado en producción 2026-07-25,
+ * con prueba visual en vivo antes de implementar). Se retiran ambas.
+ * Kill-switch: define( 'PP_FUENTES_OFF', true );
+ * ========================================================================== */
+$pp_fuentes = get_stylesheet_directory() . '/inc/pp-rendimiento-fuentes.php';
+if ( file_exists( $pp_fuentes ) ) {
+	require_once $pp_fuentes;
+}
+
+/* ==========================================================================
+ * RENDIMIENTO — CSS DE MODO OSCURO DEL CHAT
+ * El plugin ai-chat-search carga su JS de modo oscuro solo si el esquema es
+ * 'auto', pero el CSS lo carga siempre. Sus 130 reglas cuelgan todas de la
+ * clase .dark-mode, que sin ese JS nunca existe: ~20 KB muertos por página.
+ * Se retira replicando la misma condición del plugin (si se pone en 'auto',
+ * vuelve solo). Kill-switch: define( 'PP_CHAT_OSCURO_OFF', true );
+ * ========================================================================== */
+$pp_chat_oscuro = get_stylesheet_directory() . '/inc/pp-rendimiento-chat.php';
+if ( file_exists( $pp_chat_oscuro ) ) {
+	require_once $pp_chat_oscuro;
+}
+
+/* ==========================================================================
+ * NORMALIZACIÓN DEL BUSCADOR
+ * Ignora diferencias de puntuación, apóstrofos, entidades HTML (&amp;),
+ * separadores decimales (2,5 kg), espaciado de unidades (3kg) y plurales.
+ * Kill-switch: define( 'PP_SEARCH_NORM_OFF', true );
+ * ========================================================================== */
+$pp_normalizacion_busqueda = get_stylesheet_directory() . '/inc/pp-normalizacion-buscador.php';
+if ( file_exists( $pp_normalizacion_busqueda ) ) {
+	require_once $pp_normalizacion_busqueda;
+}
+

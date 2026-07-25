@@ -28,3 +28,29 @@ _parchepeludo.com/
 !/sitio_local/wp-content/plugins/pp-chat-listados/
 !/sitio_local/wp-content/plugins/pp-personalizacion/
 !/sitio_local/wp-content/plugins/pp-busqueda-franjas/
+
+# ==========================================
+# Añadido 2026-07-25
+# ==========================================
+
+# Credenciales locales — NUNCA deben subir (contiene PAGESPEED_API_KEY)
+.env
+
+# Paquetes ZIP de plugins: el código fuente ya está versionado en
+# sitio_local/wp-content/plugins/. Los .zip son solo para instalar en Hostinger.
+*.zip
+
+# Scripts temporales que se suben al webroot de PRODUCCIÓN para tareas
+# puntuales: llevan un token de acceso en el propio archivo, así que no
+# deben quedar en el repositorio.
+/borrar-duplicados-vacios.php
+/diagnostico-presentaciones.php
+/publicador-laika-produccion.php
+/reparar-presentacion-produccion.php
+/test_php.php
+
+# Datos crudos de las corridas de PageSpeed (el resumen .md y .csv sí se versionan)
+psi-raw/
+
+# Lista de tareas efímera
+task.md
