@@ -83,11 +83,32 @@ El buscador tiene **tres superficies** que hoy consultan por separado:
 2. **Resultados de Tienda** → búsqueda nativa de WooCommerce/WordPress.
 3. **Resultados de Directorio** → consulta del plugin Listeo Core.
 
+### Dónde poner el código (decisión de arquitectura 2026-07-18)
+
+Se decidió que el motor del buscador evolucionará como **módulo "Buscador" dentro del
+plugin `pp-personalizacion`** (mismo patrón que los módulos Mascotas/Listados, con su
+interruptor de apagado). Por tanto:
+
+- **Si el módulo Buscador ya existe** cuando implementes este encargo → pon la
+  normalización ahí (`pp-personalizacion/includes/buscador.php` o archivo del módulo).
+- **Si aún no existe** → impleméntala en el tema hijo (`listeo-child/inc/`, patrón
+  `pp-rendimiento-*.php`) y déjala autocontenida; se migrará al módulo después.
+  Cualquiera de los dos caminos es válido — el filtro es autocontenido y moverlo es trivial.
+
 ### Recomendación de arquitectura
 
 Implementar la normalización **en un punto único**: el filtro de WordPress
 **`posts_search`**, que intercepta la cláusula `WHERE` de cualquier `WP_Query` con
 búsqueda. Como las tres superficies terminan en `WP_Query`, un solo filtro las cubre.
+
+> ⚠️ **GOTCHA CRÍTICO — sugerencias y `get_posts()`:** el endpoint de sugerencias
+> (`ppv2_header_suggest()` en functions.php del hijo) y el contador de puentes usan
+> `get_posts()`, que por defecto pone `suppress_filters = true` → **el filtro
+> `posts_search` NO se aplicaría a esas consultas** y la normalización quedaría solo en
+> las páginas de resultados (el desalineamiento que el criterio de aceptación 1 prohíbe).
+> Solución: en esas funciones, cambiar `get_posts( $args )` por
+> `( new WP_Query( $args ) )->posts` (o añadir `'suppress_filters' => false`). Es un
+> cambio de una línea por consulta y forma parte de este encargo.
 
 La normalización debe aplicarse **a los dos lados de la comparación**:
 
