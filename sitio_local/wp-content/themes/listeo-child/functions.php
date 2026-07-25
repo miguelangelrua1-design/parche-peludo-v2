@@ -1415,24 +1415,31 @@ function ppv2_header_suggest() {
 	// Con un tipo separado elegido, sus resultados van PRIMERO (prioridad) y
 	// además se muestra el Directorio debajo; se excluyen los OTROS tipos
 	// separados. Sin tipo elegido, se muestran todos agrupados.
+	// NOTA (fix 2026-07-25): get_posts() pone suppress_filters=true por defecto,
+	// lo que saltaba el filtro posts_search de la NORMALIZACIÓN (inc/
+	// pp-normalizacion-buscador.php) → las sugerencias no encontraban "hills"
+	// aunque la página de resultados sí. suppress_filters=false en las 4
+	// consultas alinea las sugerencias con el mismo pipeline de búsqueda.
 	if ( $tipo ) {
 		// 1) El tipo elegido (prioridad).
 		$sel_posts = get_posts( array(
-			's'              => $term,
-			'post_type'      => 'listing',
-			'post_status'    => 'publish',
-			'posts_per_page' => 5,
-			'meta_query'     => array(
+			's'                => $term,
+			'post_type'        => 'listing',
+			'post_status'      => 'publish',
+			'posts_per_page'   => 5,
+			'suppress_filters' => false,
+			'meta_query'       => array(
 				array( 'key' => '_listing_type', 'value' => $tipo, 'compare' => '=' ),
 			),
 		) );
 		// 2) Base = Directorio y listados sin tipo; excluye TODOS los separados.
 		$base_posts = get_posts( array(
-			's'              => $term,
-			'post_type'      => 'listing',
-			'post_status'    => 'publish',
-			'posts_per_page' => 4,
-			'meta_query'     => array(
+			's'                => $term,
+			'post_type'        => 'listing',
+			'post_status'      => 'publish',
+			'posts_per_page'   => 4,
+			'suppress_filters' => false,
+			'meta_query'       => array(
 				'relation' => 'OR',
 				array( 'key' => '_listing_type', 'value' => $separados, 'compare' => 'NOT IN' ),
 				array( 'key' => '_listing_type', 'compare' => 'NOT EXISTS' ),
@@ -1441,10 +1448,11 @@ function ppv2_header_suggest() {
 		$listings = array_merge( $sel_posts, $base_posts );
 	} else {
 		$listings = get_posts( array(
-			's'              => $term,
-			'post_type'      => 'listing',
-			'post_status'    => 'publish',
-			'posts_per_page' => 5,
+			's'                => $term,
+			'post_type'        => 'listing',
+			'post_status'      => 'publish',
+			'posts_per_page'   => 5,
+			'suppress_filters' => false,
 		) );
 	}
 
@@ -1487,12 +1495,13 @@ function ppv2_header_suggest() {
 
 	// --- Productos (tienda WooCommerce) ---
 	$products = get_posts( array(
-		's'              => $term,
-		'post_type'      => 'product',
-		'post_status'    => 'publish',
-		'posts_per_page' => 5,
+		's'                => $term,
+		'post_type'        => 'product',
+		'post_status'      => 'publish',
+		'posts_per_page'   => 5,
+		'suppress_filters' => false, // hereda la normalización (ver nota arriba)
 		// Respeta la visibilidad de catálogo: no sugerir productos ocultos de la búsqueda.
-		'tax_query'      => array(
+		'tax_query'        => array(
 			array(
 				'taxonomy' => 'product_visibility',
 				'field'    => 'name',
