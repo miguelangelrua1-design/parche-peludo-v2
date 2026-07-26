@@ -10480,6 +10480,53 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
   margin-top: 10px;
 }
 
+/* ============================================================
+   HOME — CTAs de las tarjetas de servicio como BOTONES
+   Las tarjetas están pintadas con Elementor y sus CTAs
+   ("Reservar →", "Ver planes →", "Agendar →", "Ver galería →"…)
+   son botones Elementor estilo enlace con la clase CSS custom
+   ppv2-sc-cta puesta desde el editor (estable entre entornos:
+   los IDs de elemento difieren local/producción, la clase no).
+   Aquí se visten como el botón "Ver" de las tarjetas del
+   directorio (pill teal de marca) y se alinean a la derecha.
+   El diseño sigue viviendo en Elementor; esto es solo piel.
+   ============================================================ */
+.ppv2-sc-cta .elementor-button-wrapper {
+  text-align: right;
+}
+.ppv2-sc-cta a.elementor-button {
+  background-color: #79c8d0 !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+  padding: 9px 20px !important;
+  font-weight: 700;
+  transition: filter 0.2s ease;
+}
+.ppv2-sc-cta a.elementor-button:hover,
+.ppv2-sc-cta a.elementor-button:focus {
+  color: #fff !important;
+  filter: brightness(0.92);
+}
+
+/* ============================================================
+   HOME SERVICIOS — botón "Ver más" de cada tarjeta al color de
+   marca (clase custom pps-card-more de Elementor). Mismo pill
+   que el resto de CTAs; conserva su posición centrada.
+   ============================================================ */
+.pps-card-more a.elementor-button {
+  background-color: #79c8d0 !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+  padding: 9px 22px !important;
+  font-weight: 700;
+  transition: filter 0.2s ease;
+}
+.pps-card-more a.elementor-button:hover,
+.pps-card-more a.elementor-button:focus {
+  color: #fff !important;
+  filter: brightness(0.92);
+}
+
 /* ============================================================================
    PANEL DE CONTROL — avisos informativos en color de marca
    Los avisos azules de Listeo (.notification.notice: fondo #E9F7FE y texto
