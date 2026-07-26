@@ -10502,10 +10502,32 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
   font-weight: 700;
   transition: filter 0.2s ease;
 }
+/* El CSS custom del diseño original (era un enlace de texto) trae
+   ".ppv2-sc-cta .elementor-button:hover { background: transparent;
+   text-decoration: underline }" con !important: al pasar el mouse el pill
+   se borraba (texto blanco sobre fondo blanco). Se re-declara TODO en
+   hover con un selector más específico (el tipo `a` desempata). */
 .ppv2-sc-cta a.elementor-button:hover,
 .ppv2-sc-cta a.elementor-button:focus {
+  background-color: #79c8d0 !important;
+  background: #79c8d0 !important;
   color: #fff !important;
+  text-decoration: none !important;
+  transform: none !important;
   filter: brightness(0.92);
+}
+/* La fila precio|botón vive en una sección interna con márgenes laterales
+   (20px) y su columna con padding (10px): el botón quedaba ~50px más
+   adentro que el texto de la tarjeta. La fila pasa a ocupar el ancho del
+   contenido: el precio queda al borde izquierdo del texto y el botón al
+   derecho, simétricos. Solo afecta a las filas que contienen el CTA. */
+.elementor-inner-section:has(.ppv2-sc-cta) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100% !important;
+}
+.elementor-widget-wrap:has(> .ppv2-sc-cta) {
+  padding-right: 0 !important;
 }
 
 /* ============================================================
@@ -10523,7 +10545,11 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
 }
 .pps-card-more a.elementor-button:hover,
 .pps-card-more a.elementor-button:focus {
+  background-color: #79c8d0 !important;
+  background: #79c8d0 !important;
   color: #fff !important;
+  text-decoration: none !important;
+  transform: none !important;
   filter: brightness(0.92);
 }
 
