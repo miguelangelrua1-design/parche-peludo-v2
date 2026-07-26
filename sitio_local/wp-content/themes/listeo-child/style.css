@@ -10499,7 +10499,7 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
   color: #fff !important;
   border-radius: 999px !important;
   padding: 9px 20px !important;
-  margin-right: 4px; /* un respiro para no quedar a ras del borde del texto */
+  margin-right: 7px; /* un respiro para no quedar a ras del borde del texto */
   font-weight: 700;
   transition: filter 0.2s ease;
 }
@@ -10533,13 +10533,15 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
 
 /* ============================================================
    HOME SERVICIOS — "Ver más": TODA la franja inferior de la
-   tarjeta es el botón (decisión del PO: como el diseño original,
-   pero en gris). El widget pps-card-more ya pinta la franja gris
-   (#EEF2F3): aquí el enlace pasa a ocuparla completa (antes solo
-   el texto era clickeable) y el hover oscurece la franja entera.
+   tarjeta es el botón, pintada del color de marca con el texto
+   en blanco y más grande (decisión del PO). El enlace ocupa la
+   franja completa (antes solo el texto era clickeable) y el
+   hover oscurece la franja entera sin borrar nada.
    ============================================================ */
 .pps-card-more {
   padding: 0 !important; /* el padding pasa al enlace: franja 100% clickeable */
+  background: #79c8d0 !important;
+  border-top-color: transparent !important;
 }
 .pps-card-more .elementor-button-wrapper,
 .pps-card-more .elementor-widget-container {
@@ -10552,8 +10554,9 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
   align-items: center;
   justify-content: center;
   width: 100%;
-  background: transparent !important; /* el gris lo pone la franja (el widget) */
-  color: #4a5560 !important;
+  background: transparent !important; /* el teal lo pone la franja (el widget) */
+  color: #fff !important;
+  font-size: 17px !important;
   border-radius: 0 !important;
   padding: 16px 24px !important;
   font-weight: 700;
@@ -10563,12 +10566,12 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
 .pps-card-more a.elementor-button:hover,
 .pps-card-more a.elementor-button:focus {
   background: transparent !important;
-  color: #2a343c !important;
+  color: #fff !important;
   text-decoration: none !important;
   transform: none !important;
 }
 .pps-card-more:has(a.elementor-button:hover) {
-  background-color: #e2e8ea !important; /* toda la franja responde al mouse */
+  background: #5fb6c0 !important; /* toda la franja se oscurece al pasar el mouse */
 }
 
 /* ============================================================================
