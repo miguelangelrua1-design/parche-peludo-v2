@@ -321,10 +321,36 @@ function ppv2_shortcode_loop_on() {
 	if ( wp_script_is( 'pp-plp', 'registered' ) && ! wp_script_is( 'pp-plp', 'enqueued' ) ) {
 		wp_enqueue_script( 'pp-plp' );
 	}
+	// TODO el CSS de la tarjeta rediseñada vive bajo `.listeo-shop-grid ul.products
+	// li.product.pp-product-card …` (style.css ~8715). El shortcode [products] solo
+	// imprime `<div class="woocommerce"><ul class="products">…` → sin este envoltorio
+	// las tarjetas salen "desnudas" (ícono de carrito gigante, sin grilla). Los hooks
+	// del shortcode corren DENTRO de su div, así que esto envuelve exactamente al <ul>.
+	echo '<div class="listeo-shop-grid">';
 }
 add_action( 'woocommerce_shortcode_after_products_loop', 'ppv2_shortcode_loop_off' );
 function ppv2_shortcode_loop_off() {
 	$GLOBALS['ppv2_en_shortcode_products'] = false;
+	echo '</div>';
+}
+
+// Las imágenes de los carruseles [products] se cargan EAGER (loading="eager"
+// EXPLÍCITO). Con lazy nativo quedaban en blanco: complete=false para siempre
+// aunque la URL respondía 200 y un Image() nuevo o loading=eager cargaban al
+// instante (visto en Home local 2026-07-25, 0/8 imágenes cargadas tras 6 s).
+// Son la vitrina de la página — mostrarlas de inmediato es además lo deseable.
+//
+// OJO: tiene que ser el atributo explícito, no quitar el lazy. Primero se
+// intentó con wp_lazy_loading_enabled=false: el shortcode salía sin loading,
+// pero wp_filter_content_tags (la pasada de WP sobre el contenido, DESPUÉS de
+// renderizar los shortcodes) se lo volvía a añadir. Esa pasada respeta las
+// imágenes que YA traen loading, así que "eager" explícito sobrevive.
+add_filter( 'wp_get_attachment_image_attributes', 'ppv2_shortcode_img_eager', 20 );
+function ppv2_shortcode_img_eager( $attr ) {
+	if ( ! empty( $GLOBALS['ppv2_en_shortcode_products'] ) ) {
+		$attr['loading'] = 'eager';
+	}
+	return $attr;
 }
 
 // Texto del botón en las tarjetas: "Agregar" / "Ver opciones" / "Agotado".
