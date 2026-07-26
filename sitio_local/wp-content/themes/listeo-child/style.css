@@ -11777,33 +11777,30 @@ body.woocommerce .select2-results__option {
    queda tal cual el PLP; aquí solo se corrige el CONTENEDOR.
    ============================================================ */
 
-/* --- HOME (1555): una sola fila deslizable, como el diseño original.
-       Se excluye .ppt-products (Home Tienda), que usa grilla. --- */
-.ppv2-shop-products:not(.ppt-products) .listeo-shop-grid ul.products {
+/* --- TODAS las vitrinas [products] (Home 1555 y las 3 de Home Tienda 1610):
+       UNA fila deslizable con la tarjeta al MISMO ancho del PLP (210px).
+       align-items:flex-start es clave: sin él, el flex estira todas las
+       tarjetas a la altura de la más alta y el hueco sobrante aparece entre
+       el título y el precio ("tarjetas más largas que en el PLP"). --- */
+.ppv2-shop-products .listeo-shop-grid ul.products {
   display: flex !important;
   grid-template-columns: none !important;
   flex-wrap: nowrap !important;
+  align-items: flex-start !important;
   overflow-x: auto !important;
   scroll-snap-type: x mandatory !important;
   gap: 18px !important;
   margin: 0 !important; padding: 0 0 12px 0 !important;
   -webkit-overflow-scrolling: touch;
 }
-.ppv2-shop-products:not(.ppt-products) .listeo-shop-grid ul.products li.product.pp-product-card {
+.ppv2-shop-products .listeo-shop-grid ul.products li.product.pp-product-card {
   flex: 0 0 210px !important; width: 210px !important;
   min-width: 210px !important; max-width: 210px !important;
+  height: auto !important; min-height: 0 !important;
   scroll-snap-align: start !important;
 }
-/* Menos aire entre las pastillas del filtro y el carrusel (había ~52px). */
+/* Menos aire entre las pastillas del filtro y el carrusel del Home (había ~52px). */
 .ppv2-shop-products:not(.ppt-products) .listeo-shop-grid { margin-top: -28px; }
-
-/* --- HOME TIENDA (1610, .ppt-products): grilla de 4; la tarjeta LLENA su
-       celda (la regla vieja de 210px fijos dejaba las tarjetas "flotando"
-       con calles desiguales dentro de celdas más anchas). --- */
-.ppv2-shop-products.ppt-products .listeo-shop-grid ul.products li.product.pp-product-card {
-  width: auto !important; min-width: 0 !important; max-width: none !important;
-  flex: none !important; margin: 0 !important;
-}
 
 /* --- Botón "Agregar" dentro de estos carruseles: el bloque antiguo
        (.ppv2-shop-products ul.products li.product .button, línea ~880) lo
