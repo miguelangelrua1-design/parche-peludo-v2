@@ -10499,6 +10499,7 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
   color: #fff !important;
   border-radius: 999px !important;
   padding: 9px 20px !important;
+  margin-right: 4px; /* un respiro para no quedar a ras del borde del texto */
   font-weight: 700;
   transition: filter 0.2s ease;
 }
@@ -10531,26 +10532,43 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
 }
 
 /* ============================================================
-   HOME SERVICIOS — botón "Ver más" de cada tarjeta al color de
-   marca (clase custom pps-card-more de Elementor). Mismo pill
-   que el resto de CTAs; conserva su posición centrada.
+   HOME SERVICIOS — "Ver más": TODA la franja inferior de la
+   tarjeta es el botón (decisión del PO: como el diseño original,
+   pero en gris). El widget pps-card-more ya pinta la franja gris
+   (#EEF2F3): aquí el enlace pasa a ocuparla completa (antes solo
+   el texto era clickeable) y el hover oscurece la franja entera.
    ============================================================ */
+.pps-card-more {
+  padding: 0 !important; /* el padding pasa al enlace: franja 100% clickeable */
+}
+.pps-card-more .elementor-button-wrapper,
+.pps-card-more .elementor-widget-container {
+  width: 100%;
+}
 .pps-card-more a.elementor-button {
-  background-color: #79c8d0 !important;
-  color: #fff !important;
-  border-radius: 999px !important;
-  padding: 9px 22px !important;
+  /* flex (no block): la flecha del diseño original es un ::after y con
+     block caía a una segunda línea; en flex queda al lado del texto. */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: transparent !important; /* el gris lo pone la franja (el widget) */
+  color: #4a5560 !important;
+  border-radius: 0 !important;
+  padding: 16px 24px !important;
   font-weight: 700;
-  transition: filter 0.2s ease;
+  text-decoration: none !important;
+  transition: none;
 }
 .pps-card-more a.elementor-button:hover,
 .pps-card-more a.elementor-button:focus {
-  background-color: #79c8d0 !important;
-  background: #79c8d0 !important;
-  color: #fff !important;
+  background: transparent !important;
+  color: #2a343c !important;
   text-decoration: none !important;
   transform: none !important;
-  filter: brightness(0.92);
+}
+.pps-card-more:has(a.elementor-button:hover) {
+  background-color: #e2e8ea !important; /* toda la franja responde al mouse */
 }
 
 /* ============================================================================
