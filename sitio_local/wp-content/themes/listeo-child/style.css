@@ -10480,31 +10480,6 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
   margin-top: 10px;
 }
 
-/* ============================================================
-   DIRECTORIO MÓVIL — conmutador de vistas junto a "Ordenar por"
-   El tema esconde .layout-switcher en ≤768px. El JS del child
-   (js/ppv2-switcher-movil.js) lo mueve dentro de .sort-by en
-   móvil con la clase ppv2-switcher-movil; aquí se re-muestra y
-   se alinea a la derecha del selector de orden.
-   ============================================================ */
-@media (max-width: 768px) {
-  .layout-switcher.ppv2-switcher-movil {
-    display: inline-flex !important;
-    gap: 6px;
-    margin: 0 0 0 12px;
-    vertical-align: middle;
-  }
-  .sort-by.ppv2-sort-con-switcher {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-  /* El contenedor del select conserva su ancho; el switcher va al lado. */
-  .sort-by.ppv2-sort-con-switcher .sort-by-select {
-    flex: 0 1 auto;
-  }
-}
-
 /* ============================================================================
    PANEL DE CONTROL — avisos informativos en color de marca
    Los avisos azules de Listeo (.notification.notice: fondo #E9F7FE y texto
