@@ -297,7 +297,34 @@ function ppv2_liberar_ajustes_catalogo() {
 // ícono solo cubrían la tienda y en los sugeridos el botón salía con el
 // "Añadir al carrito" nativo y sin ícono.
 function ppv2_es_contexto_tarjeta() {
-	return ppv2_is_shop_context() || ( function_exists( 'is_product' ) && is_product() );
+	return ppv2_is_shop_context()
+		|| ( function_exists( 'is_product' ) && is_product() )
+		|| ! empty( $GLOBALS['ppv2_en_shortcode_products'] );
+}
+
+/**
+ * Loops del shortcode [products] (carruseles de Home 1555 y Home Tienda 1610).
+ *
+ * Se marca una bandera mientras dura el loop para que la tarjeta rediseñada
+ * (woocommerce/content-product.php), el texto del botón, el ícono y el
+ * "Agregar" de variables la reconozcan como contexto válido. Se hace con los
+ * hooks del propio shortcode y NO con is_page()/IDs porque así funciona en
+ * cualquier página donde se inserte [products], hoy o en el futuro.
+ *
+ * El JS de las pastillas se encola aquí y no en wp_enqueue_scripts porque en
+ * ese momento aún no se sabe si la página tendrá el shortcode; como pp-plp va
+ * en el FOOTER, encolarlo durante el render del contenido llega a tiempo.
+ */
+add_action( 'woocommerce_shortcode_before_products_loop', 'ppv2_shortcode_loop_on' );
+function ppv2_shortcode_loop_on() {
+	$GLOBALS['ppv2_en_shortcode_products'] = true;
+	if ( wp_script_is( 'pp-plp', 'registered' ) && ! wp_script_is( 'pp-plp', 'enqueued' ) ) {
+		wp_enqueue_script( 'pp-plp' );
+	}
+}
+add_action( 'woocommerce_shortcode_after_products_loop', 'ppv2_shortcode_loop_off' );
+function ppv2_shortcode_loop_off() {
+	$GLOBALS['ppv2_en_shortcode_products'] = false;
 }
 
 // Texto del botón en las tarjetas: "Agregar" / "Ver opciones" / "Agotado".
@@ -392,7 +419,7 @@ function ppv2_card_presentaciones( $product ) {
 // nativo (texto "Ver opciones" vía ppv2_loop_add_to_cart_text).
 add_filter( 'woocommerce_loop_add_to_cart_link', 'ppv2_loop_variable_agregar', 5, 3 );
 function ppv2_loop_variable_agregar( $html, $product, $args = array() ) {
-	if ( ! ppv2_is_shop_context() && ! is_product() ) {
+	if ( ! ppv2_es_contexto_tarjeta() ) {
 		return $html;
 	}
 	if ( ! $product instanceof WC_Product || ! $product->is_type( 'variable' ) ) {
@@ -418,14 +445,22 @@ function ppv2_loop_variable_agregar( $html, $product, $args = array() ) {
 // tarjeta). Archivo mínimo, en footer, cache-bust por filemtime.
 add_action( 'wp_enqueue_scripts', 'ppv2_plp_assets' );
 function ppv2_plp_assets() {
+	$dir = get_stylesheet_directory();
+	$uri = get_stylesheet_directory_uri();
+
+	// Se REGISTRA siempre (registrar no imprime nada ni cuesta una petición) para
+	// que los carruseles [products] de Home/Home Tienda puedan encolarlo durante
+	// el render — ver ppv2_shortcode_loop_on(). Se ENCOLA aquí solo en PLP/PDP.
+	if ( file_exists( $dir . '/js/pp-plp.js' ) ) {
+		wp_register_script( 'pp-plp', $uri . '/js/pp-plp.js', array( 'jquery' ), filemtime( $dir . '/js/pp-plp.js' ), true );
+	}
+
 	$es_plp = ppv2_is_shop_context() || ( function_exists( 'is_product' ) && is_product() );
 	if ( ! $es_plp ) {
 		return;
 	}
-	$dir = get_stylesheet_directory();
-	$uri = get_stylesheet_directory_uri();
-	if ( file_exists( $dir . '/js/pp-plp.js' ) ) {
-		wp_enqueue_script( 'pp-plp', $uri . '/js/pp-plp.js', array( 'jquery' ), filemtime( $dir . '/js/pp-plp.js' ), true );
+	if ( wp_script_is( 'pp-plp', 'registered' ) ) {
+		wp_enqueue_script( 'pp-plp' );
 	}
 	// Carga progresiva del listado (scroll infinito acotado a 2 cargas y luego
 	// paginación sin repetidos). SOLO en tienda/categorías: en la ficha no hay
@@ -2264,6 +2299,10 @@ function ppv2_enqueue_js_migrados() {
 		// silencio. La portada (antes ID 1555) ya la cubre is_front_page().
 		array( 'ppv2-shop-filter-script', is_page( 'home-tienda' ) || is_front_page(), array() ),      // 99
 		array( 'ppv2-listing-header-reorder', $es_pdp, array() ),                                       // 100
+		// Reposiciona el scroll cuando se llega con #add-review desde el correo
+		// de reseñas: el salto nativo falla porque la ficha aún no tiene su
+		// altura final cuando el navegador resuelve el hash.
+		array( 'ppv2-anclas-ficha', $es_pdp, array() ),                                                 // 100
 		array( 'ppv2-message-form-labels', $es_pdp, array() ),                                          // 101
 		array( 'ppv2-listing-fav-position', $es_pdp, array( 'ppv2-listing-header-reorder' ) ),          // 101
 		array( 'ppv2-listing-mobile-bottom-bar', $es_pdp, array() ),                                    // 110
@@ -2684,6 +2723,42 @@ if ( file_exists( $pp_fuentes ) ) {
 $pp_chat_oscuro = get_stylesheet_directory() . '/inc/pp-rendimiento-chat.php';
 if ( file_exists( $pp_chat_oscuro ) ) {
 	require_once $pp_chat_oscuro;
+}
+
+/* ==========================================================================
+ * CORREOS — AJUSTES DE TEXTO, ENLACES Y MINIATURAS
+ * Traduce «Hourly rate»/«1 hour» de Listeo, quita el «Enhorabuena» y la promo
+ * de la app de WooCommerce, apunta los enlaces a la ayuda propia y muestra la
+ * miniatura de cada producto en la tabla del pedido.
+ * Kill-switch: define( 'PP_CORREOS_AJUSTES_OFF', true );
+ * ========================================================================== */
+$pp_correos_ajustes = get_stylesheet_directory() . '/inc/pp-correos-ajustes.php';
+if ( file_exists( $pp_correos_ajustes ) ) {
+	require_once $pp_correos_ajustes;
+}
+
+/* ==========================================================================
+ * ⚠️ TEMPORAL — ENVIADOR DE CORREOS DE PRUEBA
+ * Añade Herramientas → «Correos de prueba» para enviar todas las plantillas de
+ * Listeo, renderizadas de verdad, a las direcciones que se indiquen.
+ * BORRAR este bloque y el archivo inc/pp-enviar-correos-prueba.php cuando
+ * termine la revisión: no debe quedarse en producción.
+ * ========================================================================== */
+$pp_correos_prueba = get_stylesheet_directory() . '/inc/pp-enviar-correos-prueba.php';
+if ( file_exists( $pp_correos_prueba ) ) {
+	require_once $pp_correos_prueba;
+}
+
+/* ==========================================================================
+ * ⚠️ TEMPORAL — REEMPLAZO DE TEXTO EN PÁGINAS DE ELEMENTOR
+ * Las páginas de Elementor guardan su texto en el meta `_elementor_data`, no
+ * en el contenido de WordPress: editarlas por la API no cambia nada visible.
+ * Esta pantalla (Herramientas → Reemplazo en Elementor) permite hacerlo con
+ * vista previa, validación de JSON y respaldo. BORRAR al terminar.
+ * ========================================================================== */
+$pp_reemplazo_elementor = get_stylesheet_directory() . '/inc/pp-reemplazo-elementor.php';
+if ( file_exists( $pp_reemplazo_elementor ) ) {
+	require_once $pp_reemplazo_elementor;
 }
 
 /* ==========================================================================

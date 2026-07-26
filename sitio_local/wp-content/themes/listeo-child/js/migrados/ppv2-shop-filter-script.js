@@ -6,7 +6,14 @@
 
 		// 1) CTA "Ver más" (enlaza a la ficha del producto) movido al final de la tarjeta.
 		//    La etiqueta de categoría ya la imprime Listeo (span.product-category).
+		//
+		//    2026-07-25: SOLO para la tarjeta antigua del tema padre. Desde que los
+		//    carruseles usan la MISMA tarjeta del PLP (.pp-product-card), esta ya
+		//    trae su propio botón "Agregar" funcional —con la variación de la
+		//    pastilla seleccionada en data-product_id— y reescribirlo a "Ver más"
+		//    le quitaba el add-to-cart. Si la tarjeta es la nueva, no se toca.
 		shop.querySelectorAll('li.product').forEach(function (li) {
+			if (li.classList.contains('pp-product-card')) { return; }
 			var link = li.querySelector('a.woocommerce-LoopProduct-link');
 			var btn = li.querySelector('a.button');
 			if (btn) {

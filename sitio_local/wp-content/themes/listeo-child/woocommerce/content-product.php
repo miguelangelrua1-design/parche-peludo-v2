@@ -97,11 +97,16 @@ if ( $product->get_type() == 'listing_package' ) { ?>
 	</li>
 
 	<?php
-} elseif ( is_shop() || is_product_taxonomy() || is_product() ) {
+} elseif ( function_exists( 'ppv2_es_contexto_tarjeta' ) ? ppv2_es_contexto_tarjeta() : ( is_shop() || is_product_taxonomy() || is_product() ) ) {
 	// -------- TIENDA (PLP) y PDP (sugeridos/upsells): tarjeta rediseñada --------
 	// is_product() añadido 2026-07-11: los "Productos sugeridos" y upsells de la
 	// ficha de producto usan la MISMA tarjeta que la tienda (el PDP también vive
 	// dentro de .listeo-shop-grid, así que el CSS existente aplica sin cambios).
+	//
+	// 2026-07-25: la condición pasó a ppv2_es_contexto_tarjeta(), que además
+	// cubre los loops del shortcode [products] (carruseles de Home y Home
+	// Tienda). Antes caían al `else` y salía la tarjeta del tema PADRE, sin
+	// pastillas de presentación y con el botón "Añadir al carrito" nativo.
 	//
 	// HOOKS DEL LOOP (reinsertados 2026-07-10): la tarjeta dispara los 5 hooks
 	// estándar de WooCommerce para que el badge "¡Oferta!" (sale flash) y los
