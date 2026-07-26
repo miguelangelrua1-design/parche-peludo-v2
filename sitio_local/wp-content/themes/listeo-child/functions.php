@@ -2798,3 +2798,38 @@ if ( file_exists( $pp_normalizacion_busqueda ) ) {
 	require_once $pp_normalizacion_busqueda;
 }
 
+/* ==========================================================================
+ * TARJETAS DE LISTADOS — precio "desde $X" + switcher de vistas en móvil
+ *
+ * 1) El precio de las tarjetas decía "Empieza desde $165.000" (traducción de
+ *    "Starts from " de listeo_core). Se acorta a "desde $165.000" por filtro
+ *    gettext: pisa el .mo sin editar catálogos y sobrevive a actualizaciones.
+ * 2) El tema oculta el conmutador grid/lista (.layout-switcher) en ≤768px.
+ *    Un JS diminuto lo recoloca junto a "Ordenar por" en móvil y lo devuelve
+ *    a su columna en escritorio (los listeners AJAX del tema viajan con el
+ *    nodo, así que el conmutador sigue funcionando igual).
+ * El botón "Ver" de las tarjetas es 100% CSS (style.css): un pseudo-elemento
+ * dentro del enlace que ya envuelve la tarjeta — sin plantillas ni JS.
+ * ========================================================================== */
+add_filter( 'gettext_listeo_core', 'ppv2_precio_desde_corto', 20, 2 );
+function ppv2_precio_desde_corto( $traduccion, $texto ) {
+	if ( 'Starts from ' === $texto && ! is_admin() ) {
+		return 'desde ';
+	}
+	return $traduccion;
+}
+
+add_action( 'wp_enqueue_scripts', 'ppv2_switcher_movil_script', 60 );
+function ppv2_switcher_movil_script() {
+	if ( is_admin() ) {
+		return;
+	}
+	$js = get_stylesheet_directory() . '/js/ppv2-switcher-movil.js';
+	if ( file_exists( $js ) ) {
+		// Global a propósito: las páginas con resultados de listados (archivo,
+		// taxonomías, búsqueda) no comparten una condición simple; el script
+		// pesa <1 KB y sale de inmediato si no hay conmutador en la página.
+		wp_enqueue_script( 'ppv2-switcher-movil', get_stylesheet_directory_uri() . '/js/ppv2-switcher-movil.js', array(), filemtime( $js ), true );
+	}
+}
+

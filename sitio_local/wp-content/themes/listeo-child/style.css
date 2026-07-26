@@ -10435,6 +10435,76 @@ a.listeo_core-unbookmark-it:focus i {
   cursor: not-allowed !important;
 }
 
+/* ============================================================
+   TARJETAS DE LISTADOS — botón "Ver" (call to action)
+   Toda la zona de texto de la tarjeta ya es UN ENLACE al listado
+   (a.listing-details-nl), así que el botón es un pseudo-elemento
+   dentro de él: clicarlo navega al listado sin JS ni plantillas.
+   Se ancla en .details-sidebar-col-nl porque existe en TODAS las
+   tarjetas (las que no tienen precio no traen .listing-booking-nl).
+   En grid el pie es una fila (rating | precio) → rating a la
+   izquierda y precio+Ver juntos a la derecha; en la vista lista el
+   pie es una columna pegada a la derecha → el botón queda en la
+   esquina inferior derecha. Aplica igual en móvil y escritorio.
+   ============================================================ */
+.listing-card-nl .details-sidebar-col-nl::after {
+  content: 'Ver';
+  display: inline-block;
+  flex: 0 0 auto;
+  background: #79c8d0;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 9px 20px;
+  border-radius: 999px;
+  transition: filter 0.2s ease;
+}
+a.listing-details-nl:hover .details-sidebar-col-nl::after {
+  filter: brightness(0.92);
+}
+/* GRID: el pie es flex-row space-between (rating | precio). Con el botón como
+   tercer ítem, se agrupan precio+botón a la derecha y el rating conserva la
+   izquierda empujando con margin-right:auto. */
+.new-grid-layout-nl .listing-card-nl .details-sidebar-col-nl {
+  justify-content: flex-end;
+  gap: 12px;
+}
+.new-grid-layout-nl .listing-card-nl .details-sidebar-upper-nl {
+  margin-right: auto;
+}
+/* LISTA (horizontal): el pie es columna alineada a la derecha (rating arriba,
+   precio abajo); el botón entra de último → esquina inferior derecha. Un
+   respiro entre el precio y el botón. */
+.listings-container:not(.new-grid-layout-nl) .listing-card-nl .details-sidebar-col-nl::after {
+  margin-top: 10px;
+}
+
+/* ============================================================
+   DIRECTORIO MÓVIL — conmutador de vistas junto a "Ordenar por"
+   El tema esconde .layout-switcher en ≤768px. El JS del child
+   (js/ppv2-switcher-movil.js) lo mueve dentro de .sort-by en
+   móvil con la clase ppv2-switcher-movil; aquí se re-muestra y
+   se alinea a la derecha del selector de orden.
+   ============================================================ */
+@media (max-width: 768px) {
+  .layout-switcher.ppv2-switcher-movil {
+    display: inline-flex !important;
+    gap: 6px;
+    margin: 0 0 0 12px;
+    vertical-align: middle;
+  }
+  .sort-by.ppv2-sort-con-switcher {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  /* El contenedor del select conserva su ancho; el switcher va al lado. */
+  .sort-by.ppv2-sort-con-switcher .sort-by-select {
+    flex: 0 1 auto;
+  }
+}
+
 /* ============================================================================
    PANEL DE CONTROL — avisos informativos en color de marca
    Los avisos azules de Listeo (.notification.notice: fondo #E9F7FE y texto
