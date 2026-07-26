@@ -11812,3 +11812,47 @@ body.woocommerce .select2-results__option {
   justify-content: center !important;
   gap: 8px !important;
 }
+
+/* ============================================================
+   HOME (1555) — Ritmo vertical compacto (2026-07-26, pedido PO)
+   Las secciones traían 90px de relleno arriba/abajo (80 el trío
+   de confianza). Se reducen a la mitad SOLO en escritorio/tablet;
+   en móvil Elementor ya aplica sus propios valores.
+   Sección por sección (los ids son los top-sections de la página):
+   ============================================================ */
+@media (min-width: 768px) {
+  /* padding-top 90 -> 44 */
+  .page-id-1555 .elementor-element-k9auist,
+  .page-id-1555 .elementor-element-3rlid98,
+  .page-id-1555 .elementor-element-bvbx8c0,
+  .page-id-1555 .elementor-element-pk8bxi4,
+  .page-id-1555 .elementor-element-udkv868,
+  .page-id-1555 .elementor-element-yzaagwq,
+  .page-id-1555 .elementor-element-48lzuhh { padding-top: 44px !important; }
+  /* padding-bottom 90 -> 44 */
+  .page-id-1555 .elementor-element-upy9m30,
+  .page-id-1555 .elementor-element-3rlid98,
+  .page-id-1555 .elementor-element-rfsgaqe,
+  .page-id-1555 .elementor-element-cub64p4,
+  .page-id-1555 .elementor-element-layfjg6,
+  .page-id-1555 .elementor-element-e5a1h2o,
+  .page-id-1555 .elementor-element-48lzuhh { padding-bottom: 44px !important; }
+  /* trío de confianza: 80/80 -> 40/40 */
+  .page-id-1555 .elementor-element-rd9285s { padding-top: 40px !important; padding-bottom: 40px !important; }
+}
+
+/* --- "Ver carrito" tras agregar por AJAX en los carruseles: igual que en el
+       PLP (enlace pequeño subrayado), no el botonzote del bloque antiguo
+       (línea ~880, que lo pintaba como segundo botón a todo el ancho). --- */
+.ppv2-shop-products ul.products li.product.pp-product-card .pp-card-body .added_to_cart {
+  display: block !important;
+  width: auto !important;
+  margin: 8px 0 0 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #4AA5AD !important;
+  text-decoration: underline !important;
+  border-radius: 0 !important;
+}
