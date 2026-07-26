@@ -134,11 +134,40 @@
 
 		var ciudades = ciudadesDe( estado );
 		if ( ! ciudades.length ) {
-			// Sin datos para ese departamento → input de texto normal.
+			if ( ! estado.value ) {
+				// SIN departamento elegido: el campo queda BLOQUEADO (select
+				// vacío y deshabilitado con la etiqueta como aviso), no un input
+				// de texto libre — misma regla que en la modal de reserva. El
+				// input oculto de React NO se toca: si trae una ciudad guardada
+				// del perfil y React aún no pintó el departamento (carrera de
+				// arranque), borrarla destruiría el dato; y enviar sin
+				// departamento es imposible (campo obligatorio del bloque), así
+				// que al elegirlo la reconciliación de abajo decide su destino.
+				// Guard de idempotencia: llenar() corre en cada pasada del
+				// observer; si ya está bloqueado, no tocar el DOM (cada mutación
+				// re-dispararía el observer → trabajo en bucle cada 150 ms).
+				if ( select.disabled && ! select.options.length && ! wrap.hidden ) { return; }
+				wrap.hidden = false;
+				select.disabled = true;
+				select.innerHTML = '';
+				select.dataset.ppv2Depto = '';
+				wrap.classList.add( 'ppv2-ciudad-vacia' );
+				var lab = wrap.querySelector( '.wc-blocks-components-select__label' );
+				if ( lab ) { lab.textContent = 'Elige primero el departamento'; }
+				return;
+			}
+			// Departamento elegido pero sin datos en el catálogo → input de
+			// texto normal (mejora progresiva).
 			if ( ! wrap.hidden ) { wrap.hidden = true; }
 			return;
 		}
 		if ( wrap.hidden ) { wrap.hidden = false; }
+		if ( select.disabled ) {
+			// Salir del estado bloqueado: reactivar y restaurar la etiqueta.
+			select.disabled = false;
+			var lab2 = wrap.querySelector( '.wc-blocks-components-select__label' );
+			if ( lab2 ) { lab2.textContent = 'Ciudad / Municipio'; }
+		}
 
 		// Reconstruir SOLO si el departamento cambió. llenar() corre en cada
 		// pasada del MutationObserver; si reconstruyera siempre, cada rebuild
@@ -187,6 +216,11 @@
 		var wrap = celda && celda.querySelector( '.ppv2-ciudad-wrap' );
 		if ( ! wrap || wrap.hidden ) { return; }
 		var select = wrap.querySelector( 'select' );
+		// Estado bloqueado (sin departamento): no hay opciones con las que
+		// reconciliar; sin este guard, un valor precargado en el input (perfil
+		// guardado o autofill) caería en la rama final y REVELARÍA el input de
+		// texto libre — justo el bug que este bloqueo corrige.
+		if ( select.disabled ) { return; }
 		if ( input.value !== select.value ) {
 			// Match exacto y, si no, NORMALIZADO: el autofill del navegador
 			// puede escribir "BELLO"/"bello" y sin esto el usuario veía una

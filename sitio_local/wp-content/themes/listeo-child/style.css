@@ -10425,6 +10425,15 @@ a.listeo_core-unbookmark-it:focus i {
 .wc-block-components-address-form__city > .ppv2-ciudad-wrap {
   margin-top: 0 !important;
 }
+/* Estado BLOQUEADO (aún sin departamento elegido): el JS deja el select vacío
+   y deshabilitado con la etiqueta "Elige primero el departamento" haciendo de
+   placeholder. Se atenúa la caja para que se lea como no-interactiva. */
+.ppv2-ciudad-wrap:has(.ppv2-ciudad-select:disabled) {
+  opacity: 0.6;
+}
+.ppv2-ciudad-select:disabled {
+  cursor: not-allowed !important;
+}
 
 /* ============================================================================
    PANEL DE CONTROL — avisos informativos en color de marca
