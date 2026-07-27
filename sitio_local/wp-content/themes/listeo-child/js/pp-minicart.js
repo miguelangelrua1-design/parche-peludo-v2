@@ -141,24 +141,23 @@
 		}
 	}
 
-	// Re-lee la página actual (GET) y re-pinta el minicart y el badge con el
-	// estado REAL del servidor: se usa cuando un envío falla (red caída,
-	// nonce caducado, ítem inexistente) para que la cantidad optimista no
-	// quede en pantalla desincronizada del carrito real.
+	// Pide los FRAGMENTOS frescos del carrito por el canal wc-ajax de
+	// WooCommerce (nunca se cachea y no usa nonce) y re-pinta minicart y
+	// badge con el estado REAL del servidor. ANTES se re-leía la página
+	// actual, pero con la caché de página activa esa copia llega CONGELADA
+	// (el carrito de quien generó la caché, normalmente vacío) y el drawer
+	// se "vaciaba" tras agregar: el visitante veía su carrito roto.
 	function resyncMini(mySeq) {
-		fetch(window.location.href, { credentials: 'same-origin' }).then(function (r) {
+		fetch('/?wc-ajax=get_refreshed_fragments', { method: 'POST', credentials: 'same-origin' }).then(function (r) {
 			if (!r.ok) { throw new Error('HTTP ' + r.status); }
-			return r.text();
-		}).then(function (html) {
+			return r.json();
+		}).then(function (data) {
 			if (mySeq !== ppReqSeq) { return; } // ya hay un envío más nuevo
-			var doc = new DOMParser().parseFromString(html, 'text/html');
-			var fresh = doc.querySelector('.listeo-mini-cart');
-			var cur = document.querySelector('.pp-cart-host .listeo-mini-cart');
-			if (fresh && cur) { cur.innerHTML = fresh.innerHTML; }
-			var freshBadge = doc.querySelector('.mini-cart-button .badge');
-			if (freshBadge) {
-				var badges = document.querySelectorAll('.mini-cart-button .badge');
-				for (var i = 0; i < badges.length; i++) { badges[i].textContent = freshBadge.textContent; }
+			if (data && data.fragments && window.jQuery) {
+				jQuery.each(data.fragments, function (selector, html) {
+					jQuery(selector).replaceWith(html);
+				});
+				jQuery(document.body).trigger('wc_fragments_refreshed');
 			}
 		}).catch(function () {
 			/* sin conexión: no rompemos la página */
@@ -258,5 +257,23 @@
 		buildChrome();
 	} else {
 		document.addEventListener('DOMContentLoaded', buildChrome);
+	}
+
+	// El PDP (y cualquier otro código) anuncia cambios de carrito con el
+	// evento estándar wc_fragment_refresh; este sitio no carga el
+	// cart-fragments.js de Woo (decisión de performance), así que sin este
+	// oyente el aviso caía al vacío y el drawer nunca se enteraba.
+	if (window.jQuery) {
+		jQuery(document.body).on('wc_fragment_refresh', function () {
+			resyncMini(ppReqSeq);
+		});
+	}
+
+	// BOOTSTRAP: con la caché de página activa, el HTML llega con el badge y
+	// el drawer del momento en que se GENERÓ la copia (otro visitante, otro
+	// carrito). Al cargar, pedimos los fragmentos frescos para pintar el
+	// carrito REAL de quien está mirando.
+	if (document.querySelector('.mini-cart-button, .listeo-mini-cart')) {
+		resyncMini(ppReqSeq);
 	}
 })();
