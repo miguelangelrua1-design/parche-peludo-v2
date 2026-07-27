@@ -23,6 +23,33 @@ document.addEventListener('DOMContentLoaded', function () {
 				}
 			}
 		}
+		// ¿Hay sesión iniciada? WordPress marca el body con .logged-in; como
+		// segunda señal (por si el HTML llega de la caché de página) se mira
+		// si el header muestra el enlace "Iniciar Sesión", que solo existe
+		// para visitantes anónimos.
+		function haySesion() {
+			if (document.body.classList.contains('logged-in')) { return true; }
+			return !document.querySelector('a[href="#sign-in-dialog"]');
+		}
+
+		// Abre el panel de Iniciar Sesión del tema. Se prefiere pulsar el
+		// enlace que ya existe en el header (arrastra el handler del tema y su
+		// animación); si no estuviera, se abre Magnific Popup a mano.
+		function abrirLogin() {
+			var enlace = document.querySelector('a[href="#sign-in-dialog"]');
+			if (enlace) { enlace.click(); return true; }
+			if (window.jQuery && jQuery.magnificPopup && document.getElementById('sign-in-dialog')) {
+				jQuery.magnificPopup.open({
+					items: { src: '#sign-in-dialog' },
+					type: 'inline',
+					mainClass: 'my-mfp-zoom-in',
+					removalDelay: 300
+				});
+				return true;
+			}
+			return false;
+		}
+
 		// Inyectar el botón de Mensaje a la IZQUIERDA de "Reservar". Usa el
 		// MISMO icono que el título de la sección Enviar Mensaje (fa-envelope-o,
 		// sobre cerrado).
@@ -37,6 +64,12 @@ document.addEventListener('DOMContentLoaded', function () {
 			btn.addEventListener('click', function (e) {
 				e.preventDefault();
 				e.stopImmediatePropagation();
+				// Sin sesión el panel de mensaje no sirve (el envío queda sin
+				// remitente y el usuario no puede seguir la conversación desde
+				// su cuenta): se le ofrece iniciar sesión, que es lo que espera
+				// encontrar. Si por lo que sea no se pudiera abrir el login,
+				// se cae al panel de mensaje para no dejar el botón muerto.
+				if (!haySesion() && abrirLogin()) { return; }
 				openSheet('message'); // openSheet está hoisteada en este scope
 			});
 			bsfRight.insertBefore(btn, bsfRight.firstChild); // izquierda del botón Reservar
