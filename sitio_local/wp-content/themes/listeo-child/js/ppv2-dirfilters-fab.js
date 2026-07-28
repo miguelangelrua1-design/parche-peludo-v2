@@ -77,7 +77,16 @@
 			// El botón lo inyecta Listeo y puede llegar tarde: se busca en cada
 			// cambio de estado (barato: solo al cruzar el umbral, no por píxel).
 			var fab = document.querySelector('.sticky-filter-button');
-			if (fab) { pintar(fab, visible); }
+			if (fab) {
+				pintar(fab, visible);
+				// El botón es solo un ícono (sin texto visible): se le da nombre
+				// accesible para lectores de pantalla y tooltip del navegador.
+				var b = fab.querySelector('.enable-filters-button');
+				if (b && !b.getAttribute('aria-label')) {
+					b.setAttribute('aria-label', 'Mostrar u ocultar filtros');
+					b.setAttribute('title', 'Filtros');
+				}
+			}
 		}
 
 		// passive: no bloquea el scroll. Throttle con setTimeout y NO con

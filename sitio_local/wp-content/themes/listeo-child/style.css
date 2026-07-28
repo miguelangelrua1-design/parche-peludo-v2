@@ -12089,8 +12089,8 @@ body.woocommerce .select2-results__option {
    ============================================================================ */
 .sticky-filter-button {
   position: fixed !important;
-  left: 20px;
-  bottom: 24px;
+  left: 16px;
+  bottom: 16px;
   top: auto !important;
   right: auto;
   height: auto !important;
@@ -12110,25 +12110,24 @@ html.pp-fabfiltros-visible .sticky-filter-button {
 /* El botón: píldora de marca con su ícono. Listeo lo dejaba en width:0 /
    line-height:0 para reducirlo a un cuadradito; aquí se devuelve a tamaño real. */
 .sticky-filter-button .filter-button-container { margin: 0 !important; }
+/* Botón redondo y compacto: SOLO ícono (decisión del PO). */
 .sticky-filter-button .enable-filters-button {
   display: inline-flex !important;
   align-items: center;
-  gap: 9px;
-  width: auto !important;
-  min-width: 0 !important;
-  height: auto !important;
+  justify-content: center;
+  gap: 0 !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  height: 48px !important;
   line-height: 1 !important;
   margin: 0 !important;
-  padding: 12px 18px !important;
+  padding: 0 !important;
   align-self: flex-start;
   border: 0;
-  border-radius: 999px;
+  border-radius: 50%;
   background: var(--teal-parche, #79C8D0) !important;
   color: #fff !important;
-  font-family: var(--font-sans, inherit);
-  font-size: 14px;
-  font-weight: 700;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, .22);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, .22);
   cursor: pointer;
   transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
 }
@@ -12137,27 +12136,38 @@ html.pp-fabfiltros-visible .sticky-filter-button {
   box-shadow: 0 8px 26px rgba(15, 23, 42, .28);
   transform: translateY(-2px);
 }
-/* Ícono: Listeo lo pinta como cuadro de color; aquí va integrado en la píldora. */
+/* Ícono: el <i class="enable-filters-button-icon"> de Listeo llega VACÍO
+   (0x0, sin contenido ni pseudo-elementos: su diseño lo pintaba con
+   background-color y bordes). Se le da forma con un SVG de embudo —el símbolo
+   universal de filtros— incrustado como data URI: sin depender de ninguna
+   fuente de iconos ni de peticiones extra. */
 .sticky-filter-button .enable-filters-button i,
 .sticky-filter-button .enable-filters-button .enable-filters-button-icon {
-  background: transparent !important;
-  border-radius: 0 !important;
-  width: auto !important;
-  height: auto !important;
+  display: block !important;
+  width: 21px !important;
+  height: 21px !important;
   margin: 0 !important;
   padding: 0 !important;
-  line-height: 1 !important;
-  color: #fff !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 3H2l8 9.46V19l4 2v-8.54L22 3z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
 }
-/* Texto: se reactiva el <span> del estado actual (el bloque de Listeo los
-   ocultaba ambos con !important, dejando el botón en 0px de ancho). */
-.sticky-filter-button .enable-filters-button span.show-text { display: inline !important; }
+/* Sin texto: el botón es solo el ícono (el nombre lo da el aria-label que
+   pone js/ppv2-dirfilters-fab.js, para que siga siendo accesible). */
+.sticky-filter-button .enable-filters-button span.show-text,
 .sticky-filter-button .enable-filters-button span.hide-text { display: none !important; }
-.sticky-filter-button .enable-filters-button.active span.show-text { display: none !important; }
-.sticky-filter-button .enable-filters-button.active span.hide-text { display: inline !important; }
 
-/* Móvil: algo más pequeño y sin chocar con el chat flotante (que va a la derecha). */
+/* Estado abierto: se marca girando el ícono, ya que no hay texto que cambie. */
+.sticky-filter-button .enable-filters-button.active {
+  background: var(--teal-deep, #5EB2BB) !important;
+}
+
+/* Móvil: un punto más pequeño y bien en la esquina (el chat flota a la derecha). */
 @media (max-width: 767px) {
-  .sticky-filter-button { left: 14px; bottom: 18px; }
-  .sticky-filter-button .enable-filters-button { padding: 12px 17px !important; font-size: 13px; }
+  .sticky-filter-button { left: 12px; bottom: 12px; }
+  .sticky-filter-button .enable-filters-button { width: 44px !important; min-width: 44px !important; height: 44px !important; }
+  .sticky-filter-button .enable-filters-button i { width: 19px !important; height: 19px !important; }
 }
