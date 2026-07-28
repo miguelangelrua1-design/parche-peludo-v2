@@ -12212,25 +12212,8 @@ html.pp-fabfiltros-visible .sticky-filter-button {
   .sticky-filter-button .enable-filters-button i { width: 16px !important; height: 12px !important; background-size: 16px 2px, 11px 2px, 6px 2px !important; }
 }
 
-/* ============================================================================
-   HOME TIENDA — Títulos de los banners de destacados (2026-07-28)
-   ----------------------------------------------------------------------------
-   Las piezas de "Destacados para Perros/Gatos" ya llevan el título y el
-   subtítulo DIBUJADOS dentro de la imagen, así que el widget de texto que había
-   encima duplicaba el rótulo.
-   No se borra: se oculta VISUALMENTE pero se deja en el HTML como <h2> real,
-   para que Google y los lectores de pantalla sigan encontrando el encabezado de
-   la sección (una imagen no es texto indexable). Patrón "visually hidden".
-   ============================================================================ */
-#ppt-dogs-banner .ppt-species-title,
-#ppt-cats-banner .ppt-species-title {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-}
+/* Nota 2026-07-28: los banners de destacados de Home Tienda ya NO llevan
+   widget de título. El <h2> (oculto a la vista, para SEO y lectores de
+   pantalla) va dentro del propio widget del enlace, con estilos EN LÍNEA:
+   WordPress filtra los <style> que se guardan por API, pero respeta el
+   atributo style=. Por eso aquí no hace falta ninguna regla. */
