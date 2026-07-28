@@ -12069,3 +12069,95 @@ body.woocommerce .select2-results__option {
     max-height: calc(100vh - 144px) !important;
   }
 }
+
+/* ============================================================================
+   DIRECTORIO — Botón FLOTANTE de filtros (2026-07-26, decisión del PO:
+   "que solo aparezca al hacer scroll" + "abajo a la izquierda")
+   ----------------------------------------------------------------------------
+   Se reutiliza el `.sticky-filter-button` de Listeo (dentro lleva el
+   `.enable-filters-button` nativo, así que el clic conserva TODA la lógica del
+   tema: abre/cierra el panel, alterna `enabled-sidebar` y sincroniza el cajón
+   móvil del proyecto). Aquí solo se corrige por qué no se veía:
+     · `position: sticky` estaba cancelado por el `overflow:hidden` del ancestro
+       `.full-page-content-container`  ->  pasa a `fixed`.
+     · `top: 10px` lo habría dejado detrás del header fijo  ->  se ancla abajo.
+     · `opacity: 0` dependía de una clase `btn-visible` que el JS del tema nunca
+       aplica  ->  la visibilidad la controla js/ppv2-dirfilters-fab.js con
+       `html.pp-fabfiltros-visible` a partir de 300px de scroll.
+     · El botón medía 0px de ancho porque el bloque de Listeo oculta sus dos
+       <span> con !important  ->  se reactiva el que corresponda al estado.
+   ============================================================================ */
+.sticky-filter-button {
+  position: fixed !important;
+  left: 20px;
+  bottom: 24px;
+  top: auto !important;
+  right: auto;
+  height: auto !important;
+  margin: 0 !important;
+  z-index: 9990;
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+html.pp-fabfiltros-visible .sticky-filter-button {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* El botón: píldora de marca con su ícono. Listeo lo dejaba en width:0 /
+   line-height:0 para reducirlo a un cuadradito; aquí se devuelve a tamaño real. */
+.sticky-filter-button .filter-button-container { margin: 0 !important; }
+.sticky-filter-button .enable-filters-button {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 9px;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 12px 18px !important;
+  align-self: flex-start;
+  border: 0;
+  border-radius: 999px;
+  background: var(--teal-parche, #79C8D0) !important;
+  color: #fff !important;
+  font-family: var(--font-sans, inherit);
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, .22);
+  cursor: pointer;
+  transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.sticky-filter-button .enable-filters-button:hover {
+  background: var(--teal-deep, #5EB2BB) !important;
+  box-shadow: 0 8px 26px rgba(15, 23, 42, .28);
+  transform: translateY(-2px);
+}
+/* Ícono: Listeo lo pinta como cuadro de color; aquí va integrado en la píldora. */
+.sticky-filter-button .enable-filters-button i,
+.sticky-filter-button .enable-filters-button .enable-filters-button-icon {
+  background: transparent !important;
+  border-radius: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  color: #fff !important;
+}
+/* Texto: se reactiva el <span> del estado actual (el bloque de Listeo los
+   ocultaba ambos con !important, dejando el botón en 0px de ancho). */
+.sticky-filter-button .enable-filters-button span.show-text { display: inline !important; }
+.sticky-filter-button .enable-filters-button span.hide-text { display: none !important; }
+.sticky-filter-button .enable-filters-button.active span.show-text { display: none !important; }
+.sticky-filter-button .enable-filters-button.active span.hide-text { display: inline !important; }
+
+/* Móvil: algo más pequeño y sin chocar con el chat flotante (que va a la derecha). */
+@media (max-width: 767px) {
+  .sticky-filter-button { left: 14px; bottom: 18px; }
+  .sticky-filter-button .enable-filters-button { padding: 12px 17px !important; font-size: 13px; }
+}

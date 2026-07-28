@@ -496,6 +496,34 @@ function ppv2_plp_assets() {
 	}
 }
 
+// Botón FLOTANTE de filtros del Directorio (abajo a la izquierda, aparece al
+// hacer scroll). Solo controla la visibilidad del `.sticky-filter-button` de
+// Listeo, que está en el DOM pero nunca se muestra: su clase `btn-visible` no
+// llega nunca y su `position:sticky` lo cancela el `overflow:hidden` del
+// ancestro .full-page-content-container. El aspecto y la posición van en
+// style.css; el clic sigue siendo el botón nativo del tema.
+// Apagar con: define( 'PP_FABFILTROS_OFF', true ); en wp-config.php
+add_action( 'wp_enqueue_scripts', 'ppv2_dirfilters_fab_assets', 100 );
+function ppv2_dirfilters_fab_assets() {
+	if ( defined( 'PP_FABFILTROS_OFF' ) && PP_FABFILTROS_OFF ) {
+		return;
+	}
+	if ( ! function_exists( 'ppv2_is_listings_archive' ) || ! ppv2_is_listings_archive() ) {
+		return;
+	}
+	$dir = get_stylesheet_directory();
+	if ( ! file_exists( $dir . '/js/ppv2-dirfilters-fab.js' ) ) {
+		return;
+	}
+	wp_enqueue_script(
+		'ppv2-dirfilters-fab',
+		get_stylesheet_directory_uri() . '/js/ppv2-dirfilters-fab.js',
+		array(),
+		filemtime( $dir . '/js/ppv2-dirfilters-fab.js' ),
+		true
+	);
+}
+
 // "Ver todo X" al principio de cada submenú de categorías de la Tienda.
 // El tema padre cancela el clic de toda opción con submenú (custom.js ~180), y
 // como aquí escritorio y móvil comparten el mismo <ul id="mobile-nav">, no hay
@@ -2307,6 +2335,132 @@ function ppv2_seo_alt_fallback( $attr, $attachment ) {
    fantasma del buscador, bottom sheet) SIGUEN imprimiéndolo: solo su
    <script> se movió al archivo correspondiente.
    ========================================================================= */
+/* =========================================================================
+   MEDICIÓN — CORE WEB VITALS DE USUARIOS REALES → GA4
+   El sitio NO tiene datos de campo en CrUX (verificado con la API de
+   PageSpeed: «sin datos» por URL y por origen), porque no alcanza el umbral
+   de tráfico de Google. Sin esto, el rendimiento solo se conoce en
+   laboratorio y el INP no se conoce en absoluto.
+   La librería va alojada aquí, no en un CDN, para no volver a añadir una
+   petición externa de las que se han estado quitando.
+   Kill-switch: add_filter( 'pp_web_vitals_activo', '__return_false' );
+   ========================================================================= */
+add_action( 'wp_enqueue_scripts', 'ppv2_enqueue_web_vitals', 101 );
+function ppv2_enqueue_web_vitals() {
+
+	if ( ! apply_filters( 'pp_web_vitals_activo', true ) ) {
+		return;
+	}
+	// Sin sentido en el panel, y se evita medir la navegación del propio equipo.
+	if ( is_admin() || is_user_logged_in() ) {
+		return;
+	}
+
+	$dir = get_stylesheet_directory() . '/js/migrados/';
+	$uri = get_stylesheet_directory_uri() . '/js/migrados/';
+
+	if ( ! file_exists( $dir . 'web-vitals.js' ) || ! file_exists( $dir . 'ppv2-web-vitals-ga4.js' ) ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'web-vitals',
+		$uri . 'web-vitals.js',
+		array(),
+		filemtime( $dir . 'web-vitals.js' ),
+		true
+	);
+	wp_enqueue_script(
+		'ppv2-web-vitals-ga4',
+		$uri . 'ppv2-web-vitals-ga4.js',
+		array( 'web-vitals' ),
+		filemtime( $dir . 'ppv2-web-vitals-ga4.js' ),
+		true
+	);
+}
+
+/* =========================================================================
+   MEDICIÓN — CLICS DE CONTACTO (WHATSAPP, TELÉFONO, CORREO) → GA4
+   En un directorio, el clic al WhatsApp del prestador ES la conversión: es
+   donde el usuario sale de la plataforma para cerrar el trato. Sin medirlo,
+   el valor que Parche Peludo genera a sus aliados no aparece en Analytics.
+   Se encola en TODO el front (no solo en fichas) porque los enlaces de
+   contacto también salen en tarjetas, en el perfil del prestador y en el pie.
+   Kill-switch: add_filter( 'pp_eventos_contacto_activo', '__return_false' );
+   ========================================================================= */
+add_action( 'wp_enqueue_scripts', 'ppv2_enqueue_eventos_contacto', 101 );
+function ppv2_enqueue_eventos_contacto() {
+
+	if ( ! apply_filters( 'pp_eventos_contacto_activo', true ) ) {
+		return;
+	}
+	if ( is_admin() ) {
+		return;
+	}
+	/*
+	 * A diferencia de las Core Web Vitals, aquí NO se excluye a todos los
+	 * usuarios registrados: un cliente logueado que escribe al prestador es una
+	 * conversión de verdad y perderla falsearía el dato a la baja. Solo se deja
+	 * fuera al equipo —quien puede editar contenido—, que navega el sitio para
+	 * revisarlo y generaría clics que no son de nadie.
+	 */
+	if ( is_user_logged_in() && current_user_can( 'edit_posts' ) ) {
+		return;
+	}
+
+	$dir = get_stylesheet_directory() . '/js/migrados/';
+	$uri = get_stylesheet_directory_uri() . '/js/migrados/';
+
+	if ( ! file_exists( $dir . 'ppv2-eventos-contacto-ga4.js' ) ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'ppv2-eventos-contacto-ga4',
+		$uri . 'ppv2-eventos-contacto-ga4.js',
+		array(),
+		filemtime( $dir . 'ppv2-eventos-contacto-ga4.js' ),
+		true
+	);
+
+	/*
+	 * El contexto se calcula en PHP, no leyendo el DOM: WordPress ya sabe qué
+	 * página está sirviendo, y deducirlo de clases CSS se rompe en cuanto
+	 * cambia una plantilla.
+	 */
+	$datos = array( 'tipo_pagina' => pp_tipo_de_pagina() );
+
+	if ( is_singular( 'listing' ) ) {
+		$datos['listado_id']      = get_the_ID();
+		$datos['listado_titulo']  = get_the_title();
+	}
+
+	wp_localize_script( 'ppv2-eventos-contacto-ga4', 'ppContactoDatos', $datos );
+}
+
+/**
+ * Clasifica la página actual para poder comparar plantillas entre sí en GA4.
+ *
+ * Un promedio de todo el sitio esconde el problema: la portada puede ir bien y
+ * la ficha de publicación fatal, y en el agregado no se ve. Los valores son los
+ * mismos que usa el módulo de Core Web Vitals, para que ambas medidas se puedan
+ * cruzar con la misma dimensión `pp_tipo_pagina`.
+ *
+ * @return string Etiqueta del tipo de página.
+ */
+function pp_tipo_de_pagina() {
+	if ( is_front_page() )              { return 'portada'; }
+	if ( is_singular( 'listing' ) )     { return 'ficha-publicacion'; }
+	if ( function_exists( 'is_product' ) && is_product() ) { return 'ficha-producto'; }
+	if ( function_exists( 'is_checkout' ) && is_checkout() ) { return 'checkout'; }
+	if ( function_exists( 'is_cart' ) && is_cart() )        { return 'carrito'; }
+	if ( function_exists( 'is_woocommerce' ) && is_woocommerce() ) { return 'tienda'; }
+	if ( is_post_type_archive( 'listing' ) || is_tax( 'listing_category' ) ) { return 'directorio'; }
+	if ( is_singular( 'post' ) || is_home() ) { return 'blog'; }
+	if ( is_page() )                    { return 'pagina'; }
+	return 'otro';
+}
+
 add_action( 'wp_enqueue_scripts', 'ppv2_enqueue_js_migrados', 100 );
 function ppv2_enqueue_js_migrados() {
 	$dir = get_stylesheet_directory() . '/js/migrados/';
@@ -2761,6 +2915,19 @@ if ( file_exists( $pp_chat_oscuro ) ) {
 $pp_correos_ajustes = get_stylesheet_directory() . '/inc/pp-correos-ajustes.php';
 if ( file_exists( $pp_correos_ajustes ) ) {
 	require_once $pp_correos_ajustes;
+}
+
+/* ==========================================================================
+ * MEDICIÓN — EMBUDO DE RESERVAS → GA4
+ * Engancha `listeo_after_insert_booking` y `listeo_booking_status_changed` y
+ * los envía por Measurement Protocol (desde el servidor), porque la aprobación
+ * del prestador, el webhook de pago y la caducidad por cron ocurren sin ningún
+ * navegador delante. Requiere pegar el secreto en Ajustes → Medición GA4.
+ * Kill-switch: add_filter( 'pp_eventos_reservas_activo', '__return_false' );
+ * ========================================================================== */
+$pp_eventos_reservas = get_stylesheet_directory() . '/inc/pp-eventos-reservas-ga4.php';
+if ( file_exists( $pp_eventos_reservas ) ) {
+	require_once $pp_eventos_reservas;
 }
 
 /* ==========================================================================
