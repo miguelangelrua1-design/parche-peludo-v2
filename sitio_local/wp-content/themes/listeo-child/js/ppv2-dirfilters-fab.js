@@ -69,8 +69,21 @@
 			return y;
 		}
 
+		/**
+		 * Con el panel de filtros ABIERTO en escritorio el botón sobra: los
+		 * filtros ya están a la vista y el panel tiene su propia ✕. Solo
+		 * ≥992px — en móvil el panel es un cajón que cubre la pantalla (y
+		 * lleva su propia cabecera con cierre), así que da igual.
+		 * El estado abierto lo marca Listeo con `enabled-sidebar`.
+		 */
+		function panelAbierto() {
+			if (window.innerWidth < 992) { return false; }
+			var sb = document.querySelector('.full-page-sidebar');
+			return !!(sb && sb.classList.contains('enabled-sidebar'));
+		}
+
 		function actualizar() {
-			var visible = desplazamiento() > UMBRAL;
+			var visible = desplazamiento() > UMBRAL && !panelAbierto();
 			if (visible === ultimo) { return; }     // evita tocar el DOM en cada píxel
 			ultimo = visible;
 			raiz.classList.toggle(CLASE, visible);
@@ -102,6 +115,24 @@
 
 		window.addEventListener('scroll', alScrollear, { passive: true });
 		if (caja) { caja.addEventListener('scroll', alScrollear, { passive: true }); }
+		// Al cambiar de tamaño puede cruzarse el umbral de 992px (el criterio de
+		// panelAbierto() depende de él).
+		window.addEventListener('resize', alScrollear, { passive: true });
+
+		/**
+		 * Abrir/cerrar el panel no genera ningún evento propio: Listeo solo
+		 * añade o quita la clase `enabled-sidebar`. Se vigila ese atributo para
+		 * esconder o devolver el botón en el momento, sin esperar a un scroll.
+		 * El sidebar puede llegar tarde al DOM, así que se observa el
+		 * contenedor y se filtra por el elemento.
+		 */
+		var raizObs = document.querySelector('.full-page-container') || document.body;
+		if (window.MutationObserver && raizObs) {
+			new MutationObserver(function () {
+				ultimo = null;          // fuerza recalcular: el motivo del cambio no es el scroll
+				actualizar();
+			}).observe(raizObs, { attributes: true, attributeFilter: ['class'], subtree: true });
+		}
 
 		actualizar();
 	}
