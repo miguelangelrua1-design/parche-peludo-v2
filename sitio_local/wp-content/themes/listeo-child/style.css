@@ -12144,16 +12144,33 @@ html.pp-fabfiltros-visible .sticky-filter-button {
 .sticky-filter-button .enable-filters-button i,
 .sticky-filter-button .enable-filters-button .enable-filters-button-icon {
   display: block !important;
-  width: 21px !important;
-  height: 21px !important;
+  /* Listeo saca el ícono del botón con posicionamiento propio (se midió a
+     -46px del borde izquierdo: quedaba FUERA del círculo y por eso el botón
+     se veía vacío). Se devuelve al flujo para que lo centre el flex. */
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  float: none !important;
+  width: 18px !important;
+  height: 14px !important;
   margin: 0 !important;
   padding: 0 !important;
+  border: 0 !important;
   border-radius: 0 !important;
+  /* Tres barras decrecientes = símbolo clásico de filtros, dibujadas con
+     degradados planos: CSS puro, sin fuentes de iconos, sin data URI (un SVG
+     incrustado sí cargaba pero no llegaba a pintarse) y sin peticiones. */
   background-color: transparent !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 3H2l8 9.46V19l4 2v-8.54L22 3z'/%3E%3C/svg%3E") !important;
+  background-image:
+    linear-gradient(#fff, #fff),
+    linear-gradient(#fff, #fff),
+    linear-gradient(#fff, #fff) !important;
+  background-size: 18px 2px, 12px 2px, 6px 2px !important;
+  background-position: center top, center center, center bottom !important;
   background-repeat: no-repeat !important;
-  background-position: center !important;
-  background-size: contain !important;
 }
 /* Sin texto: el botón es solo el ícono (el nombre lo da el aria-label que
    pone js/ppv2-dirfilters-fab.js, para que siga siendo accesible). */
@@ -12169,5 +12186,5 @@ html.pp-fabfiltros-visible .sticky-filter-button {
 @media (max-width: 767px) {
   .sticky-filter-button { left: 12px; bottom: 12px; }
   .sticky-filter-button .enable-filters-button { width: 44px !important; min-width: 44px !important; height: 44px !important; }
-  .sticky-filter-button .enable-filters-button i { width: 19px !important; height: 19px !important; }
+  .sticky-filter-button .enable-filters-button i { width: 16px !important; height: 12px !important; background-size: 16px 2px, 11px 2px, 6px 2px !important; }
 }
