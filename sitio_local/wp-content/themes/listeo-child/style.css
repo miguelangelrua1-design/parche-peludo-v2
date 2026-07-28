@@ -10499,7 +10499,6 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
   color: #fff !important;
   border-radius: 999px !important;
   padding: 9px 20px !important;
-  margin-right: 7px; /* un respiro para no quedar a ras del borde del texto */
   font-weight: 700;
   transition: filter 0.2s ease;
 }
@@ -10517,18 +10516,42 @@ a.listing-details-nl:hover .details-sidebar-col-nl::after {
   transform: none !important;
   filter: brightness(0.92);
 }
-/* La fila precio|botón vive en una sección interna con márgenes laterales
-   (20px) y su columna con padding (10px): el botón quedaba ~50px más
-   adentro que el texto de la tarjeta. La fila pasa a ocupar el ancho del
-   contenido: el precio queda al borde izquierdo del texto y el botón al
-   derecho, simétricos. Solo afecta a las filas que contienen el CTA. */
+/* Alineación de la fila «precio | botón» con el texto de la tarjeta.
+   Medido en la ficha real: el widget de texto ocupa 284→596 pero su TEXTO
+   va de 304 a 576, o sea 20px de sangría a cada lado — justo los márgenes
+   laterales que el diseño ya le da a esta sección (margin:14px 20px). Solo
+   faltaban dos cosas:
+     · width:auto la encogía al contenido, así que el botón nunca llegaba al
+       borde derecho → se le da el ancho exacto del texto (100% − 40px).
+     · el padding interno de sus dos columnas corría el precio 10px hacia la
+       izquierda → se anula, y el precio arranca donde arranca el título.
+   Resultado: precio a ras del título y botón a ras del final del párrafo. */
 .elementor-inner-section:has(.ppv2-sc-cta) {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  width: 100% !important;
+  margin: 14px 20px 0 !important;
+  width: calc(100% - 40px) !important;
 }
-.elementor-widget-wrap:has(> .ppv2-sc-cta) {
+.elementor-inner-section:has(.ppv2-sc-cta) .elementor-inner-column > .elementor-widget-wrap {
+  padding-left: 0 !important;
   padding-right: 0 !important;
+}
+
+/* MÓVIL — el CSS del diseño anula el relleno del botón
+   (`.elementor-column:not(:first-child):has(.ppv2-sc-img) .ppv2-sc-cta
+   .elementor-button { padding:0 }`), pensado para cuando el CTA era un
+   enlace de texto: con el pill hacía que se viera aplastado en todas las
+   tarjetas menos la primera. Se restituye el relleno con un selector de
+   mayor especificidad (la clase repetida desempata la cascada). */
+@media (max-width: 767px) {
+  .elementor-column:has(.ppv2-sc-img) .ppv2-sc-cta.ppv2-sc-cta a.elementor-button {
+    padding: 9px 18px !important;
+    font-size: 13.5px !important;
+  }
+  /* En móvil el diseño usa 14px de sangría (no 20px) y apila precio y botón
+     en columna alineados a la izquierda: el ancho se ajusta a esa medida
+     para que el pie coincida con el título y el texto de la tarjeta. */
+  .elementor-inner-section:has(.ppv2-sc-cta) {
+    width: calc(100% - 28px) !important;
+  }
 }
 
 /* ============================================================
@@ -12018,4 +12041,31 @@ body.woocommerce .select2-results__option {
   color: #4AA5AD !important;
   text-decoration: underline !important;
   border-radius: 0 !important;
+}
+
+/* ============================================================================
+   DIRECTORIO — el panel de filtros no se podía subir hasta arriba (2026-07-26)
+   ----------------------------------------------------------------------------
+   Listeo deja `.full-page-sidebar` con `position: sticky; top: 0` y
+   `max-height: 100vh`. Como el header del sitio es `position: fixed` y mide
+   80px, al hacer scroll el panel se pega al BORDE de la ventana y sus
+   primeros 80px (el buscador "¿Qué estás buscando?" y el título "Filtrar en
+   Directorio") quedan DETRÁS del header: el scroll interno del panel ya está
+   en su tope, así que no hay forma de alcanzarlos.
+
+   Arreglo: pegarlo por debajo del header y acotar su alto al espacio que
+   queda visible, para que su scroll interno llegue a todo el contenido.
+   Mismos valores que ya usa el sidebar de la ficha de listado (~línea 2925):
+   96px = 80 header + 16 de respiro; 128px cuando hay barra de administrador.
+   Solo escritorio: en <992px el panel es un drawer y no se toca.
+   ============================================================================ */
+@media (min-width: 992px) {
+  .full-page-container.full-page-jobs .full-page-sidebar {
+    top: 96px !important;
+    max-height: calc(100vh - 112px) !important;
+  }
+  body.admin-bar .full-page-container.full-page-jobs .full-page-sidebar {
+    top: 128px !important;
+    max-height: calc(100vh - 144px) !important;
+  }
 }
