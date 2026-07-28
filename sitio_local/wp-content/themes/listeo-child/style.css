@@ -12112,6 +12112,14 @@ html.pp-fabfiltros-visible .sticky-filter-button {
 .sticky-filter-button .filter-button-container { margin: 0 !important; }
 /* Botón redondo y compacto: SOLO ícono (decisión del PO). */
 .sticky-filter-button .enable-filters-button {
+  /* Listeo lo desplaza con `position:relative; left:48px; top:4px` (en su
+     diseño el botón asomaba por el borde del panel). Aquí ese corrimiento lo
+     sacaba de la esquina: el contenedor quedaba en x=12 y el botón en x=60. */
+  position: relative !important;
+  left: 0 !important;
+  right: auto !important;
+  top: 0 !important;
+  bottom: auto !important;
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
