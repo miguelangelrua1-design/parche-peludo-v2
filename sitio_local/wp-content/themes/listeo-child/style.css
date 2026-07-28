@@ -12180,6 +12180,17 @@ html.pp-fabfiltros-visible .sticky-filter-button {
   background-position: center top, center center, center bottom !important;
   background-repeat: no-repeat !important;
 }
+/* Listeo pinta ADEMÁS su propio ícono en los pseudo-elementos del <i> (dos
+   imágenes de 44x44, para estado normal y activo). Se veían superpuestos al
+   nuestro: dos íconos en el mismo botón. Se anulan y queda solo uno. */
+.sticky-filter-button .enable-filters-button i::before,
+.sticky-filter-button .enable-filters-button i::after,
+.sticky-filter-button .enable-filters-button .enable-filters-button-icon::before,
+.sticky-filter-button .enable-filters-button .enable-filters-button-icon::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+}
 /* Sin texto: el botón es solo el ícono (el nombre lo da el aria-label que
    pone js/ppv2-dirfilters-fab.js, para que siga siendo accesible). */
 .sticky-filter-button .enable-filters-button span.show-text,
