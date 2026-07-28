@@ -4307,9 +4307,13 @@ body.single-listing #listing-nav {
 #ppt-species .elementor-column { width: calc(50% - 14px) !important; flex: 0 0 calc(50% - 14px) !important; }
 #ppt-species-dog > .elementor-element-populated,
 #ppt-species-cat > .elementor-element-populated { position: relative; z-index: 2; display: flex; align-items: flex-end; }
+/* Velo oscuro RETIRADO 2026-07-28 (decisión del PO): existía para que el
+   texto blanco "Todo para Perros/Gatos" —que antes era un widget de
+   Elementor— se leyera sobre la foto. Las piezas nuevas ya traen su propio
+   texto y botón dentro de la imagen, así que el degradado solo la ensuciaba.
+   Si algún día se vuelve a poner el título como texto, hará falta de nuevo. */
 #ppt-species-dog::before, #ppt-species-cat::before {
-  content: ""; position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(to top, rgba(30,46,51,.80), rgba(30,46,51,.15) 50%, transparent);
+  content: none;
 }
 .ppt-species-title .elementor-heading-title { color: #fff !important; font-size: 36px; font-weight: 900; letter-spacing: -.5px; }
 
