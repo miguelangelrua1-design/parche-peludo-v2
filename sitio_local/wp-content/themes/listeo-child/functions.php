@@ -2058,13 +2058,35 @@ function ppv2_seo_paginas_publicas() {
 		'terminos-y-condiciones', 'politica-tratamiento-datos', 'tienda',
 	);
 }
+/**
+ * ¿Estamos en la tienda? Desde el 2026-07-28 la página /tienda/ ES el archivo de
+ * productos de WooCommerce, y en un archivo is_page() devuelve false. Se consulta
+ * por las dos vías para que el título y la descripción no dependan de cómo esté
+ * configurada la tienda en ese momento.
+ */
+function ppv2_es_pagina_tienda() {
+	return ( function_exists( 'is_shop' ) && is_shop() ) || is_page( 'tienda' );
+}
+/**
+ * ID de la página de la tienda. En el archivo de productos get_queried_object_id()
+ * devuelve 0 (el objeto consultado es el tipo de contenido, no un post), y con 0
+ * un rank_math_title puesto a mano desde el editor se ignoraría.
+ */
+function ppv2_id_pagina_tienda() {
+	$id = function_exists( 'wc_get_page_id' ) ? (int) wc_get_page_id( 'shop' ) : 0;
+	return $id > 0 ? $id : (int) get_queried_object_id();
+}
 add_filter( 'rank_math/frontend/robots', 'ppv2_seo_robots_noindex' );
 function ppv2_seo_robots_noindex( $robots ) {
-	// El archivo real de WooCommerce (/shop/, título "Shop") duplica a /tienda/
-	// (la página que usa el sitio); is_page() no lo cubre porque WP lo trata
-	// como archivo de productos, no como página.
-	$shop_duplicado = function_exists( 'is_shop' ) && is_shop();
-	if ( is_page( ppv2_seo_slugs_utilidad() ) || is_tax( 'listing_feature' ) || $shop_duplicado ) {
+	// 2026-07-28: la tienda de WooCommerce PASÓ a ser la página /tienda/, así que
+	// ya no hay duplicado que apagar y esta regla dejó de incluir is_shop().
+	//
+	// ⚠️ NO volver a añadir is_shop() aquí: la condición pregunta por el ROL de la
+	// página (cuál está asignada como tienda), no por su URL. Antes valía porque el
+	// catálogo vivía en /shop/ con el título "Shop" y competía con /tienda/, que
+	// entonces estaba vacía; hoy el noindex caería sobre el catálogo real.
+	// La vieja /shop/ sigue fuera del índice por su slug en ppv2_seo_slugs_utilidad().
+	if ( is_page( ppv2_seo_slugs_utilidad() ) || is_tax( 'listing_feature' ) ) {
 		unset( $robots['index'] );
 		$robots['noindex'] = 'noindex';
 		$robots['follow']  = 'follow';
@@ -2131,6 +2153,16 @@ function ppv2_seo_redirecciones_legado() {
 		wp_safe_redirect( home_url( '/' ), 301 );
 		exit;
 	}
+	// 2026-07-28: la tienda pasó de /shop/ (la página "Shop" que crea WooCommerce
+	// al instalarse) a /tienda/. La vieja sigue existiendo y devolviendo 200, así
+	// que el bloque de 404 de más abajo no la cubriría. Se conserva la query para
+	// no perder los filtros de marca/atributo que ya circulan en enlaces.
+	// Sin bucle: en /tienda/ is_page() es false, porque ahora es el archivo de Woo.
+	if ( is_page( 'shop' ) ) {
+		$qs = isset( $_SERVER['QUERY_STRING'] ) ? sanitize_text_field( wp_unslash( (string) $_SERVER['QUERY_STRING'] ) ) : '';
+		wp_safe_redirect( home_url( '/tienda/' ) . ( '' !== $qs ? '?' . $qs : '' ), 301 );
+		exit;
+	}
 	$path = trim( (string) wp_parse_url( isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '', PHP_URL_PATH ), '/' );
 	if ( '' === $path ) {
 		return;
@@ -2184,10 +2216,14 @@ function ppv2_seo_titulos_archivos( $title ) {
 			return 'Servicios de ' . $t->name . ' para mascotas a domicilio | Parche Peludo';
 		}
 	}
-	// La tienda del sitio es la PÁGINA /tienda/ (no el archivo /shop/ de Woo,
-	// que queda noindexado por duplicado).
-	if ( is_page( 'tienda' ) && '' === (string) get_post_meta( get_queried_object_id(), 'rank_math_title', true ) ) {
-		return 'Tienda online para mascotas: alimento, juguetes y accesorios | Parche Peludo';
+	// La tienda del sitio es /tienda/. Desde que esa página ES el archivo de
+	// WooCommerce, is_page() devuelve false ahí (WP la trata como archivo de
+	// productos), así que hay que preguntar también por is_shop(). Se mantiene
+	// is_page() por si algún día se vuelve a separar la landing del catálogo.
+	if ( ppv2_es_pagina_tienda() ) {
+		if ( '' === (string) get_post_meta( ppv2_id_pagina_tienda(), 'rank_math_title', true ) ) {
+			return 'Tienda online para mascotas: alimento, juguetes y accesorios | Parche Peludo';
+		}
 	}
 	if ( is_tax( 'product_cat' ) ) {
 		$t = get_queried_object();
@@ -2208,8 +2244,10 @@ function ppv2_seo_desc_archivos( $desc ) {
 			return 'Servicios de ' . mb_strtolower( $t->name, 'UTF-8' ) . ' para tu mascota con profesionales verificados. Compara opciones y reserva en línea en Parche Peludo.';
 		}
 	}
-	if ( is_page( 'tienda' ) && '' === (string) get_post_meta( get_queried_object_id(), 'rank_math_description', true ) ) {
-		return 'Compra en línea todo para tu peludo: alimento, snacks, juguetes, higiene y accesorios para perros y gatos. Envío a toda Colombia.';
+	if ( ppv2_es_pagina_tienda() ) {
+		if ( '' === (string) get_post_meta( ppv2_id_pagina_tienda(), 'rank_math_description', true ) ) {
+			return 'Compra en línea todo para tu peludo: alimento, snacks, juguetes, higiene y accesorios para perros y gatos. Envío a toda Colombia.';
+		}
 	}
 	if ( is_tax( 'product_cat' ) ) {
 		$t = get_queried_object();
