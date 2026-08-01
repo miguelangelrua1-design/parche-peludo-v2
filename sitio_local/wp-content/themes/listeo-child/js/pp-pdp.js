@@ -94,7 +94,36 @@
 
 	function busy( on ) { $wrap.toggleClass( 'pp-busy', !! on ); }
 
-	function refreshMini() { $( document.body ).trigger( 'wc_fragment_refresh' ); }
+	var refrescoPropio = false; // para ignorar el eco de nuestros propios avisos
+
+	function refreshMini() {
+		refrescoPropio = true;
+		$( document.body ).trigger( 'wc_fragment_refresh' );
+		setTimeout( function () { refrescoPropio = false; }, 50 );
+	}
+
+	// Reconstruye el mapa del carrito desde el SERVIDOR (Store API, nunca
+	// cacheada) y re-pinta. Es la red de seguridad cuando el estado local se
+	// desincroniza: el producto se eliminó desde el minicart o la página del
+	// carrito, una operación falló (key inexistente, nonce), o se volvió a la
+	// ficha con el botón Atrás. Sin esto, el stepper quedaba "congelado" con
+	// cantidades viejas y sus botones dejaban de responder.
+	function syncFromServer() {
+		fetch( '/wp-json/wc/store/v1/cart', { credentials: 'same-origin' } )
+			.then( function ( r ) { if ( ! r.ok ) { throw new Error( 'HTTP ' + r.status ); } return r.json(); } )
+			.then( function ( j ) {
+				cart = {};
+				( j.items || [] ).forEach( function ( it ) {
+					// Producto simple → slot 'simple'; variaciones → slot por id.
+					// Se registran TODAS las variaciones del carrito: entryFor()
+					// solo consulta las de ESTE producto, el resto es inofensivo.
+					if ( it.id === CFG.productId ) { cart.simple = { key: it.key, qty: it.quantity }; }
+					cart[ String( it.id ) ] = { key: it.key, qty: it.quantity };
+				} );
+				render();
+			} )
+			.catch( function () { /* sin red: no rompemos la ficha */ } );
+	}
 
 	function ajax( op, data, done ) {
 		busy( true );
@@ -102,9 +131,9 @@
 			.done( function ( res ) {
 				busy( false );
 				if ( res && res.success ) { done( res.data ); }
-				else { refreshMini(); }
+				else { syncFromServer(); refreshMini(); } // estado real + minicart
 			} )
-			.fail( function () { busy( false ); } );
+			.fail( function () { busy( false ); syncFromServer(); } );
 	}
 
 	// --- Interacciones ----------------------------------------------------------
@@ -352,5 +381,20 @@
 		buildPills();
 		autoSelectCheapest();
 		render();
+	} );
+
+	// El carrito puede cambiar por FUERA de la ficha (drawer del minicart,
+	// página del carrito): cualquier anuncio de fragmentos re-sincroniza el
+	// estado desde el servidor (saltando el eco de los avisos propios).
+	var pdpSyncTimer = null;
+	$( document.body ).on( 'wc_fragments_refreshed wc_fragment_refresh removed_from_cart', function () {
+		if ( refrescoPropio ) { return; }
+		if ( pdpSyncTimer ) { clearTimeout( pdpSyncTimer ); }
+		pdpSyncTimer = setTimeout( function () { pdpSyncTimer = null; syncFromServer(); }, 250 );
+	} );
+
+	// Volver con el botón Atrás (bfcache): revive el estado congelado → sync.
+	window.addEventListener( 'pageshow', function ( e ) {
+		if ( e.persisted ) { syncFromServer(); }
 	} );
 })( jQuery );

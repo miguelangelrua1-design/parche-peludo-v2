@@ -139,10 +139,14 @@
 		return $inp.length ? (parseInt($inp.val(), 10) || null) : null; // null = línea ausente (eliminada)
 	}
 
+	var opPropia = false; // evita re-leer el carrito por el eco de NUESTROS fragments
+
 	function applyFragments(fragments) {
 		if (!fragments) { return; }
+		opPropia = true;
 		$.each(fragments, function (selector, html) { $(selector).replaceWith(html); });
 		$(document.body).trigger('wc_fragments_refreshed');
+		setTimeout(function () { opPropia = false; }, 50);
 	}
 
 	// Operación de cantidad desde la tarjeta (+ / − / caneca).
@@ -216,6 +220,30 @@
 			timer = setTimeout(function () { timer = null; paintAll(); }, 150);
 		}).observe(grid, { childList: true, subtree: true });
 	}
+
+	// El carrito puede cambiar por FUERA de las tarjetas (drawer del minicart,
+	// página del carrito, otra pestaña): sin esto las tarjetas se quedaban con
+	// steppers y cantidades viejas tras vaciar el carrito, y la caneca/− dejaba
+	// de responder (su key ya no existía). Cualquier anuncio de fragmentos
+	// re-lee el carrito y re-pinta (con debounce; se salta el eco de las
+	// operaciones propias, que ya actualizan el mapa con datos exactos).
+	var syncTimer = null;
+	$(document.body).on('wc_fragments_refreshed wc_fragment_refresh added_to_cart removed_from_cart updated_wc_div', function () {
+		if (opPropia) { return; }
+		if (syncTimer) { clearTimeout(syncTimer); }
+		syncTimer = setTimeout(function () {
+			syncTimer = null;
+			cartBootstrap(function () { paintAll(); });
+		}, 250);
+	});
+
+	// Volver con el botón Atrás (bfcache): la página revive con el estado
+	// congelado de antes → re-leer el carrito real.
+	window.addEventListener('pageshow', function (e) {
+		if (e.persisted && document.querySelector('.pp-product-card')) {
+			cartBootstrap(function () { paintAll(); });
+		}
+	});
 
 	$(function () {
 		if (!document.querySelector('.pp-product-card')) { return; }
