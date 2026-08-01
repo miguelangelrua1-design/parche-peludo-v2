@@ -8843,13 +8843,12 @@ body.single-product #titlebar #breadcrumbs a:hover { color: var(--teal-deep); }
   content: none !important;
   display: none !important;
 }
-/* Enlace "Ver carrito" que WooCommerce añade tras agregar por AJAX */
-.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-body .added_to_cart {
-  display: block;
-  margin-top: 8px;
-  font-size: 12px;
-  color: #4AA5AD;
-  text-decoration: underline;
+/* Enlace "Ver carrito" que WooCommerce añade tras agregar por AJAX: NO se
+   muestra (PO 2026-08-01) — su lugar lo ocupa el stepper de cantidad que
+   pinta js/pp-plp.js. El JS además lo elimina del DOM; esta regla evita el
+   parpadeo entre que Woo lo inserta y el JS lo quita. */
+.pp-product-card .added_to_cart {
+  display: none !important;
 }
 
 /* Paginación de la tienda: pastillas redondas, activa/hover en teal (diseño) */
@@ -11680,6 +11679,79 @@ body.single-product .pp-pdp-agotado-btn {
    ============================================================ */
 .lbp-ops-title-for { font-size: 0; }
 .lbp-ops-title-for::after { content: 'de'; font-size: 19px; }
+
+/* ============================================================
+   STEPPER DE CANTIDAD EN TARJETAS + ESTADOS DEL PDP (PO 2026-08-01)
+   Tarjetas (PLP, sugeridos y carruseles [products]): cuando la
+   presentación activa ya está en el carrito, js/pp-plp.js oculta el
+   botón "Agregar" y muestra este control [caneca/−] N [+]. N es un
+   <span> (no editable). En el PDP, js/pp-pdp.js alterna con la misma
+   clase pp-cc-hide entre el botón "Agregar al carrito" y su selector
+   de cantidad según el producto esté o no en el carrito.
+   ============================================================ */
+.pp-cc-hide {
+  display: none !important;
+}
+/* El stepper ocupa el lugar del botón: mismo ancho y altura visual. */
+.pp-product-card .pp-card-qty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin: auto 0 0; /* como el botón: pegado al fondo de la tarjeta */
+  padding: 4px;
+  background: #EEF6F7;
+  border: 1px solid #BCE0E4;
+  border-radius: 999px;
+  box-sizing: border-box;
+}
+.pp-product-card .pp-card-qty[hidden] {
+  display: none !important;
+}
+.pp-product-card .pp-cq-btn {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #2E7C84;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  padding: 0;
+}
+.pp-product-card .pp-cq-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.pp-product-card .pp-cq-btn:hover {
+  background: #DDF0F2;
+}
+.pp-product-card .pp-cq-minus[data-mode="trash"] {
+  color: #C0392B; /* la caneca avisa que elimina */
+}
+.pp-product-card .pp-cq-num {
+  flex: 1 1 auto;
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  color: #1F2A2E;
+  user-select: none;
+}
+/* Operación en vuelo: se atenúa y no acepta más clics (anti doble-tap). */
+.pp-product-card.pp-cq-busy .pp-card-qty {
+  opacity: 0.55;
+  pointer-events: none;
+}
+/* PDP: el número del selector no es editable; que tampoco lo parezca. */
+.single-product .pp-qty-enhanced input.qty[readonly] {
+  pointer-events: none;
+  background: transparent;
+}
 
 /* ============================================================
    PANEL DE CONTROL — Scroll del menú lateral (barra fija).

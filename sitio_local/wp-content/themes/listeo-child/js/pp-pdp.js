@@ -1,16 +1,18 @@
 /**
  * PDP de producto (Parche Peludo V2) — editor de cantidad EN VIVO + variaciones.
  *
- * Comportamiento (feedback PO 2026-07-11):
- *  · Presentación obligatoria sin elegir → cantidad y botón deshabilitados
- *    (lo pinta el CSS con las clases nativas de WooCommerce; aquí no forzamos).
+ * Comportamiento (feedback PO 2026-07-11, revisado 2026-08-01):
+ *  · Presentación obligatoria sin elegir → botón deshabilitado (lo pinta el
+ *    CSS con las clases nativas de WooCommerce; aquí no forzamos).
  *  · Presentación con una sola opción → se elige sola (ahorra un paso).
- *  · Selector de cantidad conectado al carrito:
- *      - NO está en el carrito: solo el botón "+"; el "−" aparece al llegar a 2.
- *        "Añadir al carrito" agrega esa cantidad (AJAX, sin recargar).
- *      - YA está en el carrito: el "−" y el "+" cambian la cantidad EN el carrito
- *        al instante; cuando queda en 1, el botón izquierdo es una PAPELERA que
- *        elimina el producto del carrito. El botón grande pasa a "Ver carrito".
+ *  · Estados del bloque de compra (pedido del PO 2026-08-01):
+ *      - NO está en el carrito: SOLO el botón "Agregar al carrito" (el selector
+ *        de cantidad no se muestra; agregar añade 1 unidad).
+ *      - YA está en el carrito: el botón se sustituye por el control de
+ *        cantidad [caneca/−] N [+]: el "−" y el "+" cambian la cantidad EN el
+ *        carrito al instante; con 1 unidad el botón izquierdo es una PAPELERA
+ *        que elimina el producto (y vuelve el botón "Agregar al carrito").
+ *        N no es editable (readonly): la cantidad se maneja con los botones.
  *  · El mini-cart del header se refresca con el evento wc_fragment_refresh.
  *
  * Todo se apoya en la API nativa (WC()->cart vía admin-ajax) y en los eventos de
@@ -60,16 +62,15 @@
 			.html( 'trash' === mode ? ICON.trash : ICON.minus );
 	}
 
-	function setMain( mode ) { // 'add' | 'view'
+	function setMain( mode ) { // siempre 'add': restaura texto y estado del botón
 		if ( ! $btn || ! $btn.length ) { return; }
-		if ( 'view' === mode ) {
-			$btn.addClass( 'pp-view-cart' ).attr( 'data-pp-mode', 'view' ).text( CFG.i18n ? CFG.i18n.view : 'Ver carrito' );
-		} else {
-			$btn.removeClass( 'pp-view-cart' ).attr( 'data-pp-mode', 'add' );
-			if ( btnAddText ) { $btn.text( btnAddText ); }
-		}
+		$btn.removeClass( 'pp-view-cart' ).attr( 'data-pp-mode', 'add' );
+		if ( btnAddText ) { $btn.text( btnAddText ); }
 	}
 
+	// Estados (PO 2026-08-01): SIN entrada en el carrito solo se ve el botón
+	// "Agregar al carrito"; CON entrada, el botón se oculta y el control de
+	// cantidad [caneca/−] N [+] ocupa su lugar.
 	function render() {
 		if ( ! $wrap || ! $wrap.length ) { return; }
 		var sel   = selection();
@@ -77,11 +78,12 @@
 		if ( entry ) {
 			$input.val( entry.qty );
 			setLeft( entry.qty >= 2 ? 'minus' : 'trash' );
-			setMain( 'view' );
+			$wrap.removeClass( 'pp-cc-hide' );
+			if ( $btn && $btn.length ) { $btn.addClass( 'pp-cc-hide' ); }
 		} else {
-			var q = parseInt( $input.val(), 10 ) || 1;
-			if ( q < 1 ) { q = 1; $input.val( 1 ); }
-			setLeft( q >= 2 ? 'minus' : 'hidden' );
+			$input.val( 1 ); // el próximo "Agregar" siempre añade 1
+			$wrap.addClass( 'pp-cc-hide' );
+			if ( $btn && $btn.length ) { $btn.removeClass( 'pp-cc-hide' ); }
 			setMain( 'add' );
 		}
 	}
@@ -139,14 +141,10 @@
 		}
 	} );
 
-	// Botón grande: "Añadir al carrito" (AJAX) o "Ver carrito" según el estado.
+	// Botón grande: "Añadir al carrito" (AJAX). Tras agregar, render() lo oculta
+	// y muestra el control de cantidad en su lugar.
 	$( document ).on( 'click', '.single-product .single_add_to_cart_button', function ( e ) {
 		var $b = $( this );
-		if ( 'view' === $b.attr( 'data-pp-mode' ) ) {
-			e.preventDefault();
-			window.location.href = CFG.cartUrl;
-			return;
-		}
 		// Sin variación válida o deshabilitado: dejar que WooCommerce avise.
 		if ( $b.hasClass( 'disabled' ) || $b.hasClass( 'wc-variation-selection-needed' ) ) { return; }
 		var sel = selection();
@@ -181,6 +179,10 @@
 		$input = $wrap.find( 'input.qty' );
 		if ( ! $input.length ) { return; }
 		$wrap.addClass( 'pp-qty-enhanced' );
+		// La cantidad no es editable a mano (PO 2026-08-01): se maneja solo con
+		// los botones. readonly (y no disabled) para que el valor sí viaje al
+		// enviar el formulario nativo si el JS de carrito fallara.
+		$input.attr( 'readonly', 'readonly' ).attr( 'aria-live', 'polite' );
 		$input.before( '<button type="button" class="pp-qty-btn pp-qty-minus" aria-label="Disminuir cantidad">' + ICON.minus + '</button>' );
 		$input.after( '<button type="button" class="pp-qty-btn pp-qty-plus" aria-label="Aumentar cantidad">' + ICON.plus + '</button>' );
 	}
