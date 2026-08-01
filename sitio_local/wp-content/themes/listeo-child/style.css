@@ -11692,6 +11692,25 @@ body.single-product .pp-pdp-agotado-btn {
 .pp-cc-hide {
   display: none !important;
 }
+/* Blindajes de especificidad para pp-cc-hide (medidos en vivo):
+   1) En los carruseles [products], la regla del botón
+      ".ppv2-shop-products … .pp-card-body .button { display:flex !important }"
+      le ganaba a la utilitaria y el botón "Agregar" seguía visible junto al
+      stepper (botones repetidos). Estas variantes la superan en cascada. */
+.ppv2-shop-products ul.products li.product.pp-product-card .pp-card-body .button.pp-cc-hide,
+.listeo-shop-grid ul.products li.product.pp-product-card .pp-card-body .button.pp-cc-hide,
+.pp-product-card .pp-card-body .button.pp-cc-hide,
+.pp-product-card a.add_to_cart_button.pp-cc-hide,
+body.single-product form.cart .single_add_to_cart_button.pp-cc-hide {
+  display: none !important;
+}
+/* 2) En el PDP, un .show() de jQuery (tema/Woo) deja style="display:block"
+   inline en div.quantity cuando estuvo oculta, rompiendo el flex (el número
+   quedaba a la izquierda de los botones − y +). El !important del stylesheet
+   le gana al inline; el :not evita chocar con el estado oculto. */
+body.single-product form.cart div.quantity:not(.pp-cc-hide) {
+  display: flex !important;
+}
 /* El stepper ocupa el lugar del botón: mismo ancho y altura visual. */
 .pp-product-card .pp-card-qty {
   display: flex;

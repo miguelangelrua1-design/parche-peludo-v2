@@ -78,7 +78,11 @@
 		if ( entry ) {
 			$input.val( entry.qty );
 			setLeft( entry.qty >= 2 ? 'minus' : 'trash' );
-			$wrap.removeClass( 'pp-cc-hide' );
+			// Limpiar el display inline que un .show() de jQuery (tema/Woo)
+			// pudo dejar mientras estaba oculta: "display:block" rompía el
+			// flex y el número quedaba fuera de sitio (el CSS además blinda
+			// con !important, esto evita depender solo de él).
+			$wrap.removeClass( 'pp-cc-hide' ).css( 'display', '' );
 			if ( $btn && $btn.length ) { $btn.addClass( 'pp-cc-hide' ); }
 		} else {
 			$input.val( 1 ); // el próximo "Agregar" siempre añade 1
