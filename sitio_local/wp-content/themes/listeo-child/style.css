@@ -11784,6 +11784,50 @@ body.single-product form.cart div.quantity:not(.pp-cc-hide) {
 }
 
 /* ============================================================
+   PDP — "Comprar por WhatsApp" (PO 2026-08-01, según referente)
+   Pill blanco de ancho completo con borde y texto en el verde de
+   WhatsApp, bajo el botón "Agregar al carrito"; subtexto gris
+   centrado. Lo monta js/pp-pdp.js (sin PHP).
+   ============================================================ */
+.pp-wa-bloque {
+  margin: 14px 0 0;
+}
+a.pp-wa-comprar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  box-sizing: border-box;
+  padding: 12px 20px;
+  background: #fff;
+  border: 1.5px solid #25D366;
+  border-radius: 999px;
+  color: #1DA851 !important;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none !important;
+  transition: background 0.15s ease;
+}
+a.pp-wa-comprar:hover,
+a.pp-wa-comprar:focus {
+  background: #F0FBF4;
+  color: #1DA851 !important;
+}
+a.pp-wa-comprar svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+.pp-wa-nota {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: #8E9A9E;
+}
+
+/* ============================================================
    PANEL DE CONTROL — Scroll del menú lateral (barra fija).
    Bug de Listeo: en escritorio la barra lateral del panel es
    `position: fixed` con la altura completa de la ventana pero
