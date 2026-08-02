@@ -11827,6 +11827,11 @@ a.pp-wa-comprar svg {
   font-size: 13px;
   color: #8E9A9E;
 }
+/* La descripción corta baja a después de los CTA (la mueve pp-pdp.js):
+   un respiro para separarla del bloque de compra. */
+.single-product .woocommerce-product-details__short-description.pp-desc-abajo {
+  margin-top: 18px;
+}
 
 /* ============================================================
    PANEL DE CONTROL — Scroll del menú lateral (barra fija).

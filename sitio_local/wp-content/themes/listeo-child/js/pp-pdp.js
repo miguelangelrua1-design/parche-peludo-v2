@@ -390,6 +390,7 @@
 			autoSelectCheapest();
 		}
 		montarWhatsApp();
+		reordenarResumen();
 		render();
 		// El estado que viene en el HTML (PP_PDP.cart) puede estar VIEJO si la
 		// página llegó de una caché (pública o privada): la ficha decía
@@ -444,6 +445,17 @@
 	$( document ).on( 'click', '.pp-wa-comprar', function () {
 		$( this ).attr( 'href', waUrl() );
 	} );
+
+	// Orden del resumen (PO 2026-08-02): los CTA deben verse en el PRIMER
+	// pantallazo. La descripción corta baja a después de los botones
+	// (Agregar al carrito + Comprar por WhatsApp), en desktop y móvil.
+	function reordenarResumen() {
+		var $desc = $( '.single-product div.product .woocommerce-product-details__short-description' ).first();
+		var $wa   = $( '.pp-wa-bloque' ).first();
+		if ( $desc.length && $wa.length && ! $desc.hasClass( 'pp-desc-abajo' ) ) {
+			$desc.addClass( 'pp-desc-abajo' ).insertAfter( $wa );
+		}
+	}
 
 	// El carrito puede cambiar por FUERA de la ficha (drawer del minicart,
 	// página del carrito): cualquier anuncio de fragmentos re-sincroniza el
