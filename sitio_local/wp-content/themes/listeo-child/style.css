@@ -11771,10 +11771,12 @@ body.single-product form.cart div.quantity:not(.pp-cc-hide) {
   color: #1F2A2E;
   user-select: none;
 }
-/* Operación en vuelo: se atenúa y no acepta más clics (anti doble-tap). */
+/* Operación en vuelo: atenuación sutil como señal. NO se bloquean los
+   clics: la UI es optimista (responde al instante) y los toques rápidos
+   encadenados se resuelven por el número de secuencia del JS — bloquear
+   con pointer-events hacía "perder" pulsaciones de + y se sentía roto. */
 .pp-product-card.pp-cq-busy .pp-card-qty {
-  opacity: 0.55;
-  pointer-events: none;
+  opacity: 0.8;
 }
 /* PDP: el número del selector no es editable; que tampoco lo parezca. */
 .single-product .pp-qty-enhanced input.qty[readonly] {

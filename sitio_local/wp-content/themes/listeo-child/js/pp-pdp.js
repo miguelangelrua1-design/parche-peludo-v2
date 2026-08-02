@@ -137,22 +137,41 @@
 	}
 
 	// --- Interacciones ----------------------------------------------------------
+	// UI OPTIMISTA + intención final (mismo patrón que las tarjetas): la
+	// pantalla responde al instante y, tras una pausa de 350 ms, viaja UNA
+	// sola petición con el estado final (una ráfaga de −/+/caneca no genera
+	// peticiones intermedias ni puede llegar al servidor en orden invertido).
+	var opTimers = {};
+	function scheduleCartOp( slot, key ) {
+		if ( opTimers[ slot ] ) { clearTimeout( opTimers[ slot ] ); }
+		opTimers[ slot ] = setTimeout( function () {
+			delete opTimers[ slot ];
+			var entry = cart[ slot ];
+			if ( ! entry ) {
+				ajax( 'remove', { key: key }, function () { render(); refreshMini(); } );
+			} else {
+				ajax( 'set', { key: entry.key, qty: entry.qty }, function ( d ) {
+					cart[ slot ] = { key: d.key, qty: d.qty };
+					render();
+					refreshMini();
+				} );
+			}
+		}, 350 );
+	}
+
 	$( document ).on( 'click', '.single-product .pp-qty-minus', function ( e ) {
 		e.preventDefault();
 		var sel = selection(), entry = entryFor( sel ), mode = $( this ).attr( 'data-mode' );
 		if ( entry && 'trash' === mode ) {
-			ajax( 'remove', { key: entry.key }, function () {
-				delete cart[ sel.slot ];
-				$input.val( 1 );
-				render();
-				refreshMini();
-			} );
+			var key = entry.key;
+			delete cart[ sel.slot ]; // optimista: vuelve "Agregar al carrito" YA
+			$input.val( 1 );
+			render();
+			scheduleCartOp( sel.slot, key );
 		} else if ( entry && 'minus' === mode ) {
-			ajax( 'set', { key: entry.key, qty: entry.qty - 1 }, function ( d ) {
-				cart[ sel.slot ] = { key: d.key, qty: d.qty };
-				render();
-				refreshMini();
-			} );
+			cart[ sel.slot ] = { key: entry.key, qty: entry.qty - 1 }; // optimista
+			render();
+			scheduleCartOp( sel.slot, entry.key );
 		} else {
 			$input.val( Math.max( 1, ( parseInt( $input.val(), 10 ) || 1 ) - 1 ) );
 			render();
@@ -163,11 +182,9 @@
 		e.preventDefault();
 		var sel = selection(), entry = entryFor( sel );
 		if ( entry ) {
-			ajax( 'set', { key: entry.key, qty: entry.qty + 1 }, function ( d ) {
-				cart[ sel.slot ] = { key: d.key, qty: d.qty };
-				render();
-				refreshMini();
-			} );
+			cart[ sel.slot ] = { key: entry.key, qty: entry.qty + 1 }; // optimista
+			render();
+			scheduleCartOp( sel.slot, entry.key );
 		} else {
 			$input.val( ( parseInt( $input.val(), 10 ) || 1 ) + 1 );
 			render();
@@ -374,6 +391,11 @@
 		}
 		montarWhatsApp();
 		render();
+		// El estado que viene en el HTML (PP_PDP.cart) puede estar VIEJO si la
+		// página llegó de una caché (pública o privada): la ficha decía
+		// "Agregar al carrito" con el producto ya en el carrito. La verdad se
+		// pide siempre al servidor al cargar (Store API, nunca cacheada).
+		syncFromServer();
 	} );
 
 	// Reintento tras la carga completa (la variations_form inicializa en su

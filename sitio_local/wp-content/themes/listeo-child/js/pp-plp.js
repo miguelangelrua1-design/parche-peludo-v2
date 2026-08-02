@@ -149,6 +149,19 @@
 		setTimeout(function () { opPropia = false; }, 50);
 	}
 
+	// Agrupa una ráfaga de clics y envía UNA sola petición con la intención
+	// final (mismo patrón que el minicart): además de ahorrar peticiones,
+	// evita que dos POST en vuelo (p. ej. "−" y caneca seguidos) lleguen al
+	// servidor en orden invertido y dejen el carrito en un estado viejo.
+	var qtyTimers = {};
+	function scheduleQty($card, key, pid, qty) {
+		if (qtyTimers[key]) { clearTimeout(qtyTimers[key]); }
+		qtyTimers[key] = setTimeout(function () {
+			delete qtyTimers[key];
+			sendQty($card, key, pid, qty);
+		}, 350);
+	}
+
 	// Operación de cantidad desde la tarjeta (+ / − / caneca).
 	function sendQty($card, key, pid, qty) {
 		if (!window.PP_MINICART || !PP_MINICART.nonce) { return; }
@@ -181,13 +194,21 @@
 		});
 	}
 
+	// Los clics responden AL INSTANTE (UI optimista) y el servidor confirma
+	// después: sin esto, la espera de 1-3s sin cambio visible hacía pulsar la
+	// caneca varias veces creyendo que no funcionaba. Si el servidor
+	// discrepa (tope de stock, línea inexistente), la respuesta re-pinta con
+	// la verdad y el estado se corrige solo.
 	$(document).on('click', '.pp-product-card .pp-cq-plus', function (e) {
 		e.preventDefault();
 		var $card = $(this).closest('.pp-product-card');
 		var $st   = $(this).closest('.pp-card-qty');
 		var pid   = String($st.attr('data-pid') || '');
 		var entry = cartMap[pid];
-		if (entry) { sendQty($card, entry.key, pid, entry.qty + 1); }
+		if (!entry) { return; }
+		cartMap[pid] = { key: entry.key, qty: entry.qty + 1 }; // optimista
+		paintCard($card);
+		scheduleQty($card, entry.key, pid, entry.qty + 1);
 	});
 
 	$(document).on('click', '.pp-product-card .pp-cq-minus', function (e) {
@@ -198,7 +219,15 @@
 		var entry = cartMap[pid];
 		if (!entry) { return; }
 		var mode = $(this).attr('data-mode');
-		sendQty($card, entry.key, pid, 'trash' === mode ? 0 : entry.qty - 1);
+		if ('trash' === mode) {
+			delete cartMap[pid]; // optimista: el botón "Agregar" vuelve YA
+			paintCard($card);
+			scheduleQty($card, entry.key, pid, 0);
+		} else {
+			cartMap[pid] = { key: entry.key, qty: entry.qty - 1 }; // optimista
+			paintCard($card);
+			scheduleQty($card, entry.key, pid, entry.qty - 1);
+		}
 	});
 
 	// Alta por el AJAX nativo de Woo: el evento added_to_cart llega con los
