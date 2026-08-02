@@ -376,14 +376,16 @@
 			$form.on( 'reset_data', function () {
 				if ( null !== precioOriginal && $price.length ) { $price.html( precioOriginal ); }
 				syncPills();
+				ajustarPrecioUnico();
 			} );
 			$form.on( 'show_variation', function () {
 				enhance();
 				$btn = $( '.single-product .single_add_to_cart_button' ).first();
 				render();
 				syncPills();
+				ajustarPrecioUnico();
 			} );
-			$form.on( 'hide_variation', function () { render(); syncPills(); } );
+			$form.on( 'hide_variation', function () { render(); syncPills(); ajustarPrecioUnico(); } );
 			$form.find( '.variations select' ).on( 'change', function () { syncPills(); } );
 
 			buildPills();
@@ -391,6 +393,8 @@
 		}
 		montarWhatsApp();
 		reordenarResumen();
+		ajustarPrecioUnico();
+		vigilarPrecioVariacion();
 		render();
 		// El estado que viene en el HTML (PP_PDP.cart) puede estar VIEJO si la
 		// página llegó de una caché (pública o privada): la ficha decía
@@ -404,6 +408,8 @@
 	$( window ).on( 'load', function () {
 		buildPills();
 		autoSelectCheapest();
+		reordenarResumen(); // por si el resumen se montó tarde
+		ajustarPrecioUnico();
 		render();
 	} );
 
@@ -449,6 +455,36 @@
 	// Orden del resumen (PO 2026-08-02): los CTA deben verse en el PRIMER
 	// pantallazo. La descripción corta baja a después de los botones
 	// (Agregar al carrito + Comprar por WhatsApp), en desktop y móvil.
+	// Red de seguridad del precio único (PO 2026-08-02): en productos con
+	// presentaciones el CSS oculta el precio de arriba y deja el de la
+	// variación. Si por lo que sea NO hubiera precio de variación a la vista
+	// (ninguna presentación válida seleccionada), se marca el contenedor y
+	// vuelve el de arriba: la ficha nunca se queda sin precio.
+	function ajustarPrecioUnico() {
+		if ( ! CFG.isVariable ) { return; }
+		var $prod = $( '.single-product div.product' ).first();
+		if ( ! $prod.length ) { return; }
+		var $vp  = $( '.single-product .woocommerce-variation-price' ).first();
+		var hay  = $vp.length && $.trim( $vp.text() ) !== '' && $vp.is( ':visible' );
+		$prod.toggleClass( 'pp-precio-arriba', ! hay );
+	}
+
+	// WooCommerce vacía/rellena el bloque de precio DESPUÉS de disparar sus
+	// eventos, así que evaluarlo solo en show/hide/reset llegaba tarde (al
+	// quitar la presentación no volvía el precio de arriba y la ficha quedaba
+	// sin precio). Un observador sobre el contenedor de la variación lo
+	// resuelve pase lo que pase y sin depender del orden de los eventos.
+	function vigilarPrecioVariacion() {
+		if ( ! CFG.isVariable || ! window.MutationObserver ) { return; }
+		var cont = document.querySelector( '.single-product .single_variation_wrap' );
+		if ( ! cont ) { return; }
+		var t = null;
+		new MutationObserver( function () {
+			if ( t ) { return; }
+			t = setTimeout( function () { t = null; ajustarPrecioUnico(); }, 60 );
+		} ).observe( cont, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: [ 'style', 'class' ] } );
+	}
+
 	function reordenarResumen() {
 		var $desc = $( '.single-product div.product .woocommerce-product-details__short-description' ).first();
 		var $wa   = $( '.pp-wa-bloque' ).first();

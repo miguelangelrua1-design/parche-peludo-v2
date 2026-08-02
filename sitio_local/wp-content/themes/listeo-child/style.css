@@ -10779,12 +10779,12 @@ body.single-product div.product h1.product_title {
   font-family: var(--font-sans);
   font-weight: 800;
   color: var(--ink);
-  font-size: 28px;
-  line-height: 1.15;
+  font-size: 21px; /* 28 → 24 → 21: segunda rebaja pedida por el PO 2026-08-02 */
+  line-height: 1.22;
   margin: 0 0 10px;
 }
 @media (min-width: 992px) {
-  body.single-product div.product h1.product_title { font-size: 36px; }
+  body.single-product div.product h1.product_title { font-size: 26px; } /* 36 → 30 → 26 */
 }
 body.single-product div.product .woocommerce-product-rating {
   display: flex;
@@ -10809,6 +10809,16 @@ body.single-product div.product p.price {
 }
 @media (max-width: 767px) {
   body.single-product div.product p.price { font-size: 32px; }
+}
+/* Productos CON presentaciones: el precio se veía DOS veces (bajo el título
+   y otra vez tras las pastillas). Se deja solo el de abajo — el de la
+   presentación elegida, que es el que de verdad se va a pagar (PO
+   2026-08-02). Red de seguridad: si no hubiera precio de variación a la
+   vista (ninguna presentación seleccionada), js/pp-pdp.js marca
+   .pp-precio-arriba y el de arriba vuelve, para que NUNCA quede una ficha
+   sin precio. Los productos simples no llevan esta clase y no cambian. */
+body.single-product div.product.product-type-variable:not(.pp-precio-arriba) > .summary > p.price {
+  display: none;
 }
 body.single-product div.product p.price del {
   color: var(--ink-faint);
