@@ -11711,16 +11711,15 @@ body.single-product form.cart .single_add_to_cart_button.pp-cc-hide {
 body.single-product form.cart div.quantity:not(.pp-cc-hide) {
   display: flex !important;
 }
-/* En escritorio el control de cantidad ocupaba solo ~134px y se veía diminuto
-   donde antes estaba el botón "Agregar al carrito" (PO 2026-08-01: "por lo
-   menos el doble de ancho"). Los botones van a los extremos y el número
-   queda centrado geométricamente. Solo desktop: en móvil el ancho compacto
-   convive mejor con la barra inferior. */
-@media (min-width: 768px) {
-  body.single-product form.cart div.quantity:not(.pp-cc-hide) {
-    min-width: 280px;
-    justify-content: space-between;
-  }
+/* Homologado con el botón "Agregar al carrito" (PO 2026-08-01): al agregar,
+   el control de cantidad conserva EL MISMO contenedor de diseño — mismo
+   ancho (el botón lleva margin-right:6px, se replica) y los 56px de alto —
+   en móvil y desktop. Los − / + van a los extremos, el número centrado. */
+body.single-product form.cart div.quantity:not(.pp-cc-hide) {
+  width: calc(100% - 6px);
+  margin-right: 6px;
+  height: 56px;
+  justify-content: space-between;
 }
 /* El stepper ocupa el lugar del botón: mismo ancho y altura visual. */
 .pp-product-card .pp-card-qty {
